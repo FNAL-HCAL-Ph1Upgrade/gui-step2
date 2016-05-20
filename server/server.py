@@ -41,7 +41,7 @@ def logerror(severity, e):
 #returns a list of length numbytes
 def read(address, numbytes):
     values = bus.i2c_read(address, numbytes)
-    return values
+    return ''.join([str(i) for i in values])
 
 #address is an int (hex is helpful)
 #bytearray is a list of bytes to be written
@@ -54,9 +54,10 @@ def sleep(n):
 
 def parseMessage(m):
     message = m.split()
-    if m[0].lower() == 'r':
+    if message[0].lower() == 'r':
         #read
-        return read(m[1], m[2])
+        print(message)
+        return read(int(message[1], 16), int(message[2], 16))
     elif m[0].lower() == 'w':
         #write
         return write(m[1], m[2:])
@@ -78,7 +79,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         ms = message.split('|')
         rets = []
         for m in ms:
-            rets.append(parseMessage(message))
+            rets.append(str(parseMessage(message)))
+        #o = '|'.join(rets)
         self.write_message("|".join(rets))
 
     def on_close(self):

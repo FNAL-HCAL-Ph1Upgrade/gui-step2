@@ -12,22 +12,27 @@ from websocket import create_connection
 
 class webBus:
     def __init__(self, serverAddress = "pi5", VERBOSITY = 2):
+        self.VERBOSITY = VERBOSITY
         self.messages = []
-        self.ws = create_connection("ws://%s:1738/ws") % serverAddress
+        a = "ws://%s:1738/ws" % serverAddress
+        self.ws = create_connection(a)
 
     def read(self, address, numbytes):
-        self.messages.append("r %i %i") % (address, numbytes)
+        m = "r %i %i" % (address, numbytes)
+        self.messages.append(m)
+
     def write(self, address, byteArray):
         m = "w %i " % address
         for h in byteArray:
-            m += str(h)
+            m += str(h) + " "
         self.messages.append(m)
     def sleep(self, n):
-        self.messages.append("s %i") % n
+        m = "s %i" % n
+        self.messages.append(m)
     def sendBatch(self, messages):
         self.ws.send('|'.join(messages))
         ret = self.ws.recv().split('|')
-        if VERBOSITY >= 1:
+        if self.VERBOSITY >= 1:
             for e in xrange(len(messages)):
                 print "SENT: %s" % messages[e]
                 print "RECEIVED: %s" % ret[e]
