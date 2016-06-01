@@ -28,7 +28,7 @@ def logerror(severity, e):
 #i2c commands
 def i2c_simple_read(address):
     try:
-        value = bus.read_byte(address):
+        value = bus.read_byte(address)
         logerror(2, 'i2c SR addr=0x%02x OK val=0x%02x' % (address,value))
         return value
     except IOError:
@@ -65,6 +65,62 @@ def i2c_complex_write(address,register,value):
                                                      % (address,register,value))
     return None
 
+#message handling
+def parseMessage(message):
+    #procedure for parsing each command
+    #Parse simple read
+    def SR(match):
+        addr = match.group(1)
+        value = i2c_simple_read(int(addr,0))
+        if (value != None):
+            return(message + ' OK ' + hex(value))
+        else:
+            return(message + ' ER')
+    #Parse simple write
+    def SW(match):
+        addr = match.group(1)
+        value = match.group(2)
+        ret = i2c_simple_write(int(addr,0),int(value,0))
+        if (ret != None):
+            return(message + ' OK')
+        else:
+            return(message + ' ER')
+
+    #Parse complex read
+    def CR(match):
+        addr = match.group(1)
+        register = match.group(2)
+        ret = i2c_complex_read(int(addr,0),int(register,0),4)
+        if (ret != None):
+            formattedMessage = ' '.join([message, 'OK']+ret)
+            return(formatterMessage)
+        else:
+            return(message + ' ER')
+
+    #Parse complex write
+    def CW(match):
+        addr = match.group(1)
+        register = match.group(2)
+        value = match.group(3)
+        ret = i2c_complex_write(int(addr,0),int(register,0),int(value,0))
+        if (ret != None):
+            return(message + ' OK')
+        else:
+            return(message + ' ER')
+
+    #use regex to determine kind of message and execute
+    cmds = {
+            r"SR\s+(\w+)" :                 SR,
+            r"SW\s+(\w+)\s+(\w+)" :         SW,
+            r"CR\s+(\w+)\s+(\w+)":          CR,
+            r"CW\s+(\w+)\s+(\w+)\s+(\w+)" : CW
+            }
+
+    for case, cmd in cmds.iteritems():
+        match = re.search(case, message,re.I|re.X)
+        if match:
+            return cmd(match)
+    return
 
 #websocket
 class WSHandler(tornado.websocket.WebSocketHandler):
@@ -76,64 +132,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     #message sent from client
     def on_message(self, message):
         logerror(2,'Received message: %s' % message)
-        parseMessage(message)
-
-    #message handling
-    def parseMessage(message):
-        #procedure for parsing each command
-        #Parse simple read
-        def SR(match):
-            addr = match.group(1)
-            value = i2c_simple_read(int(addr,0))
-            if (value != None):
-                return(message + ' OK ' + hex(value))
-            else:
-                return(message + ' ER')
-        #Parse simple write
-        def SW(match):
-            addr = match.group(1)
-            value = match.group(2)
-            ret = i2c_simple_write(int(addr,0),int(value,0))
-            if (ret != None):
-                return(message + ' OK')
-            else:
-                return(message + ' ER')
-
-        #Parse complex read
-        def CR(match):
-            addr = match.group(1)
-            register = match.group(2)
-            ret = i2c_complex_read(int(addr,0),int(register,0),4)
-            if (ret != None):
-                formattedMessage = ' '.join([message, 'OK']+ret)
-                return(formatterMessage)
-            else:
-                return(message + ' ER')
-
-        #Parse complex write
-        def CW(match):
-            addr = match.group(1)
-            register = match.group(2)
-            value = match.group(3)
-            ret = i2c_complex_write(int(addr,0),int(register,0),int(value,0))
-            if (ret != None):
-                return(message + ' OK')
-            else:
-                return(message + ' ER')
-
-        #use regex to determine kind of message and execute
-        cmds = {
-                r"SR\s+(\w+)" :                 SR,
-                r"SW\s+(\w+)\s+(\w+)" :         SW,
-                r"CR\s+(\w+)\s+(\w+)":          CR,
-                r"CW\s+(\w+)\s+(\w+)\s+(\w+)" : CW
-                }
-
-        for case, cmd in cmds.iteritems():
-            match = re.search(case, message,re.I|re.X):
-            if match:
-                return cmd(match)
-        return
+        self.write_message(parseMessage(message))
 
     def on_close(self):
         logerror(2,'Connection Closed')

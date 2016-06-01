@@ -25,7 +25,7 @@ if len(args) != 1:
 
 inputFileName = args[0]
 VERBOSITY = options.verbosity
-serverAddress = "ws://%s:8080/ws", % options.serverAddress
+serverAddress = "ws://%s:8080/ws" % options.serverAddress
 
 def read_byte(address):
     message = send_message("SR "+hex(address))
@@ -82,14 +82,15 @@ def CR(address, register): return read_byte_data_s(address, register)
 def CW(address, register, value): return write_byte_data
 
 #setup
+ws = create_connection(serverAddress)
+
 
 #connect to pi server
 if __name__ == "__main__":
-    ws = create_connection(serverAddress)
     i = re.match('(.*)\.py', inputFileName)
     if i:
-        import i as inputFile
+        inputFile = __import__(i.group(1))
     else:
-        import inputFileName as inputFile
+        inputFile = __import__(inputFileName)
 
     inputFile.test()
