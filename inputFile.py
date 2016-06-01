@@ -1,10 +1,16 @@
+#!/usr/bin/python
+#
 #inputFile.py
 #a test input file for the client
-
-#write thing to address and check if read of address is same thing
-
+################################################################################
+# imports - must have in all files using these commands
+################################################################################
 from client import SR, SW, CR, CW, SRs, CRs
+################################################################################
 
+################################################################################
+# test-specific functions - defined by tester
+################################################################################
 def SIMPLE_CHECK_WRITE(address, value):
     SR(address) #for reference
     SW(address, value)
@@ -20,9 +26,16 @@ def COMPLEX_CHECK_WRITE(address, register, value):
         return True
     else:
         return False
+################################################################################
+
+
+################################################################################
+# Test - the test() function is executed by the client
+################################################################################
 
 def test():
     print SR(0x72)
     SIMPLE_CHECK_WRITE(0x72, 0x01)
     print SR(0x72)
     SIMPLE_CHECK_WRITE(0x72, 0x03)
+################################################################################

@@ -5,14 +5,15 @@
 
 #websocket (install websocket-client)
 from websocket import create_connection
-import re, sys, optparse, commands
+import re, sys
+import optparse, commands #parse command line options
 
 ################################################################################
-#                      Parse Script Options and Arguments                      #
+# Parse Script Options and Arguments
 ################################################################################
 parser = optparse.OptionParser("usage: %prog [options] <input file> \n")
 parser.add_option("-v", "--verbosity",
-                  dest="verbosity", type='int', default=0,
+                  dest="verbosity", type='int', default=2,
                   help="amount of detail in output")
 parser.add_option("-a", "--address",
                   dest="serverAddress", type="string",
@@ -26,7 +27,12 @@ if len(args) != 1:
 inputFileName = args[0]
 VERBOSITY = options.verbosity
 serverAddress = "ws://%s:8080/ws" % options.serverAddress
+################################################################################
 
+
+################################################################################
+# Function definitions
+################################################################################
 def read_byte(address):
     message = send_message("SR "+hex(address))
     if VERBOSITY >= 1:
@@ -75,25 +81,34 @@ def send_message(m):
     if VERBOSITY >= 2:
         print "Received '%s'" % result
     return(result)
+################################################################################
 
+
+################################################################################
+# Function aliases for testers
+################################################################################
 def SR(address): return read_byte(address)
 def SRs(address): return read_byte_s(address)
 def SW(address, value): return write_byte(address, value)
 def CR(address, register): return read_byte_data(address, register)
 def CRs(address, register): return read_byte_data_s(address, register)
 def CW(address, register, value): return write_byte_data(address,register,value)
-
-#setup
-ws = create_connection(serverAddress)
+################################################################################
 
 
-#connect to pi server
+################################################################################
+# Run
+################################################################################
+ws = create_connection(serverAddress) #connect to pi server
+
 if __name__ == "__main__":
+    #import tests
     i = re.match('(.*)\.py', inputFileName)
     if i:
         inputFile = __import__(i.group(1))
     else:
         inputFile = __import__(inputFileName)
 
+    #run tests
     inputFile.test()
-
+################################################################################
