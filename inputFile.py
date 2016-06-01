@@ -3,7 +3,7 @@
 
 #write thing to address and check if read of address is same thing
 
-from client import SR, SW, CR, CW
+from client import SR, SW, CR, CW, SRs, CRs
 
 def SIMPLE_CHECK_WRITE(address, value):
     SR(address) #for reference

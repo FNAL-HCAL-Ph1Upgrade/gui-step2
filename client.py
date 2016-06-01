@@ -76,10 +76,12 @@ def send_message(m):
         print "Received '%s'" % result
     return(result)
 
-def SR(address): return read_byte_s(address)
+def SR(address): return read_byte(address)
+def SRs(address): return read_byte_s(address)
 def SW(address, value): return write_byte(address, value)
-def CR(address, register): return read_byte_data_s(address, register)
-def CW(address, register, value): return write_byte_data
+def CR(address, register): return read_byte_data(address, register)
+def CRs(address, register): return read_byte_data_s(address, register)
+def CW(address, register, value): return write_byte_data(address,register,value)
 
 #setup
 ws = create_connection(serverAddress)
@@ -94,3 +96,4 @@ if __name__ == "__main__":
         inputFile = __import__(inputFileName)
 
     inputFile.test()
+
