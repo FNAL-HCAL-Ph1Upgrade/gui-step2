@@ -17,7 +17,7 @@ import re
 from smbus import SMBus
 
 #setup
-VERBOSITY = 0
+VERBOSITY = 2
 bus = SMBus(1)
 
 #Log errors and other messages
