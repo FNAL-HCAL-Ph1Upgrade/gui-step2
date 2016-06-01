@@ -76,16 +76,20 @@ def send_message(m):
         print "Received '%s'" % result
     return(result)
 
+def SR(address): return read_byte_s(address)
+def SW(address, value): return write_byte(address, value)
+def CR(address, register): return read_byte_data_s(address, register)
+def CW(address, register, value): return write_byte_data
+
 #setup
 
 #connect to pi server
-ws = create_connection(serverAddress)
-i = re.match('(.*)\.py', inputFileName)
-if i:
-    import i as inputFile
-else:
-    import inputFileName as inputFile
+if __name__ == "__main__":
+    ws = create_connection(serverAddress)
+    i = re.match('(.*)\.py', inputFileName)
+    if i:
+        import i as inputFile
+    else:
+        import inputFileName as inputFile
 
-#run tests
-for m in inputFile.main():
-    send_message(m)
+    inputFile.test()
