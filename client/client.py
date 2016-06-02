@@ -26,7 +26,7 @@ if len(args) != 1:
 
 inputFileName = args[0]
 VERBOSITY = options.verbosity
-serverAddress = "ws://%s:8080/ws" % options.serverAddress
+serverAddress = "ws://%s:1738/ws" % options.serverAddress
 ################################################################################
 
 
