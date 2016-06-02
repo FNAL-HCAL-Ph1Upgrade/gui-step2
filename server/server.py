@@ -3,6 +3,9 @@
 #server.py
 #command server to run on RPi and receive commands to send via i2c
 
+#use python 3's print instead of python 2's print
+from __future__ import print_function
+
 #Server imports
 import tornado.httpserver
 import tornado.websocket
@@ -19,11 +22,14 @@ from smbus import SMBus
 #setup
 VERBOSITY = 2
 bus = SMBus(1)
+t = time.localtime()
+logfilename = '%s_%s_%s_%s.log' % (t.tm_year, t.tm_mon, t.tm_mday, t.tm_min)
+logfile = open('/home/pi/logs/' + logfilename, 'w')
 
 #Log errors and other messages
 def logerror(severity, e):
     if VERBOSITY >= severity:
-        print time.asctime() + ': ' + e
+        print(time.asctime() + ': ' + e, file=logfile)
 
 #i2c commands
 def i2c_simple_read(address):
