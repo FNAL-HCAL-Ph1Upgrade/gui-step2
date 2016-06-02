@@ -33,14 +33,19 @@ def COMPLEX_CHECK_WRITE(address, register, value):
 # Test - the test() function is executed by the client
 ################################################################################
 
+#this is a comment
+
 def test():
-    print SRs(0x72)
+    print "\n\nWriting to 0x01 on Fanout:"
     SIMPLE_CHECK_WRITE(0x72, 0x01)
-    SIMPLE_CHECK_WRITE(0x74, 0x02)
-    print SRs(0x72)
-    print SRs(0x74)
-    SIMPLE_CHECK_WRITE(0x72, 0x00)
+    print "\n\nWriting 0xff on nGCCM:"
+    SIMPLE_CHECK_WRITE(0x74, 0xff)
+    print "\n\nWriting to 0x02 on Fanout:"
+    SIMPLE_CHECK_WRITE(0x72, 0x02)
+    print "\n\nWriting 0x01 on nGCCM:"
     SIMPLE_CHECK_WRITE(0x74, 0x01)
-    print SRs(0x72)
-    print SRs(0x74)
+    print "\n\nWriting to 0x01 on Fanout:"
+    SIMPLE_CHECK_WRITE(0x72, 0x01)
+    print "\n\nWriting 0xaa on nGCCM:"
+    SIMPLE_CHECK_WRITE(0x74, 0xaa)
 ################################################################################
