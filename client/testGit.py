@@ -13,7 +13,7 @@ from client import SR, SW, CR, CW, SRs, CRs
 ################################################################################
 def SIMPLE_CHECK_WRITE(address, value):
     SRs(address) #for reference
-    SWs(address, value)
+    SW(address, value)
     if SR(address) == value:
         return True
     else:
