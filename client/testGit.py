@@ -33,6 +33,8 @@ def COMPLEX_CHECK_WRITE(address, register, value):
 # Test - the test() function is executed by the client
 ################################################################################
 
+#this is a comment
+
 def test():
     print "\n\nWriting to 0x01 on Fanout:"
     SIMPLE_CHECK_WRITE(0x72, 0x01)
