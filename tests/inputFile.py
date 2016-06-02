@@ -1,4 +1,3 @@
-#Adryanna test comment
 #/usr/bin/python
 #
 #inputFile.py
