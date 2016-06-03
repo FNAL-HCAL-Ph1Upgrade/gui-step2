@@ -119,7 +119,7 @@ def parseMessage(message):
             r"SR\s+(\w+)" :                 SR,
             r"SW\s+(\w+)\s+(\w+)" :         SW,
             r"CR\s+(\w+)\s+(\w+)":          CR,
-            r"CW\s+(\w+)\s+(\w+)\s+(\w+)" : CW
+            r"CW\s+(\w+)\s+(\w+)\s+(.+)" : CW
             }
 
     for case, cmd in cmds.iteritems():
