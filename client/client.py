@@ -29,14 +29,16 @@ class webBus:
     def sleep(self, n):
         m = "s %i" % n
         self.messages.append(m)
-    def sendBatch(self, messages):
-        self.ws.send('|'.join(messages))
+    def sendBatch(self):
+        self.ws.send('|'.join(self.messages))
         ret = self.ws.recv().split('|')
         if self.VERBOSITY >= 1:
             for e in xrange(len(messages)):
                 print "SENT: %s" % messages[e]
                 print "RECEIVED: %s" % ret[e]
         return ret
+    def clearBus(self):
+        self.messages = []
 
 
 ################################################################################
