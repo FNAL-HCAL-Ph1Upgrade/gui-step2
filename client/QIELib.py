@@ -18,25 +18,25 @@ i2cGroups = {
 RMs = {
     4 : {
         "slots" : ["J2", "J3", "J4", "J5"],
-        "sipmc" : "J1",
+        "sipm" : "J1",
         "slotGroup" : 2,
         "sipmGroup" : 1
         },
     3 : {
         "slots" : ["J7", "J8", "J9", "J10"],
-        "sipmc" : "J6",
+        "sipm" : "J6",
         "slotGroup" : 4,
         "sipmGroup" : 3
         },
     2 : {
         "slots" : ["J18", "J19", "J20", "J21"],
-        "sipmc" : "J17",
+        "sipm" : "J17",
         "slotGroup" : 7,
         "sipmGroup" : 6
         },
     1 : {
         "slots" : ["J23", "J24", "J25", "J26"],
-        "sipmc" : "J22",
+        "sipm" : "J22",
         "slotGroup" : 9,
         "sipmGroup" : 8
         }
