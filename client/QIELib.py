@@ -18,25 +18,25 @@ i2cGroups = {
 RMs = {
     4 : {
         "slots" : ["J2", "J3", "J4", "J5"],
-        "sipmC" : "J1",
+        "sipmc" : "J1",
         "slotGroup" : 2,
         "sipmGroup" : 1
         },
     3 : {
         "slots" : ["J7", "J8", "J9", "J10"],
-        "sipmC" : "J6",
+        "sipmc" : "J6",
         "slotGroup" : 4,
         "sipmGroup" : 3
         },
     2 : {
         "slots" : ["J18", "J19", "J20", "J21"],
-        "sipmC" : "J17",
+        "sipmc" : "J17",
         "slotGroup" : 7,
         "sipmGroup" : 6
         },
     1 : {
         "slots" : ["J23", "J24", "J25", "J26"],
-        "sipmC" : "J22",
+        "sipmc" : "J22",
         "slotGroup" : 9,
         "sipmGroup" : 8
         }
@@ -65,36 +65,69 @@ JSlots = {
     25 : 0x1B,
     26 : 0x1C
          }
-
-serialShiftRegisterBits = {
-    "LVDS/SLVS" : [0],
-    "P0, P1" : [1, 2],
-    "DiscOn" : [3],
-    "TGain" : [4],
-    "TimingThresholdDAC" : [5,6,7,8,9,10,11,12],
-    "TimingIref" : [13,14,15],
-    "PedastalDAC" : [16,17,18,19,20,21],
-    "CapID0pedastal" : [22,23,24,25],
-    "CapID1pedastal" : [26,27,28,29],
-    "CapID2pedastal" : [30,31,32,33],
-    "CapID3pedastal" : [34, 35, 36, 37],
-    "FixRange" : [38],
-    "RangeSet" : [39, 30],
-    "ChargeInjectDAC" : [41, 42, 43],
-    "Gsel" : [44, 45, 46, 47, 48],
-    "Idcset" : [49, 50, 51, 52, 53],
-    "CkOutEn" : [54],
-    "TDCmode" : [55],
-    "Hsel" : [56],
-    "PhaseDelay" : [57, 58, 59, 60, 61, 62, 63]
-}
+from collections import OrderedDict
+serialShiftRegisterBits = OrderedDict(
+    [("LVDS/SLVS", [0]),
+    ("P0, P1", [1, 2]),
+    ("DiscOn", [3]),
+    ("TGain", [4]),
+    ("TimingThresholdDAC", [5,6,7,8,9,10,11,12]),
+    ("TimingIref", [13,14,15]),
+    ("PedastalDAC", [16,17,18,19,20,21]),
+    ("CapID0pedastal", [22,23,24,25]),
+    ("CapID1pedastal", [26,27,28,29]),
+    ("CapID2pedastal", [30,31,32,33]),
+    ("CapID3pedastal", [34, 35, 36, 37]),
+    ("FixRange", [38]),
+    ("RangeSet", [39, 30]),
+    ("ChargeInjectDAC", [41, 42, 43]),
+    ("Gsel", [44, 45, 46, 47, 48]),
+    ("Idcset", [49, 50, 51, 52, 53]),
+    ("CkOutEn", [54]),
+    ("TDCmode", [55]),
+    ("Hsel", [56]),
+    ("PhaseDelay", [57, 58, 59, 60, 61, 62, 63])]
+    )
 
 def getBits(decimal):
     return list('%05d' % int(bin(decimal)[2:]))
 
+class RM:
+    def __init__(self, rmNum):
+        self.sipm = RMs[rmNum]["sipm"]
+        self.slots = RMs[rmNum]["slots"]
+        self.cards = []
+        for i in slots:
+            self.cards.append(qCard(JSlots[int(i[1:])]))
+
+
+################################################################################
+# qCard Class
+################################################################################
+class qCard:
+    def __init__(self, address):
+        self.address = address
+        self.shiftRegisters = []
+        for i in range(2):
+            self.shiftRegisters.append(shiftRegister())
+    def __repr__(self):
+        return "qCard()"
+################################################################################
+
+
+################################################################################
+# shiftRegister Class
+################################################################################
 class shiftRegister:
-    def __init__(self):
-        self.QIEs = (QIE() for i in range(6))
+    def __init__(self, arr = list(0 for i in xrange(64 * 6))):
+        '''creates a shift register object with 6 QIEs, default 0s'''
+        self.QIEs = []
+        for i in range(6):
+            self.QIEs.append(QIE(arr[i*63:i*63 + 64]))
+
+    def __repr__(self):
+        return "shiftRegister"
+
     #returns a flattened array of all QIE register bits to be written as a block
     def flatten(self):
         '''flatten all of the bits in the register's QIEs to one list'''
@@ -103,28 +136,41 @@ class shiftRegister:
             for b in q.arr:
                 a.append(b)
         return a
+################################################################################
+
+
+################################################################################
+# QIE Class
+################################################################################
 class QIE:
-    def __init__(self):
-        '''initialize a QIE11 object with default settings'''
-        self.arr = list(0 for i in xrange(64))
-        self.setToDefaults()
+
+    ############################################################################
+    # Core and I/O Functions
+    ############################################################################
+    def __init__(self, arrayOfBits = list(0 for i in xrange(64))):
+        '''initialize a QIE11 object with given bits set'''
+        self.load(arrayOfBits)
     def __repr__(self):
         return "QIE()"
     def __str__(self):
         '''Display each setting with values'''
-        return "FooBar"
+        strs = []
+        for k in serialShiftRegisterBits.keys():
+            s = ""
+            for i in serialShiftRegisterBits[k]:
+                s += str(self.arr[i])
+            strs.append(k + ":\n    " + s)
+        return "\n".join(strs)
+    def flatten(self):
+        return list(self.arr)
+    def load(self, arrayOfBits):
+        self.arr = list(arrayOfBits)
+    ############################################################################
 
-    def setToDefaults(self):
-        #Defaults for following functions
-        self.setLVDS()
-        self.setLVDS_output_level_trim(350)
-        self.discOn(0)
-        self.TGain(0)
-        self.TimingThresholdDAC(tuple(1 for i in xrange(8)))
-        self.TimingIref(0)
-        self.PedastalDAC(1, 6)
-        self.ChargeInjectDAC(100)
 
+    ############################################################################
+    #Functions to change bits by property
+    ############################################################################
     #Change bit 0
     def setLVDS(self):
         self.arr[0] = 1
@@ -172,7 +218,7 @@ class QIE:
             50 : (1,0,1),
             60 : (1,1,0),
             70 : (1,1,1)
-        }.get(a)
+        }.get(q)
         self.arr[13] = d[0]
         self.arr[14] = d[1]
         self.arr[15] = d[2]
@@ -245,8 +291,8 @@ class QIE:
         elif b == 0:
             #fixed range mode
             self.arr[38] = 0
+
     #Change bits 39-40
-    ##DEFAULT UNKNOWN
     def RangeSet(self, t):
         self.arr[39] = t[0]
         self.arr[40] = t[1]
@@ -268,23 +314,47 @@ class QIE:
             self.arr[41 + i] = d[i]
 
     #Change bits 44-48
-    def Gsel(t):
+    def Gsel(self, t):
         for i in xrange(5):
             self.arr[44 + i] = t[i]
 
     #Change bits 49-53
-    def Idcset():
-        
+    def Idcset(self, t):
+        for i in range(5):
+            self.arr[49 + i] = t[i]
+
     #Change bit 54
-    def CkOutEn():
+    def CkOutEn(self, b):
+        if b == 0:
+            #Disable LVDS CkOut
+            self.arr[54] = 0
+        elif b == 1:
+            #Enable LVDS CkOut
+            self.arr[54] = 1
 
     #Change bit 55
-    def TDCmode():
+    def TDCmode(self, b):
+        if b == 0:
+            #First mode
+            self.arr[55] = 1
+        elif b == 1:
+            #Last mode
+            self.arr[55] = 1
 
     #Change bit 56
-    def Hsel():
+    def Hsel(self, b):
+        if b == 0:
+            #hysteresis is less than p2p noise
+            self.arr[56] = 0
+        if b == 1:
+            #amount of hysteresis is doubled as compared to b = 0
+            self.arr[56] = 1
 
     #Change bit 57-63
-    def PhaseDelay():
+    def PhaseDelay(self, t):
+        for i in xrange(7):
+            self.arr[57 + i] = t[i]
 
-    #Add print function, check each mode
+    ############################################################################
+
+################################################################################
