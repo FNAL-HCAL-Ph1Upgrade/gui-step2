@@ -34,8 +34,8 @@ def COMPLEX_CHECK_WRITE(address, register, value):
 ################################################################################
 
 def test():
-    print SR(0x72) == 1
-    print SRs(0x72) == '0x1'
+    print SR(0x71)
+    print SRs(0x71)
     # SW(0x72,0x01)
     # SR(0x74)
     # SIMPLE_CHECK_WRITE(0x72, 0x01)
