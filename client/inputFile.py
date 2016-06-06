@@ -37,12 +37,12 @@ def initial_test():
     # SIMPLE_CHECK_WRITE(0x72, 0x02)
 
 # 1. Determine address of Fanout (0x72 unless switches are flipped).
-def find_fan(start):
-    val = None
-    while val == None or start > 0xa0:
-        val = SR(start)
-        start += 1
-    return hex(val)
+def find_fan(init_add):
+    byte = SR(init_add)
+    while byte == None and init_add < 0xa0:
+        init_add += 1
+        byte = SR(init_add)
+    return hex(init_add)
 
 # 2. Determine bits to set on Fanout to open i2c with ngCCM FPGA Bridge (0x74). Verify address of Fanout.
 
@@ -53,6 +53,7 @@ def find_fan(start):
 ################################################################################
 
 def test():
-    print 'fan value: ', find_fan(0x70)
+    fan_add = find_fan(0x70)
+    print 'fan value: ', fan_add
 
 ################################################################################
