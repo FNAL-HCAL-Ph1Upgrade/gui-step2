@@ -44,7 +44,15 @@ def find_fan(init_add):
         byte = SR(init_add)
     return init_add
 
-# 2. Determine bits to set on Fanout to open i2c with ngCCM FPGA Bridge (0x74). Verify address of Fanout.
+# 2. Determine byte to set on Fanout to open i2c with ngCCM U10 (0x74). Verify address of Fanout.
+def find_ccm_1(fan_add):
+    fan_byte = 1
+    ccm_byte = SR(0x74)
+    while ccm_byte == None and fan_byte <= 0x80:
+        fan_byte *= 2
+        SW(fan_add,fan_byte)
+        ccm_byte = SR(0x74)
+    return fan_byte
 
 # 3. Determine
 
@@ -55,7 +63,7 @@ def find_fan(init_add):
 def test():
     SW(0x72,0x00)
     fan_add = find_fan(0x70)
-    fan_byte = SR(fan_add)
+    fan_byte = find_ccm_1(fan_add)
     print 'fan add: ', hex(fan_add)
     print 'fan byte: ', hex(fan_byte)
 
