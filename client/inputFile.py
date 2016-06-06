@@ -36,22 +36,22 @@ def initial_test():
     # SIMPLE_CHECK_WRITE(0x72, 0x01)
     # SIMPLE_CHECK_WRITE(0x72, 0x02)
 
-# 1. Determine address of Fanout (0x72 unless switches are flipped).
-def find_fan(init_add):
+# 1. Determine address (eg. Fanout is 0x72 unless switches are flipped).
+def find_address(init_add):
     byte = SR(init_add)
     while byte == None and init_add < 0xa0:
         init_add += 1
         byte = SR(init_add)
     return init_add
 
-# 2. Determine byte to set on Fanout to open i2c with ngCCM U10 (0x74). Verify address of Fanout.
-def find_ccm_1(fan_add):
-    fan_byte = 1
-    ccm_byte = SR(0x74)
-    while ccm_byte == None and fan_byte <= 0x80:
-        fan_byte *= 2
-        SW(fan_add,fan_byte)
-        ccm_byte = SR(0x74)
+# 2. Determine byte to set on Fanout to open i2c with ngCCM U10 (0x74). Verify address of U10.
+def determine_byte(add_1, add_2):
+    byte_1 = 1
+    byte_2 = SR(add_2)
+    while byte_2 == None and byte_1 <= 0x80:
+        byte_1 *= 2
+        SW(add_1,byte_1)
+        byte_2 = SR(add_2)
     return fan_byte
 
 # 3. Determine
@@ -62,7 +62,7 @@ def find_ccm_1(fan_add):
 
 def test():
     SW(0x72,0x00)
-    fan_add = find_fan(0x70)
+    fan_add = find_address(0x70)
     fan_byte = find_ccm_1(fan_add)
     print 'fan add: ', hex(fan_add)
     print 'fan byte: ', hex(fan_byte)
