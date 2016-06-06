@@ -43,9 +43,9 @@ def test():
     print "\n\nWriting to 0x02 on Fanout:"
     SIMPLE_CHECK_WRITE(0x72, 0x02)
     print "\n\nWriting 0x01 on nGCCM:"
-    SIMPLE_CHECK_WRITE(0x74, 0x01)
+    SIMPLE_CHECK_WRITE(0x74, 0xff)
     print "\n\nWriting to 0x01 on Fanout:"
-    SIMPLE_CHECK_WRITE(0x72, 0x01)
+    SIMPLE_CHECK_WRITE(0x72, 0x02)
     print "\n\nWriting 0xaa on nGCCM:"
-    SIMPLE_CHECK_WRITE(0x74, 0xaa)
+    SIMPLE_CHECK_WRITE(0x74, 0xff)
 ################################################################################

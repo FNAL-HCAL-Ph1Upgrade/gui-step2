@@ -5,6 +5,8 @@
 
 #websocket (install websocket-client)
 from websocket import create_connection
+from Tkinter import *
+#from nGCCeCommands import makeGui
 import re, sys
 import optparse, commands #parse command line options
 
@@ -13,20 +15,20 @@ import optparse, commands #parse command line options
 ################################################################################
 parser = optparse.OptionParser("usage: %prog [options] <input file> \n")
 parser.add_option("-v", "--verbosity",
-                  dest="verbosity", type='int', default=2,
+                  dest="verbosity", type='int', default=1,  #Shaun changed this from 2 to 1 to keep things less verbose
                   help="amount of detail in output")
 parser.add_option("-a", "--address",
                   dest="serverAddress", type="string",
                   default="pi5",
                   help ="address of server node")
 options, args = parser.parse_args()
-if len(args) != 1:
-    print "Please specify input file. Exiting"
-    sys.exit()
+#if len(args) != 1:
+#    print "Please specify input file. Exiting"
+#    sys.exit()
 
-inputFileName = args[0]
+#inputFileName = args[0]
 VERBOSITY = options.verbosity
-serverAddress = "ws://%s:8080/ws" % options.serverAddress
+serverAddress = "ws://%s:1738/ws" % options.serverAddress
 ################################################################################
 
 
@@ -101,14 +103,18 @@ def CW(address, register, value): return write_byte_data(address,register,value)
 ################################################################################
 ws = create_connection(serverAddress) #connect to pi server
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     #import tests
-    i = re.match('(.*)\.py', inputFileName)
-    if i:
-        inputFile = __import__(i.group(1))
-    else:
-        inputFile = __import__(inputFileName)
+#    i = re.match('(.*)\.py', inputFileName)
+#    if i:
+#        inputFile = __import__(i.group(1))
+#    else:
+#        inputFile = __import__(inputFileName)
 
     #run tests
-    inputFile.test()
+    #root = Tk()
+    #myapp = makeGui(root)
+    #root.mainloop()
+    #inputFile.test()
+    
 ################################################################################
