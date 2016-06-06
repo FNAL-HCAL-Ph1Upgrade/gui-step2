@@ -39,7 +39,7 @@ def initial_test():
 # 1. Determine address (eg. Fanout is 0x72 unless switches are flipped).
 def find_address(init_add):
     byte = SR(init_add)
-    while byte == None and init_add < 0xa0:
+    while byte == None and init_add <= 0xa0:
         init_add += 1
         byte = SR(init_add)
     return init_add
@@ -61,10 +61,16 @@ def determine_byte(add_1, add_2):
 ################################################################################
 
 def test():
-    SW(0x72,0x00)
+    fan = 0x72
+    u10 = 0x74
+    SW(fan,0x00)
     fan_add = find_address(0x70)
-    fan_byte = determine_byte(fan_add)
+    fan_byte = determine_byte(fan_add,u10)
+    u10_add = find_address(0x73)
+    u10_byte = SR(u10_add)
     print 'fan add: ', hex(fan_add)
     print 'fan byte: ', hex(fan_byte)
+    print 'u10 add: ', hex(u10_add)
+    print 'u10 byte: ', hex(u10_byte)
 
 ################################################################################
