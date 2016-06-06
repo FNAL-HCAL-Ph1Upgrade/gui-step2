@@ -56,6 +56,6 @@ def test():
     fan_add = find_fan(0x70)
     fan_byte = SR(fan_add)
     print 'fan add: ', hex(fan_add)
-    print 'fan byte: ', fan_byte
+    print 'fan byte: ', hex(fan_byte)
 
 ################################################################################
