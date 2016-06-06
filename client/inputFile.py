@@ -52,7 +52,7 @@ def determine_byte(add_1, add_2):
         byte_1 *= 2
         SW(add_1,byte_1)
         byte_2 = SR(add_2)
-    return fan_byte
+    return byte_1
 
 # 3. Determine
 
@@ -63,7 +63,7 @@ def determine_byte(add_1, add_2):
 def test():
     SW(0x72,0x00)
     fan_add = find_address(0x70)
-    fan_byte = find_ccm_1(fan_add)
+    fan_byte = determine_byte(fan_add)
     print 'fan add: ', hex(fan_add)
     print 'fan byte: ', hex(fan_byte)
 
