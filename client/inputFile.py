@@ -42,7 +42,7 @@ def find_fan(start):
     while val == None or start > 0xa0:
         val = SR(start)
         start += 1
-    return val
+    return hex(val)
 
 # 2. Determine bits to set on Fanout to open i2c with ngCCM FPGA Bridge (0x74). Verify address of Fanout.
 
@@ -53,6 +53,6 @@ def find_fan(start):
 ################################################################################
 
 def test():
-
+    print 'fan value: ', find_fan(0x70)
 
 ################################################################################
