@@ -54,8 +54,8 @@ def find_fan(init_add):
 
 def test():
     fan_add = find_fan(0x70)
-    fan_byte = SR(fan_add)
+    # fan_byte = SR(fan_add)
     print 'fan add: ', fan_add
-    print 'fan byte: ', fan_add
+    # print 'fan byte: ', fan_byte
 
 ################################################################################
