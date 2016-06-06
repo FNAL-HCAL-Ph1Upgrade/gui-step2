@@ -35,7 +35,8 @@ def COMPLEX_CHECK_WRITE(address, register, value):
 
 def test():
     SR(0x72)
+    SW(0x72,0x01)
+    SR(0x74)
     # SIMPLE_CHECK_WRITE(0x72, 0x01)
-    SR(0x72)
     # SIMPLE_CHECK_WRITE(0x72, 0x02)
 ################################################################################
