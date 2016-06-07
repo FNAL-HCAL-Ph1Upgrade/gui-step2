@@ -6,9 +6,9 @@ u = uniqueID
 
 def run(RMList):
     uniqueIDArray = range(4)
+    num_slots = 1
     # Iterate through RM 0, 1, 2, 3 (include desired RMs in list)
     for rm in RMList:
-        num_slots = 1
         idList = range(num_slots)
         # Iterate through Slot 0, 1, 2, 3 (run for all 4 slots by default)
         for slot in range(num_slots):
@@ -19,8 +19,9 @@ def run(RMList):
 
 def printRun(RMList):
     uniqueIDArray = run(RMList)
+    num_slots = 1
     for rm in RMList:
-        for slot in range(4):
+        for slot in range(num_slots):
             print 'RM: ', rm, ' slot: ', slot
             print 'UniqueID: ', uniqueIDArray[rm][slot]
 
