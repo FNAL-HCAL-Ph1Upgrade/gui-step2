@@ -1,6 +1,6 @@
 # Run complete QIE Test Sweet
 from client import webBus
-import UniqueID
+import uniqueID
 b = webBus()
 u = UniqueID
 
