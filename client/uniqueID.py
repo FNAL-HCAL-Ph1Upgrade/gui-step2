@@ -1,3 +1,4 @@
+# Read UniqueID from QIE Card
 from client import webBus
 import QIELib
 b = webBus("pi5")
