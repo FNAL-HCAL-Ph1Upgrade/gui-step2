@@ -1,8 +1,8 @@
 # Run complete QIE Test Sweet
 from client import webBus
 import uniqueID
-b = webBus()
-u = UniqueID
+b = webBus("pi5")
+u = uniqueID
 
 def run(RMList):
     uniqueIDArray = range(4)
