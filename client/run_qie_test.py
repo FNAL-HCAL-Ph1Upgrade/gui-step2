@@ -23,5 +23,5 @@ def printRun(RMList, num_slots):
             print 'RM: ', rm, ' slot: ', slot
             print 'UniqueID: ', uniqueIDArray[rm][slot]
 
-print u.openChannel(0,0)
+print u.openChannel(2,0)
 # printRun([0], 1)
