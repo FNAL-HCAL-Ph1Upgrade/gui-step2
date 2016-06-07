@@ -47,6 +47,7 @@ def find_address(init_add):
 # 2. Determine byte to set on Fanout to open i2c with ngCCM U10 (0x74). Verify address of U10.
 def determine_byte(add_1, add_2):
     byte_1 = 1
+    SW(add_1,byte_1)
     byte_2 = SR(add_2)
     while byte_2 == None and byte_1 <= 0x80:
         byte_1 *= 2
