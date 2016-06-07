@@ -18,5 +18,5 @@ if pgrep -f server.py >/dev/null 2>&1
         echo "server.py is not running"
         echo "starting server.py..."
     fi
-    nohup python /home/pi/server.py > /dev/null 2>&1
+    nohup python /home/pi/server.py > /dev/null 2>&1 &
 fi
