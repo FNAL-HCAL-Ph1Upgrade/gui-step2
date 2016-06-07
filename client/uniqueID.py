@@ -25,6 +25,7 @@ def openChannel(rm,slot):
         print 'Please choose RM = {0,1,2,3}'
         return 'closed channel'
     # Open channel to i2c group
+    print '##### open i2c #####'
     b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
     return b.sendBatch()
 
