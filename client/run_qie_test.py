@@ -12,7 +12,7 @@ def run(RMList, num_slots):
         # Iterate through Slot 0, 1, 2, 3 (run for all 4 slots by default)
         for slot in range(num_slots):
             idList[slot] = u.uniqueID(rm,slot)
-            b.clearBus()
+            # b.clearBus()
         uniqueIDArray[rm] = idList
     return uniqueIDArray
 
@@ -23,4 +23,5 @@ def printRun(RMList, num_slots):
             print 'RM: ', rm, ' slot: ', slot
             print 'UniqueID: ', uniqueIDArray[rm][slot]
 
-printRun([0], 1)
+print u.openChannel(0,0)
+# printRun([0], 1)
