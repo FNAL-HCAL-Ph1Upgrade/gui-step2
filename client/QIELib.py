@@ -3,6 +3,26 @@
 #QIELib.py
 #Library of tables, functions, and classes for working with QIE11 test stands
 
+#MUX slave addresses (slave i2c addresses)
+MUXs = {
+    "fanout" : 0x72,
+    "ngccm" : {
+                "u10" : 0x74,
+                "u18" : 0x70
+                },
+    "bridge" : [0x19, 0x1a, 0x1b, 0x1c]
+        }
+#Register addresses
+REGs = {
+    "qie0" : 0x30,
+    "qie1" : 0x31,
+    "iscSelect" : 0x11,
+    "vttx" : 0x7E,
+    "igloo" : 0x09,
+    "ID" : 0x50,
+    "temp" : 0x40
+        }
+
 #Bit to write to mux for given twisted pair i2c
 i2cGroups = {
     1 : 0x04,
@@ -15,26 +35,27 @@ i2cGroups = {
     8 : 0x02,
     9 : 0x01
             }
+
 RMs = {
-    4 : {
+    1 : {
         "slots" : ["J2", "J3", "J4", "J5"],
         "sipm" : "J1",
         "slotGroup" : 2,
         "sipmGroup" : 1
         },
-    3 : {
+    2 : {
         "slots" : ["J7", "J8", "J9", "J10"],
         "sipm" : "J6",
         "slotGroup" : 4,
         "sipmGroup" : 3
         },
-    2 : {
+    3 : {
         "slots" : ["J18", "J19", "J20", "J21"],
         "sipm" : "J17",
         "slotGroup" : 7,
         "sipmGroup" : 6
         },
-    1 : {
+    4 : {
         "slots" : ["J23", "J24", "J25", "J26"],
         "sipm" : "J22",
         "slotGroup" : 9,
