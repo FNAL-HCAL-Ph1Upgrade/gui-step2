@@ -7,12 +7,17 @@ import client
 class makeGui:
 	def __init__(self, parent):
 
-		#Initialize some parameters for use later on
+		# Name the parent. This is mostly for bookkeeping purposes
+		# and doesn't really get used too much.
 		self.myParent = parent
 
-		self.pyTitle = StringVar()
+		# Create some string variables for text entry/display boxes
 		self.ngccmHexText = StringVar()
+		self.fanoutHexText = StringVar()
 	
+		# Create integer variables for the fanout box's checkbuttons.
+		# Although they're integers, they should only ever hold the
+		# values 1 or 0.
 		self.checkVar7 = IntVar()
 		self.checkVar6 = IntVar()
 		self.checkVar5 = IntVar()
@@ -22,6 +27,7 @@ class makeGui:
 		self.checkVar1 = IntVar()
 		self.checkVar0 = IntVar()
 
+		# More integer variables for checkbuttons. This time for the ngCCM box.
 		self.ng_checkVar5 = IntVar()
 		self.ng_checkVar4 = IntVar()
 		self.ng_checkVar3 = IntVar()
@@ -29,7 +35,8 @@ class makeGui:
 		self.ng_checkVar1 = IntVar()
 		self.ng_checkVar0 = IntVar()
 
-		#Topmost frame is called topMost_frame
+		# Place an all-encompassing frame in the parent window. All of the following
+		# frames will be placed here (topMost_frame) and not in the parent window.
 		self.topMost_frame = Frame(parent)
 		self.topMost_frame.pack()
 		
@@ -51,22 +58,8 @@ class makeGui:
 		###		                       ###
 		##########################################
 
-		# Frame for asking the .py filename
-		self.pyTitle_frame = Frame(
-			self.topMost_frame,
-			borderwidth=5, relief=RIDGE,
-			height=50,
-			background="white"
-			)
-		self.pyTitle_frame.pack(
-			side=TOP,
-			ipadx=frame_ipadx,
-			ipady=frame_ipady,
-			padx=frame_padx,
-			pady=frame_pady
-			)
-
-		# Frame for writing to fanout board
+		# Make and pack a sub-frame within topMost_frame that will contain
+		# all of the controls for communicating with the fanout board
 		self.fanout_frame = Frame(
 			self.topMost_frame,
 			borderwidth=5, relief=RIDGE,
@@ -81,7 +74,8 @@ class makeGui:
 			pady=frame_pady
 			)
 
-		# Frame for writing to ngCCM 
+		# Make and pack a sub-frame within topMost_frame that will contain
+		# all of the controls for communicating with the ngccms
 		self.ngccm_frame = Frame(
 			self.topMost_frame,
 			borderwidth=5, relief=RIDGE,
@@ -96,40 +90,29 @@ class makeGui:
 			pady=frame_pady
 			)
 
+		# Make and pack a sub-frame within topMost_frame that will contain
+		# all of the controls for talking with the QIE cards
+		self.qie_frame = Frame(
+			self.topMost_frame,
+			borderwidth=5, relief=RIDGE,
+			height=50,
+			background="white"
+			)
+		self.qie_frame.pack(
+			side=TOP,
+			ipadx=frame_ipadx,
+			ipady=frame_ipady,
+			padx=frame_padx,
+			pady=frame_pady
+			)
+
+
 		##########################################
 		###                                    ###
 		###	BEGIN MAKING WIDGETS           ### 
 		###		                       ###
 		##########################################
 
-		######################################
-		#####				 #####
-		#####  Widgets in pyTitle frame  #####
-		#####				 #####
-		######################################
-
-		#Make a text label for the .py filename box
-		self.pyEntryLabel = Label(self.pyTitle_frame, text="Name of routine: ")
-		self.pyEntryLabel.configure(
-			padx=button_padx,
-			pady=button_pady,
-			background="white"
-			)
-		self.pyEntryLabel.pack(side=TOP)
-
-		#Make a textbox for the .py filename
-		self.pyEntry = Entry(self.pyTitle_frame, textvariable=self.pyTitle)
-		self.pyEntry.pack(side=TOP)
-
-		#Make a button to accept the .py file title
-		self.titleButton = Button(self.pyTitle_frame, command=self.titleButtonClick)
-		self.titleButton.configure(text="ACCEPT",background="green")
-		self.titleButton.configure(
-			width=button_width,
-			padx=button_padx,
-			pady=button_pady
-			)
-		self.titleButton.pack(side=TOP)
 
 		######################################
 		#####				 #####
@@ -137,7 +120,7 @@ class makeGui:
 		#####				 #####
 		######################################
 		
-		#Make a text label for the frame
+		# Make and pack a text label for the fanout frame
 		self.fanoutLabel = Label(self.fanout_frame, text="Clock Fanout Board   -   Hex Code: 0x72")
 		self.fanoutLabel.configure(
 			padx=button_padx,
@@ -146,7 +129,9 @@ class makeGui:
 			)
 		self.fanoutLabel.pack(side=TOP)
 
-		# Top sub-frame in fanout
+		# Make a sub-sub-frame within the fanout frame that will allow us to better control
+		# the layout. This one is called subTop_frame, as it will go on top of the subBot_frame
+		# (which gets created below).
 		self.fanout_subTop_frame = Frame(
 			self.fanout_frame,
 			background="white"
@@ -159,7 +144,8 @@ class makeGui:
                         pady=frame_pady
                         )
 
-		# Bottom sub-frame in fanout
+		# Make a sub-sub-frame within the fanout frame. This one will go beneath the subTop_frame
+		# (created above)
 		self.fanout_subBot_frame = Frame(
 			self.fanout_frame,
 			background="white"
@@ -172,7 +158,7 @@ class makeGui:
                         pady=frame_pady
                         )
 
-		#Make a "multiplexer: " label
+		#Make and pack a simple "multiplexer: " label
 		self.fanoutPlexLabel = Label(self.fanout_subTop_frame,text="Multiplexer: ")
 		self.fanoutPlexLabel.configure(
 			padx=button_padx,
@@ -180,6 +166,10 @@ class makeGui:
 			background="white"
 			)
 		self.fanoutPlexLabel.pack(side=LEFT)
+
+		#Add a text field that outputs the hex address. Make it readonly.
+                self.fanoutHexTextBox = Entry(self.fanout_subTop_frame, textvariable=self.fanoutHexText,state="readonly",readonlybackground="gray90")
+                self.fanoutHexTextBox.pack(side=LEFT)
 
 		#Make checkbox 7
 		self.check7 = Checkbutton(self.fanout_subBot_frame,text="7", variable=self.checkVar7)
@@ -206,7 +196,7 @@ class makeGui:
 		self.check0 = Checkbutton(self.fanout_subBot_frame,text="0", variable=self.checkVar0)
 		self.check0.pack(side=LEFT)
 
-		#Make a button to write to address
+		#Make a button to write to fanout and assign it to the member function "self.fanoutClickWrite"
 		self.fanout_write_Button = Button(self.fanout_subBot_frame, command=self.fanoutClickWrite)
 		self.fanout_write_Button.configure(text="WRITE",background="green")
 		self.fanout_write_Button.configure(
@@ -216,7 +206,7 @@ class makeGui:
 			)
 		self.fanout_write_Button.pack(side=RIGHT)
 
-		#Make a button to read what is at the fanout address
+		#Make a button to read what is at the fanout. Member function is "self.fanoutClickRead"
 		self.fanout_read_Button = Button(self.fanout_subTop_frame, command=self.fanoutClickRead)
 		self.fanout_read_Button.configure(text="READ",background="khaki")
 		self.fanout_read_Button.configure(
@@ -232,6 +222,9 @@ class makeGui:
 		##### Widgets in the ngCCM frame #####
 		#####				 #####
 		######################################
+	
+		# I'm going to spare some comments here. For the most part, this is the exact
+		# same logic as what is in the "Widgets in the fanout frame" section of code.
 
 		#Make a text label for the frame
 		self.ngCCMLabel = Label(self.ngccm_frame, text="ngCCM Board   -   Hex Code: 0x74")
@@ -278,11 +271,10 @@ class makeGui:
                 self.ngccmPlexLabel.pack(side=LEFT)
 
 		#Add a text field that outputs the hex address
-		self.ngccmHexTextBox = Entry(self.ngccm_subTop_frame, textvariable=self.ngccmHexText)
+		self.ngccmHexTextBox = Entry(self.ngccm_subTop_frame, textvariable=self.ngccmHexText,state="readonly",readonlybackground="gray90")
 		self.ngccmHexTextBox.pack(side=LEFT)
 
-
-		#Make checkbox 5
+		#Make checkbox 5 (We only use 5 checkboxes because of some hardware things)
 		self.ngCCM_check5 = Checkbutton(self.ngccm_subBot_frame,text="5", variable=self.ng_checkVar5)
 		self.ngCCM_check5.pack(side=LEFT)
 		#Make checkbox 4
@@ -320,13 +312,73 @@ class makeGui:
 			pady=button_pady
 			)
 		self.ngCCM_read_Button.pack(side=RIGHT)
-	
-	#################################
+
+		######################################
+		#####				 #####
+		#####  Widgets in the QIE frame  #####
+		#####				 #####
+		######################################
+
+		#Make a text label for the frame
+		self.qieFrameLabel = Label(self.qie_frame, text="QIE Chips   -   Hex Codes: 0x19 to 0x1c")
+		self.qieFrameLabel.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.qieFrameLabel.pack(side=TOP)
+
+		# Top sub-frame in QIE frame
+		self.qie_subTop_frame = Frame(
+			self.qie_frame,
+			background="white"
+			)
+		self.qie_subTop_frame.pack(
+			side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+		# Bottom sub-frame in QIE frame
+                self.qie_subBot_frame = Frame(
+                        self.qie_frame,
+                        background="white"
+                        )
+                self.qie_subBot_frame.pack(
+                        side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+		#Make a button to write the hex number
+		self.qie_write_Button = Button(self.qie_subBot_frame, command=self.qieClickWrite)
+		self.qie_write_Button.configure(text="WRITE",background="green")
+		self.qie_write_Button.configure(
+			width=button_width*2,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.qie_write_Button.pack(side=RIGHT)
+
+		#Make a button to read what is at the address
+		self.qie_read_Button = Button(self.qie_subTop_frame, command=self.qieClickRead)
+		self.qie_read_Button.configure(text="READ",background="khaki")
+		self.qie_read_Button.configure(
+			width=button_width*2,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.qie_read_Button.pack(side=RIGHT)
+
+
 	#################################
 	###			      ###
 	###  BEGIN MEMBER FUNCTIONS   ###
 	###			      ###
-	#################################
 	#################################
 
 	def checksToHex(self,inCheck0,inCheck1,inCheck2,inCheck3,inCheck4,inCheck5,inCheck6,inCheck7):
@@ -334,26 +386,28 @@ class makeGui:
 			 (inCheck5*32)+(inCheck6*64)+(inCheck7*128)
 		return hexVar
 
-	def titleButtonClick(self):
-		print self.pyTitle.get()
-
 	def fanoutClickWrite(self):
 		hexCon = self.checksToHex(self.checkVar0.get(),self.checkVar1.get(),self.checkVar2.get(),self.checkVar3.get(),
 			 self.checkVar4.get(),self.checkVar5.get(),self.checkVar6.get(),self.checkVar7.get())
 		client.write_byte(0x72, hexCon)
-		
+		self.fanoutClickRead()
 
 	def fanoutClickRead(self):
-		print client.read_byte_s(0x72)
+		self.fanoutHexText.set(client.read_byte_s(0x72))
+		print self.fanoutHexText.get()
 
 	def ngccmClickWrite(self):
 		hexCon = self.checksToHex(self.ng_checkVar0.get(), self.ng_checkVar1.get(), self.ng_checkVar2.get(),
 			 self.ng_checkVar3.get(),self.ng_checkVar4.get(),self.ng_checkVar5.get(), 0, 0)
 		client.write_byte(0x74, hexCon)
+		self.ngccmClickRead()
 
 	def ngccmClickRead(self):
 		self.ngccmHexText.set(client.read_byte_s(0x74))
 		print self.ngccmHexText.get()
+
+	def qieClickRead(self): print "This is a read placeholder"
+	def qieClickWrite(self): print "This is a write placeholder"
 
 root = Tk()
 myapp = makeGui(root)
