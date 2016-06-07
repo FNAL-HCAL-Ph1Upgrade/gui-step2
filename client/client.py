@@ -1,114 +1,48 @@
 #!/usr/bin/python
 #
 #client.py
-#client with which to send commands to server
+#client /library/ with which to send commands to server
 
 #websocket (install websocket-client)
 from websocket import create_connection
-import re, sys
-import optparse, commands #parse command line options
 
 ################################################################################
-# Parse Script Options and Arguments
-################################################################################
-parser = optparse.OptionParser("usage: %prog [options] <input file> \n")
-parser.add_option("-v", "--verbosity",
-                  dest="verbosity", type='int', default=2,
-                  help="amount of detail in output")
-parser.add_option("-a", "--address",
-                  dest="serverAddress", type="string",
-                  default="pi5",
-                  help ="address of server node")
-options, args = parser.parse_args()
-if len(args) != 1:
-    print "Please specify input file. Exiting"
-    sys.exit()
-
-inputFileName = args[0]
-VERBOSITY = options.verbosity
-serverAddress = "ws://%s:1738/ws" % options.serverAddress
+# webBus class
 ################################################################################
 
+class webBus:
+    def __init__(self, serverAddress = "pi5", VERBOSITY = 2):
+        self.VERBOSITY = VERBOSITY
+        self.messages = []
+        a = "ws://%s:1738/ws" % serverAddress
+        self.ws = create_connection(a)
 
-################################################################################
-# Function definitions
-################################################################################
-def read_byte(address):
-    message = send_message("SR "+hex(address))
-    if VERBOSITY >= 1:
-        print message
-    match = re.search(r"OK\s+(\w+)",message,re.I|re.X)
-    if match:
-        return int(match.group(1),0)
-    return None
+    def read(self, address, numbytes):
+        m = "r %i %i" % (address, numbytes)
+        self.messages.append(m)
 
-def read_byte_s(address):
-    ret = read_byte(address)
-    if ret == None:
-        return None
-    return hex(ret)
-
-def write_byte(address,value):
-    message = send_message("SW "+hex(address)+" "+hex(value))
-    if VERBOSITY >= 1:
-        print message
-
-def read_byte_data(address,register):
-    message = send_message("CR "+hex(address)+" "+hex(register))
-    if VERBOSITY >= 1:
-        print message
-    match = re.search(r"OK\s+(\w+)",message,re.I|re.X)
-    if match:
-        return int(match.group(1),0)
-    return None
-
-def read_byte_data_s(address,register):
-    ret = read_byte_data(address,register)
-    if ret == None:
-        return None
-    return hex(ret)
-
-def write_byte_data(address,register,value):
-    message = send_message("CW "+hex(address)+" "+hex(register)+" "+hex(value))
-    if VERBOSITY >= 1:
-        print message
-
-def send_message(m):
-    ws.send(m)
-    if VERBOSITY >= 2:
-        print "Sent '%s'" %m
-    result = ws.recv()
-    if VERBOSITY >= 2:
-        print "Received '%s'" % result
-    return(result)
-################################################################################
+    def write(self, address, byteArray):
+        m = "w %i " % address
+        for h in byteArray:
+            m += str(h) + " "
+        self.messages.append(m)
+    def sleep(self, n):
+        m = "s %i" % n
+        self.messages.append(m)
+    def sendBatch(self):
+        self.ws.send('|'.join(self.messages))
+        ret = self.ws.recv().split('|')
+        if self.VERBOSITY >= 1:
+            for e in xrange(len(self.messages)):
+                print "SENT: %s" % self.messages[e]
+                print "RECEIVED: %s" % ret[e]
+        return ret
+    def clearBus(self):
+        self.messages = []
 
 
 ################################################################################
-# Function aliases for testers
-################################################################################
-def SR(address): return read_byte(address)
-def SRs(address): return read_byte_s(address)
-def SW(address, value): return write_byte(address, value)
-def CR(address, register): return read_byte_data(address, register)
-def CRs(address, register): return read_byte_data_s(address, register)
-def CW(address, register, value): return write_byte_data(address,register,value)
-################################################################################
-
-
-################################################################################
-# Run
-################################################################################
-ws = create_connection(serverAddress) #connect to pi server
-
 if __name__ == "__main__":
-    #import tests
-    i = re.match('(.*)\.py', inputFileName)
-    if i:
-        inputFile = __import__(i.group(1))
-    else:
-        inputFile = __import__(inputFileName)
+    print "What you just ran is a library. Correct usage is to import this file\
+    and use its class(es) and functions."
 
-    #run tests
-    inputFile.test()
-################################################################################
