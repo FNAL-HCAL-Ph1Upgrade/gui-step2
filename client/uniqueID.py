@@ -12,6 +12,7 @@ q = QIELib
 def openChannel(rm,slot):
     if rm in [0,1]:
         # Open channel to ngCCM for RM 1,2: J1 - J10
+        print '##### RM in 0,1 #####'
         b.write(q.MUXs["fanout"],[0x02])
         b.sendBatch()
     elif rm in [2,3]:
