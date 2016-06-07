@@ -33,7 +33,7 @@ def uniqueID(rm,slot):
     # Value : 4 = 0x04 (or 0x10 for Bit 4... we need to find out!)
     # Note that the SSN expects 32 bits (4 bytes)
     # The SSN may also expect 8 bits (1 byte) for write!
-    b.write(q.QIEi2c[slot],[0x11,0x10,0,0,0])
+    b.write(q.QIEi2c[slot],[0x11,0x04,0,0,0])
     b.read(0x50,8)
     return b.sendBatch()
 
