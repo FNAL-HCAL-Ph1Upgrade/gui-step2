@@ -12,6 +12,7 @@ def run(RMList):
         # Iterate through Slot 0, 1, 2, 3 (run for all 4 slots by default)
         for slot in range(4):
             idList[slot] = u.uniqueID(rm,slot)
+            b.clearBus()
         uniqueIDArray[rm] = idList
     return uniqueIDArray
 
