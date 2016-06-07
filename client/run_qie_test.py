@@ -4,9 +4,8 @@ import uniqueID
 b = webBus("pi5")
 u = uniqueID
 
-def run(RMList):
+def run(RMList,num_slots):
     uniqueIDArray = range(4)
-    num_slots = 1
     # Iterate through RM 0, 1, 2, 3 (include desired RMs in list)
     for rm in RMList:
         idList = range(num_slots)
@@ -17,12 +16,11 @@ def run(RMList):
         uniqueIDArray[rm] = idList
     return uniqueIDArray
 
-def printRun(RMList):
+def printRun(RMList,num_slots):
     uniqueIDArray = run(RMList)
-    num_slots = 1
     for rm in RMList:
         for slot in range(num_slots):
             print 'RM: ', rm, ' slot: ', slot
             print 'UniqueID: ', uniqueIDArray[rm][slot]
 
-printRun([0])
+printRun([0],4)
