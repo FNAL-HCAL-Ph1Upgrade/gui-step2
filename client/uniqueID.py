@@ -13,17 +13,17 @@ def openChannel(rm,slot):
     if rm in [0,1]:
         # Open channel to ngCCM for RM 1,2: J1 - J10
         b.write(q.MUXs["fanout"],[0x02])
-        b.sendBatch(b.messages)
+        b.sendBatch()
     elif rm in [2,3]:
         # Open channel to ngCCM for RM 3, 4: J17 - J26
         b.write(q.MUXs["fanout"],[0x01])
-        b.sendBatch(b.messages)
+        b.sendBatch()
     else:
         print 'Invalid RM = ', rm
         print 'Please choose RM = {0,1,2,3}'
     # Open channel to i2c group
     b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
-    b.sendBatch(b.messages)
+    b.sendBatch()
 
 # Read UniqueID
 def uniqueID(rm,slot):
@@ -33,7 +33,7 @@ def uniqueID(rm,slot):
     # Note that the SSN expects 32 bits (4 bytes)
     b.write(q.QIEi2c[slot],[0x11,0x04,0,0,0])
     b.read(0x50,8)
-    return b.sendBatch(b.messages)
+    return b.sendBatch()
 
 
 # Read UniqueID for all QIE Cards in Backplane
