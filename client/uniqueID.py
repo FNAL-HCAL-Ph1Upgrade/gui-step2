@@ -16,14 +16,16 @@ def openChannel(rm,slot):
         b.sendBatch()
     elif rm in [2,3]:
         # Open channel to ngCCM for RM 3, 4: J17 - J26
+        print '##### RM in 2,3 #####'
         b.write(q.MUXs["fanout"],[0x01])
         b.sendBatch()
     else:
         print 'Invalid RM = ', rm
         print 'Please choose RM = {0,1,2,3}'
+        return 'closed channel'
     # Open channel to i2c group
     b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
-    b.sendBatch()
+    return b.sendBatch()
 
 # Read UniqueID
 def uniqueID(rm,slot):
