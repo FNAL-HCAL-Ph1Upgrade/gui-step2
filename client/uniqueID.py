@@ -32,7 +32,7 @@ def uniqueID(rm,slot):
     # Note that the i2c_select has register address 0x11
     # Value : 4 = 0x04 or 0x10 (for Bit 4... we need to find out!)
     # Note that the SSN expects 32 bits (4 bytes)
-    b.write(int(q.QIEi2c[slot]),[0x11,0x04])
+    b.write(q.QIEi2c[slot],[0x11,0x04])
     b.read(0x50,8)
     return b.sendBatch()
 
