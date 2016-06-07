@@ -1,7 +1,7 @@
-import client
+from client import webBus
 import QIELib
-b=webBus()
-q=QIELib
+b = webBus("pi5")
+q = QIELib
 
 # Label RMs as 0, 1, 2, 3
 # Label Slots as 0, 1, 2, 3
@@ -28,7 +28,9 @@ def uniqueID(rm,slot):
     # Note that the i2c_select has register address 0x11
     # Note that the SSN expects 32 bits (4 bytes)
     b.write(q.QIEi2c[slot],[0x11,0x04,0,0,0])
-    b.read(0x50,8)
+    return b.read(0x50,8)
+    # print b.sendBatch(b.messages)
+
 
 # Read UniqueID for all QIE Cards in Backplane
 # To read IDs for RM 1, pass RMList = [0]
