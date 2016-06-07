@@ -64,13 +64,15 @@ def determine_byte(add_1, add_2):
 def test():
     fan = 0x72
     u10 = 0x74
-    print '### Write 0x00 to Fanout for initiation!'
+    print '\n### Write 0x00 to Fanout for initiation!'
     SW(fan,0x00)
-    print '### Find address and determine byte for Fanout.'
+    print '\n### Find address and determine byte for Fanout.'
     fan_add = find_address(0x70)
+    print '\n'
     fan_byte = determine_byte(fan_add,u10)
-    print '### Find address and determine byte for ngCCM U10.'
+    print '\n### Find address and determine byte for ngCCM U10.'
     u10_add = find_address(0x73)
+    print '\n'
     u10_byte = SR(u10_add)
     print 'fan add: ', hex(fan_add)
     print 'fan byte: ', hex(fan_byte)
