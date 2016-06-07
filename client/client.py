@@ -33,8 +33,8 @@ class webBus:
         self.ws.send('|'.join(self.messages))
         ret = self.ws.recv().split('|')
         if self.VERBOSITY >= 1:
-            for e in xrange(len(messages)):
-                print "SENT: %s" % messages[e]
+            for e in xrange(len(self.messages)):
+                print "SENT: %s" % self.messages[e]
                 print "RECEIVED: %s" % ret[e]
         return ret
     def clearBus(self):
