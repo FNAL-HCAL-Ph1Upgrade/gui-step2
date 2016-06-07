@@ -23,4 +23,4 @@ def printRun(RMList, num_slots):
             print 'RM: ', rm, ' slot: ', slot
             print 'UniqueID: ', uniqueIDArray[rm][slot]
 
-printRun([0], 4)
+printRun([0], 1)

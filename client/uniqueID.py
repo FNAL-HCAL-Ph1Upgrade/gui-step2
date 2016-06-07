@@ -30,9 +30,10 @@ def uniqueID(rm,slot):
     openChannel(rm,slot)
     # Read UniqueID 8 bytes from SSN, U48 on QIE Card
     # Note that the i2c_select has register address 0x11
-    # Value : 4 = 0x04 or 0x10 (for Bit 4... we need to find out!)
+    # Value : 4 = 0x04 (or 0x10 for Bit 4... we need to find out!)
     # Note that the SSN expects 32 bits (4 bytes)
-    b.write(q.QIEi2c[slot],[0x11,0x04,0,0,0])
+    # The SSN may also expect 8 bits (1 byte) for write!
+    b.write(q.QIEi2c[slot],[0x11,0x04])
     b.read(0x50,8)
     return b.sendBatch()
 
