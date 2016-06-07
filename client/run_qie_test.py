@@ -1,6 +1,9 @@
 # Run complete QIE Test Sweet
+import client
+import UniqueID
+b = webBus()
 
-def getUniqueIDs(RMList):
+def run(RMList):
     uniqueIDArray = range(4)
     # Iterate through RM 0, 1, 2, 3 (include desired RMs in list)
     for rm in RMList:

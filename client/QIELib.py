@@ -22,6 +22,21 @@ REGs = {
     "ID" : 0x50,
     "temp" : 0x40
         }
+# Simplify your life today with RMi2c and QIEi2c. Boom dog.
+
+RMi2c = {
+    0 : 0x02,
+    1 : 0x20,
+    2 : 0x10,
+    3 : 0x01
+        }
+
+QIEi2c = {
+    0 : 0x19,
+    1 : 0x1a,
+    2 : 0x1b,
+    3 : 0x1c
+        }
 
 #Bit to write to mux for given twisted pair i2c
 i2cGroups = {

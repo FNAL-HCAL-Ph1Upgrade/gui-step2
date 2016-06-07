@@ -1,4 +1,7 @@
+import client
 import QIELib
+b=webBus()
+q=QIELib
 
 # Label RMs as 0, 1, 2, 3
 # Label Slots as 0, 1, 2, 3
@@ -8,31 +11,24 @@ import QIELib
 def openChannel(rm,slot):
     if rm in [0,1]:
         # Open channel to ngCCM for RM 1,2: J1 - J10
-        i2c_write(QIELib.MUXs["fanout"],[0x02])
+        b.write(q.MUXs["fanout"],[0x02])
     elif rm in [2,3]:
         # Open channel to ngCCM for RM 3, 4: J17 - J26
-        i2c_write(QIELib.MUXs["fanout"],[0x01])
+        b.write(q.MUXs["fanout"],[0x01])
     else:
         print 'Invalid RM = ', rm
         print 'Please choose RM = {0,1,2,3}'
-    # Open channel to i2c group 2, J2 - J5
-    i2c_write(0x74,[0x02])
+    # Open channel to i2c group
+    b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
 
 # Read UniqueID
 def uniqueID(rm,slot):
-    if slot <= 13:
-        # Open channel to ngCCM for RM 1,2: J1 - J12
-        i2c_write(QIELib.MUXs["fanout"],[0x02])
-    else:
-        # Open channel to ngCCM for RM 3, 4: J17 - J26
-        i2c_write(QIELib.MUXs["fanout"],[0x01])
-    # Open channel to i2c group 2, J2 - J5
-    i2c_write(0x74,[0x02])
-    # Read UniqueID 8 bytes from SSN for first QIE in J2
+    openChannel(rm,slot)
+    # Read UniqueID 8 bytes from SSN, U48 on QIE Card
     # Note that the i2c_select has register address 0x11
     # Note that the SSN expects 32 bits (4 bytes)
-    i2c_write(0x19,[0x11,0x04,0,0,0])
-    i2c_read(0x50,8)
+    b.write(q.QIEi2c[slot],[0x11,0x04,0,0,0])
+    b.read(0x50,8)
 
 # Read UniqueID for all QIE Cards in Backplane
 # To read IDs for RM 1, pass RMList = [0]
