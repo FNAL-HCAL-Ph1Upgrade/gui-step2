@@ -10,11 +10,6 @@ import QIELib
 b = webBus("pi5")
 q = QIELib
 
-def send_clear():
-    bus = b.sendBatch()
-    b.clearBus()
-    return bus
-
 #MUX slave addresses (slave i2c addresses)
 MUXs = {
     "fanout" : 0x72,
@@ -144,12 +139,12 @@ def openChannel(rm,slot):
         # Open channel to ngCCM for RM 1,2: J1 - J10
         print '##### RM in 0,1 #####'
         b.write(q.MUXs["fanout"],[0x02])
-        send_clear()
+        b.sendBatch()
     elif rm in [2,3]:
         # Open channel to ngCCM for RM 3, 4: J17 - J26
         print '##### RM in 2,3 #####'
         b.write(q.MUXs["fanout"],[0x01])
-        send_clear()
+        b.sendBatch()
     else:
         print 'Invalid RM = ', rm
         print 'Please choose RM = {0,1,2,3}'
@@ -158,7 +153,7 @@ def openChannel(rm,slot):
     print '##### open i2c #####'
     # b.clearBus()
     b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
-    return send_clear()
+    return b.sendBatch()
 
 def getBits(decimal):
     return list('%05d' % int(bin(decimal)[2:]))
