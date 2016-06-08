@@ -8,5 +8,6 @@ def igloo(rm,slot):
     b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
     # b.write(0x09,[0x05])
     # b.read(0x09,8)
+    return b.sendBatch()
 
-igloo(0,0)
+print igloo(0,0)
