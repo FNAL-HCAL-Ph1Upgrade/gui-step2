@@ -5,7 +5,7 @@ q = QIELib
 
 def regTest(rm,slot):
     q.openChannel(rm,slot)
-    b.write(q.QIEi2c[slot],[0x30]])
+    b.write(q.QIEi2c[slot],[0x30])
     b.read(0x30,48)
     temp = b.sendBatch()[1]
 
