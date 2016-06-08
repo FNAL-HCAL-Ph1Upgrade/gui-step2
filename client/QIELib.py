@@ -3,6 +3,9 @@
 #QIELib.py
 #Library of tables, functions, and classes for working with QIE11 test stands
 
+from client import webBus
+b = webBus("pi5")
+
 #MUX slave addresses (slave i2c addresses)
 MUXs = {
     "fanout" : 0x72,
