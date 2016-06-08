@@ -10,16 +10,9 @@ def sensor(rm,slot):
     b.write(0x40,[0xf3])
     b.read(0x40,2) #what happens if I read 4 bytes? trash?
 
-    prelimTemp = b.sendBatch()[2]
-    prelimTemp = prelimTemp.split()
-    aa = prelimTemp[0]
-    bb = prelimTemp[1]
-    one = hex(aa)
-    two = hex(bb)
-    intermedTemp = one[2:] + two[2:]
-    #intermedTemp = hex(prelimTemp.split[0])[2:] + hex(prelimTemp.split[1])[2:]
-    bigTemp = int(intermedTemp,16)
-    return bigTemp
+    data = b.sendBatch()[2]
+    data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
+    return data
 
 print "Sensor: " + sensor(0,0)
 print "New Temp: " + (-46.85) +175.72*(sensor(0,0))/(2**16)
