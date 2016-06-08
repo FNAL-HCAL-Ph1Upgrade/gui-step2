@@ -27,7 +27,7 @@ def sensorHumid(rm,slot):
     data = b.sendBatch()[2]
     data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
     #Converting the humidity using equation
-    humid = (-6) + 125*(data/(2**16))
+    humid = (-6.0) + 125.0*(data/(2**16))
 
     return humid
 
