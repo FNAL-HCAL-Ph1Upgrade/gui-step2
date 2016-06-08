@@ -36,10 +36,8 @@ class webBus:
             for e in xrange(len(self.messages)):
                 print "SENT: %s" % self.messages[e]
                 print "RECEIVED: %s" % ret[e]
-        return ret
-    def clearBus(self):
         self.messages = []
-
+        return ret
 
 ################################################################################
 if __name__ == "__main__":
