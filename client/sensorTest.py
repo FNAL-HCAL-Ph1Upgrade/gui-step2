@@ -6,6 +6,7 @@ q = QIELib
 def sensor(rm,slot):
     q.openChannel(rm,slot)
     b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
+    print "Now for the sensor:\n"
     b.write(0x40,[0x3e])
     b.read(0x40,2) #what happens if I read 4 bytes? trash?
     return b.sendBatch()[2]
