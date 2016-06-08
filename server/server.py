@@ -57,13 +57,15 @@ def parseMessage(m):
     if message[0].lower() == 'r':
         #read
         print(message)
-        return read(int(message[1], 16), int(message[2], 16))
-    elif m[0].lower() == 'w':
+        return read(int(message[1]), int(message[2]))
+    elif message[0].lower() == 'w':
         #write
-        return write(m[1], m[2:])
-    elif m[0].lower() == 's':
+        arr = [int(i) for i in message[2:]]
+        print(arr)
+        return write(int(message[1]), arr)
+    elif message[0].lower() == 's':
         #sleep
-        sleep(m[1])
+        sleep(message[1])
         return None
 
 #websocket
@@ -79,7 +81,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         ms = message.split('|')
         rets = []
         for m in ms:
-            rets.append(str(parseMessage(message)))
+            rets.append(str(parseMessage(m)))
         #o = '|'.join(rets)
         self.write_message('|'.join(rets))
 
