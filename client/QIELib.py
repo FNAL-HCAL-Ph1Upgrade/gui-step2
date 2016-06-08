@@ -3,10 +3,17 @@
 #QIELib.py
 #Library of tables, functions, and classes for working with QIE11 test stands
 
+####### Random Stuff that I need for openChannel ################
+
 from client import webBus
 import QIELib
 b = webBus("pi5")
 q = QIELib
+
+def send_clear():
+    bus = b.sendBatch()
+    b.clearBus()
+    return bus
 
 #MUX slave addresses (slave i2c addresses)
 MUXs = {
