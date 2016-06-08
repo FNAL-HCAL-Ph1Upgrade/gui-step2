@@ -16,8 +16,8 @@ def sensor(rm,slot):
     bigTemp = int(intermedTemp,16)
     return bigTemp
 
-print "Sensor: " + bigTemp
-print "New Temp: " + (-46.85) +175.72*(bigTemp)/(2**16)
+print "Sensor: " + sensor(0,0)
+print "New Temp: " + (-46.85) +175.72*(sensor(0,0))/(2**16)
 #print "Sensor:" + sensor(0,0)
 
 #(-46.85) +175.72*(TEMP)/(2**16)
