@@ -24,6 +24,6 @@ def printRun(RMList, num_slots):
             print 'UniqueID: ', uniqueIDArray[rm][slot]
 
 # print u.openChannel(3,3)
-printRun([0], 1)
+printRun([0], 4)
 
 # That output, though? It's Greek to me!

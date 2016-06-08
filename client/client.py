@@ -45,4 +45,3 @@ class webBus:
 if __name__ == "__main__":
     print "What you just ran is a library. Correct usage is to import this file\
     and use its class(es) and functions."
-
