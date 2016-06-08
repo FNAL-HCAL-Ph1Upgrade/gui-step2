@@ -12,9 +12,9 @@ def sensor(rm,slot):
 
     prelimTemp = b.sendBatch()[2]
     prelimTemp = prelimTemp.split()
-    one = prelimTemp[0]
-    two = prelimTemp[1]
-    intermedTemp = hex(one)[2:] + hex(two)[2:]
+    one = hex(prelimTemp[0])
+    two = hex(prelimTemp[1])
+    intermedTemp = one[2:] + two[2:]
     #intermedTemp = hex(prelimTemp.split[0])[2:] + hex(prelimTemp.split[1])[2:]
     bigTemp = int(intermedTemp,16)
     return bigTemp
