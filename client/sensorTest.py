@@ -11,8 +11,11 @@ def sensor(rm,slot):
     b.read(0x40,2) #what happens if I read 4 bytes? trash?
 
     prelimTemp = b.sendBatch()[2]
-    prelimTemp.split()
-    intermedTemp = hex(prelimTemp.split[0])[2:] + hex(prelimTemp.split[1])[2:]
+    prelimTemp = prelimTemp.split()
+    a = prelimTemp[0]
+    b = prelimTemp[1]
+    intermedTemp = hex(a)[2:] + hex(b)[2:]
+    #intermedTemp = hex(prelimTemp.split[0])[2:] + hex(prelimTemp.split[1])[2:]
     bigTemp = int(intermedTemp,16)
     return bigTemp
 
