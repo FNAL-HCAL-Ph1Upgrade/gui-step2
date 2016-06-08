@@ -14,7 +14,7 @@ def sensor(rm,slot):
     data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
     return data
 
-print "Sensor: " + sensor(0,0)
+#print "Sensor: " + sensor(0,0)
 print "New Temp: " + (-46.85) +175.72*(sensor(0,0))/(2**16)
 #print "Sensor:" + sensor(0,0)
 
