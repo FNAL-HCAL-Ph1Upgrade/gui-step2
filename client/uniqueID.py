@@ -8,18 +8,22 @@ q = QIELib
 # Label Slots as 0, 1, 2, 3
 
 # Open Channel for QIE Card Given RM and Slot
+def send_clear():
+    bus = b.sendBatch()
+    b.clearBus()
+    return bus
 
 def openChannel(rm,slot):
     if rm in [0,1]:
         # Open channel to ngCCM for RM 1,2: J1 - J10
         print '##### RM in 0,1 #####'
         b.write(q.MUXs["fanout"],[0x02])
-        b.sendBatch()
+        b.send_clear()
     elif rm in [2,3]:
         # Open channel to ngCCM for RM 3, 4: J17 - J26
         print '##### RM in 2,3 #####'
         b.write(q.MUXs["fanout"],[0x01])
-        b.sendBatch()
+        b.send_clear()
     else:
         print 'Invalid RM = ', rm
         print 'Please choose RM = {0,1,2,3}'
@@ -28,7 +32,7 @@ def openChannel(rm,slot):
     print '##### open i2c #####'
     b.clearBus()
     b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
-    return b.sendBatch()
+    return b.send_clear()
 
 # Read UniqueID
 def uniqueID(rm,slot):
@@ -40,7 +44,7 @@ def uniqueID(rm,slot):
     # The SSN may also expect 8 bits (1 byte) for write!
     b.write(q.QIEi2c[slot],[0x11,0x04,0,0,0])
     b.read(0x50,8)
-    return b.sendBatch()
+    return b.send_clear()
 
 
 # Read UniqueID for all QIE Cards in Backplane
