@@ -9,13 +9,18 @@ def sensor(rm,slot):
     print "Now for the sensor:\n"
     b.write(0x40,[0xf3])
     b.read(0x40,2) #what happens if I read 4 bytes? trash?
-    return b.sendBatch()[2]
 
-prelimTemp = hex(sensor(0,0))
-print "Sensor:" + prelimTemp
+    prelimTemp = b.sendBatch()[2]
+    prelimTemp.split()
+    intermedTemp = hex(prelimTemp.split[0])[2:] + hex(prelimTemp.split[1])[2:]
+    bigTemp = int(intermedTemp,16)
+    return bigTemp
+
+print "Sensor: " + bigTemp
+print "New Temp: " + (-46.85) +175.72*(bigTemp)/(2**16)
 #print "Sensor:" + sensor(0,0)
 
-(-46.85) +175.72*(TEMP)/(2**16)
+#(-46.85) +175.72*(TEMP)/(2**16)
 
 '''
 #/usr/bin/python
