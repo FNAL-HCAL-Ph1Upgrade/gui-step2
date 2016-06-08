@@ -4,7 +4,9 @@
 #Library of tables, functions, and classes for working with QIE11 test stands
 
 from client import webBus
+import QIELib
 b = webBus("pi5")
+q = QIELib
 
 #MUX slave addresses (slave i2c addresses)
 MUXs = {
