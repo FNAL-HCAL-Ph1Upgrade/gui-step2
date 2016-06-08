@@ -25,3 +25,5 @@ def printRun(RMList, num_slots):
 
 print u.openChannel(2,0)
 # printRun([0], 1)
+
+# Τηατ οθτπθτ, τηοθγη? Ιτ'σ Γρεεκ το με!'
