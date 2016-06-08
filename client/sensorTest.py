@@ -10,7 +10,7 @@ def sensor(rm,slot):
     b.read(0x40,2) #what happens if I read 4 bytes? trash?
     return b.sendBatch()[2]
 
-print sensor(0,0)
+print "Sensor:" + sensor(0,0)
 
 '''
 #/usr/bin/python
