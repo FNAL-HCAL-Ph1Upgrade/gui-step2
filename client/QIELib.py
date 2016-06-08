@@ -125,6 +125,29 @@ serialShiftRegisterBits = OrderedDict(
     ("PhaseDelay", [57, 58, 59, 60, 61, 62, 63])]
     )
 
+######## open channel to RM and Slot! ######################
+
+def openChannel(rm,slot):
+    if rm in [0,1]:
+        # Open channel to ngCCM for RM 1,2: J1 - J10
+        print '##### RM in 0,1 #####'
+        b.write(q.MUXs["fanout"],[0x02])
+        send_clear()
+    elif rm in [2,3]:
+        # Open channel to ngCCM for RM 3, 4: J17 - J26
+        print '##### RM in 2,3 #####'
+        b.write(q.MUXs["fanout"],[0x01])
+        send_clear()
+    else:
+        print 'Invalid RM = ', rm
+        print 'Please choose RM = {0,1,2,3}'
+        return 'closed channel'
+    # Open channel to i2c group
+    print '##### open i2c #####'
+    # b.clearBus()
+    b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
+    return send_clear()
+
 def getBits(decimal):
     return list('%05d' % int(bin(decimal)[2:]))
 
