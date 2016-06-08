@@ -3,20 +3,36 @@ import QIELib
 b = webBus("pi5")
 q = QIELib
 
-def sensor(rm,slot):
+def sensorTemp(rm,slot):
     q.openChannel(rm,slot)
     b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
-    print "Now for the sensor:\n"
     b.write(0x40,[0xf3])
-    b.read(0x40,2) #what happens if I read 4 bytes? trash?
+    b.read(0x40,2)
 
     data = b.sendBatch()[2]
     data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
-    return data
+    #Converting the temperature using equation
+    temp = (-46.85) +175.72*(data)/(2**16)
 
-#print "Sensor: " + sensor(0,0)
-temp = (-46.85) +175.72*(sensor(0,0))/(2**16)
-print "%.2f" %temp
+    return temp
+
+print "%.2f" %(sensorTemp(0,0))
+
+def sensorHumid(rm,slot):
+    q.openChannel(rm,slot)
+    b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
+    b.write(0x40,[0xf5])
+    b.read(0x40,2)
+
+    data = b.sendBatch()[2]
+    data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
+    #Converting the humidity using equation
+    humid = -6 + 125*(data/(2**16))
+
+    return humid
+
+print "%.2f" %(sensorHumid(0,0))
+
 #print "Sensor:" + sensor(0,0)
 
 #(-46.85) +175.72*(TEMP)/(2**16)
