@@ -45,8 +45,12 @@ def uniqueID(rm,slot):
     print '##### Read UniqueID #####'
     b.write(q.QIEi2c[slot],[0x11,0x04,0,0,0])
     b.read(0x50,8)
-    return send_clear()
+    raw_bus = send_clear()
+    return raw_bus[-1]
 
+######## Old Function... not in use!!!!! #############################
+
+######## May be useful in the future...? #############################
 
 # Read UniqueID for all QIE Cards in Backplane
 # To read IDs for RM 1, pass RMList = [0]
