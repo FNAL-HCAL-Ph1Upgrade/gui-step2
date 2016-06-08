@@ -16,7 +16,7 @@ def sensor(rm,slot):
 
 #print "Sensor: " + sensor(0,0)
 temp = (-46.85) +175.72*(sensor(0,0))/(2**16)
-print "New Temp: " + str(temp)
+print "%.2f" %temp
 #print "Sensor:" + sensor(0,0)
 
 #(-46.85) +175.72*(TEMP)/(2**16)
