@@ -3,6 +3,7 @@ import QIELib
 b = webBus("pi5")
 q = QIELib
 
+'''
 def regTest(rm,slot):
     q.openChannel(rm,slot)
     b.write(q.QIEi2c[slot],[0x30])
@@ -13,9 +14,9 @@ def regTest(rm,slot):
 
 print regTest(0,2)
 
-
-
 '''
+
+
 #returns the temperature of the QIE card
 def sensorTemp(rm,slot):
     q.openChannel(rm,slot)
@@ -30,7 +31,7 @@ def sensorTemp(rm,slot):
 
     return temp
 
-print "%.2f" %(sensorTemp(0,0))
+print "%.2f" %(sensorTemp(0,2))
 
 
 #returns the relative humidity of the QIE card
@@ -48,5 +49,4 @@ def sensorHumid(rm,slot):
 
     return humid
 
-print "%.2f" %(sensorHumid(0,0))
-'''
+print "%.2f" %(sensorHumid(0,2))
