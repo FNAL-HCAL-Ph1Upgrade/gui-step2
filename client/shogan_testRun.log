@@ -1,14 +1,14 @@
-2016-06-09 13:44:03.811963
+2016-06-09 16:25:16.563531
 shogan
-
+Pass/Fail Version Check
 
 0x19
 UniqueID
 00:00:00:ea:bf:8a
 Temp
-29.019
+26.864
 Humi
-35.47
+40.131
 Herm
 PASS
 Brdg
@@ -18,15 +18,15 @@ PASS
 Zero
 PASS
 Fver
-1 11 0 0
+PASS
 
 0x1a
 UniqueID
 00:00:00:ea:b7:36
 Temp
-30.092
+27.947
 Humi
-33.829
+38.079
 Herm
 PASS
 Brdg
@@ -36,15 +36,15 @@ PASS
 Zero
 PASS
 Fver
-1 11 0 0
+PASS
 
 0x1b
 UniqueID
 00:00:00:ea:9d:ec
 Temp
-31.561
+29.502
 Humi
--3.578
+36.431
 Herm
 PASS
 Brdg
@@ -54,15 +54,15 @@ PASS
 Zero
 PASS
 Fver
-1 11 0 0
+PASS
 
 0x1c
 UniqueID
 00:00:00:ea:b9:60
 Temp
-32.237
+30.199
 Humi
-29.603
+33.646
 Herm
 PASS
 Brdg
@@ -72,5 +72,5 @@ PASS
 Zero
 PASS
 Fver
-1 11 0 0
+PASS
 
