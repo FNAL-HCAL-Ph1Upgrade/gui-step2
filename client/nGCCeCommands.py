@@ -658,6 +658,7 @@ class makeGui:
 		for i in (0x19,0x1a,0x1b,0x1c):
 			qieCommands.runSuite(i)
 		print "\nSuite Completed! Thank you! (:"
+		print "Machine-readable log file saved as: "+self.nameChoiceVar.get()+"_testRun.log"
 
 	# Then, print the computer-readable format to a text file
 		with open(self.nameChoiceVar.get()+"_testRun.log", 'w') as outFile:
