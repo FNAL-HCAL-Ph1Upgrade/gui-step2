@@ -54,6 +54,9 @@ def vttx2write(rm,slot):
 
     return data
 
+print "From vttx1read: " + vttx1read(0,0)
+print "From vttx2read: " + vttx2read(0,0)
+
 print "From vttx1write: " + vttx1write(0,0)
 print "From vttx2write: " + vttx2write(0,0)
 
