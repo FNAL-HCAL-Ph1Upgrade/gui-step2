@@ -26,10 +26,10 @@ def vttx2read(rm,slot):
     data = b.sendBatch()[2]
 
     return data
-
+'''
 print "From vttx1read: " + vttx1read(0,0)
 print "From vttx2read: " + vttx2read(0,0)
-
+'''
 
 
 ########################################################
@@ -56,3 +56,6 @@ def vttx2write(rm,slot):
 
 print "From vttx1write: " + vttx1write(0,0)
 print "From vttx2write: " + vttx2write(0,0)
+
+print "From vttx1read: " + vttx1read(0,0)
+print "From vttx2read: " + vttx2read(0,0)
