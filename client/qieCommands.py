@@ -132,4 +132,11 @@ def runSuiteCompForm(register, inFile):
 	inFile.write("Zero\n")
 	inFile.write(str(zeroTest(register))+"\n")
 	inFile.write("Fver\n")
-	inFile.write(str(fwVerTest(register))+"\n")
+	if str(fwVerTest(register) == "1 11 0 0"):
+		inFile.write("PASS\n")
+	else:
+		inFile.write("FAIL\n")
+
+
+
+
