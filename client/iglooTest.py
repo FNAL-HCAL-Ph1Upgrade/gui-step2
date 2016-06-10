@@ -15,11 +15,11 @@ q = QIELib
 
 
 #give this function a string (like '133 4 92 23') and returns the binary cat
-def strToBin(str):
+def strToBin(aString):
     j = 0
     catBinary = ""
-    for i in str.split():
-        catBinary = catBinary + bin(int(str.split()[j]))[2:]
+    for i in aString.split():
+        catBinary = catBinary + bin(int(aString.split()[j]))[2:]
         j += 1
     return catBinary
 
