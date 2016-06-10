@@ -124,7 +124,6 @@ def runSuiteCompForm(register, inFile, tester):
 	activeCard = qieCard()
 	activeCard.timeOfTest = str(datetime.now())
 	activeCard.tester = tester
-	activeCard.comment = "No comment."
 	activeCard.i2cAddress = str(hex(register))
 	activeCard.uniqueID = str(getUniqueID(0,register))
 	activeCard.temperature = sensorTemp(0,register)
@@ -135,26 +134,6 @@ def runSuiteCompForm(register, inFile, tester):
 	activeCard.passedOnes = tff_Test(register)
 	activeCard.passedZero = zeroTest(register)
 	json.dump(activeCard, inFile, default=jdefault)
-#	inFile.write(str(hex(register))+"\n")
-#	inFile.write("UniqueID\n")
-#	inFile.write(str(getUniqueID(0,register))+"\n")
-#	inFile.write("Temp\n")
-#	inFile.write(str(sensorTemp(0,register))+"\n")
-#	inFile.write("Humi\n")
-#	inFile.write(str(sensorHumid(0,register))+"\n")
-#	inFile.write("Herm\n")
-#	inFile.write(str(hermTest(register))+"\n")
-#	inFile.write("Brdg\n")
-#	inFile.write(str(brdgTest(register))+"\n")
-#	inFile.write("Ones\n")
-#	inFile.write(str(tff_Test(register))+"\n")
-#	inFile.write("Zero\n")
-#	inFile.write(str(zeroTest(register))+"\n")
-#	inFile.write("Fver\n")
-#	if str(fwVerTest(register) == "1 11 0 0"):
-#		inFile.write("PASS\n")
-#	else:
-#		inFile.write("FAIL\n")
 
 def runCompleteSuite(register,humanFile,machineFile,inTester):
 	runSuite(register,humanFile)

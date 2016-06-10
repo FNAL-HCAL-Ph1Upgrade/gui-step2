@@ -13,7 +13,6 @@ class qieCard:
 		# Test parameters/info
 		self.timeOfTest = ""
 		self.tester     = ""
-		self.comment    = ""
 		
 		# Data from card
 		self.i2cAddress  = ""
