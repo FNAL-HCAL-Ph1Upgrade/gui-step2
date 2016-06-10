@@ -15,13 +15,12 @@ q = QIELib
 
 
 #give this function a string (like '133 4 92 23') and returns the binary cat
-def strToBin(str):
+def strToBin(aString):
     j = 0
     catBinary = ""
-    for i in str.split():
-        catBinary = catBinary + bin(int(str.split()[j]))[2:]
-    catBinary = str(catBinary)
-
+    for i in aString.split():
+        catBinary = catBinary + bin(int(aString.split()[j]))[2:]
+        j += 1
     return catBinary
 
 
@@ -91,7 +90,6 @@ def statusReg(desiredReg = "all"):
     #split up the 32 bits into their appropriate status chunks:
     #10-bit InputSpyWordNum, InputSpyFifoEmpty, InputSpyFifoFull,
     #Qie_DLLNoLock[12:1], BRIDGE_SPARE[5:0], 1-bit 0, PLL 320MHz Lock
-
     
     regBin = strToBin(reg)
   
@@ -113,9 +111,6 @@ def statusReg(desiredReg = "all"):
         return allRegBin
     else:
         return desiredReg + " = " + regBinDict[desiredReg]
-   
-
-
 
 
 openIgloo(0,0)
