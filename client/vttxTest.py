@@ -3,6 +3,16 @@ import QIELib
 b = webBus("pi5")
 q = QIELib
 
+# helpful string to hex list
+def strToBin(string):
+        catBinary = ""
+        j=0
+        for i in string.split():
+                catBinary = catBinary + bin(int(string.split()[j]))[2:]
+                print "j = " + str(j) + ",  catBinary = " + catBinary
+                j = j + 1
+        return catBinary
+
 ########################################################
 # VTTX Read Functions
 ########################################################
@@ -51,6 +61,35 @@ def vttx2write(rm,slot):
 
     return data
 
+# Read from Vttx, write that same set of bytes, read again to confirm
+def vttx1RWR(rm, slot):
+    #### READ
+    read1 = vttx1(rm, slot)
+    readArr = read1.split()
+    readArr.reverse()
+    writeArr = list(int(i) for i in readArr)
+
+    #### WRITE
+    # write to vttx1 what we just read from it
+    b.write(0x7E,[0x00,writeArr])
+
+    #### READ
+    #read from vttx1 to check if it worked
+    read2 = vttx1read(rm,slot)
+
+    if (read1 == read2):
+        return "PASS!"
+    else:
+        return "YOU SHALL NOT PASS!"
+
+
+
+print "From RWR of vttx1: " +vttx1RWR(0,0)
+
+
+
+
+'''
 print "From vttx1read: " + vttx1read(0,0)
 print "From vttx2read: " + vttx2read(0,0)
 
@@ -59,7 +98,7 @@ print "From vttx2write: " + vttx2write(0,0)
 
 print "From vttx1read: " + vttx1read(0,0)
 print "From vttx2read: " + vttx2read(0,0)
-
+'''
 
 # output of successful execution of the code!
 '''
