@@ -48,7 +48,7 @@ def fpgaMinVer(): # "fpga minor verison"
     b.write(0x09,[0x01])
     b.read(0x09,1)
     minVer = b.sendBatch()[1]
-    minVer = hex(int(majVer))[2:0]
+    minVer = hex(int(minVer))[2:0]
     return minVer
 
 # Register byte 0x02 (RO)
