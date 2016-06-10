@@ -79,19 +79,22 @@ def uniqueID(): # "should be written with QIE-card unique ID"
     b.read(0x09,8)
     return b.sendBatch()[1]
 
-# Register bye 0x10 (RO)
+# Register byte 0x10 (RO)
 def statusReg(desiredReg = "all"):
     b.write(0x09, [0x10])
     b.read(0x09,4)
     reg = b.sendBatch()[1]
 
-    return "Reg = " + reg
+    print "Reg = " + reg
+
     #split up the 32 bits into their appropriate status chunks:
     #10-bit InputSpyWordNum, InputSpyFifoEmpty, InputSpyFifoFull,
     #Qie_DLLNoLock[12:1], BRIDGE_SPARE[5:0], 1-bit 0, PLL 320MHz Lock
 
     regBin = strToBin(reg)
+    print "RegBin = " + regBin
 
+    '''
     regBinDict = {
     "InputSpyWordNum"   :   regBin[0:9], # number of words in InputSpyFifo (depth = 512)
     "InputSpyFifoEmpty" :   regBin[10],
@@ -105,19 +108,20 @@ def statusReg(desiredReg = "all"):
     allRegBin = regBin[0:9] + " : " + regBin[10] + " : " + regBin[11]\
         + " : " + regBin[12:23] + " : " + regBin[24:29] + " : " + regBin[30]\
         + " : " + regBin[31]
-
+    '''
+'''
     if desiredReg == "all":
         return allRegBin
     else:
         return desiredReg + " = " + regBinDict[desiredReg]
-
+'''
 
 
 
 openIgloo(0,0)
 print "Zeros: " + zeros()
 #print "FPGA Major Version: " + fpgaMajVer()
-#print statusReg()
+print statusReg()
 
 
 ##########################
