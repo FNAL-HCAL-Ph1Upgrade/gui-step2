@@ -19,7 +19,7 @@ def vttx1read(rm,slot):
 
 def vttx2read(rm,slot):
     q.openChannel(rm,slot)
-    #VTTX 1 is value "1" in I2C_SELECT table
+    #VTTX 2 is value "2" in I2C_SELECT table
     b.write(q.QIEi2c[slot],[0x11,0x02,0,0,0])
     b.write(0x7E,[0x00])
     b.read(0x7E,7)

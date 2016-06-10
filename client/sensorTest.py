@@ -3,19 +3,6 @@ import QIELib
 b = webBus("pi5")
 q = QIELib
 
-'''
-def regTest(rm,slot):
-    q.openChannel(rm,slot)
-    b.write(q.QIEi2c[slot],[0x30])
-    b.read(0x30,48)
-    temp = b.sendBatch()[1]
-
-    return temp
-
-print regTest(0,2)
-
-'''
-
 
 #returns the temperature of the QIE card
 def sensorTemp(rm,slot):
@@ -25,6 +12,9 @@ def sensorTemp(rm,slot):
     b.read(0x40,2)
 
     data = b.sendBatch()[2]
+    #Splitting the incoming data and reversing the order of bytes
+    #(the read function's inherent reversal of bytes isn't compatible with
+    #this particular sensor's desired output order)
     data = int((hex(int(data.split()[1])))[2:] + (hex(int(data.split()[0])))[2:],16)
     #Converting the temperature using equation
     temp = (-46.85) +175.72*(data)/(2**16)
@@ -42,7 +32,9 @@ def sensorHumid(rm,slot):
     b.read(0x40,2)
 
     data = b.sendBatch()[2]
-
+    #Splitting the incoming data and reversing the order of bytes
+    #(the read function's inherent reversal of bytes isn't compatible with
+    #this particular sensor's desired output order)
     data = int((hex(int(data.split()[1])))[2:] + (hex(int(data.split()[0])))[2:],16)
     #Converting the humidity using equation
     humid = -6 + 125.0*(data)/(2**16)
