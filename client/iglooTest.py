@@ -20,6 +20,7 @@ def strToBin(str):
     catBinary = ""
     for i in str.split():
         catBinary = catBinary + bin(int(str.split()[j]))[2:]
+        j += 1
     return catBinary
 
 def openIgloo(rm,slot):
@@ -89,7 +90,6 @@ def statusReg(desiredReg = "all"):
     #10-bit InputSpyWordNum, InputSpyFifoEmpty, InputSpyFifoFull,
     #Qie_DLLNoLock[12:1], BRIDGE_SPARE[5:0], 1-bit 0, PLL 320MHz Lock
 
-    '''
     regBin = strToBin(reg)
 
     regBinDict = {
@@ -110,7 +110,6 @@ def statusReg(desiredReg = "all"):
         return allRegBin
     else:
         return desiredReg + " = " + regBinDict[desiredReg]
-    '''
 
 
 
