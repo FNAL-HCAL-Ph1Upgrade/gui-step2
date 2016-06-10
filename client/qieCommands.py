@@ -10,7 +10,6 @@ def hermTest(register):
 	b.write(register,[0x00])
 	b.read(register, 4)
 	outString = b.sendBatch()[1]
-	outString = testLib.reverseBytes(outString)
 	if (testLib.toASCII(outString) == "HERM"):
 		return "PASS"
 	else:
@@ -21,7 +20,6 @@ def brdgTest(register):
 	b.write(register,[0x01])
 	b.read(register, 4)
 	outString = b.sendBatch()[1]
-	outString = testLib.reverseBytes(outString)
 	if (testLib.toASCII(outString) == "Brdg"):
 		return "PASS"
 	else:
@@ -49,7 +47,7 @@ def fwVerTest(register):
 	b = webBus("pi5")
 	b.write(register,[0x04])
 	b.read(register, 4)
-	return testLib.reverseBytes(b.sendBatch()[1])
+	return b.sendBatch()[1]
 
 def statusCheck(register):
 	b = webBus("pi5")
@@ -66,6 +64,7 @@ def sensorTemp(rm,qieCard):    # Thanks, Adryanna!
 
 	bigData = b.sendBatch()
 	data = bigData[3]
+	data = testLib.reverseBytes(data)
 	data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
 	#Converting the temperature using equation
 	temp = (-46.85) +175.72*(data)/(2**16)
@@ -80,6 +79,7 @@ def sensorHumid(rm,qieCard):  # Thanks, Adryanna!
 	b.read(0x40,2)
 
 	data = b.sendBatch()[3]
+	data = testLib.reverseBytes(data)
 	data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
 	#Converting the humidity using equation
 	humid = -6 + 125.0*(data)/(2**16)
@@ -93,26 +93,25 @@ def getUniqueID(rm, qieCard):  # Thanks, Caleb!
 	b.write(0x50,[0x00])
 	b.read(0x50,8)
 	raw_bus = b.sendBatch()
-	cooked_bus = testLib.reverseBytes(raw_bus[-1])
-	cooked_bus = testLib.serialNum(cooked_bus)
+	cooked_bus = testLib.serialNum(raw_bus[-1])
 	return(testLib.toHex(cooked_bus))
 	
-def runSuite(register):
+def runSuite(register, inFile):
 	# HUMAN-READABLE FORMAT
 	# The weird parts of the following print statement
 	# allow us to print colored font to the terminal.
 	# Feel free to remove the colored font if it doesn't work.
-	print '\033[93m'+"\nQIE Card being tested: "+'\033[0m','\033[96m'+str(hex(register))+'\033[0m'
-	print "Unique ID:  ", str(getUniqueID(0,register))
-	print "Herm test:  ", hermTest(register)
-	print "Brdg test:  ", brdgTest(register)
-	print "Ones Register:  ", tff_Test(register)
-	print "Zero Register:  ", zeroTest(register)
-	print "Firmware Ver.:  ", fwVerTest(register)
-	print "Temperature: "   , sensorTemp(0,register), " C"
-	print "Humidity: "      , sensorHumid(0,register)
-	print "Overall Status: ", statusCheck(register)
-	return "\nTests for "+str(register)+" complete."
+	inFile.write("\nQIE Card being tested: "+str(hex(register)))
+	inFile.write("\nUnique ID:  "+ str(getUniqueID(0,register)))
+	inFile.write("\nHerm test:  "+ hermTest(register))
+	inFile.write("\nBrdg test:  "+ brdgTest(register))
+	inFile.write("\nOnes Register:  "+ tff_Test(register))
+	inFile.write("\nZero Register:  "+ zeroTest(register))
+	inFile.write("\nFirmware Ver.:  "+ fwVerTest(register))
+	inFile.write("\nTemperature: "   + str(sensorTemp(0,register))+" C")
+	inFile.write("\nHumidity: "      + str(sensorHumid(0,register)))
+	inFile.write("\nOverall Status: "+ statusCheck(register))
+	inFile.write("\n\nTests for "+str(hex(register))+" complete.")
 
 def runSuiteCompForm(register, inFile):
 	# COMPUTER-PARSING FORMAT
@@ -137,6 +136,6 @@ def runSuiteCompForm(register, inFile):
 	else:
 		inFile.write("FAIL\n")
 
-
-
-
+def runCompleteSuite(register,humanFile,machineFile):
+	runSuite(register,humanFile)
+	runSuiteCompForm(register,machineFile)

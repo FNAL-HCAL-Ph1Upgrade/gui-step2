@@ -1,4 +1,4 @@
-# nGCCeCommands.py
+# User-Interface.py
 #
 # This is the main Graphical User Interface for communicating
 # with the setup in the lab.
@@ -649,27 +649,25 @@ class makeGui:
 			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.getUniqueID(0,tempInt)))
 
 	def runTestSuite(self):
-		dateString = str(datetime.now())
-		for j in range(0,30):
-			print "\n"
-		print '\033[93m'+"Test performed by: "+'\033[0m',self.nameChoiceVar.get()
-		print '\033[93m'+"Time of testing: "+'\033[0m',dateString
-		print '\033[93m'+"Testing comment(s):"+'\033[0m',self.infoCommentVar.get()
-		for i in (0x19,0x1a,0x1b,0x1c):
-			qieCommands.runSuite(i)
+		#ONCE IT'S TIME TO TEST OTHER READOUT MODULES, MAKE THE APPROPRIATE CHANGES HERE
+		for card in (0x19,0x1a,0x1b,0x1c):
+			with open(self.nameChoiceVar.get()+"_"+str(hex(card))+"_readableLog.log", 'w') as humanFile:
+				with open(self.nameChoiceVar.get()+"_"+str(hex(card))+"_machineLog.log", 'w') as machineFile:
+					self.runTestSuiteHelper(card,humanFile,machineFile)
 		print "\nSuite Completed! Thank you! (:"
-		print "Machine-readable log file saved as: "+self.nameChoiceVar.get()+"_testRun.log"
 
-	# Then, print the computer-readable format to a text file
-		with open(self.nameChoiceVar.get()+"_testRun.log", 'w') as outFile:
-			outFile.write(dateString+"\n")
-			outFile.write(self.nameChoiceVar.get()+"\n")
-			outFile.write(self.infoCommentVar.get()+"\n\n")
-			for i in (0x19,0x1a,0x1b,0x1c):
-				qieCommands.runSuiteCompForm(i,outFile)
-				# Write an extra new line char after each card:
-				outFile.write("\n")
+	def runTestSuiteHelper(self,card,humanFile,machineFile):
+		dateString = str(datetime.now())
+		humanFile.write("Test performed by: "+self.nameChoiceVar.get())
+		humanFile.write("\nTime of testing: "+dateString)
+		humanFile.write("\nTesting comment(s):"+self.infoCommentVar.get()+"\n")
+		machineFile.write(dateString+"\n")
+		machineFile.write(self.nameChoiceVar.get()+"\n")
+		machineFile.write(self.infoCommentVar.get()+"\n\n")
+		qieCommands.runCompleteSuite(card,humanFile,machineFile)	
 
+# These next few lines call the class and display the window
+# on the computer screen
 root = Tk()
 myapp = makeGui(root)
 root.mainloop()
