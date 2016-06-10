@@ -1,68 +1,76 @@
-2016-06-09 09:56:31.949888
+2016-06-09 11:01:12.434047
 abaas
-Broke something on accident. Fixed???
+Changed a lot of stuff. Verifying that the CR log looks good
 
 0x19
+UniqueID
+00:00:00:ea:bf:8a
 Temp
-26.896
+26.885
 Humi
-35.943
+35.813
 Herm
-77 82 69 72
+HERM
 Brdg
-103 100 114 66
+Brdg
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 
 0x1a
+UniqueID
+00:00:00:ea:b7:36
 Temp
-28.151
+28.269
 Humi
-33.944
+33.6
 Herm
-77 82 69 72
+HERM
 Brdg
-103 100 114 66
+Brdg
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 
 0x1b
+UniqueID
+00:00:00:ea:9d:ec
 Temp
-29.802
+29.995
 Humi
-32.357
+31.937
 Herm
-77 82 69 72
+HERM
 Brdg
-103 100 114 66
+Brdg
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 
 0x1c
+UniqueID
+00:00:00:ea:b9:60
 Temp
-30.242
+30.542
 Humi
-29.679
+29.107
 Herm
-77 82 69 72
+HERM
 Brdg
-103 100 114 66
+Brdg
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 

@@ -1,68 +1,76 @@
-2016-06-09 09:31:57.931040
+2016-06-10 09:25:16.578827
 shogan
 
 
 0x19
+UniqueID
+00:00:00:ea:bf:8a
 Temp
-26.864
+29.481
 Humi
-35.012
+41.527
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+PASS
 
 0x1a
+UniqueID
+00:00:00:ea:b7:36
 Temp
-28.151
+30.574
 Humi
-32.944
+39.467
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+PASS
 
 0x1b
+UniqueID
+00:00:00:ea:9d:ec
 Temp
-29.792
+31.99
 Humi
-31.395
+37.85
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+PASS
 
 0x1c
+UniqueID
+00:00:00:ea:b9:60
 Temp
-30.285
+32.623
 Humi
--3.829
+35.37
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+PASS
 

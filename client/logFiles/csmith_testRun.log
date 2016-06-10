@@ -1,64 +1,76 @@
-2016-06-09 09:01:16.487335
+2016-06-09 11:03:09.792803
 csmith
-Testing test log
+pass/fail stuff
 
+0x19
+UniqueID
+00:00:00:ea:bf:8a
 Temp
-26.96
+26.971
 Humi
-34.142
+35.813
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 
+0x1a
+UniqueID
+00:00:00:ea:b7:36
 Temp
-28.59
+28.215
 Humi
-31.365
+33.845
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 
+0x1b
+UniqueID
+00:00:00:ea:9d:ec
 Temp
-30.607
+29.877
 Humi
-29.48
+32.258
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 
+0x1c
+UniqueID
+00:00:00:ea:b9:60
 Temp
-30.66
+30.467
 Humi
-27.566
+29.374
 Herm
-77 82 69 72
+PASS
 Brdg
-103 100 114 66
+PASS
 Ones
-255 255 255 255
+PASS
 Zero
-0 0 0 0
+PASS
 Fver
-0 0 11 1
+1 11 0 0
 
