@@ -76,6 +76,7 @@ def vttx1RWR(rm, slot):
     #### READ
     #read from vttx1 to check if it worked
     read2 = vttx1read(rm,slot)
+    b.sendBatch()
 
     if (read1 == read2):
         return "PASS!"
