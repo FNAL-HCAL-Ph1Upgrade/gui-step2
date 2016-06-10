@@ -116,7 +116,8 @@ def statusReg(desiredReg = "all"):
 
 
 openIgloo(0,0)
-print "FPGA Major Version: " + fpgaMajVer()
+print "Zeros: " + zeros()
+#print "FPGA Major Version: " + fpgaMajVer()
 #print statusReg()
 
 
