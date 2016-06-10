@@ -85,14 +85,14 @@ def statusReg(desiredReg = "all"):
     b.write(0x09, [0x10])
     b.read(0x09,4)
     reg = b.sendBatch()[1]
-
-  #  return "Reg = " + reg
-
+    
     #split up the 32 bits into their appropriate status chunks:
     #10-bit InputSpyWordNum, InputSpyFifoEmpty, InputSpyFifoFull,
     #Qie_DLLNoLock[12:1], BRIDGE_SPARE[5:0], 1-bit 0, PLL 320MHz Lock
     
     regBin = strToBin(reg)
+    
+    return regBin
 
     '''
     regBinDict = {
@@ -120,7 +120,7 @@ openIgloo(0,0)
 print statusReg()
 
 #print "FPGA Major Version: " + fpgaMajVer()
-print statusReg()
+print "RegBin: " + statusReg()
 
 
 ##########################
