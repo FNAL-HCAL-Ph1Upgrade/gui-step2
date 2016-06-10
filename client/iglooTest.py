@@ -24,11 +24,11 @@ def openIgloo(rm,slot):
 ##################################
 def readFPGAVersion():
     #openIgloo should already be called before this
-    b.write(0x09,0x00)
+    b.write(0x09,[0x00])
     b.read(0x09,8) # "fpga major version"
     majVer = b.sendBatch()[1]
 
-    b.write(0x09,0x01)
+    b.write(0x09,[0x01])
     b.read(0x09,8) # "fpga minor verison"
     minVer = b.sendBatch()[1]
 
