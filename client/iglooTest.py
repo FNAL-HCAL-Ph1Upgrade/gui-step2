@@ -38,7 +38,9 @@ def fpgaMajVer(): # "fpga major version"
     b.write(0x09,[0x00])
     b.read(0x09,1)
     majVer = b.sendBatch()[1]
+    print "majVer: " + majVer
     majVer = hex(int(majVer))[2:0]
+    print "majVer in hex: " + majVer
     return majVer
 
 # Register byte 0x01 (RO)
