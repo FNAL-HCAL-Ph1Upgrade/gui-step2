@@ -22,7 +22,9 @@ class qieCard:
 		self.firmwareVer = ""
 
 		# Test results
-		self.passedHerm = False
-		self.passedBrdg = False
-		self.passedOnes = False
-		self.passedZero = False
+		self.passedTemp  = False
+		self.passedHumid = False
+		self.passedHerm  = False
+		self.passedBrdg  = False
+		self.passedOnes  = False
+		self.passedZero  = False

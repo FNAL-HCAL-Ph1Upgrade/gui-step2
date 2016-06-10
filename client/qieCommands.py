@@ -8,133 +8,161 @@ import json
 from datetime import datetime
 from qieCardClass import qieCard
 
-def jdefault(o):
-	return o.__dict__
+class qieCommands:
 
-def hermTest(register):
-	b = webBus("pi5")
-	b.write(register,[0x00])
-	b.read(register, 4)
-	outString = b.sendBatch()[1]
-	if (testLib.toASCII(outString) == "HERM"):
-		return True
-	else:
-		return False
+	def __init__(self):	
+		self.humiStore = -99.0
+		self.tempStore = -99.0
+		self.passesTemp = False
+		self.passesHumi = False
+
+	def jdefault(self,o):
+		return o.__dict__
+
+	def hermTest(self,register):
+		b = webBus("pi5")
+		b.write(register,[0x00])
+		b.read(register, 4)
+		outString = b.sendBatch()[1]
+		outString = testLib.reverseBytes(outString)
+		if (testLib.toASCII(outString) == "HERM"):
+			return True
+		else:
+			return False
+			
+	def brdgTest(self,register):
+		b = webBus("pi5")
+		b.write(register,[0x01])
+		b.read(register, 4)
+		outString = b.sendBatch()[1]
+		outString = testLib.reverseBytes(outString)
+		if (testLib.toASCII(outString) == "Brdg"):
+			return True
+		else:
+			return False
+
+	def tff_Test(self,register):
+		b = webBus("pi5")
+		b.write(register,[0x08])
+		b.read(register, 4)
+		if (b.sendBatch()[1] == "255 255 255 255"):
+			return  True
+		else:
+			return False
+
+	def zeroTest(self,register):
+		b = webBus("pi5")
+		b.write(register,[0x09])
+		b.read(register, 4)
+		if (b.sendBatch()[1] == "0 0 0 0"):
+			return True
+		else:
+			return False
 		
-def brdgTest(register):
-	b = webBus("pi5")
-	b.write(register,[0x01])
-	b.read(register, 4)
-	outString = b.sendBatch()[1]
-	if (testLib.toASCII(outString) == "Brdg"):
-		return True
-	else:
-		return False
+	def fwVerTest(self,register):
+		b = webBus("pi5")
+		b.write(register,[0x04])
+		b.read(register, 4)
+		outString = b.sendBatch()[1]
+		outString = testLib.reverseBytes(outString)
 
-def tff_Test(register):
-	b = webBus("pi5")
-	b.write(register,[0x08])
-	b.read(register, 4)
-	if (b.sendBatch()[1] == "255 255 255 255"):
-		return  True
-	else:
-		return False
+	def statusCheck(self,register):
+		b = webBus("pi5")
+		b.write(register,[0x10])
+		b.read(register, 4)
+		return b.sendBatch()[1]
 
-def zeroTest(register):
-	b = webBus("pi5")
-	b.write(register,[0x09])
-	b.read(register, 4)
-	if (b.sendBatch()[1] == "0 0 0 0"):
-		return True
-	else:
-		return False
-	
-def fwVerTest(register):
-	b = webBus("pi5")
-	b.write(register,[0x04])
-	b.read(register, 4)
-	return b.sendBatch()[1]
+	def sensorTemp(self,rm,qieCard):    # Thanks, Adryanna!
+		b = webBus("pi5")
+		b.write(0x00,[0x06])
+		b.write(qieCard,[0x11,0x05,0,0,0])
+		b.write(0x40,[0xf3])
+		b.sleep(300)
+		b.read(0x40,2)
 
-def statusCheck(register):
-	b = webBus("pi5")
-	b.write(register,[0x10])
-	b.read(register, 4)
-	return b.sendBatch()[1]
+		bigData = b.sendBatch()
+		data = bigData[4]
+		data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
+		#Converting the temperature using equation
+		temp = (-46.85) +175.72*(data)/(2**16)
+		self.tempStore = round(temp,3)
+		print self.tempStore
 
-def sensorTemp(rm,qieCard):    # Thanks, Adryanna!
-	b = webBus("pi5")
-	b.write(0x00,[0x06])
-	b.write(qieCard,[0x11,0x05,0,0,0])
-	b.write(0x40,[0xf3])
-	b.read(0x40,2)
+	def sensorHumid(self,rm,qieCard):  # Thanks, Adryanna!
+		b = webBus("pi5")
+		b.write(0x00,[0x06])
+		b.write(qieCard,[0x11,0x05,0,0,0])
+		b.write(0x40,[0xf5])
+		b.sleep(300)
+		b.read(0x40,2)
 
-	bigData = b.sendBatch()
-	data = bigData[3]
-	data = testLib.reverseBytes(data)
-	data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
-	#Converting the temperature using equation
-	temp = (-46.85) +175.72*(data)/(2**16)
-	temp = round(temp,3)
-	return temp
+		bigData = b.sendBatch()
+		data = bigData[4]
+		data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
+		#Converting the humidity using equation
+		humid = -6 + 125.0*(data)/(2**16)
+		self.humiStore = round(humid,3)
+		print self.humiStore
 
-def sensorHumid(rm,qieCard):  # Thanks, Adryanna!
-	b = webBus("pi5")
-	b.write(0x00,[0x06])
-	b.write(qieCard,[0x11,0x05,0,0,0])
-	b.write(0x40,[0xf5])
-	b.read(0x40,2)
+	def getUniqueID(self,rm, qieCard):  # Thanks, Caleb!
+		b = webBus("pi5")
+		b.write(0x00,[0x06])
+		b.write(qieCard,[0x11,0x04,0,0,0])
+		b.write(0x50,[0x00])
+		b.read(0x50,8)
+		raw_bus = b.sendBatch()
+		cooked_bus = testLib.reverseBytes(raw_bus[-1])
+		cooked_bus = testLib.serialNum(cooked_bus)
+		return(testLib.toHex(cooked_bus))
 
-	data = b.sendBatch()[3]
-	data = testLib.reverseBytes(data)
-	data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
-	#Converting the humidity using equation
-	humid = -6 + 125.0*(data)/(2**16)
-	humid = round(humid,3)
-	return humid
+	def temperatureTest(self):
+		if (self.tempStore < 45 and self.tempStore > 10):
+			self.passesTemp = True
+		else:
+			self.passesTemp = False
 
-def getUniqueID(rm, qieCard):  # Thanks, Caleb!
-	b = webBus("pi5")
-	b.write(0x00,[0x06])
-	b.write(qieCard,[0x11,0x04,0,0,0])
-	b.write(0x50,[0x00])
-	b.read(0x50,8)
-	raw_bus = b.sendBatch()
-	cooked_bus = testLib.serialNum(raw_bus[-1])
-	return(testLib.toHex(cooked_bus))
-	
-def runSuite(register, inFile):
-	# HUMAN-READABLE FORMAT
-	# The weird parts of the following print statement
-	# allow us to print colored font to the terminal.
-	# Feel free to remove the colored font if it doesn't work.
-	inFile.write("\nQIE Card being tested: "+str(hex(register)))
-	inFile.write("\nUnique ID:  "+ str(getUniqueID(0,register)))
-	inFile.write("\nHerm test:  "+ str(hermTest(register)))
-	inFile.write("\nBrdg test:  "+ str(brdgTest(register)))
-	inFile.write("\nOnes Register:  "+ str(tff_Test(register)))
-	inFile.write("\nZero Register:  "+ str(zeroTest(register)))
-	inFile.write("\nFirmware Ver.:  "+ str(fwVerTest(register)))
-	inFile.write("\nTemperature: "   + str(sensorTemp(0,register))+" C")
-	inFile.write("\nHumidity: "      + str(sensorHumid(0,register)))
-	inFile.write("\nOverall Status: "+ statusCheck(register))
-	inFile.write("\n\nTests for "+str(hex(register))+" complete.")
+	def humidityTest(self):
+		if (self.humiStore < 50 and self.humiStore > 0):
+			self.passesHumi = True
+		else:
+			self.passesHumi = False
+		 
+		
+	def runSuiteCompForm(self,register, jsonFile, tester, logFile):
+		# COMPUTER-PARSING FORMAT
+		self.activeCard = qieCard()
+		self.activeCard.timeOfTest = str(datetime.now())
+		self.activeCard.tester = tester
+		self.activeCard.i2cAddress = str(hex(register))
+		self.activeCard.uniqueID = str(self.getUniqueID(0,register))
+		self.sensorTemp(0,register)
+		self.sensorHumid(0,register)
+		self.activeCard.temperature = self.tempStore
+		self.activeCard.humidity = self.humiStore
+		self.temperatureTest()
+		self.humidityTest()
+		self.activeCard.passedTemp = self.passesTemp
+		self.activeCard.passedHumid = self.passesHumi
+		self.activeCard.firmwareVer = str(self.fwVerTest(register))
+		self.activeCard.passedHerm = self.hermTest(register)
+		self.activeCard.passedBrdg = self.brdgTest(register)
+		self.activeCard.passedOnes = self.tff_Test(register)
+		self.activeCard.passedZero = self.zeroTest(register)
 
-def runSuiteCompForm(register, inFile, tester):
-	# COMPUTER-PARSING FORMAT
-	activeCard = qieCard()
-	activeCard.timeOfTest = str(datetime.now())
-	activeCard.tester = tester
-	activeCard.i2cAddress = str(hex(register))
-	activeCard.uniqueID = str(getUniqueID(0,register))
-	activeCard.temperature = sensorTemp(0,register)
-	activeCard.humidity = sensorHumid(0,register)
-	activeCard.firmwareVer = str(fwVerTest(register))
-	activeCard.passedHerm = hermTest(register)
-	activeCard.passedBrdg = brdgTest(register)
-	activeCard.passedOnes = tff_Test(register)
-	activeCard.passedZero = zeroTest(register)
-	json.dump(activeCard, inFile, default=jdefault)
+		logFile.write("\nQIE Card being tested: "+str(hex(register)))
+		logFile.write("\nUnique ID:  "+ str(self.activeCard.uniqueID))
+		logFile.write("\nHerm test:  "+ str(self.activeCard.passedHerm))
+		logFile.write("\nBrdg test:  "+ str(self.activeCard.passedBrdg))
+		logFile.write("\nOnes Register:  "+ str(self.activeCard.passedOnes))
+		logFile.write("\nZero Register:  "+ str(self.activeCard.passedZero))
+		logFile.write("\nFirmware Ver.:  "+ self.activeCard.firmwareVer)
+		logFile.write("\nTemperature: "   + str(self.activeCard.temperature))
+		logFile.write("\nPasses Temp: "   + str(self.passesTemp))
+		logFile.write("\nPasses Humi: "   + str(self.passesHumi))
+		logFile.write("\nHumidity: "      + str(self.activeCard.humidity))
+		logFile.write("\n\nTests for "+str(hex(register))+" complete.")
 
-def runCompleteSuite(register,humanFile,machineFile,inTester):
-	runSuite(register,humanFile)
-	runSuiteCompForm(register,machineFile,inTester)
+		json.dump(self.activeCard, jsonFile, default=self.jdefault)
+
+	def runCompleteSuite(self,register,humanFile,jsonFile,inTester,logFile):
+		self.runSuiteCompForm(register,jsonFile,inTester,logFile)

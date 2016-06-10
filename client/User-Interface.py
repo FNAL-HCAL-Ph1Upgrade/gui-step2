@@ -9,11 +9,14 @@
 
 from Tkinter import *
 from client import webBus
-import qieCommands
+from qieCommands import qieCommands
 from datetime import datetime
 
 class makeGui:
 	def __init__(self, parent):
+	
+		# Instantiate a qieCommands class member
+		self.myCommands = qieCommands()
 
 		# Instantiate a webBus member:
 		self.gb = webBus("pi5")		
@@ -664,7 +667,7 @@ class makeGui:
 #		machineFile.write(dateString+"\n")
 #		machineFile.write(self.nameChoiceVar.get()+"\n")
 #		machineFile.write(self.infoCommentVar.get()+"\n\n")
-		qieCommands.runCompleteSuite(card,humanFile,machineFile,self.nameChoiceVar.get())	
+		self.myCommands.runCompleteSuite(card,humanFile,machineFile,self.nameChoiceVar.get(),humanFile)	
 
 # These next few lines call the class and display the window
 # on the computer screen
