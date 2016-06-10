@@ -104,7 +104,7 @@ def statusReg(desiredReg = "all"):
     if desiredReg == "all":
         return allRegBin
     else:
-        return desiredReg " : " + regBinDict[desiredReg]
+        return desiredReg + " = " + regBinDict[desiredReg]
 
 
 
