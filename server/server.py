@@ -40,9 +40,10 @@ def logerror(severity, e):
 #address is an int (hex is helpful)
 #returns a list of length numbytes
 def read(address, numbytes):
-    values = bus.i2c_read(address, numbytes).reverse()
-    return ' '.join([str(i) for i in values])
-
+    values = bus.i2c_read(address, numbytes)
+    t = ' '.join([str(i) for i in values]).split()
+    t.reverse()
+    return ' '.join(t)
 #address is an int (hex is helpful)
 #bytearray is a list of bytes to be written
 def write(address, byteArray):
