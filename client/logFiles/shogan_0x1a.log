@@ -1,0 +1,16 @@
+Test performed by: shogan
+Time of testing: 2016-06-10 13:57:31.539806
+Testing comment(s):
+
+QIE Card being tested: 0x1a
+Unique ID:  00:00:00:ea:b7:36
+Herm test:  True
+Brdg test:  True
+Ones Register:  True
+Zero Register:  True
+Firmware Ver.:  1 11 0 0
+Temperature: 42.211 C
+Humidity: 17.8
+Overall Status: 0 0 0 2
+
+Tests for 0x1a complete.

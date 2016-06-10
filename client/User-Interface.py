@@ -651,8 +651,8 @@ class makeGui:
 	def runTestSuite(self):
 		#ONCE IT'S TIME TO TEST OTHER READOUT MODULES, MAKE THE APPROPRIATE CHANGES HERE
 		for card in (0x19,0x1a,0x1b,0x1c):
-			with open(self.nameChoiceVar.get()+"_"+str(hex(card))+"_readableLog.log", 'w') as humanFile:
-				with open(self.nameChoiceVar.get()+"_"+str(hex(card))+"_machineLog.log", 'w') as machineFile:
+			with open(self.nameChoiceVar.get()+"_"+str(hex(card))+".log", 'w') as humanFile:
+				with open(self.nameChoiceVar.get()+"_"+str(hex(card))+"_raw.json", 'w') as machineFile:
 					self.runTestSuiteHelper(card,humanFile,machineFile)
 		print "\nSuite Completed! Thank you! (:"
 
@@ -661,10 +661,10 @@ class makeGui:
 		humanFile.write("Test performed by: "+self.nameChoiceVar.get())
 		humanFile.write("\nTime of testing: "+dateString)
 		humanFile.write("\nTesting comment(s):"+self.infoCommentVar.get()+"\n")
-		machineFile.write(dateString+"\n")
-		machineFile.write(self.nameChoiceVar.get()+"\n")
-		machineFile.write(self.infoCommentVar.get()+"\n\n")
-		qieCommands.runCompleteSuite(card,humanFile,machineFile)	
+#		machineFile.write(dateString+"\n")
+#		machineFile.write(self.nameChoiceVar.get()+"\n")
+#		machineFile.write(self.infoCommentVar.get()+"\n\n")
+		qieCommands.runCompleteSuite(card,humanFile,machineFile,self.nameChoiceVar.get())	
 
 # These next few lines call the class and display the window
 # on the computer screen

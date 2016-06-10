@@ -4,6 +4,12 @@
 from client import webBus
 import QIELib
 import testLib
+import json
+from datetime import datetime
+from qieCardClass import qieCard
+
+def jdefault(o):
+	return o.__dict__
 
 def hermTest(register):
 	b = webBus("pi5")
@@ -11,9 +17,9 @@ def hermTest(register):
 	b.read(register, 4)
 	outString = b.sendBatch()[1]
 	if (testLib.toASCII(outString) == "HERM"):
-		return "PASS"
+		return True
 	else:
-		return "FAIL"
+		return False
 		
 def brdgTest(register):
 	b = webBus("pi5")
@@ -21,27 +27,27 @@ def brdgTest(register):
 	b.read(register, 4)
 	outString = b.sendBatch()[1]
 	if (testLib.toASCII(outString) == "Brdg"):
-		return "PASS"
+		return True
 	else:
-		return "FAIL"
+		return False
 
 def tff_Test(register):
 	b = webBus("pi5")
 	b.write(register,[0x08])
 	b.read(register, 4)
 	if (b.sendBatch()[1] == "255 255 255 255"):
-		return "PASS"
+		return  True
 	else:
-		return "FAIL"
+		return False
 
 def zeroTest(register):
 	b = webBus("pi5")
 	b.write(register,[0x09])
 	b.read(register, 4)
 	if (b.sendBatch()[1] == "0 0 0 0"):
-		return "PASS"
+		return True
 	else:
-		return "FAIL"
+		return False
 	
 def fwVerTest(register):
 	b = webBus("pi5")
@@ -103,39 +109,53 @@ def runSuite(register, inFile):
 	# Feel free to remove the colored font if it doesn't work.
 	inFile.write("\nQIE Card being tested: "+str(hex(register)))
 	inFile.write("\nUnique ID:  "+ str(getUniqueID(0,register)))
-	inFile.write("\nHerm test:  "+ hermTest(register))
-	inFile.write("\nBrdg test:  "+ brdgTest(register))
-	inFile.write("\nOnes Register:  "+ tff_Test(register))
-	inFile.write("\nZero Register:  "+ zeroTest(register))
-	inFile.write("\nFirmware Ver.:  "+ fwVerTest(register))
+	inFile.write("\nHerm test:  "+ str(hermTest(register)))
+	inFile.write("\nBrdg test:  "+ str(brdgTest(register)))
+	inFile.write("\nOnes Register:  "+ str(tff_Test(register)))
+	inFile.write("\nZero Register:  "+ str(zeroTest(register)))
+	inFile.write("\nFirmware Ver.:  "+ str(fwVerTest(register)))
 	inFile.write("\nTemperature: "   + str(sensorTemp(0,register))+" C")
 	inFile.write("\nHumidity: "      + str(sensorHumid(0,register)))
 	inFile.write("\nOverall Status: "+ statusCheck(register))
 	inFile.write("\n\nTests for "+str(hex(register))+" complete.")
 
-def runSuiteCompForm(register, inFile):
+def runSuiteCompForm(register, inFile, tester):
 	# COMPUTER-PARSING FORMAT
-	inFile.write(str(hex(register))+"\n")
-	inFile.write("UniqueID\n")
-	inFile.write(str(getUniqueID(0,register))+"\n")
-	inFile.write("Temp\n")
-	inFile.write(str(sensorTemp(0,register))+"\n")
-	inFile.write("Humi\n")
-	inFile.write(str(sensorHumid(0,register))+"\n")
-	inFile.write("Herm\n")
-	inFile.write(str(hermTest(register))+"\n")
-	inFile.write("Brdg\n")
-	inFile.write(str(brdgTest(register))+"\n")
-	inFile.write("Ones\n")
-	inFile.write(str(tff_Test(register))+"\n")
-	inFile.write("Zero\n")
-	inFile.write(str(zeroTest(register))+"\n")
-	inFile.write("Fver\n")
-	if str(fwVerTest(register) == "1 11 0 0"):
-		inFile.write("PASS\n")
-	else:
-		inFile.write("FAIL\n")
+	activeCard = qieCard()
+	activeCard.timeOfTest = str(datetime.now())
+	activeCard.tester = tester
+	activeCard.comment = "No comment."
+	activeCard.i2cAddress = str(hex(register))
+	activeCard.uniqueID = str(getUniqueID(0,register))
+	activeCard.temperature = sensorTemp(0,register)
+	activeCard.humidity = sensorHumid(0,register)
+	activeCard.firmwareVer = str(fwVerTest(register))
+	activeCard.passedHerm = hermTest(register)
+	activeCard.passedBrdg = brdgTest(register)
+	activeCard.passedOnes = tff_Test(register)
+	activeCard.passedZero = zeroTest(register)
+	json.dump(activeCard, inFile, default=jdefault)
+#	inFile.write(str(hex(register))+"\n")
+#	inFile.write("UniqueID\n")
+#	inFile.write(str(getUniqueID(0,register))+"\n")
+#	inFile.write("Temp\n")
+#	inFile.write(str(sensorTemp(0,register))+"\n")
+#	inFile.write("Humi\n")
+#	inFile.write(str(sensorHumid(0,register))+"\n")
+#	inFile.write("Herm\n")
+#	inFile.write(str(hermTest(register))+"\n")
+#	inFile.write("Brdg\n")
+#	inFile.write(str(brdgTest(register))+"\n")
+#	inFile.write("Ones\n")
+#	inFile.write(str(tff_Test(register))+"\n")
+#	inFile.write("Zero\n")
+#	inFile.write(str(zeroTest(register))+"\n")
+#	inFile.write("Fver\n")
+#	if str(fwVerTest(register) == "1 11 0 0"):
+#		inFile.write("PASS\n")
+#	else:
+#		inFile.write("FAIL\n")
 
-def runCompleteSuite(register,humanFile,machineFile):
+def runCompleteSuite(register,humanFile,machineFile,inTester):
 	runSuite(register,humanFile)
-	runSuiteCompForm(register,machineFile)
+	runSuiteCompForm(register,machineFile,inTester)

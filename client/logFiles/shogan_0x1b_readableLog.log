@@ -1,6 +1,6 @@
 Test performed by: shogan
-Time of testing: 2016-06-10 11:21:18.143600
-Testing comment(s):More
+Time of testing: 2016-06-10 13:19:03.096133
+Testing comment(s):burnt smell?
 
 QIE Card being tested: 0x1b
 Unique ID:  00:00:00:ea:9d:ec
@@ -9,7 +9,8 @@ Brdg test:  PASS
 Ones Register:  PASS
 Zero Register:  PASS
 Firmware Ver.:  1 11 0 0
-Temperature: 31.003 C
-Humidity: 38.338
-Overall Status: 3 0 0 0
+Temperature: 29.631 C
+Humidity: 34.867
+Overall Status: 0 0 0 3
+
 Tests for 0x1b complete.
