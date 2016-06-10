@@ -85,7 +85,7 @@ def vttx1RWR(rm, slot):
 
 
 
-print "From RWR of vttx1: " +vttx1RWR(0,0)
+print "From RWR of vttx1: " + vttx1RWR(0,0)
 
 
 
