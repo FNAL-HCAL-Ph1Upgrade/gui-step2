@@ -40,7 +40,7 @@ def logerror(severity, e):
 #address is an int (hex is helpful)
 #returns a list of length numbytes
 def read(address, numbytes):
-    values = bus.i2c_read(address, numbytes)
+    values = bus.i2c_read(address, numbytes).reverse()
     return ' '.join([str(i) for i in values])
 
 #address is an int (hex is helpful)
@@ -50,7 +50,7 @@ def write(address, byteArray):
 
 #Waits a given number of microseconds
 def sleep(n):
-    bus.wait(n)
+    bus.wait(int(n))
 
 def parseMessage(m):
     message = m.split()
