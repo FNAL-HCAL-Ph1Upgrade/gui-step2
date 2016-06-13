@@ -117,7 +117,7 @@ def vttx2RWR(card, b):
 
     # if read1 matches read2, then write was successful -- print register
     if (read1 == read2):
-        return "Pass, Reg = " + strToHex(read2)
+        return "Pass " + strToHex(read2)
     else:
         return "Fail"
 

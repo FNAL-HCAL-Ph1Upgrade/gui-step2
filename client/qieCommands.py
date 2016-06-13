@@ -79,7 +79,7 @@ class qieCommands:
 		self.b.write(0x00,[0x06])
 		self.b.write(qieCard,[0x11,0x05,0,0,0])
 		self.b.write(0x40,[0xf3])
-		self.b.sleep(300)
+		self.b.sleep(500)
 		self.b.read(0x40,2)
 
 		bigData = self.b.sendBatch()
@@ -95,7 +95,7 @@ class qieCommands:
 		self.b.write(0x00,[0x06])
 		self.b.write(qieCard,[0x11,0x05,0,0,0])
 		self.b.write(0x40,[0xf5])
-		self.b.sleep(300)
+		self.b.sleep(500)
 		self.b.read(0x40,2)
 
 		bigData = self.b.sendBatch()
