@@ -4,11 +4,11 @@ b = webBus("pi5")
 q = QIELib
 
 # helpful string to hex list
-def strToBin(string):
+def strToHex(string):
         catBinary = ""
         j=0
         for i in string.split():
-                catBinary = catBinary + bin(int(string.split()[j]))[2:]
+                catBinary = catBinary + hex(int(string.split()[j]))[2:]
                 print "j = " + str(j) + ",  catBinary = " + catBinary
                 j = j + 1
         return catBinary
@@ -83,7 +83,7 @@ def vttx1RWR(rm, slot):
     read2 = b.sendBatch()[1]
 
     if (read1 == read2):
-        return "Pass, Reg = " + read2
+        return "Pass, Reg = " + strToHex(read2)
     else:
         return "Fail"
 
@@ -109,7 +109,7 @@ def vttx2RWR(rm, slot):
     read2 = b.sendBatch()[1]
 
     if (read1 == read2):
-        return "Pass, Reg = " + read2
+        return "Pass, Reg = " + strToHex(read2)
     else:
         return "Fail"
 
