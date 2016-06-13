@@ -8,8 +8,7 @@ def strToHex(string):
         catBinary = ""
         j=0
         for i in string.split():
-                catBinary = catBinary + hex(int(string.split()[j]))[2:]
-                print "j = " + str(j) + ",  catBinary = " + catBinary
+                catBinary = catBinary + " " + hex(int(string.split()[j]))[2:]
                 j = j + 1
         return catBinary
 
