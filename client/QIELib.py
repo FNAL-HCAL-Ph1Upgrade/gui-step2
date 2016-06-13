@@ -3,6 +3,9 @@
 #QIELib.py
 #Library of tables, functions, and classes for working with QIE11 test stands
 
+
+shiftRegisterAddresses = [0x30, 0x31]
+
 #Bit to write to mux for given twisted pair i2c
 i2cGroups = {
     1 : 0x04,
@@ -17,32 +20,31 @@ i2cGroups = {
             }
 RMs = {
     4 : {
-        "slots" : ["J2", "J3", "J4", "J5"],
-        "sipm" : "J1",
+        "slots" : [2,3,4,5],
+        "sipm" : 1,
         "slotGroup" : 2,
         "sipmGroup" : 1
         },
     3 : {
-        "slots" : ["J7", "J8", "J9", "J10"],
-        "sipm" : "J6",
+        "slots" : [7,8,9,10],
+        "sipm" : 6,
         "slotGroup" : 4,
         "sipmGroup" : 3
         },
     2 : {
-        "slots" : ["J18", "J19", "J20", "J21"],
-        "sipm" : "J17",
+        "slots" : [18,19,20,21],
+        "sipm" : 17,
         "slotGroup" : 7,
         "sipmGroup" : 6
         },
     1 : {
-        "slots" : ["J23", "J24", "J25", "J26"],
-        "sipm" : "J22",
+        "slots" : [23,24,25,26],
+        "sipm" : 22,
         "slotGroup" : 9,
         "sipmGroup" : 8
         }
       }
 
-#For higher J, subtract 5
 JSlots = {
     1  : 0x18,
     2  : 0x19,
@@ -89,52 +91,101 @@ serialShiftRegisterBits = OrderedDict(
     ("PhaseDelay", [57, 58, 59, 60, 61, 62, 63])]
     )
 
-def getBits(decimal):
-    return list('%05d' % int(bin(decimal)[2:]))
+def getBitsFromByte(decimal):
+    return list('%08d' % int(bin(decimal)[2:]))
 
-class RM:
-    def __init__(self, rmNum):
-        self.sipm = RMs[rmNum]["sipm"]
-        self.slots = RMs[rmNum]["slots"]
-        self.cards = []
-        for i in slots:
-            self.cards.append(qCard(JSlots[int(i[1:])]))
+def getBitsFromBytes(decimalBytes):
+    ret = []
+    for i in decimalBytes:
+        ret = ret + getBitsFromByte(i)
+    return ret
 
+def getByteFromBits(bitList):
+    return int(''.join(bitList), 2)
+def getBytesFromBits(bitList):
+    ret = []
+    for i in xrange(len(bitList)/8):
+        ret.append(getByteFromBits(bitList[i * 8: (i + 1) * 8]))
+    return ret
+
+
+# class RM:
+#     def __init__(self, rmNum):
+#         self.sipm = RMs[rmNum]["sipm"]
+#         self.slots = RMs[rmNum]["slots"]
+#         self.cards = []
+#         for i in slots:
+#             self.cards.append(qCard(JSlots[i]))
+#     def readIn(self):
+#         for c in self.cards:
+#             c.readIn()
+#
 
 ################################################################################
 # qCard Class
 ################################################################################
 class qCard:
-    def __init__(self, address):
+    def __init__(self, bus, address):
         self.address = address
         self.shiftRegisters = []
-        for i in range(2):
-            self.shiftRegisters.append(shiftRegister())
+        self.readIn(bus)
     def __repr__(self):
         return "qCard()"
+
+    def __str__(self):
+        s = ""
+        for i in self.shiftRegisters:
+            s += str(i)
+        return s
+    def readIn(self, bus):
+        for r in shiftRegisterAddresses:
+            b = readFromRegister(bus, self.address, r, 48)
+            self.shiftRegisters.append(QIEshiftRegister(getBitsFromBytes(b)))
+    def writeOut(self, bus):
+        for i in range(2):
+            writeToRegister(bus, self.address, shiftRegisterAddresses[i],\
+            getBytesFromBits(self.shiftRegisters[i].flatten()))
 ################################################################################
 
+def readFromRegister(bus, address, register, numBytes):
+    bus.write(address, [register])
+    bus.read(address, numBytes)
+    ret = []
+    for i in bus.sendBatch()[1].split():
+        ret.append(int(i))
+    return ret
+def writeToRegister(bus, address, register, bytesToWrite):
+    bus.write(address, [register] + list(bytesToWrite))
+    return None
 
 ################################################################################
-# shiftRegister Class
+# QIEshiftRegister Class
 ################################################################################
-class shiftRegister:
+class QIEshiftRegister:
     def __init__(self, arr = list(0 for i in xrange(64 * 6))):
         '''creates a shift register object with 6 QIEs, default 0s'''
         self.QIEs = []
-        for i in range(6):
-            self.QIEs.append(QIE(arr[i*63:i*63 + 64]))
+        for i in xrange(6):
+            self.QIEs.append(QIE(arr[i * 64:(i + 1) * 64]))
+
 
     def __repr__(self):
-        return "shiftRegister"
+        return "shiftRegister()"
 
+    def __str__(self):
+        r = ""
+        for q in self.QIEs:
+            r += "-------\n"
+            r += str(q)
+            r += "\n"
+            r += "-------\n"
+        return r
     #returns a flattened array of all QIE register bits to be written as a block
     def flatten(self):
         '''flatten all of the bits in the register's QIEs to one list'''
         a = []
         for q in self.QIEs:
-            for b in q.arr:
-                a.append(b)
+            a += q.flatten()
         return a
 ################################################################################
 
@@ -164,7 +215,7 @@ class QIE:
     def flatten(self):
         return list(self.arr)
     def load(self, arrayOfBits):
-        self.arr = list(arrayOfBits)
+        self.arr = arrayOfBits
     ############################################################################
 
 
