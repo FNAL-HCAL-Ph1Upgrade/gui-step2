@@ -1,9 +1,12 @@
-# This is a file that contains some basic checks to run
-# On QIE cards
+# This is the meat behind the testing suite. It is a culmination
+# of everybody's individual codes. The main function of this code
+# is to generate log functions regarding the tests being
+# conducted.
 
 from client import webBus
 import QIELib
 import testLib
+import iglooTest
 import json
 import bridge_test
 import vttxTest
@@ -140,6 +143,7 @@ class qieCommands:
 
 		resultsString = bridge_test.basicTests(register,27)
 		
+		# Information coming from the bridge tests
 		self.activeCard = qieCard()
 		self.activeCard.timeOfTest = str(datetime.now())
 		#self.activeCard.tester = tester
@@ -159,8 +163,6 @@ class qieCommands:
 		self.activeCard.passedOnes = self.tff_Test(register)
 		self.activeCard.passedZero = self.zeroTest(register)
 		self.testVttx(register,self.b)
-		self.activeCard.vttx1Result = self.vttx1Result
-		self.activeCard.vttx2Result = self.vttx2Result
 		self.activeCard.thermOneWire = resultsString[26]
 		self.activeCard.qieDaisyChn1 = resultsString[25]
 		self.activeCard.qieDaisyChn0 = resultsString[24]
@@ -181,6 +183,33 @@ class qieCommands:
 		self.activeCard.clockCounter = resultsString[9]
 		self.activeCard.scratch = resultsString[6]
 		self.activeCard.onesZeros = resultsString[5]
+
+		# Information coming from vtxxResults
+		self.activeCard.vttx1Result = self.vttx1Result
+		self.activeCard.vttx2Result = self.vttx2Result
+
+		# Information coming from igloo 
+		iglooTest.openIgloo(register)	
+		self.activeCard.igloo_fpgaMajVer = iglooTest.fpgaMajVer()
+		self.activeCard.igloo_fpgaMinVer = iglooTest.fpgaMinVer()
+		self.activeCard.igloo_onesRegist = iglooTest.ones()
+		self.activeCard.igloo_zeroRegist = iglooTest.zeros()
+		self.activeCard.igloo_FPGAtopBot = iglooTest.FPGATopOrBottom()
+		self.activeCard.igloo_uniqueID   = iglooTest.uniqueID()
+		self.activeCard.igloo_statusReg  = iglooTest.statusReg()
+		self.activeCard.igloo_cnterReg   = iglooTest.cntrReg()
+		self.activeCard.igloo_clockCount = iglooTest.clk_count()
+		self.activeCard.igloo_qieResetCount = iglooTest.rst_QIE_count()
+		self.activeCard.igloo_wteCounter    = iglooTest.wte_count()
+		self.activeCard.igloo_capIdErrorCnt = iglooTest.capIDErr_count()
+		self.activeCard.igloo_fifoData      = iglooTest.fifo_data()
+		self.activeCard.igloo_inputSpy      = iglooTest.inputSpy()
+		self.activeCard.igloo_spy96bits     = iglooTest.spy96bits()
+		self.activeCard.igloo_qie_clockPh   = iglooTest.qie_ck_ph()
+		self.activeCard.igloo_linkTestMode  = iglooTest.link_test_mode()
+		self.activeCard.igloo_linkTestPatt  = iglooTest.link_test_pattern()
+		self.activeCard.igloo_SERDES_test   = iglooTest.SERDES()
+		self.activeCard.igloo_scratchRegis  = iglooTest.scratchReg()
 
 		with open(self.activeCard.uniqueID + ".log", 'a') as logFile:
 			with open(self.activeCard.uniqueID +"_"+str(runNumber)+"_raw.json", 'w') as jsonFile:
@@ -219,6 +248,27 @@ class qieCommands:
 				logFile.write("\nAlternating (a's) Register: " + self.activeCard.onesZeros)
 				logFile.write("\n\nVttx 1 Read: "   + self.activeCard.vttx1Result)
 				logFile.write("\nVttx 2 Read: "   + self.activeCard.vttx2Result)
+				logFile.write("\n\nData from Igloo Tests")
+				logFile.write("\nFPGA Major Version: "+self.activeCard.igloo_fpgaMajVer)
+         		        logFile.write("\nFPGA Minor Version: "+self.activeCard.igloo_fpgaMinVer)
+		                logFile.write("\nOnes Register: "+self.activeCard.igloo_onesRegist)
+               			logFile.write("\nZeros Register: "+self.activeCard.igloo_zeroRegist)
+		                logFile.write("\nFPGA Top or Bottom: "+self.activeCard.igloo_FPGAtopBot)
+		                logFile.write("\nIgloo Unique ID: "+self.activeCard.igloo_uniqueID)
+    			        logFile.write("\nStatus Register: "+self.activeCard.igloo_statusReg)
+                		logFile.write("\nCounter Register: "+self.activeCard.igloo_cnterReg)
+                		logFile.write("\nClock Counter: "+self.activeCard.igloo_clockCount)
+                		logFile.write("\nQIE Reset Counter: "+self.activeCard.igloo_qieResetCount)
+                		logFile.write("\nWTE Counter: "+self.activeCard.igloo_wteCounter)
+                		logFile.write("\nCap ID Error Counter: "+self.activeCard.igloo_capIdErrorCnt)
+                		logFile.write("\nFIFO Data: "+self.activeCard.igloo_fifoData)
+                		logFile.write("\nInput Spy: "+self.activeCard.igloo_inputSpy)
+                		logFile.write("\nSpy 96 Bits: "+self.activeCard.igloo_spy96bits)
+                		logFile.write("\nQIE Clock Phase: "+self.activeCard.igloo_qie_clockPh)
+                		logFile.write("\nLink Test Mode: "+self.activeCard.igloo_linkTestMode)
+                		logFile.write("\nLink Test Pattern: "+self.activeCard.igloo_linkTestPatt)
+                		logFile.write("\nSERDES Test: "+self.activeCard.igloo_SERDES_test)
+                		logFile.write("\nScratch Register: "+self.activeCard.igloo_scratchRegis)
 				logFile.write("\n\nTests for "+str(hex(register))+" complete.")
 				logFile.write("\n\n")
 

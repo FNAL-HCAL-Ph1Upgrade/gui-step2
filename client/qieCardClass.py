@@ -53,6 +53,23 @@ class qieCard:
 		self.scratch = ""
 		self.onesZeros = ""
 
-
-
-
+		self.igloo_fpgaMajVer = ""
+		self.igloo_fpgaMinVer = ""
+		self.igloo_onesRegist = ""
+		self.igloo_zeroRegist = ""
+		self.igloo_FPGAtopBot = ""
+		self.igloo_uniqueID   = ""
+		self.igloo_statusReg  = ""
+		self.igloo_cnterReg   = ""
+		self.igloo_clockCount = ""
+		self.igloo_qieResetCount = ""
+		self.igloo_wteCounter    = ""
+		self.igloo_capIdErrorCnt = ""
+		self.igloo_fifoData      = ""
+		self.igloo_inputSpy      = ""
+		self.igloo_spy96bits     = ""
+		self.igloo_qie_clockPh   = ""
+		self.igloo_linkTestMode  = ""
+		self.igloo_linkTestPatt  = ""
+		self.igloo_SERDES_test   = ""
+		self.igloo_scratchRegis  = ""

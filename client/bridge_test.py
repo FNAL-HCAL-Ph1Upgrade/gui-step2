@@ -373,3 +373,5 @@ i2cDict = {
         'address' : 0x09
     }
 }
+
+print basicTests(0x19, 27)
