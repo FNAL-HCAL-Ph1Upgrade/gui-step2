@@ -19,7 +19,7 @@ def strToBin(aString):
     j = 0
     catBinary = ""
     for i in aString.split():
-        catBinary = catBinary + bin(int(aString.split()[j]))[2:]
+        catBinary = catBinary + format(int(aString.split()[j]),'08b')
         j += 1
     return catBinary
 
