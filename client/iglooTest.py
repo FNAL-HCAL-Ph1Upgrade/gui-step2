@@ -10,7 +10,7 @@ Goals:
 
 from client import webBus
 import QIELib
-b = webBus("pi5") #can add "pi5,0" so won't print send/receive messages
+b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 q = QIELib
 
 ##############################
@@ -85,7 +85,7 @@ def FPGATopOrBottom(): # "FPGA top or bottom bit"
     return b.sendBatch()[1]
 
 # Register byte 0x05 (R/W)
-def uniqueID(): # "should be written with QIE-card unique ID"
+def uniqueID(): # "should be written with QIE-card unique ID, powerup as 0xBAD"
 
     # I haven't added in writing to this register... will await Joe's declaration
     b.write(0x09,[0x05])
@@ -337,21 +337,70 @@ def dataToSERDES(): # "SERDES APB_S_PWDATA"
     return strToHex(b.sendBatch()[1])
 
 # Register byte 0x83 (RW)
-def AddrToSERDES(): # "SERDES APB_S_PWDATA"
+def addrToSERDES(): # "bits[13:2] tied to SERDES APB_S_PADDR[13:2]"
     b.write(0x09,[0x83])
+    b.read(0x09,2)
+    return strToBin(b.sendBatch()[1])
+
+# Register byte 0x84 (RW)
+def ctrlToSERDES(): # "bit0 = i2c_go, bit1 = i2c_write"
+    b.write(0x09,[0x84])
+    b.read(0x09,1)
+    return strToBin(b.sendBatch()[1])
+
+# Register byte 0x85 (RO)
+def dataFromSERDES(): # "SERDES APB_S_PRDATA [31:0]"
+    b.write(0x09,[0x85])
     b.read(0x09,4)
     return strToHex(b.sendBatch()[1])
 
+# Register byte 0x86 (RO)
+def statFromSERDES(): # "bit0 = busy, bit1 = i2c_counter"
+    b.write(0x09,[0x82])
+    b.read(0x09,4)
+    return strToHex(b.sendBatch()[1])
+
+# SERDES functions all together:
+def SERDES():
+    return "dataToSERDES: " + dataToSERDES() + ", addrToSERDES: " + addrToSERDES()\
+        + ", ctrlToSERDES: " + ctrlToSERDES() + ", dataFromSERDES: " + dataFromSERDES()\
+        + ", statFromSERDES: " + statFromSERDES()
+
+# Register byte 0xFF (RW)
+def scratchReg(): # "Scratch register"
+    b.write(0x09,[0xFF])
+    b.read(0x09, 4)
+    return strToHex(b.sendBatch()[1])
+
+
+
+
+#####################################################
+# calling the functions
+#####################################################
 
 openIgloo(0,0)
-print "Zeros: " + zeros()
+
 print "FPGA Major Version: " + fpgaMajVer()
 print "FPGA Minor Version: " + fpgaMinVer()
-print "RegBin: " + statusReg("Qie_DLLNoLock")
+print "Ones: " + ones()
+print "Zeros: " + zeros()
+print "FPGATopOrBottom: " + FPGATopOrBottom()
+print "Unique ID: " + uniqueID()
+print "StatusReg: " + statusReg()
 print "CntrReg: " + cntrReg()
 print "Clock Counter: " + clk_count()
 print "QIE Reset Counter: " + rst_QIE_count()
 print "WTE Counter: " + wte_count()
+print "CapID Error Counter: " + capIDErr_count()
+print "FIFO Data: " + fifo_data()
+print "InputSpy: " + inputSpy()
+print "Spy96bits: " + spy96bits()
+print "QIE Clock Phase: " + qie_ck_ph()
+print "Link Test Mode: " + link_test_mode()
+print "Link Test Pattern: " + link_test_pattern()
+print "SERDES: " + SERDES()
+print "ScratchReg: " + scratchReg()
 
 ##########################
 # The Igloo2 class
