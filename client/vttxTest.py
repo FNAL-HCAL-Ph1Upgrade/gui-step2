@@ -76,11 +76,12 @@ def vttx1RWR(rm, slot):
 
     # write to vttx1 what we just read from it
     b.write(0x7E,[0x00,writeArr])
+    b.sendBatch()
 
     # read from vttx1 to check if it worked
     b.write(0x7E,[0x00])
     b.read(0x7E,7)
-    read2 = b.sendBatch()[2]
+    read2 = b.sendBatch()[1]
 
     if (read1 == read2):
         return "PASS!"
