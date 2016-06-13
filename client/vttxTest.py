@@ -63,6 +63,7 @@ def vttx2write(rm,slot):
 
 # Read from Vttx, write that same set of bytes, read again to confirm
 def vttx1RWR(rm, slot):
+
     #### READ
     read1 = vttx1read(rm, slot)
     readArr = read1.split()
