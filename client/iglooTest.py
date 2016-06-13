@@ -262,7 +262,7 @@ def spy96bits(): # "Fw-dependent monitoring (from v3.04 it is the orbit-histo)"
     b.write(0x09, [0x40])
     b.read(0x09,12) # 96 bits = 12 bytes
     spy = b.sendBatch()[1]
-    return strToHex[spy]
+    return strToHex(spy)
 
 # Register bytes 0x60-6B (RW)
 def qie_ck_ph(): # QIE1-12 Clock Phase (Valid values of 0-15)
@@ -381,7 +381,6 @@ def scratchReg(): # "Scratch register"
 
 openIgloo(0,0)
 
->>>>>>> aa75ef65b5be76e7eb8ac45f472d8fae7fe53642
 print "FPGA Major Version: " + fpgaMajVer()
 print "FPGA Minor Version: " + fpgaMinVer()
 print "Ones: " + ones()
