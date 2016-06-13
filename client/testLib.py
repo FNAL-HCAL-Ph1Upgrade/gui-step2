@@ -46,8 +46,8 @@ QIEi2c = {
 # Bridge Register Tests
 
 def readRegister(slot, address, num_bytes):
-    b.write(q.QIEi2c[slot],[address])
-    b.read(q.QIEi2c[slot], num_bytes)
+    b.write(slot,[address])
+    b.read(slot, num_bytes)
     message = b.sendBatch()[-1]
     return reverseBytes(message)
 
@@ -119,12 +119,12 @@ bridgeDict = {
 def openRM(rm):
     if rm in [0,1]:
         # Open channel to ngCCM for RM 1,2: J1 - J10
-        print '##### RM ', rm,' #####'
+        #print '##### RM ', rm,' #####'
         b.write(q.MUXs["fanout"],[0x02])
         b.sendBatch()
     elif rm in [2,3]:
         # Open channel to ngCCM for RM 3, 4: J17 - J26
-        print '##### RM ', rm,' #####'
+        #print '##### RM ', rm,' #####'
         b.write(q.MUXs["fanout"],[0x01])
         b.sendBatch()
     else:
@@ -132,7 +132,7 @@ def openRM(rm):
         print 'Please choose RM = {0,1,2,3}'
         return 'closed channel'
     # Open channel to i2c group
-    print '##### open i2c ' + hex(q.RMi2c[rm]) + ' #####'
+    #print '##### open i2c ' + hex(q.RMi2c[rm]) + ' #####'
     # b.clearBus()
     b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
     return b.sendBatch()
@@ -141,19 +141,19 @@ def openRM(rm):
 # RN = Registration Number
 # SN = Serial Number
 def printIDs(uniqueIDArray):
-    print
+    #print
     for rm in xrange(len(uniqueIDArray)):
         for slot in xrange(len(uniqueIDArray[0])):
             revRN = reverseBytes(uniqueIDArray[rm][slot])
             hexRN = toHex(revRN)
             revSN = serialNum(revRN)
             hexSN = toHex(revSN)
-            print 'RM: ', rm, ' slot: ', slot
+            # print 'RM: ', rm, ' slot: ', slot
             # print 'Unique Registration Number (dec): ', revRN
             # print 'Unique Registration Number (hex): ', hexRN
             # print 'Serial Number (dec): ', revSN
-            print 'Serial Number (hex): ', hexSN
-            print
+            # print 'Serial Number (hex): ', hexSN
+            # print
 
 # Reverse order of string of bytes separated by spaces.
 def reverseBytes(message):

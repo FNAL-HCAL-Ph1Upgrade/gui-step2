@@ -631,6 +631,7 @@ class makeGui:
 			self.runtime_subTop_frame,
 			textvariable=self.runtimeNumber)
 		self.runtime_outputText.pack(side=LEFT)
+		self.runtimeNumber.set(1)
 
 
 		#Make a widget that closes the GUI
@@ -708,27 +709,18 @@ class makeGui:
 			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.getUniqueID(0,tempInt)))
 
 	def runTestSuite(self):
+		print str(datetime.now())
 		#ONCE IT'S TIME TO TEST OTHER READOUT MODULES, MAKE THE APPROPRIATE CHANGES HERE
 		for k in range(0,int(self.runtimeNumber.get())):
 			if (k%10 == 0):
 				print "Number of tests completed: ", k
 			for card in (0x19,0x1a,0x1b,0x1c):
-			#	with open(self.nameChoiceVar.get()+"_"+str(k)+"_"+str(hex(card))+".log", 'w') as humanFile:
-			#		with open(self.nameChoiceVar.get()+"_"+str(k)+"_"+str(hex(card))+"_raw.json", 'w') as machineFile:
-			#	self.runTestSuiteHelper(card,humanFile,machineFile)
 				self.runTestSuiteHelper(card,k)
 		print "\nSuite Completed! Thank you! (:"
-
+		print str(datetime.now())
 
 	def runTestSuiteHelper(self,card,inNumber):
 		self.myCommands.runCompleteSuite(card,inNumber)
-
-#	def runTestSuiteHelper(self,card,humanFile,machineFile):
-#		dateString = str(datetime.now())
-#		humanFile.write("Test performed by: "+self.nameChoiceVar.get())
-#		humanFile.write("\nTime of testing: "+dateString)
-#		humanFile.write("\nTesting comment(s):"+self.infoCommentVar.get()+"\n")
-#		self.myCommands.runCompleteSuite(card,humanFile,machineFile,self.nameChoiceVar.get(),humanFile)	
 
 # These next few lines call the class and display the window
 # on the computer screen

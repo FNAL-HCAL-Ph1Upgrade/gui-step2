@@ -30,3 +30,29 @@ class qieCard:
 		self.passedBrdg  = False
 		self.passedOnes  = False
 		self.passedZero  = False
+
+		# Results from Caleb/Jordan's bridge tests
+		self.thermOneWire = ""
+		self.qieDaisyChn0 = ""
+		self.qieDaisyChn1 = ""
+		self.orbitHisto6  = "" 
+		self.orbitHisto5  = ""
+		self.orbitHisto4  = ""
+		self.orbitHisto3  = ""
+		self.orbitHisto2  = ""
+		self.orbitHisto1  = ""		
+		self.orbitHisto0  = ""
+		self.controlReg   = ""
+		self.igloo2Cntrl  = ""
+		self.bkplnSpare3Counter = ""
+		self.bkplnSpare2Counter = ""
+		self.bkplnSpare1Counter = ""
+		self.wteCounter = ""
+		self.resQieCounter = ""
+		self.clockCounter = ""
+		self.scratch = ""
+		self.onesZeros = ""
+
+
+
+
