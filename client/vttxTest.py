@@ -117,7 +117,6 @@ print "From RWR of vttx1: " + vttx1RWR(0,0)
 print "From RWR of vttx2: " + vttx2RWR(0,0)
 
 
-
 '''
 print "From vttx1read: " + vttx1read(0,0)
 print "From vttx2read: " + vttx2read(0,0)
