@@ -13,6 +13,9 @@ import QIELib
 b = webBus("pi5") #can add "pi5,0" so won't print send/receive messages
 q = QIELib
 
+##############################
+# Conversion Functions
+##############################
 
 #give this function a string (like '133 4 92 23') and returns the binary cat
 def strToBin(aString):
@@ -22,6 +25,21 @@ def strToBin(aString):
         catBinary = catBinary + format(int(aString.split()[j]),'08b')
         j += 1
     return catBinary
+
+# helpful string to hex list
+def strToHex(string):
+        catBinary = ""
+        j=0
+        for i in string.split():
+                catBinary = catBinary + " " + hex(int(string.split()[j]))[2:]
+                j = j + 1
+        return catBinary
+
+
+
+##############################
+# Igloo-specific functions
+##############################
 
 def openIgloo(rm,slot):
     q.openChannel(rm,slot)
@@ -40,7 +58,7 @@ def fpgaMajVer(): # "fpga major version"
     b.read(0x09,4)
     majVer = b.sendBatch()[1]
     print "majVer: " + majVer
-    majVer = hex(int(majVer))[2:0]
+    majVer = strToHex(majVer)
     print "majVer in hex: " + majVer
     return majVer
 
