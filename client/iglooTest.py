@@ -57,18 +57,14 @@ def fpgaMajVer(): # "fpga major version"
     b.write(0x09,[0x00])
     b.read(0x09,4)
     majVer = b.sendBatch()[1]
-    print "majVer: " + majVer
-    majVer = strToHex(majVer)
-    print "majVer in hex: " + majVer
-    return majVer
+    return strToHex(majVer)
 
 # Register byte 0x01 (RO)
 def fpgaMinVer(): # "fpga minor verison"
     b.write(0x09,[0x01])
     b.read(0x09,4)
     minVer = b.sendBatch()[1]
-    minVer = hex(int(minVer))[2:0]
-    return minVer
+    return strToHex(minVer)
 
 # Register byte 0x02 (RO)
 def ones(): # "all ones register"
@@ -134,7 +130,8 @@ print statusReg()
 
 print "Zeros: " + zeros()
 print "FPGA Major Version: " + fpgaMajVer()
-print "RegBin: " + statusReg("PLL 320MHz Lock")
+print "FPGA Minor Version: " + fpgaMinVer()
+print "RegBin: " + statusReg("Qie_DLLNoLock")
 
 
 ##########################
