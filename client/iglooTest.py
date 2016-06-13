@@ -116,7 +116,7 @@ openIgloo(0,0)
 print statusReg()
 
 #print "FPGA Major Version: " + fpgaMajVer()
-print "RegBin: " + statusReg()
+print "RegBin: " + statusReg("PLL 320MHz Lock")
 
 
 ##########################
