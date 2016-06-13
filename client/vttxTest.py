@@ -60,6 +60,11 @@ def vttx2write(rm,slot):
 
     return data
 
+
+########################################################
+# VTTX Read/Write/Read Functions
+########################################################
+
 # Read from Vttx1, write that same set of bytes, read again to confirm
 def vttx1RWR(rm, slot):
     # First, read from vttx1 LDD to ascertain the register values
@@ -81,6 +86,7 @@ def vttx1RWR(rm, slot):
     b.read(0x7E,7)
     read2 = b.sendBatch()[1]
 
+    # if read1 matches read2, then write was successful -- print register
     if (read1 == read2):
         return "Pass, Reg = " + strToHex(read2)
     else:
@@ -107,6 +113,7 @@ def vttx2RWR(rm, slot):
     b.read(0x7E,7)
     read2 = b.sendBatch()[1]
 
+    # if read1 matches read2, then write was successful -- print register
     if (read1 == read2):
         return "Pass, Reg = " + strToHex(read2)
     else:
@@ -116,18 +123,6 @@ def vttx2RWR(rm, slot):
 print "From RWR of vttx1: " + vttx1RWR(0,0)
 print "From RWR of vttx2: " + vttx2RWR(0,0)
 
-
-
-'''
-print "From vttx1read: " + vttx1read(0,0)
-print "From vttx2read: " + vttx2read(0,0)
-
-print "From vttx1write: " + vttx1write(0,0)
-print "From vttx2write: " + vttx2write(0,0)
-
-print "From vttx1read: " + vttx1read(0,0)
-print "From vttx2read: " + vttx2read(0,0)
-'''
 
 # output of successful execution of the code!
 '''
@@ -142,8 +137,14 @@ print "From vttx2read: " + vttx2read(0,0)
     SENT: w 126 0
     RECEIVED: 0
     SENT: r 126 7
-    RECEIVED: 135 153 25 136 255 255 4
-From vttx1read: 135 153 25 136 255 255 4
+    RECEIVED: 4 255 255 136 25 153 7
+    SENT: w 126 0 4 255 255 136 25 153 7
+    RECEIVED: 0
+    SENT: w 126 0
+    RECEIVED: 0
+    SENT: r 126 7
+    RECEIVED: 4 255 255 136 25 153 7
+From RWR of vttx1: Pass, Reg =  4 ff ff 88 19 99 7
     ##### RM in 0,1 #####
     SENT: w 114 2
     RECEIVED: 0
@@ -156,53 +157,11 @@ From vttx1read: 135 153 25 136 255 255 4
     RECEIVED: 0
     SENT: r 126 7
     RECEIVED: 135 153 25 136 255 255 4
-From vttx2read: 135 153 25 136 255 255 4
-    ##### RM in 0,1 #####
-    SENT: w 114 2
-    RECEIVED: 0
-    ##### open i2c #####
-    SENT: w 116 2
-    RECEIVED: 0
-    SENT: w 25 17 1 0 0 0
-    RECEIVED: 0
     SENT: w 126 0 135 153 25 136 255 255 4
     RECEIVED: 0
-From vttx1write: 0
-    ##### RM in 0,1 #####
-    SENT: w 114 2
-    RECEIVED: 0
-    ##### open i2c #####
-    SENT: w 116 2
-    RECEIVED: 0
-    SENT: w 25 17 2 0 0 0
-    RECEIVED: 0
-    SENT: w 126 0 135 153 25 136 255 255 4
-    RECEIVED: 0
-From vttx2write: 0
-    ##### RM in 0,1 #####
-    SENT: w 114 2
-    RECEIVED: 0
-    ##### open i2c #####
-    SENT: w 116 2
-    RECEIVED: 0
-    SENT: w 25 17 1 0 0 0
-    RECEIVED: 0
     SENT: w 126 0
     RECEIVED: 0
     SENT: r 126 7
     RECEIVED: 135 153 25 136 255 255 4
-From vttx1read: 135 153 25 136 255 255 4
-    ##### RM in 0,1 #####
-    SENT: w 114 2
-    RECEIVED: 0
-    ##### open i2c #####
-    SENT: w 116 2
-    RECEIVED: 0
-    SENT: w 25 17 2 0 0 0
-    RECEIVED: 0
-    SENT: w 126 0
-    RECEIVED: 0
-    SENT: r 126 7
-    RECEIVED: 135 153 25 136 255 255 4
-From vttx2read: 135 153 25 136 255 255 4
+From RWR of vttx2: Pass, Reg =  87 99 19 88 ff ff 4
 '''
