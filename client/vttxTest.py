@@ -75,7 +75,7 @@ def vttx1RWR(rm, slot):
     writeArr = list(int(i) for i in readArr)
 
     # write to vttx1 what we just read from it
-    b.write(0x7E,[0x00,writeArr])
+    b.write(0x7E,[0x00] + writeArr)
     b.sendBatch()
 
     # read from vttx1 to check if it worked
