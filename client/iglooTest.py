@@ -70,7 +70,7 @@ def fpgaMinVer(): # "fpga minor verison"
 def ones(): # "all ones register"
     b.write(0x09,[0x02])
     b.read(0x09,4)
-    return b.sendBatch()[1]
+    return strToHex(b.sendBatch()[1])
 
 # Register byte 0x03 (RO)
 def zeros(): # "all zeros register"
@@ -90,7 +90,7 @@ def uniqueID(): # "should be written with QIE-card unique ID, powerup as 0xBAD"
     # I haven't added in writing to this register... will await Joe's declaration
     b.write(0x09,[0x05])
     b.read(0x09,8)
-    return b.sendBatch()[1]
+    return strToHex(b.sendBatch()[1])
 
 
 # Register byte 0x10 (RO)
@@ -378,29 +378,29 @@ def scratchReg(): # "Scratch register"
 #####################################################
 # calling the functions
 #####################################################
+def readAllIgloo():
+    openIgloo(0,0)
 
-openIgloo(0,0)
-
-print "FPGA Major Version: " + fpgaMajVer()
-print "FPGA Minor Version: " + fpgaMinVer()
-print "Ones: " + ones()
-print "Zeros: " + zeros()
-print "FPGATopOrBottom: " + FPGATopOrBottom()
-print "Unique ID: " + uniqueID()
-print "StatusReg: " + statusReg()
-print "CntrReg: " + cntrReg()
-print "Clock Counter: " + clk_count()
-print "QIE Reset Counter: " + rst_QIE_count()
-print "WTE Counter: " + wte_count()
-print "CapID Error Counter: " + capIDErr_count()
-print "FIFO Data: " + fifo_data()
-print "InputSpy: " + inputSpy()
-print "Spy96bits: " + spy96bits()
-print "QIE Clock Phase: " + qie_ck_ph()
-print "Link Test Mode: " + link_test_mode()
-print "Link Test Pattern: " + link_test_pattern()
-print "SERDES: " + SERDES()
-print "ScratchReg: " + scratchReg()
+    print "FPGA Major Version: " + fpgaMajVer()
+    print "FPGA Minor Version: " + fpgaMinVer()
+    print "Ones: " + ones()
+    print "Zeros: " + zeros()
+    print "FPGATopOrBottom: " + FPGATopOrBottom()
+    print "Unique ID: " + uniqueID()
+    print "StatusReg: " + statusReg()
+    print "CntrReg: " + cntrReg()
+    print "Clock Counter: " + clk_count()
+    print "QIE Reset Counter: " + rst_QIE_count()
+    print "WTE Counter: " + wte_count()
+    print "CapID Error Counter: " + capIDErr_count()
+    print "FIFO Data: " + fifo_data()
+    print "InputSpy: " + inputSpy()
+    print "Spy96bits: " + spy96bits()
+    print "QIE Clock Phase: " + qie_ck_ph()
+    print "Link Test Mode: " + link_test_mode()
+    print "Link Test Pattern: " + link_test_pattern()
+    print "SERDES: " + SERDES()
+    print "ScratchReg: " + scratchReg()
 
 ##########################
 # The Igloo2 class
