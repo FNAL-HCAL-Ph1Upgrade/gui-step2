@@ -61,7 +61,7 @@ def vttx2write(rm,slot):
 
     return data
 
-# Read from Vttx, write that same set of bytes, read again to confirm
+# Read from Vttx1, write that same set of bytes, read again to confirm
 def vttx1RWR(rm, slot):
     # First, read from vttx1 LDD to ascertain the register values
     q.openChannel(rm,slot)
@@ -71,7 +71,6 @@ def vttx1RWR(rm, slot):
     read1 = b.sendBatch()[2] # store read data into "read1"
 
     readArr = read1.split()
-    #readArr.reverse()
     writeArr = list(int(i) for i in readArr)
 
     # write to vttx1 what we just read from it
@@ -84,14 +83,39 @@ def vttx1RWR(rm, slot):
     read2 = b.sendBatch()[1]
 
     if (read1 == read2):
-        return "PASS!"
+        return "Pass, Reg = " + read2
     else:
-        return "YOU SHALL NOT PASS!"
+        return "Fail"
 
+# Read from Vttx2, write that same set of bytes, read again to confirm
+def vttx2RWR(rm, slot):
+    # First, read from vttx1 LDD to ascertain the register values
+    q.openChannel(rm,slot)
+    b.write(q.QIEi2c[slot],[0x11,0x02,0,0,0])
+    b.write(0x7E,[0x00])
+    b.read(0x7E,7)
+    read1 = b.sendBatch()[2] # store read data into "read1"
+
+    readArr = read1.split()
+    writeArr = list(int(i) for i in readArr)
+
+    # write to vttx2 what we just read from it
+    b.write(0x7E,[0x00] + writeArr)
+    b.sendBatch()
+
+    # read from vttx2 to check if it worked
+    b.write(0x7E,[0x00])
+    b.read(0x7E,7)
+    read2 = b.sendBatch()[1]
+
+    if (read1 == read2):
+        return "Pass, Reg = " + read2
+    else:
+        return "Fail"
 
 
 print "From RWR of vttx1: " + vttx1RWR(0,0)
-
+print "From RWR of vttx2: " + vttx2RWR(0,0)
 
 
 
