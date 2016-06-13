@@ -110,14 +110,13 @@ def statusReg(desiredReg = "all"):
         return allRegBin
     else:
         return desiredReg + " = " + regBinDict[desiredReg]
-'''
 
 
 
 openIgloo(0,0)
 print "Zeros: " + zeros()
 #print "FPGA Major Version: " + fpgaMajVer()
-print "RegBin: " + statusReg()
+print "RegBin: " + statusReg("PLL 320MHz Lock")
 
 
 ##########################
