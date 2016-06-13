@@ -63,21 +63,24 @@ def vttx2write(rm,slot):
 
 # Read from Vttx, write that same set of bytes, read again to confirm
 def vttx1RWR(rm, slot):
+    # First, read from vttx1 LDD to ascertain the register values
+    q.openChannel(rm,slot)
+    b.write(q.QIEi2c[slot],[0x11,0x01,0,0,0])
+    b.write(0x7E,[0x00])
+    b.read(0x7E,7)
+    read1 = b.sendBatch()[2] # store read data into "read1"
 
-    #### READ
-    read1 = vttx1read(rm, slot)
     readArr = read1.split()
     readArr.reverse()
     writeArr = list(int(i) for i in readArr)
 
-    #### WRITE
     # write to vttx1 what we just read from it
     b.write(0x7E,[0x00,writeArr])
 
-    #### READ
-    #read from vttx1 to check if it worked
-    read2 = vttx1read(rm,slot)
-    b.sendBatch()
+    # read from vttx1 to check if it worked
+    b.write(0x7E,[0x00])
+    b.read(0x7E,7)
+    read2 = b.sendBatch()[2]
 
     if (read1 == read2):
         return "PASS!"
