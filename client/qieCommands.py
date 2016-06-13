@@ -129,11 +129,12 @@ class qieCommands:
 			self.passesHumi = False
 		 
 		
-	def runSuiteCompForm(self,register, jsonFile, tester, logFile):
-		# COMPUTER-PARSING FORMAT
+#	def runSuiteCompForm(self,register, jsonFile, tester, logFile):
+	def runSuiteCompForm(self,register,runNumber):
+
 		self.activeCard = qieCard()
 		self.activeCard.timeOfTest = str(datetime.now())
-		self.activeCard.tester = tester
+		#self.activeCard.tester = tester
 		self.activeCard.i2cAddress = str(hex(register))
 		self.activeCard.uniqueID = str(self.getUniqueID(0,register))
 		self.sensorTemp(0,register)
@@ -150,20 +151,27 @@ class qieCommands:
 		self.activeCard.passedOnes = self.tff_Test(register)
 		self.activeCard.passedZero = self.zeroTest(register)
 
-		logFile.write("\nQIE Card being tested: "+str(hex(register)))
-		logFile.write("\nUnique ID:  "+ str(self.activeCard.uniqueID))
-		logFile.write("\nHerm test:  "+ str(self.activeCard.passedHerm))
-		logFile.write("\nBrdg test:  "+ str(self.activeCard.passedBrdg))
-		logFile.write("\nOnes Register:  "+ str(self.activeCard.passedOnes))
-		logFile.write("\nZero Register:  "+ str(self.activeCard.passedZero))
-		logFile.write("\nFirmware Ver.:  "+ self.activeCard.firmwareVer)
-		logFile.write("\nTemperature: "   + str(self.activeCard.temperature))
-		logFile.write("\nPasses Temp: "   + str(self.passesTemp))
-		logFile.write("\nPasses Humi: "   + str(self.passesHumi))
-		logFile.write("\nHumidity: "      + str(self.activeCard.humidity))
-		logFile.write("\n\nTests for "+str(hex(register))+" complete.")
+		with open(self.activeCard.uniqueID + ".log", 'a') as logFile:
+			with open(self.activeCard.uniqueID +"_"+str(runNumber)+"_raw.json", 'w') as jsonFile:
 
-		json.dump(self.activeCard, jsonFile, default=self.jdefault)
+				logFile.write("\nQIE Card being tested: "+str(hex(register)))
+				logFile.write("\nUnique ID:  "+ str(self.activeCard.uniqueID))
+				logFile.write("\nHerm test:  "+ str(self.activeCard.passedHerm))
+				logFile.write("\nBrdg test:  "+ str(self.activeCard.passedBrdg))
+				logFile.write("\nOnes Register:  "+ str(self.activeCard.passedOnes))
+				logFile.write("\nZero Register:  "+ str(self.activeCard.passedZero))
+				logFile.write("\nFirmware Ver.:  "+ self.activeCard.firmwareVer)
+				logFile.write("\nTemperature: "   + str(self.activeCard.temperature))
+				logFile.write("\nPasses Temp: "   + str(self.passesTemp))
+				logFile.write("\nPasses Humi: "   + str(self.passesHumi))
+				logFile.write("\nHumidity: "      + str(self.activeCard.humidity))
+				logFile.write("\n\nTests for "+str(hex(register))+" complete.")
+				logFile.write("\n\n")
 
-	def runCompleteSuite(self,register,humanFile,jsonFile,inTester,logFile):
-		self.runSuiteCompForm(register,jsonFile,inTester,logFile)
+				json.dump(self.activeCard, jsonFile, default=self.jdefault)
+	
+	def runCompleteSuite(self,register,runNumber):
+		self.runSuiteCompForm(register,runNumber)
+
+#	def runCompleteSuite(self,register,humanFile,jsonFile,inTester,logFile):
+#		self.runSuiteCompForm(register,jsonFile,inTester,logFile)
