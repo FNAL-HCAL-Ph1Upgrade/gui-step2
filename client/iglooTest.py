@@ -91,12 +91,7 @@ def statusReg(desiredReg = "all"):
     #Qie_DLLNoLock[12:1], BRIDGE_SPARE[5:0], 1-bit 0, PLL 320MHz Lock
     
     regBin = strToBin(reg)
-<<<<<<< HEAD
-    
-    return regBin
-=======
     #return regBin
->>>>>>> eb2a9de60d4ccc1043a437df571870f94e5b9735
 
     regBinDict = {
     "InputSpyWordNum"   :   regBin[0:9], # number of words in InputSpyFifo (depth = 512)
@@ -116,7 +111,6 @@ def statusReg(desiredReg = "all"):
         return allRegBin
     else:
         return desiredReg + " = " + regBinDict[desiredReg]
-'''
 
 openIgloo(0,0)
 print statusReg()
