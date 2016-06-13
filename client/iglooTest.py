@@ -90,9 +90,8 @@ def statusReg(desiredReg = "all"):
     #Qie_DLLNoLock[12:1], BRIDGE_SPARE[5:0], 1-bit 0, PLL 320MHz Lock
 
     regBin = strToBin(reg)
-    return regBin
+    #return regBin
 
-    '''
     regBinDict = {
     "InputSpyWordNum"   :   regBin[0:9], # number of words in InputSpyFifo (depth = 512)
     "InputSpyFifoEmpty" :   regBin[10],
@@ -106,8 +105,7 @@ def statusReg(desiredReg = "all"):
     allRegBin = regBin[0:9] + " : " + regBin[10] + " : " + regBin[11]\
         + " : " + regBin[12:23] + " : " + regBin[24:29] + " : " + regBin[30]\
         + " : " + regBin[31]
-    '''
-'''
+
     if desiredReg == "all":
         return allRegBin
     else:
