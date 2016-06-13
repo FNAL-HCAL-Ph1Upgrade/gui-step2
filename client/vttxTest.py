@@ -71,7 +71,7 @@ def vttx1RWR(rm, slot):
     read1 = b.sendBatch()[2] # store read data into "read1"
 
     readArr = read1.split()
-    readArr.reverse()
+    #readArr.reverse()
     writeArr = list(int(i) for i in readArr)
 
     # write to vttx1 what we just read from it
