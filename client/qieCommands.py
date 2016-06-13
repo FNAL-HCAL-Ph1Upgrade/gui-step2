@@ -15,15 +15,16 @@ class qieCommands:
 		self.tempStore = -99.0
 		self.passesTemp = False
 		self.passesHumi = False
+		self.b = webBus("pi5")
 
 	def jdefault(self,o):
 		return o.__dict__
 
 	def hermTest(self,register):
-		b = webBus("pi5")
-		b.write(register,[0x00])
-		b.read(register, 4)
-		outString = b.sendBatch()[1]
+		#b = webBus("pi5")
+		self.b.write(register,[0x00])
+		self.b.read(register, 4)
+		outString = self.b.sendBatch()[1]
 		outString = testLib.reverseBytes(outString)
 		if (testLib.toASCII(outString) == "HERM"):
 			return True
@@ -31,10 +32,10 @@ class qieCommands:
 			return False
 			
 	def brdgTest(self,register):
-		b = webBus("pi5")
-		b.write(register,[0x01])
-		b.read(register, 4)
-		outString = b.sendBatch()[1]
+		#b = webBus("pi5")
+		self.b.write(register,[0x01])
+		self.b.read(register, 4)
+		outString = self.b.sendBatch()[1]
 		outString = testLib.reverseBytes(outString)
 		if (testLib.toASCII(outString) == "Brdg"):
 			return True
@@ -42,45 +43,45 @@ class qieCommands:
 			return False
 
 	def tff_Test(self,register):
-		b = webBus("pi5")
-		b.write(register,[0x08])
-		b.read(register, 4)
-		if (b.sendBatch()[1] == "255 255 255 255"):
+		#b = webBus("pi5")
+		self.b.write(register,[0x08])
+		self.b.read(register, 4)
+		if (self.b.sendBatch()[1] == "255 255 255 255"):
 			return  True
 		else:
 			return False
 
 	def zeroTest(self,register):
-		b = webBus("pi5")
-		b.write(register,[0x09])
-		b.read(register, 4)
-		if (b.sendBatch()[1] == "0 0 0 0"):
+		#b = webBus("pi5")
+		self.b.write(register,[0x09])
+		self.b.read(register, 4)
+		if (self.b.sendBatch()[1] == "0 0 0 0"):
 			return True
 		else:
 			return False
 		
 	def fwVerTest(self,register):
-		b = webBus("pi5")
-		b.write(register,[0x04])
-		b.read(register, 4)
-		outString = b.sendBatch()[1]
+		#b = webBus("pi5")
+		self.b.write(register,[0x04])
+		self.b.read(register, 4)
+		outString = self.b.sendBatch()[1]
 		outString = testLib.reverseBytes(outString)
 
 	def statusCheck(self,register):
-		b = webBus("pi5")
-		b.write(register,[0x10])
-		b.read(register, 4)
-		return b.sendBatch()[1]
+		#b = webBus("pi5")
+		self.b.write(register,[0x10])
+		self.b.read(register, 4)
+		return self.b.sendBatch()[1]
 
 	def sensorTemp(self,rm,qieCard):    # Thanks, Adryanna!
-		b = webBus("pi5")
-		b.write(0x00,[0x06])
-		b.write(qieCard,[0x11,0x05,0,0,0])
-		b.write(0x40,[0xf3])
-		b.sleep(300)
-		b.read(0x40,2)
+		#b = webBus("pi5")
+		self.b.write(0x00,[0x06])
+		self.b.write(qieCard,[0x11,0x05,0,0,0])
+		self.b.write(0x40,[0xf3])
+		self.b.sleep(300)
+		self.b.read(0x40,2)
 
-		bigData = b.sendBatch()
+		bigData = self.b.sendBatch()
 		data = bigData[4]
 		data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
 		#Converting the temperature using equation
@@ -89,14 +90,14 @@ class qieCommands:
 		print self.tempStore
 
 	def sensorHumid(self,rm,qieCard):  # Thanks, Adryanna!
-		b = webBus("pi5")
-		b.write(0x00,[0x06])
-		b.write(qieCard,[0x11,0x05,0,0,0])
-		b.write(0x40,[0xf5])
-		b.sleep(300)
-		b.read(0x40,2)
+		#b = webBus("pi5")
+		self.b.write(0x00,[0x06])
+		self.b.write(qieCard,[0x11,0x05,0,0,0])
+		self.b.write(0x40,[0xf5])
+		self.b.sleep(300)
+		self.b.read(0x40,2)
 
-		bigData = b.sendBatch()
+		bigData = self.b.sendBatch()
 		data = bigData[4]
 		data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
 		#Converting the humidity using equation
@@ -105,12 +106,12 @@ class qieCommands:
 		print self.humiStore
 
 	def getUniqueID(self,rm, qieCard):  # Thanks, Caleb!
-		b = webBus("pi5")
-		b.write(0x00,[0x06])
-		b.write(qieCard,[0x11,0x04,0,0,0])
-		b.write(0x50,[0x00])
-		b.read(0x50,8)
-		raw_bus = b.sendBatch()
+		#b = webBus("pi5")
+		self.b.write(0x00,[0x06])
+		self.b.write(qieCard,[0x11,0x04,0,0,0])
+		self.b.write(0x50,[0x00])
+		self.b.read(0x50,8)
+		raw_bus = self.b.sendBatch()
 		cooked_bus = testLib.reverseBytes(raw_bus[-1])
 		cooked_bus = testLib.serialNum(cooked_bus)
 		return(testLib.toHex(cooked_bus))

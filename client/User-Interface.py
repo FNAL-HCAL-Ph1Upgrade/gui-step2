@@ -30,10 +30,10 @@ class makeGui:
 		self.fanoutHexText  =  StringVar()
 		self.qieChoiceVar   =  StringVar()
 		self.qieReadVar     =  StringVar()
-#		self.qieWriteVar    =  StringVar()
 		self.qieOutText     =  StringVar()
 		self.nameChoiceVar  =  StringVar()
 		self.infoCommentVar =  StringVar()
+		self.runtimeNumber  =  StringVar()
 	
 		# Create integer variables for the fanout box's checkbuttons.
 		# Although they're integers, they should only ever hold the
@@ -59,6 +59,9 @@ class makeGui:
 		# frames will be placed here (topMost_frame) and not in the parent window.
 		self.topMost_frame = Frame(parent)
 		self.topMost_frame.pack()
+
+		# Add a flag to stop tests
+		self.quitTestsFlag = False
 		
 		#----- constants for controlling layout
 		button_width = 6
@@ -152,16 +155,18 @@ class makeGui:
 			pady=frame_pady
 			)
 
-		self.placehold_frame = Frame(
+		# Make a runtime frame. For now this will contain
+		# information regarding the tests being conducted.
+		self.runtime_frame = Frame(
 			self.botHalf_frame,
 			borderwidth=5, relief=RIDGE,
 			height=250, width=400,
 			background="white"
 			)
 		# We don't want this frame to shrink when placing widgets:
-		self.placehold_frame.pack_propagate(False)		
+		self.runtime_frame.pack_propagate(False)		
 
-		self.placehold_frame.pack(
+		self.runtime_frame.pack(
 			side=LEFT,
 			ipadx=frame_ipadx,
 			ipady=frame_ipady,
@@ -571,17 +576,65 @@ class makeGui:
 			padx=button_padx,
 			pady=button_pady
 			)
-		self.qie_testSuite_button.pack()
+		self.qie_testSuite_button.pack(side=LEFT)
+
+		#Make a button to stop the main test suite without closing window
+#		self.qie_quitSuite_button = Button(self.qie_subBot_frame, command = self.safeQuitTests)
+#		self.qie_quitSuite_button.configure(text="SAFELY QUIT TESTS", background="red")
+#		self.qie_quitSuite_button.configure(
+#			width=button_width*2,
+#			padx=button_padx,
+#			pady=button_pady
+#			)
+#		self.qie_quitSuite_button.pack(side=LEFT)
+
 
 		#################################
 		###			      ###
-		###  WIDGETS IN P.HOLD FRAME  ###
+		### WIDGETS IN RUNTIME FRAME  ###
 		###			      ###
 		#################################
+		
+		# Make and pack a text label for name selector
+		self.runtime_Label = Label(self.runtime_frame, text="Testing Status & Runtime Information")
+		self.runtime_Label.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.runtime_Label.pack(side=TOP)
+
+		# Top sub-frame in runtime frame
+		self.runtime_subTop_frame = Frame(
+			self.runtime_frame,
+			background="white"
+			)
+		self.runtime_subTop_frame.pack(
+			side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+		# Make a label for number of tests run
+		self.testsRun_Label = Label(self.runtime_subTop_frame, text="Number of tests run: ")
+		self.testsRun_Label.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.testsRun_Label.pack(side=LEFT)
+
+		# Make a box to actually display the number of labels run
+		self.runtime_outputText = Entry(
+			self.runtime_subTop_frame,
+			textvariable=self.runtimeNumber)
+		self.runtime_outputText.pack(side=LEFT)
 
 
 		#Make a widget that closes the GUI
-		self.closeButton = Button(self.placehold_frame, text="Close Window", background="orange red",
+		self.closeButton = Button(self.runtime_frame, text="Close Window", background="orange red",
 					  command=self.closeButtonPress)
 		self.closeButton.configure(
 			padx=button_padx*2,
@@ -623,6 +676,9 @@ class makeGui:
 		self.gb.sendBatch()
 		self.ngccmClickRead()
 
+#	def safeQuitTests(self):
+#		self.quitTestsFlag = True
+
 	def ngccmClickRead(self):
 		self.gb.read(0x74,1)
 		self.ngccmHexText.set(hex(int(self.gb.sendBatch()[0])))
@@ -653,20 +709,22 @@ class makeGui:
 
 	def runTestSuite(self):
 		#ONCE IT'S TIME TO TEST OTHER READOUT MODULES, MAKE THE APPROPRIATE CHANGES HERE
-		for card in (0x19,0x1a,0x1b,0x1c):
-			with open(self.nameChoiceVar.get()+"_"+str(hex(card))+".log", 'w') as humanFile:
-				with open(self.nameChoiceVar.get()+"_"+str(hex(card))+"_raw.json", 'w') as machineFile:
-					self.runTestSuiteHelper(card,humanFile,machineFile)
+		print str(datetime.now())
+		for k in range(0,int(self.runtimeNumber.get())):
+			if (k%10 == 0):
+				print "Number of tests completed: ", k
+			for card in (0x19,0x1a,0x1b,0x1c):
+				with open(self.nameChoiceVar.get()+"_"+str(k)+"_"+str(hex(card))+".log", 'w') as humanFile:
+					with open(self.nameChoiceVar.get()+"_"+str(k)+"_"+str(hex(card))+"_raw.json", 'w') as machineFile:
+						self.runTestSuiteHelper(card,humanFile,machineFile)
 		print "\nSuite Completed! Thank you! (:"
+		print str(datetime.now())
 
 	def runTestSuiteHelper(self,card,humanFile,machineFile):
 		dateString = str(datetime.now())
 		humanFile.write("Test performed by: "+self.nameChoiceVar.get())
 		humanFile.write("\nTime of testing: "+dateString)
 		humanFile.write("\nTesting comment(s):"+self.infoCommentVar.get()+"\n")
-#		machineFile.write(dateString+"\n")
-#		machineFile.write(self.nameChoiceVar.get()+"\n")
-#		machineFile.write(self.infoCommentVar.get()+"\n\n")
 		self.myCommands.runCompleteSuite(card,humanFile,machineFile,self.nameChoiceVar.get(),humanFile)	
 
 # These next few lines call the class and display the window
