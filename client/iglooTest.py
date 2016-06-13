@@ -28,12 +28,12 @@ def strToBin(aString):
 
 # helpful string to hex list
 def strToHex(string):
-        catBinary = ""
+        catHex = ""
         j=0
         for i in string.split():
-                catBinary = catBinary + " " + hex(int(string.split()[j]))[2:]
+                catHex = catHex + " " + hex(int(string.split()[j]))[2:]
                 j = j + 1
-        return catBinary
+        return catHex
 
 
 
@@ -403,13 +403,3 @@ def readAllIgloo():
     print "ScratchReg: " + scratchReg()
 
 readAllIgloo()
-
-##########################
-# The Igloo2 class
-##########################
-
-#class Igloo:
-
-    ###########################
-    # Register Functions
-    ###########################
