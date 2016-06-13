@@ -402,6 +402,8 @@ def readAllIgloo():
     print "SERDES: " + SERDES()
     print "ScratchReg: " + scratchReg()
 
+readAllIgloo()
+
 ##########################
 # The Igloo2 class
 ##########################
