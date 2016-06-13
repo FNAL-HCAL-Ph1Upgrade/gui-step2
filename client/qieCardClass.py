@@ -20,6 +20,8 @@ class qieCard:
 		self.temperature = -999.99
 		self.humidity    = -999.99
 		self.firmwareVer = ""
+		self.vttx1Result = ""
+		self.vttx2Result = ""
 
 		# Test results
 		self.passedTemp  = False

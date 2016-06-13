@@ -5,6 +5,7 @@ from client import webBus
 import QIELib
 import testLib
 import json
+import vttxTest
 from datetime import datetime
 from qieCardClass import qieCard
 
@@ -127,6 +128,10 @@ class qieCommands:
 			self.passesHumi = True
 		else:
 			self.passesHumi = False
+
+	def testVttx(self,card,webBus):
+		self.vttx1Result = vttxTest.vttx1RWR(card, webBus)
+		self.vttx2Result = vttxTest.vttx2RWR(card, webBus)
 		 
 		
 #	def runSuiteCompForm(self,register, jsonFile, tester, logFile):
@@ -150,6 +155,9 @@ class qieCommands:
 		self.activeCard.passedBrdg = self.brdgTest(register)
 		self.activeCard.passedOnes = self.tff_Test(register)
 		self.activeCard.passedZero = self.zeroTest(register)
+		self.testVttx(register,self.b)
+		self.activeCard.vttx1Result = self.vttx1Result
+		self.activeCard.vttx2Result = self.vttx2Result
 
 		with open(self.activeCard.uniqueID + ".log", 'a') as logFile:
 			with open(self.activeCard.uniqueID +"_"+str(runNumber)+"_raw.json", 'w') as jsonFile:
@@ -165,6 +173,8 @@ class qieCommands:
 				logFile.write("\nPasses Temp: "   + str(self.passesTemp))
 				logFile.write("\nPasses Humi: "   + str(self.passesHumi))
 				logFile.write("\nHumidity: "      + str(self.activeCard.humidity))
+				logFile.write("\nVttx 1 Read: "   + self.activeCard.vttx1Result)
+				logFile.write("\nVttx 2 Read: "   + self.activeCard.vttx2Result)
 				logFile.write("\n\nTests for "+str(hex(register))+" complete.")
 				logFile.write("\n\n")
 
