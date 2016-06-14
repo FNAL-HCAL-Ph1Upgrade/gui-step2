@@ -273,7 +273,10 @@ def qie_ck_ph(): # QIE1-12 Clock Phase (Valid values of 0-15)
     for i in range(0,12):
         b.write(0x09,[address[i]]) # clock phase for QIE#(i+1)
         b.read(0x09,1)
-        qie.append(strToHex(b.sendBatch()[1]))
+
+    for i in range(0,24):
+        if i%2 == 1:
+            qie.append(strToHex(b.sendBatch()[i]))
 
     '''
     b.write(0x09, [0x60]) # QIE1 clock phase
