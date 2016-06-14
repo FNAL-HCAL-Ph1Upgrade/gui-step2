@@ -274,64 +274,9 @@ def qie_ck_ph(): # QIE1-12 Clock Phase (Valid values of 0-15)
         b.write(0x09,[address[i]]) # clock phase for QIE#(i+1)
         b.read(0x09,1)
 
-    for i in range(0,24):
+    for i in range(0,24): #filling qie array
         if i%2 == 1:
             qie.append(strToHex(b.sendBatch()[i]))
-
-    '''
-    b.write(0x09, [0x60]) # QIE1 clock phase
-    b.read(0x09,1)
-    qie1 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x61]) # QIE2
-    b.read(0x09,1)
-    qie2 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x62]) # QIE3
-    b.read(0x09,1)
-    qie3 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x63]) # QIE4
-    b.read(0x09,1)
-    qie4 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x64]) # QIE5
-    b.read(0x09,1)
-    qie5 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x65]) # QIE6
-    b.read(0x09,1)
-    qie6 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x66]) # QIE7
-    b.read(0x09,1)
-    qie7 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x67]) # QIE8
-    b.read(0x09,1)
-    qie8 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x68]) # QIE9
-    b.read(0x09,1)
-    qie9 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x69]) # QIE10
-    b.read(0x09,1)
-    qie10 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x6A]) # QIE11
-    b.read(0x09,1)
-    qie11 = strToHex(b.sendBatch()[1])
-
-    b.write(0x09, [0x6B]) # QIE12
-    b.read(0x09,1)
-    qie12 = strToHex(b.sendBatch()[1])
-
-
-    return "QIE1:" + qie1 + ", 2:" + qie2 + ", 3:" + qie3 + ", 4:" + qie4\
-        + ", 5:" + qie5 + ", 6:" + qie6 + ", 7:" + qie7 + ", 8:" + qie8\
-        + ", 9:" + qie9 + ", 10:" + qie10 + ", 11:" + qie11 + ", 12:" + qie12
-    '''
 
     #formatting the output as a cat of the clock phases
     ret = ""
