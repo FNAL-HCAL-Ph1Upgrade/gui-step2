@@ -266,6 +266,16 @@ def spy96bits(): # "Fw-dependent monitoring (from v3.04 it is the orbit-histo)"
 
 # Register bytes 0x60-6B (RW)
 def qie_ck_ph(): # QIE1-12 Clock Phase (Valid values of 0-15)
+
+    address = [0x61,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x6B]
+    qie = []
+
+    for i in range(0,12):
+        b.write(0x09,[address[i]]) # clock phase for QIE#(i+1)
+        b.read(0x09,1)
+        qie[i] = strToHex(b.sendBatch()[1])
+
+    '''
     b.write(0x09, [0x60]) # QIE1 clock phase
     b.read(0x09,1)
     qie1 = strToHex(b.sendBatch()[1])
@@ -314,9 +324,19 @@ def qie_ck_ph(): # QIE1-12 Clock Phase (Valid values of 0-15)
     b.read(0x09,1)
     qie12 = strToHex(b.sendBatch()[1])
 
+
     return "QIE1:" + qie1 + ", 2:" + qie2 + ", 3:" + qie3 + ", 4:" + qie4\
         + ", 5:" + qie5 + ", 6:" + qie6 + ", 7:" + qie7 + ", 8:" + qie8\
         + ", 9:" + qie9 + ", 10:" + qie10 + ", 11:" + qie11 + ", 12:" + qie12
+    '''
+
+    #formatting the output as a cat of the clock phases
+    ret = ""
+    for i in range(0,11):
+        ret = ret + str((i+1)) + ": " + qie[i] + ", "
+    ret = ret + "12: " + qie[11]
+
+    return ret
 
 # Register byte 0x80 (RW)
 def link_test_mode():  # "Link test modes: hex7=ID, hex1=Counter-&-Pattern, hex0=Normal"
@@ -438,12 +458,12 @@ Zeros: 0 0 0 0
 FPGATopOrBottom: 0
 Unique ID:  ad b 0 0 0 0 0 0
 StatusReg: 0000000100 : 0 : 0 : 000000100000 : 000000 : 0 : 0
-CntrReg: 00000 : 000000 : 000000 : 00 : 000000 : 000000
-Clock Counter:  a8 2 53 1c
-QIE Reset Counter:  6 ee bc 1b
-WTE Counter:  0 5 bd 1b
-CapID Error Counter: Link1:  1 e 0 0, Link2:  1 e 0 0, Link3:  0 0 0 0
-FIFO Data: Data1:  f0 4 4 4 4 4 6 ff ff ff ff, Data2:  f8 4 5 6 5 4 4 ff ff ff ff, Data3:  fc 5 5 4 5 4 5 ff ff ff ff
+CntrReg: 000000 : 000000 : 000000 : 00 : 000000 : 000000
+Clock Counter:  8 a8 d8 30
+QIE Reset Counter:  60 c8 d0 1b
+WTE Counter:  22 e0 d0 1b
+CapID Error Counter: Link1:  0 4 0 0, Link2:  0 4 0 0, Link3:  0 0 0 0
+FIFO Data: Data1:  fc 5 5 5 5 4 5 ff ff ff ff, Data2:  f8 4 4 6 5 4 4 ff ff ff ff, Data3:  f0 4 4 6 4 4 5 ff ff ff ff
 InputSpy: 0 : 0 : 000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000010000000
 Spy96bits:  0 0 0 0 0 0 0 0 0 0 a0 aa
 QIE Clock Phase: QIE1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
