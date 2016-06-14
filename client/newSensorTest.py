@@ -56,6 +56,8 @@ def sensorHumid(rm,slot):
     print "                             oldHumid: " + str(oldHumid)
 
 
-    return humid
+    #return humid
 
-print "%.2f" %(sensorHumid(0,2))
+#print "%.2f" %(sensorHumid(0,2))
+
+sensorHumid(0,2)
