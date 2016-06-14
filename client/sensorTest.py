@@ -15,8 +15,12 @@ def sensorTemp(rm,slot):
     #Splitting the incoming data and reversing the order of bytes
     #(the read function's inherent reversal of bytes isn't compatible with
     #this particular sensor's desired output order)
-    data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
-    #Converting the temperature using equation
+
+    # Splitting the incoming data & concatenating strings of binary bytes
+    data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
+    # zero-ing out the 2 status bits, converting to int for calculations
+    data = int(data[0:14] + "00", 2)
+    # Converting temp using equation
     temp = (-46.85) +175.72*(data)/(2**16)
 
     return temp
@@ -32,12 +36,12 @@ def sensorHumid(rm,slot):
     b.read(0x40,2)
 
     data = b.sendBatch()[2]
-    #Splitting the incoming data and reversing the order of bytes
-    #(the read function's inherent reversal of bytes isn't compatible with
-    #this particular sensor's desired output order)
-    data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
-    #Converting the humidity using equation
-    humid = -6 + 125.0*(data)/(2**16)
+    # Splitting the incoming data & concatenating strings of binary bytes
+    data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
+    # zero-ing out the 2 status bits, converting to int for calculations
+    data = int(data[0:14] + "00", 2)
+    # Converting humidity using equation
+    humid = (-6.0) + 125.0 * (data)/(2**16)
 
     return humid
 
