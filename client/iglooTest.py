@@ -33,7 +33,7 @@ def strToHex(string):
         for i in string.split():
                 catHex = catHex + " " + hex(int(string.split()[j]))[2:]
                 j = j + 1
-        return catHex
+        return catH
 
 
 
@@ -107,11 +107,11 @@ def statusReg(desiredReg = "all"): # default = display all of register
     regBin = strToBin(reg)
 
     regBinDict = {
-    "InputSpyWordNum"   :   regBin[0:9], # number of words in InputSpyFifo (depth = 512)
+    "InputSpyWordNum"   :   regBin[0:10], # number of words in InputSpyFifo (depth = 512)
     "InputSpyFifoEmpty" :   regBin[10],
     "InputSpyFifoFull"  :   regBin[11],
-    "Qie_DLLNoLock"     :   regBin[12:23], # good when '0'
-    "BRIDGE_SPARE"      :   regBin[24:29],
+    "Qie_DLLNoLock"     :   regBin[12:24], # good when '0'
+    "BRIDGE_SPARE"      :   regBin[24:30],
     "1-bit"             :   regBin[30], # should be '0'
     "PLL 320MHz Lock"   :   regBin[31] # good when '1'
     }
@@ -142,11 +142,11 @@ def cntrReg(desiredReg = "all"): # default = display all of register
 
     regBinDict = {
     "31'bX"   :   regBin[0:5],
-    "orbitHisto_clear" :   regBin[6:11], # controls histo of the QIE_RST spacing
-    "orbitHisto_run"  :   regBin[12:17], # controls histo of the QIE_RST spacing
-    "2-bit 0"     :   regBin[18:19],
-    "WrEn_InputSpy"      :   regBin[20:25],
-    "CI_mode"             :   regBin[26:31], # Charge Injection mode of the QIE10
+    "orbitHisto_clear" :   regBin[6:12], # controls histo of the QIE_RST spacing
+    "orbitHisto_run"  :   regBin[12:18], # controls histo of the QIE_RST spacing
+    "2-bit 0"     :   regBin[18:20],
+    "WrEn_InputSpy"      :   regBin[20:26],
+    "CI_mode"             :   regBin[26:32], # Charge Injection mode of the QIE10
     }
 
     allRegBin = regBinDict["31'bX"] + " : " + regBinDict["orbitHisto_clear"]\
@@ -227,19 +227,19 @@ def inputSpy(desiredReg = "all"): # default = display all of register
     regBinDict = {
     "InputSpyFifoEmpty"   :   regBin[0],
     "InputSpyFifoFull" :   regBin[1],
-    "ClkCounter"  :   regBin[2:7], # 6-bit clock counter
-    "QIE1_out"     :   regBin[8:23], # all QIE#_out are 16-bit
-    "QIE2_out"      :   regBin[24:39],
-    "QIE3_out"      :   regBin[40:55],
-    "QIE4_out"      :   regBin[56:71],
-    "QIE5_out"      :   regBin[72:87],
-    "QIE6_out"      :   regBin[88:103],
-    "QIE7_out"      :   regBin[104:119],
-    "QIE8_out"      :   regBin[120:135],
-    "QIE9_out"      :   regBin[136:151],
-    "QIE10_out"      :   regBin[152:167],
-    "QIE11_out"      :   regBin[168:183],
-    "QIE12_out"      :   regBin[184:199],
+    "ClkCounter"  :   regBin[2:8], # 6-bit clock counter
+    "QIE1_out"     :   regBin[8:24], # all QIE#_out are 16-bit
+    "QIE2_out"      :   regBin[24:40],
+    "QIE3_out"      :   regBin[40:56],
+    "QIE4_out"      :   regBin[56:72],
+    "QIE5_out"      :   regBin[72:88],
+    "QIE6_out"      :   regBin[88:104],
+    "QIE7_out"      :   regBin[104:120],
+    "QIE8_out"      :   regBin[120:136],
+    "QIE9_out"      :   regBin[136:152],
+    "QIE10_out"      :   regBin[152:168],
+    "QIE11_out"      :   regBin[168:184],
+    "QIE12_out"      :   regBin[184:200],
     }
 
     allRegBin = regBinDict["InputSpyFifoEmpty"] + " : " + regBinDict["InputSpyFifoFull"]\
@@ -403,3 +403,28 @@ def readAllIgloo():
     print "ScratchReg: " + scratchReg()
 
 readAllIgloo()
+
+'''
+OLD READOUT (WITH INCORRECT ARRAY CUTS INSIDE REGISTERS)---->>>
+
+FPGA Major Version:  0
+FPGA Minor Version:  9
+Ones:  ff ff ff ff
+Zeros: 0 0 0 0
+FPGATopOrBottom: 0
+Unique ID:  ad b 0 0 0 0 0 0
+StatusReg: 000000010 : 0 : 0 : 00000010000 : 00000 : 0 : 0
+CntrReg: 00000 : 00000 : 00000 : 0 : 00000 : 00000
+Clock Counter:  40 1 85 75
+QIE Reset Counter:  4 c8 79 1b
+WTE Counter:  80 e7 79 1b
+CapID Error Counter: Link1:  1 e 0 0, Link2:  1 e 0 0, Link3:  0 0 0 0
+FIFO Data: Data1:  f0 4 4 4 4 4 6 ff ff ff ff, Data2:  f0 4 4 6 6 6 4 ff ff ff ff, Data3:  f4 4 4 4 4 4 5 ff ff ff ff
+InputSpy: 0 : 0 : 00000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000001000000
+Spy96bits:  0 0 0 0 0 0 0 0 0 0 a0 aa
+QIE Clock Phase: QIE1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
+Link Test Mode:  0
+Link Test Pattern:  ef be ed fe
+SERDES: dataToSERDES:  0 0 0 0, addrToSERDES: 0000000000000000, ctrlToSERDES: 00000000, dataFromSERDES:  0 0 0 0, statFromSERDES:  0 0 0 0
+ScratchReg:  ff ff ff ff
+'''
