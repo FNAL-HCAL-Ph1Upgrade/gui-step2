@@ -42,7 +42,7 @@ def sensorHumid(rm,slot):
     print "humid byte1+byte2 = " + byte1 + "+" + byte2
     catBytes = byte1+byte2
     print "catBytes = " + catBytes
-    useTheseBytes = catBytes[0:13] + "00"
+    useTheseBytes = catBytes[0:14] + "00"
     print "useTheseBytes" + useTheseBytes
 
     data = int(useTheseBytes,2)
