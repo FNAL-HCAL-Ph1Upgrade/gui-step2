@@ -45,11 +45,16 @@ def sensorHumid(rm,slot):
     useTheseBytes = catBytes[0:14] + "00"
     print "useTheseBytes" + useTheseBytes
 
-    data = int(useTheseBytes,2)
+    newData = int(useTheseBytes,2)
 
-    #data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
+    oldData = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
     #Converting the humidity using equation
-    humid = -6.0 + 125.0*(data)/(2**16)
+    newHumid = -6.0 + 125.0*(newData)/(2**16)
+    print "                             newHumid: " + str(newHumid)
+
+    oldHumid = -6.0 + 125.0*(oldData)/(2**16)
+    print "                             oldHumid: " + str(oldHumid)
+
 
     return humid
 
