@@ -14,18 +14,6 @@ from datetime import datetime
 
 class makeGui:
 	def __init__(self, parent):
-
-		# Create a list of QIECard slots:
-		self.cardSlots = ["Card 1", "Card 2", "Card 3", "Card 4", "Card 5",
-			     "Card 6","Card 7", "Card 8", "Card 9", "Card 10",
-			     "Card 11", "Card 12", "Card 13", "Card 14",
-			     "Card 15", "Card 16"]
-
-		# Create a list of nGCCme slots:
-		self.ngccmeSlots = ["nGCCme 1", "nGCCme 2"]
-
-		# Create a list of Readout Modules:
-		self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
 	
 		# Instantiate a qieCommands class member
 		self.myCommands = qieCommands()
@@ -38,14 +26,35 @@ class makeGui:
 		self.myParent = parent
 
 		# Create some string variables for text entry/display boxes
+		self.ngccmHexText   =  StringVar()
+		self.fanoutHexText  =  StringVar()
 		self.qieChoiceVar   =  StringVar()
 		self.qieReadVar     =  StringVar()
 		self.qieOutText     =  StringVar()
 		self.nameChoiceVar  =  StringVar()
 		self.infoCommentVar =  StringVar()
 		self.runtimeNumber  =  StringVar()
-		self.allCardSelection = IntVar()
 	
+		# Create integer variables for the fanout box's checkbuttons.
+		# Although they're integers, they should only ever hold the
+		# values 1 or 0.
+		self.checkVar7 = IntVar()
+		self.checkVar6 = IntVar()
+		self.checkVar5 = IntVar()
+		self.checkVar4 = IntVar()
+		self.checkVar3 = IntVar()
+		self.checkVar2 = IntVar()
+		self.checkVar1 = IntVar()
+		self.checkVar0 = IntVar()
+
+		# More integer variables for checkbuttons. This time for the ngCCM box.
+		self.ng_checkVar5 = IntVar()
+		self.ng_checkVar4 = IntVar()
+		self.ng_checkVar3 = IntVar()
+		self.ng_checkVar2 = IntVar()
+		self.ng_checkVar1 = IntVar()
+		self.ng_checkVar0 = IntVar()
+
 		# Place an all-encompassing frame in the parent window. All of the following
 		# frames will be placed here (topMost_frame) and not in the parent window.
 		self.topMost_frame = Frame(parent)
@@ -92,26 +101,43 @@ class makeGui:
 
 		# Make a top half-frame
 		self.topHalf_frame = Frame(self.topMost_frame)
-		self.topHalf_frame.pack(side=LEFT)
+		self.topHalf_frame.pack(side=TOP)
 
-		# Make a frame for containing an experiment diagram
-		self.experiment_frame = Frame(
+		# Make a bottom half-frame
+		self.botHalf_frame = Frame(self.topMost_frame)
+		self.botHalf_frame.pack(side=TOP)
+
+		# Make and pack a sub-frame within topMost_frame that will contain
+		# all of the controls for communicating with the fanout board
+		self.fanout_frame = Frame(
 			self.topHalf_frame,
 			borderwidth=5, relief=RIDGE,
-			height=580, width=300,
+			height=50,
 			background="white"
 			)
-		self.experiment_frame.pack_propagate=(False)
-		self.experiment_frame.pack(
+		self.fanout_frame.pack(
+			side=LEFT,
 			ipadx=frame_ipadx,
 			ipady=frame_ipady,
 			padx=frame_padx,
 			pady=frame_pady
 			)
 
-		# Make a bottom half-frame
-		self.botHalf_frame = Frame(self.topMost_frame)
-		self.botHalf_frame.pack(side=RIGHT)
+		# Make and pack a sub-frame within topMost_frame that will contain
+		# all of the controls for communicating with the ngccms
+		self.ngccm_frame = Frame(
+			self.topHalf_frame,
+			borderwidth=5, relief=RIDGE,
+			height=50,
+			background="white"
+			)
+		self.ngccm_frame.pack(
+			side=LEFT,
+			ipadx=frame_ipadx,
+			ipady=frame_ipady,
+			padx=frame_padx,
+			pady=frame_pady
+			)
 
 		# Make and pack a sub-frame within topMost_frame that will contain
 		# all of the controls for talking with the QIE cards
@@ -122,7 +148,7 @@ class makeGui:
 			background="white"
 			)
 		self.qie_frame.pack(
-			side=TOP,
+			side=LEFT,
 			ipadx=frame_ipadx,
 			ipady=frame_ipady,
 			padx=frame_padx,
@@ -141,7 +167,7 @@ class makeGui:
 		self.runtime_frame.pack_propagate(False)		
 
 		self.runtime_frame.pack(
-			side=TOP,
+			side=LEFT,
 			ipadx=frame_ipadx,
 			ipady=frame_ipady,
 			padx=frame_padx,
@@ -220,123 +246,205 @@ class makeGui:
 			textvariable=self.infoCommentVar
 			)
 		self.info_commentBox.pack(side=LEFT)
-
+	
 		######################################
-		#####                            #####
-		#####  Experiment Setup Frm      #####
+		#####				 #####
+		#####  Widgets in fanout frame   #####
 		#####				 #####
 		######################################
+		
+		# Make and pack a text label for the fanout frame
+		self.fanoutLabel = Label(self.fanout_frame, text="Clock Fanout Board   -   Hex Code: 0x72")
+		self.fanoutLabel.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.fanoutLabel.pack(side=TOP)
 
-		# Make left subframe
-		self.experi_subLeft_frame = Frame(self.experiment_frame,background="white")
-		self.experi_subLeft_frame.pack(
-			side=LEFT,
+		# Make a sub-sub-frame within the fanout frame that will allow us to better control
+		# the layout. This one is called subTop_frame, as it will go on top of the subBot_frame
+		# (which gets created below).
+		self.fanout_subTop_frame = Frame(
+			self.fanout_frame,
+			background="white"
+			)
+		self.fanout_subTop_frame.pack(
+			side=TOP,
                         ipadx=frame_ipadx,
                         ipady=frame_ipady,
                         padx=frame_padx,
                         pady=frame_pady
-			)
+                        )
 
-		# Make middle left subframe
-		self.experi_subMidLeft_frame = Frame(self.experiment_frame,background="white")
-		self.experi_subMidLeft_frame.pack(
-			side=LEFT,
+		# Make a sub-sub-frame within the fanout frame. This one will go beneath the subTop_frame
+		# (created above)
+		self.fanout_subBot_frame = Frame(
+			self.fanout_frame,
+			background="white"
+			)
+		self.fanout_subBot_frame.pack(
+			side=TOP,
                         ipadx=frame_ipadx,
                         ipady=frame_ipady,
                         padx=frame_padx,
                         pady=frame_pady
-			)
+                        )
 
-		# Make middle right subframe
-		self.experi_subMidRight_frame = Frame(self.experiment_frame,background="white")
-		self.experi_subMidRight_frame.pack(
-			side=LEFT,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
+		#Make and pack a simple "multiplexer: " label
+		self.fanoutPlexLabel = Label(self.fanout_subTop_frame,text="Multiplexer: ")
+		self.fanoutPlexLabel.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
 			)
+		self.fanoutPlexLabel.pack(side=LEFT)
 
-		# Make right subframe
-		self.experi_subRight_frame = Frame(self.experiment_frame,background="white")
-		self.experi_subRight_frame.pack(
-			side=LEFT,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
-			)
+		#Add a text field that outputs the hex address. Make it readonly.
+                self.fanoutHexTextBox = Entry(self.fanout_subTop_frame, textvariable=self.fanoutHexText,state="readonly",readonlybackground="gray90")
+                self.fanoutHexTextBox.pack(side=LEFT)
 
-		# Make and pack a checkbutton to enable ALL of the
-		# QIE Card Slots
-		self.allRadio = Checkbutton(
-			self.experi_subLeft_frame,
-			text="All slots",
-			variable=self.allCardSelection,
-			background="white",
-			command = self.allCheckBttnClick
-			)
-		self.allRadio.configure(
+		#Make checkbox 7
+		self.check7 = Checkbutton(self.fanout_subBot_frame,text="7", variable=self.checkVar7)
+		self.check7.pack(side=LEFT)
+		#Make checkbox 6
+		self.check6 = Checkbutton(self.fanout_subBot_frame,text="6", variable=self.checkVar6)
+		self.check6.pack(side=LEFT)
+		#Make checkbox 5
+		self.check5 = Checkbutton(self.fanout_subBot_frame,text="5", variable=self.checkVar5)
+		self.check5.pack(side=LEFT)
+		#Make checkbox 4
+		self.check4 = Checkbutton(self.fanout_subBot_frame,text="4", variable=self.checkVar4)
+		self.check4.pack(side=LEFT)
+		#Make checkbox 3
+		self.check3 = Checkbutton(self.fanout_subBot_frame,text="3", variable=self.checkVar3)
+		self.check3.pack(side=LEFT)
+		#Make checkbox 2
+		self.check2 = Checkbutton(self.fanout_subBot_frame,text="2", variable=self.checkVar2)
+		self.check2.pack(side=LEFT)
+		#Make checkbox 1
+		self.check1 = Checkbutton(self.fanout_subBot_frame,text="1", variable=self.checkVar1)
+		self.check1.pack(side=LEFT)
+		#Make checkbox 0
+		self.check0 = Checkbutton(self.fanout_subBot_frame,text="0", variable=self.checkVar0)
+		self.check0.pack(side=LEFT)
+
+		#Make a button to write to fanout and assign it to the member function "self.fanoutClickWrite"
+		self.fanout_write_Button = Button(self.fanout_subBot_frame, command=self.fanoutClickWrite)
+		self.fanout_write_Button.configure(text="WRITE",background="green")
+		self.fanout_write_Button.configure(
+			width=button_width*2,
 			padx=button_padx,
 			pady=button_pady
 			)
-		self.allRadio.pack(side=TOP)
+		self.fanout_write_Button.pack(side=RIGHT)
 
-		# Make and pack two checkbuttons that control each
-		# nGCCme card
-		self.ngccmeVarList = [IntVar(), IntVar()]
-		
-		for i in range(len(self.ngccmeSlots)):
-			self.ngccmeCheck = Checkbutton(
-				self.experi_subMidLeft_frame,
-				text = self.ngccmeSlots[i],
-				variable = self.ngccmeVarList[i],
-				background = "white",
-				command = self.ngccmeCheckBttnClick
-				)
-			self.ngccmeCheck.configure(
-				padx=button_padx,
-				pady=button_pady,
-				)
-			self.ngccmeCheck.pack(side=TOP)
+		#Make a button to read what is at the fanout. Member function is "self.fanoutClickRead"
+		self.fanout_read_Button = Button(self.fanout_subTop_frame, command=self.fanoutClickRead)
+		self.fanout_read_Button.configure(text="READ",background="khaki")
+		self.fanout_read_Button.configure(
+			width=button_width*2,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.fanout_read_Button.pack(side=RIGHT)
 
-		# Make and pack four checkbuttons that control all
-		# four of the readout modules
-		self.readoutVarList = [IntVar() for i in range(0,4)]
-		
-		for i in range(len(self.readoutSlots)):
-			self.readoutCheck = Checkbutton(
-				self.experi_subMidRight_frame,
-				text = self.readoutSlots[i],
-				variable = self.readoutVarList[i],
-				background = "white",
-				command = self.rmCheckBttnClick
-				)
-			self.readoutCheck.configure(
-				padx=button_padx,
-				pady=button_pady
-				)
-			self.readoutCheck.pack(side=TOP)
-		
-		# Now we're dealing with individual card slots.
-		# First, create many variables for the checkbuttons
-		self.cardVarList = [IntVar() for i in range(0,17)]
-		
-		# Then, for each variable in cardVarList, add a
-		# checkbutton that corresponds to it
-		for i in range(len(self.cardSlots)):
-			self.cardRadio = Checkbutton(
-				self.experi_subRight_frame,
-				text = self.cardSlots[i],
-				variable = self.cardVarList[i+1],
-				background = "white"
-				)
-			self.cardRadio.configure(
-				padx=button_padx,
-				pady=button_pady,
-				)
-			self.cardRadio.pack(side=TOP)
-				
+
+		######################################
+		#####				 #####
+		##### Widgets in the ngCCM frame #####
+		#####				 #####
+		######################################
+	
+		# I'm going to spare some comments here. For the most part, this is the exact
+		# same logic as what is in the "Widgets in the fanout frame" section of code.
+
+		#Make a text label for the frame
+		self.ngCCMLabel = Label(self.ngccm_frame, text="ngCCM Board   -   Hex Code: 0x74")
+		self.ngCCMLabel.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.ngCCMLabel.pack(side=TOP)
+
+		# Top sub-frame in ngCCM
+		self.ngccm_subTop_frame = Frame(
+			self.ngccm_frame,
+			background="white"
+			)
+		self.ngccm_subTop_frame.pack(
+			side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+		# Bottom sub-frame in ngCCM
+                self.ngccm_subBot_frame = Frame(
+                        self.ngccm_frame,
+                        background="white"
+                        )
+                self.ngccm_subBot_frame.pack(
+                        side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+		#Add textbox that says "Multiplexer: "
+                self.ngccmPlexLabel = Label(self.ngccm_subTop_frame,text="Multiplexer: ")
+                self.ngccmPlexLabel.configure(
+                        padx=button_padx,
+                        pady=button_pady,
+                        background="white"
+                        )
+                self.ngccmPlexLabel.pack(side=LEFT)
+
+		#Add a text field that outputs the hex address
+		self.ngccmHexTextBox = Entry(self.ngccm_subTop_frame, textvariable=self.ngccmHexText,state="readonly",readonlybackground="gray90")
+		self.ngccmHexTextBox.pack(side=LEFT)
+
+		#Make checkbox 5 (We only use 5 checkboxes because of some hardware things)
+		self.ngCCM_check5 = Checkbutton(self.ngccm_subBot_frame,text="5", variable=self.ng_checkVar5)
+		self.ngCCM_check5.pack(side=LEFT)
+		#Make checkbox 4
+		self.ngCCM_check4 = Checkbutton(self.ngccm_subBot_frame,text="4", variable=self.ng_checkVar4)
+		self.ngCCM_check4.pack(side=LEFT)
+		#Make checkbox 3
+		self.ngCCM_check3 = Checkbutton(self.ngccm_subBot_frame,text="3", variable=self.ng_checkVar3)
+		self.ngCCM_check3.pack(side=LEFT)
+		#Make checkbox 2
+		self.ngCCM_check2 = Checkbutton(self.ngccm_subBot_frame,text="2", variable=self.ng_checkVar2)
+		self.ngCCM_check2.pack(side=LEFT)
+		#Make checkbox 1
+		self.ngCCM_check1 = Checkbutton(self.ngccm_subBot_frame,text="1", variable=self.ng_checkVar1)
+		self.ngCCM_check1.pack(side=LEFT)
+		#Make checkbox 0
+		self.ngCCM_check0 = Checkbutton(self.ngccm_subBot_frame,text="0", variable=self.ng_checkVar0)
+		self.ngCCM_check0.pack(side=LEFT)
+
+		#Make a button to write the hex number
+		self.ngCCM_write_Button = Button(self.ngccm_subBot_frame, command=self.ngccmClickWrite)
+		self.ngCCM_write_Button.configure(text="WRITE",background="green")
+		self.ngCCM_write_Button.configure(
+			width=button_width*2,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.ngCCM_write_Button.pack(side=RIGHT)
+
+		#Make a button to read what is at the address
+		self.ngCCM_read_Button = Button(self.ngccm_subTop_frame, command=self.ngccmClickRead)
+		self.ngCCM_read_Button.configure(text="READ",background="khaki")
+		self.ngCCM_read_Button.configure(
+			width=button_width*2,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.ngCCM_read_Button.pack(side=RIGHT)
 
 		######################################
 		#####				 #####
@@ -470,6 +578,17 @@ class makeGui:
 			)
 		self.qie_testSuite_button.pack(side=LEFT)
 
+		#Make a button to stop the main test suite without closing window
+#		self.qie_quitSuite_button = Button(self.qie_subBot_frame, command = self.safeQuitTests)
+#		self.qie_quitSuite_button.configure(text="SAFELY QUIT TESTS", background="red")
+#		self.qie_quitSuite_button.configure(
+#			width=button_width*2,
+#			padx=button_padx,
+#			pady=button_pady
+#			)
+#		self.qie_quitSuite_button.pack(side=LEFT)
+
+
 		#################################
 		###			      ###
 		### WIDGETS IN RUNTIME FRAME  ###
@@ -529,27 +648,6 @@ class makeGui:
 	###  BEGIN MEMBER FUNCTIONS   ###
 	###			      ###
 	#################################
-	
-	def allCheckBttnClick(self):
-		self.ngccmeVarList[0].set(self.allCardSelection.get())
-		self.ngccmeVarList[1].set(self.allCardSelection.get())
-		for i in range(0,4):
-			self.readoutVarList[i].set(self.allCardSelection.get())
-		self.rmCheckBttnClick()
-
-	def ngccmeCheckBttnClick(self):
-		self.readoutVarList[0].set(self.ngccmeVarList[0].get())
-		self.readoutVarList[1].set(self.ngccmeVarList[0].get())
-		self.readoutVarList[2].set(self.ngccmeVarList[1].get())
-		self.readoutVarList[3].set(self.ngccmeVarList[1].get())
-		self.rmCheckBttnClick()
-
-	def rmCheckBttnClick(self):
-		for i in range(1,5): self.cardVarList[i].set(self.readoutVarList[0].get())
-		for i in range(5,9): self.cardVarList[i].set(self.readoutVarList[1].get())
-		for i in range(9,13): self.cardVarList[i].set(self.readoutVarList[2].get())
-		for i in range(13,17): self.cardVarList[i].set(self.readoutVarList[3].get())
-
 
 	def checksToHex(self,inCheck0,inCheck1,inCheck2,inCheck3,inCheck4,inCheck5,inCheck6,inCheck7):
 		hexVar = (inCheck0*1)+(inCheck1*2)+(inCheck2*4)+(inCheck3*8)+(inCheck4*16)+\
@@ -560,6 +658,31 @@ class makeGui:
 		# IF ANYTHING SHOULD BE DONE ON CANCELLATION
 		# PUT IT IN THIS FUNCTION
 		self.myParent.destroy()
+
+	def fanoutClickWrite(self):
+		hexCon = self.checksToHex(self.checkVar0.get(),self.checkVar1.get(),self.checkVar2.get(),self.checkVar3.get(),
+			 self.checkVar4.get(),self.checkVar5.get(),self.checkVar6.get(),self.checkVar7.get())
+		self.gb.write(0x72,[hexCon])
+		self.gb.sendBatch()
+		self.fanoutClickRead()
+
+	def fanoutClickRead(self):
+		self.gb.read(0x72,1)
+		self.fanoutHexText.set(hex(int(self.gb.sendBatch()[0])))
+
+	def ngccmClickWrite(self):
+		hexCon = self.checksToHex(self.ng_checkVar0.get(), self.ng_checkVar1.get(), self.ng_checkVar2.get(),
+			 self.ng_checkVar3.get(),self.ng_checkVar4.get(),self.ng_checkVar5.get(), 0, 0)
+		self.gb.write(0x74,[hexCon])
+		self.gb.sendBatch()
+		self.ngccmClickRead()
+
+#	def safeQuitTests(self):
+#		self.quitTestsFlag = True
+
+	def ngccmClickRead(self):
+		self.gb.read(0x74,1)
+		self.ngccmHexText.set(hex(int(self.gb.sendBatch()[0])))
 
 	def qieClickRead(self):     # Where the magic(?) happens
 		# See what test the user has selected, and then run that test from the

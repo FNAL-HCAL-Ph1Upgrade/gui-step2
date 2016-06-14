@@ -374,4 +374,3 @@ i2cDict = {
     }
 }
 
-print basicTests(0x19, 27)

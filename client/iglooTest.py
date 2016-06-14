@@ -396,4 +396,3 @@ def readAllIgloo(slot):
     print "SERDES: " + SERDES()
     print "ScratchReg: " + scratchReg()
 
-readAllIgloo(0x19)

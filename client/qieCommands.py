@@ -92,7 +92,6 @@ class qieCommands:
 		#Converting the temperature using equation
 		temp = (-46.85) +175.72*(data)/(2**16)
 		self.tempStore = round(temp,3)
-		#print self.tempStore
 
 	def sensorHumid(self,rm,qieCard):  # Thanks, Adryanna!
 		#b = webBus("pi5")
@@ -108,7 +107,6 @@ class qieCommands:
 		#Converting the humidity using equation
 		humid = -6 + 125.0*(data)/(2**16)
 		self.humiStore = round(humid,3)
-		#print self.humiStore
 
 	def getUniqueID(self,rm, qieCard):  # Thanks, Caleb!
 		#b = webBus("pi5")
