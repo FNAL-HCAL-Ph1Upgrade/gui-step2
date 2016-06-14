@@ -141,7 +141,7 @@ def cntrReg(desiredReg = "all"): # default = display all of register
     regBin = strToBin(reg)
 
     regBinDict = {
-    "31'bX"   :   regBin[0:5],
+    "31'bX"   :   regBin[0:6],
     "orbitHisto_clear" :   regBin[6:12], # controls histo of the QIE_RST spacing
     "orbitHisto_run"  :   regBin[12:18], # controls histo of the QIE_RST spacing
     "2-bit 0"     :   regBin[18:20],
@@ -421,6 +421,30 @@ WTE Counter:  80 e7 79 1b
 CapID Error Counter: Link1:  1 e 0 0, Link2:  1 e 0 0, Link3:  0 0 0 0
 FIFO Data: Data1:  f0 4 4 4 4 4 6 ff ff ff ff, Data2:  f0 4 4 6 6 6 4 ff ff ff ff, Data3:  f4 4 4 4 4 4 5 ff ff ff ff
 InputSpy: 0 : 0 : 00000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000001000000
+Spy96bits:  0 0 0 0 0 0 0 0 0 0 a0 aa
+QIE Clock Phase: QIE1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
+Link Test Mode:  0
+Link Test Pattern:  ef be ed fe
+SERDES: dataToSERDES:  0 0 0 0, addrToSERDES: 0000000000000000, ctrlToSERDES: 00000000, dataFromSERDES:  0 0 0 0, statFromSERDES:  0 0 0 0
+ScratchReg:  ff ff ff ff
+
+
+NEW READOUT (FIXED THE ARRAY CUTS)
+
+FPGA Major Version:  0
+FPGA Minor Version:  9
+Ones:  ff ff ff ff
+Zeros: 0 0 0 0
+FPGATopOrBottom: 0
+Unique ID:  ad b 0 0 0 0 0 0
+StatusReg: 0000000100 : 0 : 0 : 000000100000 : 000000 : 0 : 0
+CntrReg: 00000 : 000000 : 000000 : 00 : 000000 : 000000
+Clock Counter:  a8 2 53 1c
+QIE Reset Counter:  6 ee bc 1b
+WTE Counter:  0 5 bd 1b
+CapID Error Counter: Link1:  1 e 0 0, Link2:  1 e 0 0, Link3:  0 0 0 0
+FIFO Data: Data1:  f0 4 4 4 4 4 6 ff ff ff ff, Data2:  f8 4 5 6 5 4 4 ff ff ff ff, Data3:  fc 5 5 4 5 4 5 ff ff ff ff
+InputSpy: 0 : 0 : 000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000010000000
 Spy96bits:  0 0 0 0 0 0 0 0 0 0 a0 aa
 QIE Clock Phase: QIE1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
 Link Test Mode:  0
