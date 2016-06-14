@@ -37,6 +37,14 @@ def sensorHumid(rm,slot):
     #(the read function's inherent reversal of bytes isn't compatible with
     #this particular sensor's desired output order)
 
+    data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
+    data = int(data[0:14] + "00") # zero-ing out the 2 status bits
+
+    humid = -6.0 + 125.0*(data)/(2**16)
+
+    return humid
+
+'''
     byte1 = format(int(data.split()[0]),'08b')
     byte2 = format(int(data.split()[1]),'08b')
     print "humid byte1+byte2 = " + byte1 + "+" + byte2
@@ -54,7 +62,7 @@ def sensorHumid(rm,slot):
 
     oldHumid = -6.0 + 125.0*(oldData)/(2**16)
     print "                             oldHumid: " + str(oldHumid)
-
+'''
 
     #return humid
 
