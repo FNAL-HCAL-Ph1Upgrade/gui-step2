@@ -227,29 +227,18 @@ class makeGui:
 		#####				 #####
 		######################################
 
+		# Make a label for the entire frame
+		self.experi_subFrame_lbl = Label(self.experiment_frame,text="Hardware Setup (Check boxes to add cards to test)")
+		self.experi_subFrame_lbl.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.experi_subFrame_lbl.pack(side=TOP)
+
 		# Make left subframe
 		self.experi_subLeft_frame = Frame(self.experiment_frame,background="white")
 		self.experi_subLeft_frame.pack(
-			side=LEFT,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
-			)
-
-		# Make middle left subframe
-		self.experi_subMidLeft_frame = Frame(self.experiment_frame,background="white")
-		self.experi_subMidLeft_frame.pack(
-			side=LEFT,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
-			)
-
-		# Make middle right subframe
-		self.experi_subMidRight_frame = Frame(self.experiment_frame,background="white")
-		self.experi_subMidRight_frame.pack(
 			side=LEFT,
                         ipadx=frame_ipadx,
                         ipady=frame_ipady,
@@ -267,13 +256,33 @@ class makeGui:
                         pady=frame_pady
 			)
 
+		# Make far right subframe
+		self.experi_farRight_frame = Frame(self.experiment_frame,background="white")
+		self.experi_farRight_frame.pack(
+			side=LEFT,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+			)
+
+
+		# Label for higher-level hardware
+		self.experi_highlevel_lbl = Label(self.experi_subLeft_frame,text="High-Level\n")
+		self.experi_highlevel_lbl.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.experi_highlevel_lbl.pack(side=TOP)
+
 		# Make and pack a checkbutton to enable ALL of the
 		# QIE Card Slots
 		self.allRadio = Checkbutton(
 			self.experi_subLeft_frame,
 			text="All slots",
 			variable=self.allCardSelection,
-			background="white",
+			background="DarkSeaGreen1",
 			command = self.allCheckBttnClick
 			)
 		self.allRadio.configure(
@@ -282,16 +291,19 @@ class makeGui:
 			)
 		self.allRadio.pack(side=TOP)
 
+		self.blankLabel1 = Label(self.experi_subLeft_frame, text="", background="white")
+		self.blankLabel1.pack(side=TOP)
+
 		# Make and pack two checkbuttons that control each
 		# nGCCme card
 		self.ngccmeVarList = [IntVar(), IntVar()]
 		
 		for i in range(len(self.ngccmeSlots)):
 			self.ngccmeCheck = Checkbutton(
-				self.experi_subMidLeft_frame,
+				self.experi_subLeft_frame,
 				text = self.ngccmeSlots[i],
 				variable = self.ngccmeVarList[i],
-				background = "white",
+				background = "lemon chiffon",   # sounds delicious
 				command = self.ngccmeCheckBttnClick
 				)
 			self.ngccmeCheck.configure(
@@ -300,16 +312,19 @@ class makeGui:
 				)
 			self.ngccmeCheck.pack(side=TOP)
 
+		self.blankLabel2 = Label(self.experi_subLeft_frame, text="", background="white")
+		self.blankLabel2.pack(side=TOP)
+
 		# Make and pack four checkbuttons that control all
 		# four of the readout modules
 		self.readoutVarList = [IntVar() for i in range(0,4)]
 		
 		for i in range(len(self.readoutSlots)):
 			self.readoutCheck = Checkbutton(
-				self.experi_subMidRight_frame,
+				self.experi_subLeft_frame,
 				text = self.readoutSlots[i],
 				variable = self.readoutVarList[i],
-				background = "white",
+				background = "light cyan",
 				command = self.rmCheckBttnClick
 				)
 			self.readoutCheck.configure(
@@ -317,7 +332,17 @@ class makeGui:
 				pady=button_pady
 				)
 			self.readoutCheck.pack(side=TOP)
-		
+
+		# Label for individual card column
+		self.experi_cards_lbl = Label(self.experi_subRight_frame,text="QIE Cards\n")
+		self.experi_cards_lbl.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.experi_cards_lbl.pack(side=TOP)
+
+	
 		# Now we're dealing with individual card slots.
 		# First, create many variables for the checkbuttons
 		self.cardVarList = [IntVar() for i in range(0,17)]
@@ -329,14 +354,37 @@ class makeGui:
 				self.experi_subRight_frame,
 				text = self.cardSlots[i],
 				variable = self.cardVarList[i+1],
-				background = "white"
+				background = "lavender"
 				)
 			self.cardRadio.configure(
 				padx=button_padx,
 				pady=button_pady,
 				)
 			self.cardRadio.pack(side=TOP)
-				
+
+		# Now, we add stuff to the farRight frame
+		
+		# Far-right label
+		# Label for card barcode column
+		self.experi_barcode_lbl = Label(self.experi_farRight_frame,text="Barcodes\n")
+		self.experi_barcode_lbl.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.experi_barcode_lbl.pack(side=TOP)
+
+		# Create many barcode variables
+		self.barcodeVarList = [StringVar() for i in range(0,17)]
+
+		# Then, for each variable in barcodeVarList, add a Entry corresponding to it
+		for i in range(1,17):
+			self.barcodeEntry = Entry(
+				self.experi_farRight_frame,
+				textvariable=self.barcodeVarList[i],
+				borderwidth=4
+				)
+			self.barcodeEntry.pack(side=TOP)
 
 		######################################
 		#####				 #####
@@ -514,6 +562,18 @@ class makeGui:
 		self.runtime_outputText.pack(side=LEFT)
 		self.runtimeNumber.set(1)
 
+		#Make a button that removes all barcodes
+		self.clearBarcodeBttn = Button(
+			self.runtime_frame,
+			text="Clear Entered Barcodes",
+			background="salmon1",
+			command=self.clearBarcodePress
+			)
+		self.clearBarcodeBttn.configure(
+			padx=button_padx*2,
+			pady=button_pady*2
+			)
+		self.clearBarcodeBttn.pack(side=TOP)
 
 		#Make a widget that closes the GUI
 		self.closeButton = Button(self.runtime_frame, text="Close Window", background="orange red",
@@ -549,6 +609,10 @@ class makeGui:
 		for i in range(5,9): self.cardVarList[i].set(self.readoutVarList[1].get())
 		for i in range(9,13): self.cardVarList[i].set(self.readoutVarList[2].get())
 		for i in range(13,17): self.cardVarList[i].set(self.readoutVarList[3].get())
+
+	def clearBarcodePress(self):
+		for i in range(1,17):
+			self.barcodeVarList[i].set("")
 
 
 	def checksToHex(self,inCheck0,inCheck1,inCheck2,inCheck3,inCheck4,inCheck5,inCheck6,inCheck7):
