@@ -33,7 +33,7 @@ def strToHex(string):
         for i in string.split():
                 catHex = catHex + " " + hex(int(string.split()[j]))[2:]
                 j = j + 1
-        return catH
+        return catHex
 
 
 
