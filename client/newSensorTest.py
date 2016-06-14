@@ -43,7 +43,7 @@ def sensorHumid(rm,slot):
     catBytes = byte1+byte2
     print "catBytes = " + catBytes
     useTheseBytes = catBytes[0:14] + "00"
-    print "useTheseBytes" + useTheseBytes
+    print "useThese = s" + useTheseBytes
 
     newData = int(useTheseBytes,2)
 
