@@ -29,7 +29,7 @@ print "%.2f" %(sensorTemp(0,2))
 def sensorHumid(rm,slot):
     q.openChannel(rm,slot)
     b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
-    b.write(0x40,[0xe5])
+    b.write(0x40,[0xf5])
     b.read(0x40,2)
 
     data = b.sendBatch()[2]
@@ -38,10 +38,11 @@ def sensorHumid(rm,slot):
     #this particular sensor's desired output order)
 
     data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
-    data = int(data[0:14] + "00") # zero-ing out the 2 status bits
-
-    humid = -6.0 + 125.0*(data)/(2**16)
-
+    print "data binary: " + data
+    data = int(data[0:14] + "00",2) # zero-ing out the 2 status bits
+    print "data no sta: %f" %data
+    humid = (-6.0) + 125.0 * (data)/(2**16)
+    print "humid b4 return: %f" %humid
     return humid
 
 '''
@@ -66,6 +67,6 @@ def sensorHumid(rm,slot):
 
     #return humid
 
-#print "%.2f" %(sensorHumid(0,2))
+print "                     HUMID: %.2f" %(sensorHumid(0,2))
 
-sensorHumid(0,2)
+#sensorHumid(0,2)
