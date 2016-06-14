@@ -29,7 +29,7 @@ print "%.2f" %(sensorTemp(0,2))
 def sensorHumid(rm,slot):
     q.openChannel(rm,slot)
     b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
-    b.write(0x40,[0xf5])
+    b.write(0x40,[0xe5])
     b.read(0x40,2)
 
     data = b.sendBatch()[2]

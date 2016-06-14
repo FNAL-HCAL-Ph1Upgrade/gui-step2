@@ -18,10 +18,12 @@ def sensorTemp(rm,slot):
     data = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
     #Converting the temperature using equation
     temp = (-46.85) +175.72*(data)/(2**16)
+    
+    print "                             Temp DATA = " + str(data)    
 
     return temp
 
-print "%.2f" %(sensorTemp(0,2))
+print "                                  " +  "%.2f" %(sensorTemp(0,2))
 
 
 #returns the relative humidity of the QIE card
@@ -39,6 +41,8 @@ def sensorHumid(rm,slot):
     #Converting the humidity using equation
     humid = -6 + 125.0*(data)/(2**16)
 
+    print "                             Humid DATA = " + str(data)
+
     return humid
 
-print "%.2f" %(sensorHumid(0,2))
+print "                                 " + "%.2f" %(sensorHumid(0,2))
