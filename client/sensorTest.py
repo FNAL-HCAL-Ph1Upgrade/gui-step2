@@ -13,11 +13,38 @@ def sensorTemp(rm,slot):
 
     data = (b.sendBatch()[2]).split()
     checksum = data[2] # 3rd byte of data is the checksum
-    print "Checksum: " + format(int(checksum),'08b')
+    print "Checksum: " + hex(int(checksum))[2:]
 
-    #Splitting the incoming data and reversing the order of bytes
-    #(the read function's inherent reversal of bytes isn't compatible with
-    #this particular sensor's desired output order)
+
+# def checkCRC(data, checksum):
+#   crc = 0
+#   # calculates 8-Bit checksum with given polynomial
+#   for i in range(0,2): # 2 data bytes total
+#       crc ^= (data[i])
+#       bit = 8
+#       for i in range(0,8):
+#           if (crc & )
+#           bit -= 1
+#     for
+#  (u8t bit = 8; bit > 0;
+# --
+# bit)
+#     {
+# if
+#  (crc & 0x80) crc = (crc << 1) ^ POLYNOMIAL;
+# else
+#  crc = (crc << 1);
+#     }
+#   }
+# if
+#  (crc != c
+# hecksum)
+# return
+#  CHECKSUM_ERROR;
+# else
+# return
+#  0;
+# }
 
     # Splitting the incoming data & concatenating strings of binary bytes
     data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
