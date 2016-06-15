@@ -1,15 +1,18 @@
 #registers.py
 
+
 registers = {
     "ID_string" :{
         "address" : 0x00,
         "size" : 32,
-        "RW" : 0
+        "RW" : 0,
+        "expected" : "77 82 69 72" #MREH in ascii
         },
     "ID_string_cont" :{
         "address" : 0x01,
         "size" : 32,
-        "RW" : 0
+        "RW" : 0,
+        "expected" : "103 100 114 66" #gdrB in ascii
         },
     "FW_Version" :{
         "address" : 0x04,
@@ -20,16 +23,19 @@ registers = {
         "address" : 0x08,
         "size" : 32,
         "RW" : 0
+        "expected" : "255 255 255 255"
         },
     "Zeroes" :{
         "address" : 0x09,
         "size" : 32,
-        "RW" : 0
+        "RW" : 0,
+        "expected" : "0 0 0 0"
         },
     "OnesZeroes" :{
         "address" : 0x0A,
         "size" : 32,
-        "RW" : 0
+        "RW" : 0,
+        "expected" : "170 170 170 170"
         },
     "Scratch" :{
         "address" : 0x0B,

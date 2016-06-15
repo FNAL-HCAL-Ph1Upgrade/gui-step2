@@ -31,3 +31,9 @@ class RM:
         for card in self.qCards:
             s += "qCard at %s \n" % card.slot
         return s
+    def runAll(self):
+        for q in self.qCards:
+            q.runAll()
+    def printAll(self):
+        for q in self.qCards:
+            print q

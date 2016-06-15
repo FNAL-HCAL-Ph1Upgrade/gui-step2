@@ -1,34 +1,66 @@
-testList = []
+#import helpers as h
+import sys
+sys.path.append('../')
+import client
+#from registers import registers
 
-##Helper functions for tests:
-def getBitsFromByte(decimal):
-    return list('%08d' % int(bin(decimal)[2:]))
+registers = {
+    "ID_string" :{
+        "address" : 0x00,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "77 82 69 72" #MREH in ascii
+        },
+    "ID_string_cont" :{
+        "address" : 0x01,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "103 100 114 66" #gdrB in ascii
+        },
+    "Ones" :{
+        "address" : 0x08,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "255 255 255 255"
+        },
+    "Zeroes" :{
+        "address" : 0x09,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "0 0 0 0"
+        },
+    "OnesZeroes" :{
+        "address" : 0x0A,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "170 170 170 170"
+        }
+}
+class testSuite:
+    def __init__(self, webAddress, address):
+        '''create a new test suite object... initialize bus and address'''
+        self.bus = client.webBus(webAddress, 0)
+        self.address = address
 
-def getBitsFromBytes(decimalBytes):
-    ret = []
-    for i in decimalBytes:
-        ret = ret + getBitsFromByte(i)
-    return ret
+    def readWithCheck(self, registerName, iterations = 1):
+        passes = 0
+        register = registers[registerName]["address"]
+        size = 4#registers[registerName]["size"] / 8
+        check = registers[registerName]["expected"]
 
-def getByteFromBits(bitList):
-    return int(''.join(bitList), 2)
-def getBytesFromBits(bitList):
-    ret = []
-    for i in xrange(len(bitList)/8):
-        ret.append(getByteFromBits(bitList[i * 8: (i + 1) * 8]))
-    return ret
+        for i in xrange(iterations):
+            self.bus.write(self.address, [register])
+            self.bus.read(self.address, size)
+        r = self.bus.sendBatch()
+        for i in xrange(iterations * 2):
+            if (i % 2 == 1) and (r[i] == check):
+                passes += 1
+        return (passes, iterations - passes) #(passes, fails)
 
-def readFromRegister(bus, address, register, numBytes):
-    bus.write(address, [register])
-    bus.read(address, numBytes)
-    ret = []
-    for i in bus.sendBatch()[1].split():
-        ret.append(int(i))
-    return ret
-def writeToRegister(bus, address, register, bytesToWrite):
-    bus.write(address, [register] + list(bytesToWrite))
-    return None
+    def runTests(self):
+        for r in registers.keys():
+            yield self.readWithCheck(r, 100)
 
-
-def test1(iterations, address):
-    return (passes, fails)
+    # for i in xrange(iterations):
+    #     bus.read
+    # return (passes, iterations - passes) #passes, fails
