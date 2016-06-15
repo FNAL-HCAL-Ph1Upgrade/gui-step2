@@ -174,7 +174,7 @@ def rst_QIE_count(): # "QIE Reset Counter"
     return strToHex(rstctr)
 
 # Register byte 0x14 (RO)
-def wte_count(): # "WTE Counter"
+def wte_count(): # "WTE Counter" (Warning-test-enable signal for calibration purposes)
     b.write(0x09, [0x14])
     b.read(0x09,4)
     wtectr = b.sendBatch()[1]
@@ -274,9 +274,11 @@ def qie_ck_ph(): # QIE1-12 Clock Phase (Valid values of 0-15)
         b.write(0x09,[address[i]]) # clock phase for QIE#(i+1)
         b.read(0x09,1)
 
+    batchArr = b.sendBatch()
     for i in range(0,24): #filling qie array
         if i%2 == 1:
-            qie.append(strToHex(b.sendBatch()[i]))
+            qie.append(strToHex(batchArr[i][1]))
+
 
     #formatting the output as a cat of the clock phases
     ret = ""
@@ -285,6 +287,9 @@ def qie_ck_ph(): # QIE1-12 Clock Phase (Valid values of 0-15)
     ret = ret + "12: " + qie[11]
 
     return ret
+
+
+##### Bytes 0x80-0x86: Registers related to data links ######
 
 # Register byte 0x80 (RW)
 def link_test_mode():  # "Link test modes: hex7=ID, hex1=Counter-&-Pattern, hex0=Normal"
