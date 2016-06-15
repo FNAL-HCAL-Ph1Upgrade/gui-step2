@@ -50,6 +50,7 @@ def sensorTemp(rm,slot):
     temp = (-46.85) +175.72*(data)/(2**16)
 
     print "                             Temp: %.2f" %temp
+    
     return temp
 
 print "%.2f" %(sensorTemp(0,2))
