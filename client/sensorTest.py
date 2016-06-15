@@ -15,13 +15,8 @@ def sensorTemp(rm,slot):
     checksum = data[2] # 3rd byte of data is the checksum
     print "Checksum: " + format(int(checksum),'08b')
 
-    data = b.sendBatch()[2]
-    #Splitting the incoming data and reversing the order of bytes
-    #(the read function's inherent reversal of bytes isn't compatible with
-    #this particular sensor's desired output order)
-
     # Splitting the incoming data & concatenating strings of binary bytes
-    data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
+    data = format(int(data[0]),'08b') + format(int(data[1]),'08b')
     print "2 data bytes: " + data
     # zero-ing out the 2 status bits, converting to int for calculations
     data = int(data[0:14] + "00", 2)
