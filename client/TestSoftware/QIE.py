@@ -1,3 +1,4 @@
+<<<<<<< HEAD:client/QIELib.py
 #!/usr/bin/python
 #
 #QIELib.py
@@ -102,6 +103,11 @@ JSlots = {
     25 : 0x1B,
     26 : 0x1C
          }
+=======
+#QIE.py
+
+#QIE settings - Ordered by most significant bits
+>>>>>>> dd9e546d2df9ce014505f4c29e024d7f05f2afb3:client/TestSoftware/QIE.py
 from collections import OrderedDict
 serialShiftRegisterBits = OrderedDict(
     [("LVDS/SLVS", [0]),
@@ -126,6 +132,7 @@ serialShiftRegisterBits = OrderedDict(
     ("PhaseDelay", [57, 58, 59, 60, 61, 62, 63])]
     )
 
+<<<<<<< HEAD:client/QIELib.py
 def getBitsFromByte(decimal):
     return list('%08d' % int(bin(decimal)[2:]))
 
@@ -229,8 +236,12 @@ class QIEshiftRegister:
 ################################################################################
 # QIE Class
 ################################################################################
-class QIE:
+=======
 
+#QIE Class
+
+>>>>>>> dd9e546d2df9ce014505f4c29e024d7f05f2afb3:client/TestSoftware/QIE.py
+class QIE:
     ############################################################################
     # Core and I/O Functions
     ############################################################################
@@ -442,6 +453,11 @@ class QIE:
         for i in xrange(7):
             self.arr[57 + i] = t[i]
 
+<<<<<<< HEAD:client/QIELib.py
 ############################################################################
 
 ############################################################################
+=======
+    ############################################################################
+#
+>>>>>>> dd9e546d2df9ce014505f4c29e024d7f05f2afb3:client/TestSoftware/QIE.py
