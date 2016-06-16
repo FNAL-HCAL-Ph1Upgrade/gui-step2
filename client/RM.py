@@ -19,7 +19,6 @@ class RM:
     def __init__(self, location, activeSlots):
         '''Initializes an RM object at a specific location on the test stand'''
         self.qCards = []
-        print activeSlots
         for i in activeSlots:
             self.qCards.append(qCard(i))
     def __repr__(self):
@@ -34,8 +33,9 @@ class RM:
     def runAll(self):
         for q in self.qCards:
             q.runAll()
-    def runSingle(key):
-	q.runSingle(key)
+    def runSingle(self, key):
+	for q in self.qCards:
+	    q.runSingle(key)
     def printAll(self):
         for q in self.qCards:
             print q

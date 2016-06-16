@@ -29,8 +29,9 @@ class makeGui:
 		# Create a list of Readout Modules:
 		self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
 	
-		# Instantiate a qieCommands class member
-#		self.myTestStand = qieCommands()
+		# Make an empty list that will eventually contain all of
+		# the active card slots
+		self.outSlotNumbers = []
 
 		# Instantiate a webBus member:
 		self.gb = webBus("pi5")		
@@ -495,11 +496,12 @@ class makeGui:
 
 		# Make and pack a PLACEHOLDER LISTBOX for the variable to read:
                 self.qie_readBox = OptionMenu(self.qie_subMid_frame, self.qieReadVar,
-                                              "Unique ID","Herm Test","Brdg Test",
-				              "255 Test","Zero Test","FW Version", "Humidity",
-					      "Temperature","Get Status")
+                                              "ID_string","ID_string_cont","Ones",
+				              "Zeroes","OnesZeroes","Firmware_Ver",
+					      "Unique_ID", "Temperature", "Humidity"
+					     )
                 self.qie_readBox.pack(side=LEFT)
-                self.qieReadVar.set("Unique ID") # initializes the OptionMenu
+                self.qieReadVar.set("ID_string") # initializes the OptionMenu
 
 		#Make a button to read what is at the address
 		self.qie_read_Button = Button(self.qie_subMid_frame, command=self.qieClickRead)
@@ -634,28 +636,18 @@ class makeGui:
 		# See what test the user has selected, and then run that test from the
 		# qieCommands.py file. Display the results in the text field within the
 		# QIE frame on the main GUI window.
-		tempInt = int(self.qieChoiceVar.get(),16)
-		if self.qieReadVar.get() == "Herm Test": 
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.hermTest(tempInt))
-		elif self.qieReadVar.get() == "Brdg Test":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.brdgTest(tempInt))
-		elif self.qieReadVar.get() == "255 Test":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.tff_Test(tempInt))
-		elif self.qieReadVar.get() == "Zero Test":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.zeroTest(tempInt))
-		elif self.qieReadVar.get() == "FW Version":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.fwVerTest(tempInt))
-		elif self.qieReadVar.get() == "Get Status":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.statusCheck(tempInt))
-		elif self.qieReadVar.get() == "Temperature":
-			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.sensorTemp(0,tempInt))+" C")  #This will be changed as more slots get used
-		elif self.qieReadVar.get() == "Humidity":
-			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.sensorHumid(0,tempInt))) #Will be changes as more RM slots get used
-		elif self.qieReadVar.get() == "Unique ID":
-			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.getUniqueID(0,tempInt)))
+		self.prepareOutSlots()
+		self.myTestStand = TestStand(self.outSlotNumbers)
+		self.myTestStand.runSingle(self.qieReadVar.get())
+		self.outSlotNumbers = []
 
 	def runTestSuite(self):
+		self.prepareOutSlots()
+		self.myTestStand = TestStand(self.outSlotNumbers)
+		self.myTestStand.runAll()
 		self.outSlotNumbers = []
+
+	def prepareOutSlots(self):
 		for k in range(len(self.cardVarList)):
 			if (self.cardVarList[k].get() == 1):
 				if k in [1,2,3,4]:
@@ -666,23 +658,8 @@ class makeGui:
 					self.outSlotNumbers.append(k+9)
 				elif k in [13,14,15,16]:
 					self.outSlotNumbers.append(k+10)
-		self.myTestStand = TestStand(self.outSlotNumbers)
+	
 				
-#		print str(datetime.now())
-		#ONCE IT'S TIME TO TEST OTHER READOUT MODULES, MAKE THE APPROPRIATE CHANGES HERE
-#		for k in range(0,int(self.runtimeNumber.get())):
-#			if (k%10 == 0):
-#				print "Number of tests completed: ", k
-#			for card in (0x19,0x1a,0x1b,0x1c):
-#				self.runTestSuiteHelper(card,k)
-#		print "\nSuite Completed! Thank you! (:"
-#		print str(datetime.now())
-
-#	def runTestSuiteHelper(self,card,inNumber):
-#		self.myCommands.runCompleteSuite(card,inNumber)
-
-# These next few lines call the class and display the window
-# on the computer screen
 root = Tk()
 myapp = makeGui(root)
 root.mainloop()

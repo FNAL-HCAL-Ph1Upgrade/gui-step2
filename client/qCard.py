@@ -36,5 +36,7 @@ class qCard:
 
     def runSingle(self, key):
 	t = tests.testSuite("pi5", self.address)
-	print t.runSingleTest(key)
+	for result in t.runSingleTest(key):
+		self.passed.append(result)
+	print self.passed
 		
