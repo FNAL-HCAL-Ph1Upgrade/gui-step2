@@ -1,6 +1,7 @@
 #import helpers as h
 import sys
 #sys.path.append('../')
+from qieOutCard import qCardOut
 import client
 #from registers import registers
 
@@ -76,6 +77,7 @@ class testSuite:
         '''create a new test suite object... initialize bus and address'''
         self.bus = client.webBus(webAddress, 0)
         self.address = address
+	self.outCard = qCardOut()
 
     def readWithCheck(self, registerName, iterations = 1):
         passes = 0
@@ -90,7 +92,7 @@ class testSuite:
         for i in xrange(iterations * 2):
             if (i % 2 == 1) and (r[i] == check):
                 passes += 1
-        return (passes, iterations - passes) #(passes, fails)
+        self.outCard.resultList[registerName] = (passes, iterations - passes) #(passes, fails)
 
     def readNoCheck(self, testName, iterations = 1):
 	i2c_pathway = noCheckRegis[testName]["i2c_path"]
@@ -115,13 +117,19 @@ class testSuite:
 	for i in r:
 		if i != '0':
 			new_r.append(i)
-	return new_r
+	self.outCard.resultList[testName] = new_r
+#	return new_r
 
     def runTests(self):
         for r in registers.keys():
-            yield self.readWithCheck(r, 100)
+#	    yield self.readWithCheck(r, 100)
+            self.readWithCheck(r, 100)
 	for r in noCheckRegis.keys():
-	    yield self.readNoCheck(r, 1)
+#	    yield self.readNoCheck(r, 100)
+	    self.readNoCheck(r, 1)
+	self.outCard.printResults()
+	print "\n\n"
+	self.outCard.writeHumanLog()	
 
     def runSingleTest(self,key):
 	if key in registers:

@@ -28,15 +28,16 @@ class qCard:
         return s
     def runAll(self):
         '''Run all tests'''
-	print self.address
         t = tests.testSuite("pi5", self.address)
-        for result in t.runTests():
-            self.passed.append(result)
-	print self.passed
+	t.runTests()
 
     def runSingle(self, key):
+	print "debug1"
 	t = tests.testSuite("pi5", self.address)
+	print "debug2"
 	for result in t.runSingleTest(key):
+		print "debug3"
 		self.passed.append(result)
-	print self.passed
+		print "debug4"
+	#print self.passed
 		
