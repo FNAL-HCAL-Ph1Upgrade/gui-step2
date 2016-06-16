@@ -59,7 +59,7 @@ class testSuite:
 
     def runTests(self):
         for r in registers.keys():
-            yield self.readWithCheck(r, 100)
+            yield self.readWithCheck(r, 100)[1:]
 
     # for i in xrange(iterations):
     #     bus.read
