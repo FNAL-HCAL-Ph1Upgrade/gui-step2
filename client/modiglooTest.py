@@ -5,7 +5,6 @@ Goals:
     * but first, read what's there so that in case you overwrite, you can undo your mistakes...
 * understand the SERDES registers (see Microsemi documentation for meanings)
 * create functions to read (and if possible) write to internal registers
-
 '''
 
 from client import webBus
@@ -47,17 +46,31 @@ def openIgloo(rm,slot):
     b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
     b.sendBatch()
 
+# NOTE: Function parameter key:
+#       r -> read from reg
+#       w -> write to reg
+#       rw -> read, write
+# If a write to RO reg fails (i.e. sendBatch() returns nonzero error code),
+# then reg works as expected and value stored at reg is returned. If no error
+# is detected, we return "FAIL"
 
 ############################################################################
 ### NOTE: openIgloo(r,s) should already be called before these functions ###
 ############################################################################
 
 # Register byte 0x00 (RO)
-def fpgaMajVer(): # "fpga major version"
+def fpgaMajVer(set = "ro"): # "fpga major version"
     b.write(0x09,[0x00])
     b.read(0x09,1)
     majVer = b.sendBatch()[1]
-    return strToHex(majVer)
+    if (set == "rw"):
+        b.write(0x09,[0x00, int(majVer)]) ## SHOULD GIVE ME AN ERROR
+        b.read(0x09, 1)
+        batchArr = (b.sendBatch()[0]).split()
+        if (batchArr[0] != 0): # '0' indicates no errors. But we DO want a write error
+            return strToHex(majVer)
+        else:
+            return "FAIL"
 
 # Register byte 0x01 (RO)
 def fpgaMinVer(): # "fpga minor verison"
@@ -85,9 +98,7 @@ def FPGATopOrBottom(): # "FPGA top or bottom bit"
     return b.sendBatch()[1]
 
 # Register byte 0x05 (R/W)
-def uniqueID(): # "should be written with QIE-card unique ID, powerup as 0xBAD"
-
-    # I haven't added in writing to this register... will await Joe's declaration
+def uniqueID("rw"): # "should be written with QIE-card unique ID, powerup as 0xBAD"
     b.write(0x09,[0x05])
     b.read(0x09,8)
     return strToHex(b.sendBatch()[1])
@@ -141,12 +152,12 @@ def cntrReg(desiredReg = "all"): # default = display all of register
     regBin = strToBin(reg)
 
     regBinDict = {
-    "31'bX"   :   regBin[0:6],
-    "orbitHisto_clear" :   regBin[6:12], # controls histo of the QIE_RST spacing
-    "orbitHisto_run"  :   regBin[12:18], # controls histo of the QIE_RST spacing
-    "2-bit 0"     :   regBin[18:20],
-    "WrEn_InputSpy"      :   regBin[20:26],
-    "CI_mode"             :   regBin[26:32], # Charge Injection mode of the QIE10
+    "31'bX"             :   regBin[0:6],
+    "orbitHisto_clear"  :   regBin[6:12], # controls histo of the QIE_RST spacing
+    "orbitHisto_run"    :   regBin[12:18], # controls histo of the QIE_RST spacing
+    "2-bit 0"           :   regBin[18:20],
+    "WrEn_InputSpy"     :   regBin[20:26],
+    "CI_mode"           :   regBin[26:32], # Charge Injection mode of the QIE10
     }
 
     allRegBin = regBinDict["31'bX"] + " : " + regBinDict["orbitHisto_clear"]\
@@ -376,52 +387,3 @@ def readAllIgloo():
     print "ScratchReg: " + scratchReg()
 
 readAllIgloo()
-
-'''
-OLD READOUT (WITH INCORRECT ARRAY CUTS INSIDE REGISTERS)---->>>
-
-FPGA Major Version:  0
-FPGA Minor Version:  9
-Ones:  ff ff ff ff
-Zeros: 0 0 0 0
-FPGATopOrBottom: 0
-Unique ID:  ad b 0 0 0 0 0 0
-StatusReg: 000000010 : 0 : 0 : 00000010000 : 00000 : 0 : 0
-CntrReg: 00000 : 00000 : 00000 : 0 : 00000 : 00000
-Clock Counter:  40 1 85 75
-QIE Reset Counter:  4 c8 79 1b
-WTE Counter:  80 e7 79 1b
-CapID Error Counter: Link1:  1 e 0 0, Link2:  1 e 0 0, Link3:  0 0 0 0
-FIFO Data: Data1:  f0 4 4 4 4 4 6 ff ff ff ff, Data2:  f0 4 4 6 6 6 4 ff ff ff ff, Data3:  f4 4 4 4 4 4 5 ff ff ff ff
-InputSpy: 0 : 0 : 00000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000000000000 : 000000001000000
-Spy96bits:  0 0 0 0 0 0 0 0 0 0 a0 aa
-QIE Clock Phase: QIE1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
-Link Test Mode:  0
-Link Test Pattern:  ef be ed fe
-SERDES: dataToSERDES:  0 0 0 0, addrToSERDES: 0000000000000000, ctrlToSERDES: 00000000, dataFromSERDES:  0 0 0 0, statFromSERDES:  0 0 0 0
-ScratchReg:  ff ff ff ff
-
-
-NEW READOUT (FIXED THE ARRAY CUTS)
-
-FPGA Major Version:  0
-FPGA Minor Version:  9
-Ones:  ff ff ff ff
-Zeros: 0 0 0 0
-FPGATopOrBottom: 0
-Unique ID:  ad b 0 0 0 0 0 0
-StatusReg: 0000000100 : 0 : 0 : 000000100000 : 000000 : 0 : 0
-CntrReg: 000000 : 000000 : 000000 : 00 : 000000 : 000000
-Clock Counter:  8 a8 d8 30
-QIE Reset Counter:  60 c8 d0 1b
-WTE Counter:  22 e0 d0 1b
-CapID Error Counter: Link1:  0 4 0 0, Link2:  0 4 0 0, Link3:  0 0 0 0
-FIFO Data: Data1:  fc 5 5 5 5 4 5 ff ff ff ff, Data2:  f8 4 4 6 5 4 4 ff ff ff ff, Data3:  f0 4 4 6 4 4 5 ff ff ff ff
-InputSpy: 0 : 0 : 000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000000000000 : 0000000010000000
-Spy96bits:  0 0 0 0 0 0 0 0 0 0 a0 aa
-QIE Clock Phase: QIE1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
-Link Test Mode:  0
-Link Test Pattern:  ef be ed fe
-SERDES: dataToSERDES:  0 0 0 0, addrToSERDES: 0000000000000000, ctrlToSERDES: 00000000, dataFromSERDES:  0 0 0 0, statFromSERDES:  0 0 0 0
-ScratchReg:  ff ff ff ff
-'''
