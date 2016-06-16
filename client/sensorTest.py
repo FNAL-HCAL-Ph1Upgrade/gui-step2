@@ -53,8 +53,6 @@ def sensorTemp(rm,slot):
     data = int(data[0:14] + "00", 2)
     # Converting temp using equation
     temp = (-46.85) +175.72*(data)/(2**16)
-    
-    if (
     return temp
 
 print "%.2f" %(sensorTemp(0,2))
