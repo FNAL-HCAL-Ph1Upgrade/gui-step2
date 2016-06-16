@@ -103,7 +103,7 @@ registers = {
             "link1" : 0x15,
             "link2" : 0x16,
             "link3" : 0x17
-                }          # COMMA HERE?
+                },         # COMMA HERE?
         "size" : 32,
         "RW" : 0,
         "expected" : "",
@@ -113,7 +113,7 @@ registers = {
             "data1" : 0x30,
             "data2" : 0x31,
             "data3" : 0x32
-                }
+                },
         "size" : 88,
         "RW" : 0,
         "expected" : ""
@@ -146,7 +146,7 @@ registers = {
             10: 0x69,
             11: 0x6A,
             12: 0x6B
-                }
+                },
         "size" : 8,
         "RW" : 1,
         "expected" : "",
