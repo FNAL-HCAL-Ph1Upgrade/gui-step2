@@ -109,7 +109,7 @@ registers = {
         "expected" : "",
         },
     "fifo_data" :{
-        "address" : : {
+        "address" : {
             "data1" : 0x30,
             "data2" : 0x31,
             "data3" : 0x32
