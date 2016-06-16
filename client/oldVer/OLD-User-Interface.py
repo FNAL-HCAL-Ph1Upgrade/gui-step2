@@ -668,7 +668,8 @@ class makeGui:
 
 	def fanoutClickRead(self):
 		self.gb.read(0x72,1)
-		self.fanoutHexText.set(hex(int(self.gb.sendBatch()[0])))
+		print self.gb.sendBatch()
+		#self.fanoutHexText.set(hex(int(self.gb.sendBatch()[0])))
 
 	def ngccmClickWrite(self):
 		hexCon = self.checksToHex(self.ng_checkVar0.get(), self.ng_checkVar1.get(), self.ng_checkVar2.get(),
@@ -682,7 +683,8 @@ class makeGui:
 
 	def ngccmClickRead(self):
 		self.gb.read(0x74,1)
-		self.ngccmHexText.set(hex(int(self.gb.sendBatch()[0])))
+		print self.gb.sendBatch()
+#		self.ngccmHexText.set(hex(int(self.gb.sendBatch()[0])))
 
 	def qieClickRead(self):     # Where the magic(?) happens
 		# See what test the user has selected, and then run that test from the

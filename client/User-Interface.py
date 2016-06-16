@@ -6,20 +6,22 @@
 # For Baylor University, Summer 2016.
 
 # This is a comment to see if I got git to work properly
+# round 2 electric boogaloo
 
+import qCard
 from Tkinter import *
 from client import webBus
-from qieCommands import qieCommands
+from TestStand import TestStand
 from datetime import datetime
 
 class makeGui:
 	def __init__(self, parent):
 
 		# Create a list of QIECard slots:
-		self.cardSlots = ["Card 1", "Card 2", "Card 3", "Card 4", "Card 5",
-			     "Card 6","Card 7", "Card 8", "Card 9", "Card 10",
-			     "Card 11", "Card 12", "Card 13", "Card 14",
-			     "Card 15", "Card 16"]
+		self.cardSlots = ["Card 2", "Card 3", "Card 4", "Card 5", "Card 7",
+			     "Card 8","Card 9", "Card 10", "Card 18", "Card 19",
+			     "Card 20", "Card 21", "Card 23", "Card 24",
+			     "Card 25", "Card 26"]
 
 		# Create a list of nGCCme slots:
 		self.ngccmeSlots = ["nGCCme 1", "nGCCme 2"]
@@ -28,7 +30,7 @@ class makeGui:
 		self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
 	
 		# Instantiate a qieCommands class member
-		self.myCommands = qieCommands()
+#		self.myTestStand = qieCommands()
 
 		# Instantiate a webBus member:
 		self.gb = webBus("pi5")		
@@ -653,18 +655,31 @@ class makeGui:
 			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.getUniqueID(0,tempInt)))
 
 	def runTestSuite(self):
-		print str(datetime.now())
+		self.outSlotNumbers = []
+		for k in range(len(self.cardVarList)):
+			if (self.cardVarList[k].get() == 1):
+				if k in [1,2,3,4]:
+					self.outSlotNumbers.append(k+1)
+				elif k in [5,6,7,8]:
+					self.outSlotNumbers.append(k+2)
+				elif k in [9,10,11,12]:
+					self.outSlotNumbers.append(k+9)
+				elif k in [13,14,15,16]:
+					self.outSlotNumbers.append(k+10)
+		self.myTestStand = TestStand(self.outSlotNumbers)
+				
+#		print str(datetime.now())
 		#ONCE IT'S TIME TO TEST OTHER READOUT MODULES, MAKE THE APPROPRIATE CHANGES HERE
-		for k in range(0,int(self.runtimeNumber.get())):
-			if (k%10 == 0):
-				print "Number of tests completed: ", k
-			for card in (0x19,0x1a,0x1b,0x1c):
-				self.runTestSuiteHelper(card,k)
-		print "\nSuite Completed! Thank you! (:"
-		print str(datetime.now())
+#		for k in range(0,int(self.runtimeNumber.get())):
+#			if (k%10 == 0):
+#				print "Number of tests completed: ", k
+#			for card in (0x19,0x1a,0x1b,0x1c):
+#				self.runTestSuiteHelper(card,k)
+#		print "\nSuite Completed! Thank you! (:"
+#		print str(datetime.now())
 
-	def runTestSuiteHelper(self,card,inNumber):
-		self.myCommands.runCompleteSuite(card,inNumber)
+#	def runTestSuiteHelper(self,card,inNumber):
+#		self.myCommands.runCompleteSuite(card,inNumber)
 
 # These next few lines call the class and display the window
 # on the computer screen
