@@ -1,7 +1,7 @@
 #import helpers as h
 import sys
 #sys.path.append('../')
-from qieOutCard import qCardOut
+from testSummary import testSummary
 import client
 #from registers import registers
 
@@ -77,7 +77,7 @@ class testSuite:
         '''create a new test suite object... initialize bus and address'''
         self.bus = client.webBus(webAddress, 0)
         self.address = address
-	self.outCard = qCardOut()
+	self.outCard = testSummary()
 
     def readWithCheck(self, registerName, iterations = 1):
         passes = 0
@@ -93,6 +93,7 @@ class testSuite:
             if (i % 2 == 1) and (r[i] == check):
                 passes += 1
         self.outCard.resultList[registerName] = (passes, iterations - passes) #(passes, fails)
+	return (passes, iterations - passes)
 
     def readNoCheck(self, testName, iterations = 1):
 	i2c_pathway = noCheckRegis[testName]["i2c_path"]
@@ -115,21 +116,22 @@ class testSuite:
 	# Remove the entries in r that contain no information
 	new_r = []
 	for i in r:
-		if i != '0':
+		if (i != '0' and i != 'None'):
 			new_r.append(i)
 	self.outCard.resultList[testName] = new_r
-#	return new_r
+	return new_r
 
-    def runTests(self):
+    def runTests(self,barcode):
         for r in registers.keys():
 #	    yield self.readWithCheck(r, 100)
             self.readWithCheck(r, 100)
 	for r in noCheckRegis.keys():
-#	    yield self.readNoCheck(r, 100)
 	    self.readNoCheck(r, 1)
+	self.outCard.resultList["Barcode"] = barcode
 	self.outCard.printResults()
 	print "\n\n"
 	self.outCard.writeHumanLog()	
+	self.outCard.writeMachineJson()
 
     def runSingleTest(self,key):
 	if key in registers:

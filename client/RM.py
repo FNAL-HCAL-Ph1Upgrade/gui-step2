@@ -30,9 +30,9 @@ class RM:
         for card in self.qCards:
             s += "qCard at %s \n" % card.slot
         return s
-    def runAll(self):
-        for q in self.qCards:
-            q.runAll()
+    def runAll(self,barCodeList):
+        for q in range(len(self.qCards)):
+            self.qCards[q].runAll(barCodeList[q])
     def runSingle(self, key):
 	for q in self.qCards:
 	    q.runSingle(key)

@@ -4,7 +4,7 @@
 # with the setup in the lab.
 # Developed with the help of many people
 # For Baylor University, Summer 2016.
-
+#
 # This is a comment to see if I got git to work properly
 # round 2 electric boogaloo
 
@@ -28,7 +28,7 @@ class makeGui:
 
 		# Create a list of Readout Modules:
 		self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
-	
+
 		# Make an empty list that will eventually contain all of
 		# the active card slots
 		self.outSlotNumbers = []
@@ -114,7 +114,7 @@ class makeGui:
 
 		# Make a bottom half-frame
 		self.botHalf_frame = Frame(self.topMost_frame)
-		self.botHalf_frame.pack(side=RIGHT)
+		self.botHalf_frame.pack(side=LEFT)
 
 		# Make and pack a sub-frame within topMost_frame that will contain
 		# all of the controls for talking with the QIE cards
@@ -145,6 +145,21 @@ class makeGui:
 
 		self.runtime_frame.pack(
 			side=TOP,
+			ipadx=frame_ipadx,
+			ipady=frame_ipady,
+			padx=frame_padx,
+			pady=frame_pady
+			)
+
+		# Make a rightmost subframe for uHTR stuff
+		self.microHTR_frame = Frame(
+			self.topMost_frame,
+			borderwidth=5, relief=RIDGE,
+			background="white",
+			height=40, width=50,
+			)
+		self.microHTR_frame.pack(
+			side=RIGHT,
 			ipadx=frame_ipadx,
 			ipady=frame_ipady,
 			padx=frame_padx,
@@ -588,6 +603,112 @@ class makeGui:
 			pady=button_pady*2,
 			)
 		self.closeButton.pack(side=TOP)
+
+		#################################
+		###			      ###
+		###   WIDGETS IN uHTR FRAME   ###
+		###			      ###
+		#################################
+		# Make and pack a text label for the box label
+		self.uHTR_frame_Label = Label(self.microHTR_frame, text="uHTR Runtime Parameters")
+		self.uHTR_frame_Label.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.uHTR_frame_Label.pack(side=TOP)
+
+		# Make many text variables
+		self.uHTR_Parameters = [StringVar() for i in range(0,6)]
+
+		# Make top subframe 1
+		self.uHTR_sub1 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub1.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Crate number parameter label & box
+		self.uHTR_crateNo_Lbl = Label(self.uHTR_sub1, text="Crate Number: ",bg="white")
+		self.uHTR_crateNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
+		self.uHTR_crateNo_Fld = Entry(self.uHTR_sub1, textvariable=self.uHTR_Parameters[0])
+		self.uHTR_crateNo_Fld.pack(side=LEFT)
+
+		# Make top subframe 2
+		self.uHTR_sub2 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub2.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Slot number parameter label & box
+		self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg="white")
+		self.uHTR_slotNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
+		self.uHTR_slotNo_Fld = Entry(self.uHTR_sub2, textvariable=self.uHTR_Parameters[1])
+		self.uHTR_slotNo_Fld.pack(side=LEFT)
+
+		# Make top subframe 3
+		self.uHTR_sub3 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub3.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Num. of Orbits parameter label & box
+		self.uHTR_orbitsNo_Lbl = Label(self.uHTR_sub3, text="# of Orbits: ",bg="white")
+		self.uHTR_orbitsNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
+		self.uHTR_orbitsNo_Fld = Entry(self.uHTR_sub3, textvariable=self.uHTR_Parameters[2])
+		self.uHTR_orbitsNo_Fld.pack(side=LEFT)
+
+		# Make top subframe 4
+		self.uHTR_sub4 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub4.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Separate Cap Id parameter label & box
+		self.uHTR_sepCapId_Lbl = Label(self.uHTR_sub4, text="Separate Cap Id: ",bg="white")
+		self.uHTR_sepCapId_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
+		self.uHTR_sepCapId_Fld = Entry(self.uHTR_sub4, textvariable=self.uHTR_Parameters[3])
+		self.uHTR_sepCapId_Fld.pack(side=LEFT)
+	
+		# Make top subframe 5
+		self.uHTR_sub5 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub5.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Output directory parameter label & box
+		self.uHTR_outputDir_Lbl = Label(self.uHTR_sub5, text="Output Directory: ",bg="white")
+		self.uHTR_outputDir_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
+		self.uHTR_outputDir_Fld = Entry(self.uHTR_sub5, textvariable=self.uHTR_Parameters[4])
+		self.uHTR_outputDir_Fld.pack(side=LEFT)
+
+		# Make top subframe 6
+		self.uHTR_sub6 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub6.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Toggle Signal parameter label & box
+		self.uHTR_togSignal_Lbl = Label(self.uHTR_sub6, text="Toggle Signal: ",bg="white")
+		self.uHTR_togSignal_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
+		self.uHTR_togSignal_Fld = Entry(self.uHTR_sub6, textvariable=self.uHTR_Parameters[5])
+		self.uHTR_togSignal_Fld.pack(side=LEFT)
+
+		# Make top subframe 7
+		self.uHTR_sub7 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub7.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Button for doing uHTR tests
+		self.uHTR_tester_bttn = Button(self.uHTR_sub7, text="Run uHTR Tests", bg="turquoise",
+						command=self.uHTR_tester_bttnPress)
+		self.uHTR_tester_bttn.configure(
+			padx=button_padx*2,
+			pady=button_pady*2,
+			)
+		self.uHTR_tester_bttn.pack(side=TOP)
+
+		# Make defaults for the parameters:
+		self.uHTR_Parameters[0].set("41")
+		self.uHTR_Parameters[1].set("3")
+		self.uHTR_Parameters[2].set("1000")
+		self.uHTR_Parameters[3].set("0")
+		self.uHTR_Parameters[4].set("joshtest")
+		self.uHTR_Parameters[5].set("0")
+	
 	
 	#################################
 	###			      ###
@@ -644,8 +765,19 @@ class makeGui:
 	def runTestSuite(self):
 		self.prepareOutSlots()
 		self.myTestStand = TestStand(self.outSlotNumbers)
-		self.myTestStand.runAll()
+		self.myTestStand.runAll(self.barcodeVarsToStrs())
+		# Reset the active outSlots
 		self.outSlotNumbers = []
+
+	def barcodeVarsToStrs(self):
+		self.stringList = []
+		for i in range(len(self.barcodeVarList)):
+			if (self.cardVarList[i].get() == 1):
+				self.stringList.append(self.barcodeVarList[i].get())
+		return self.stringList
+	
+	def uHTR_tester_bttnPress(self):
+		print "This is the worst easter egg ever made."
 
 	def prepareOutSlots(self):
 		for k in range(len(self.cardVarList)):

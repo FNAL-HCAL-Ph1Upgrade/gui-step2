@@ -33,9 +33,9 @@ class TestStand:
         self.RMs.append(RM.RM(3, RM3_active))
         self.RMs.append(RM.RM(4, RM4_active))
 
-    def runAll(self):
+    def runAll(self,barCodeList):
 	for r in self.RMs:
-		r.runAll()
+		r.runAll(barCodeList)
 
     def runSingle(self, key):
 	for r in self.RMs:
