@@ -138,7 +138,7 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
             "BRIDGE_SPARE"      :   allRegStr[24:30],
             "1_bit"             :   allRegStr[30], # should be '0'
             "PLL_320MHz_Lock"   :   allRegStr[31] # good when '1'
-            }
+                }
 
         allReg = statusReg["InputSpyWordNum"] + " : " + statusReg["InputSpyFifoEmpty"]\
             + " : " + statusReg["InputSpyFifoFull"] + " : " + statusReg["Qie_DLLNoLock"]\
@@ -179,6 +179,68 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
             return True
         else:
             return False
+# ------------------------------------------------------------------------
+class cntrReg(Test): #inherit from Test class, overload testBody() function
+    # -------------------------------------------
+    def read(self, desiredReg = "all"):
+        name = "cntrReg"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+        allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
+        #print "allRegList: ", allRegList
+
+        if (allRegList == False): return False
+
+        allRegBin = i.getBitsFromBytes(allRegList)
+        allRegStr = i.catBitsFromBytes(allRegBin)
+
+        cntrReg = {
+        "31'bX"             :   allRegStr[0:6],
+        "orbitHisto_clear"  :   allRegStr[6:12], # controls histo of the QIE_RST spacing
+        "orbitHisto_run"    :   allRegStr[12:18], # controls histo of the QIE_RST spacing
+        "2-bit 0"           :   allRegStr[18:20],
+        "WrEn_InputSpy"     :   allRegStr[20:26],
+        "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
+            }
+
+        allReg = cntrReg["31'bX"] + " : " + cntrReg["orbitHisto_clear"]\
+            + " : " + cntrReg["orbitHisto_run"] + " : " + cntrReg["2-bit 0"]\
+            + " : " + cntrReg["WrEn_InputSpy"] + " : " + cntrReg["CI_mode"]
+
+        if desiredReg == "all":
+            return allReg
+
+        else:
+            return cntrReg[desiredReg]
+
+    # -------------------------------------------
+    # def write(self, name, settingBits):
+    #     # CODE HERE
+    #     return True
+
+    # -------------------------------------------
+    def testBody(self):
+        readPass = False
+        rwrPass = False
+
+        name = "cntrReg"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        print self.read()
+
+        if self.read() !=False:
+            readPass = True
+
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
+            rwrPass = True
+
+        if (readPass and rwrPass):
+            return True
+        else:
+            return False
 
 # ------------------------------------------------------------------------
 def runAll():
@@ -202,6 +264,8 @@ def runAll():
     m = uniqueID(b,i.igloo["uniqueID"]["register"],'iglooClass.txt', 2)
     print m.run()
     m = statusReg(b,i.igloo["statusReg"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = cntrReg(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
     print m.run()
 
 runAll()
