@@ -66,6 +66,26 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
+class ones(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "ones"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        # print "----------NO CHANGE----------"
+        # # for RO register, RWR should NOT pass
+        # if not (i.readWriteRead_noChange(b, i.iglooAdd, reg, size)):
+        #     return True
+        # else:
+        #     return False
+
+        print "----------RAND CHANGE----------"
+        # for RO register, RWR should NOT pass
+        if (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
 
 def runAll():
     def openIgloo(rm,slot):
