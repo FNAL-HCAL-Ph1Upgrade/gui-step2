@@ -137,6 +137,8 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
 
     def write(self, name, settingBits):
         # CODE HERE
+        return True
+        
     def testBody(self):
         name = "statusReg"
         reg = i.igloo[name]["register"]
