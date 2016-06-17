@@ -121,24 +121,33 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
 
 class statusReg(Test): #inherit from Test class, overload testBody() function
     def read(self, desiredReg = "all"):
-        # CODE HERE
         allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
         allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(allRegList))
 
-        allReg = i.statusReg["InputSpyWordNum"] + " : " + i.statusReg["InputSpyFifoEmpty"]\
-            + " : " + i.statusReg["InputSpyFifoFull"] + " : " + i.statusReg["Qie_DLLNoLock"]\
-            + " : " + i.statusReg["BRIDGE_SPARE"] + " : " + i.statusReg["1_bit"]\
-            + " : " + i.statusReg["PLL_320MHz_Lock"]
+        statusReg = {
+            "InputSpyWordNum"   :   allRegStr[0:10], # number of words in InputSpyFifo (depth = 512)
+            "InputSpyFifoEmpty" :   allRegStr[10],
+            "InputSpyFifoFull"  :   allRegStr[11],
+            "Qie_DLLNoLock"     :   allRegStr[12:24], # good when '0'
+            "BRIDGE_SPARE"      :   allRegStr[24:30],
+            "1_bit"             :   allRegStr[30], # should be '0'
+            "PLL_320MHz_Lock"   :   allRegStr[31] # good when '1'
+            }
+
+        allReg = statusReg["InputSpyWordNum"] + " : " + statusReg["InputSpyFifoEmpty"]\
+            + " : " + statusReg["InputSpyFifoFull"] + " : " + statusReg["Qie_DLLNoLock"]\
+            + " : " + statusReg["BRIDGE_SPARE"] + " : " + statusReg["1_bit"]\
+            + " : " + statusReg["PLL_320MHz_Lock"]
 
         if desiredReg == "all":
             return allReg
-
-
-
+        else:
+            return statusReg[desiredReg]
+            
     def write(self, name, settingBits):
         # CODE HERE
         return True
-        
+
     def testBody(self):
         name = "statusReg"
         reg = i.igloo[name]["register"]

@@ -301,13 +301,3 @@ igloo = {
         "expected" : ""
         }
 }
-
-statusReg = {
-    "InputSpyWordNum"   :   allRegStr[0:10], # number of words in InputSpyFifo (depth = 512)
-    "InputSpyFifoEmpty" :   allRegStr[10],
-    "InputSpyFifoFull"  :   allRegStr[11],
-    "Qie_DLLNoLock"     :   allRegStr[12:24], # good when '0'
-    "BRIDGE_SPARE"      :   allRegStr[24:30],
-    "1_bit"             :   allRegStr[30], # should be '0'
-    "PLL_320MHz_Lock"   :   allRegStr[31] # good when '1'
-    }
