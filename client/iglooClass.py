@@ -28,7 +28,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
         name = "fpgaMajVer"
         reg = i.igloo[name]["register"]
-        size = i.igloo[name]["size"]
+        size = i.igloo[name]["size"] / 8
         # for RO register, RWR should NOT pass
         if not (i.readWriteRead(b, i.iglooAdd, reg, size)):
             return True
