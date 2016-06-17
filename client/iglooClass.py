@@ -23,17 +23,33 @@ class Test:
     def testBody(self):
         return True
 
+# ------------------------------------------------------------------------
 
 class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
         name = "fpgaMajVer"
         reg = i.igloo[name]["register"]
-        size = i.igloo[name]["size"] / 8
+        size = i.igloo[name]["size"] / 8      # dict holds bits, we want bytes
+
         # for RO register, RWR should NOT pass
         if not (i.readWriteRead(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
+# ------------------------------------------------------------------------
+
+class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "fpgaMinVer"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        # for RO register, RWR should NOT pass
+        if not (i.readWriteRead(b, i.iglooAdd, reg, size)):
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
 
 def runAll():
     def openIgloo(rm,slot):
@@ -44,6 +60,8 @@ def runAll():
     openIgloo(0,0)
 
     m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
+    m.testBody()
+    m = fpgaMinVer(b,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 1)
     m.testBody()
 
 runAll()
