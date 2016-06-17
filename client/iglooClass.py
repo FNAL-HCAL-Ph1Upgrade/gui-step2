@@ -28,7 +28,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         add = igloo[reg]["address"]
         size = igloo[reg]["size"]
         # for RO register, RWR should NOT pass
-        if !(readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size])):
+        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
             return True
         else:
             return False
@@ -41,7 +41,7 @@ class fpgaMinVer(Test):
         add = igloo[reg]["address"]
         size = igloo[reg]["size"]
         # for RO register, RWR should NOT pass
-        if !(readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size])):
+        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
             return True
         else:
             return False
@@ -52,7 +52,7 @@ class ones(Test):
         add = igloo[reg]["address"]
         size = igloo[reg]["size"]
         # for RO register, RWR should NOT pass
-        if !(readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size])):
+        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
             return True
         else:
             return False
@@ -63,7 +63,7 @@ class zeroes(Test):
         add = igloo[reg]["address"]
         size = igloo[reg]["size"]
         # for RO register, RWR should NOT pass
-        if !(readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size])):
+        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
             return True
         else:
             return False
@@ -74,7 +74,7 @@ class fpgaTopOrBottom(Test):
         add = igloo[reg]["address"]
         size = igloo[reg]["size"]
         # for RO register, RWR should NOT pass
-        if !(readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size])):
+        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
             return True
         else:
             return False
