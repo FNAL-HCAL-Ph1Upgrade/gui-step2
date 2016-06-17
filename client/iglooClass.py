@@ -120,8 +120,7 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
 # ------------------------------------------------------------------------
 
 class statusReg(Test): #inherit from Test class, overload testBody() function
-    def read(self):
-        desiredReg = "all"
+    def read(self, desiredReg = "all"):
         name = "statusReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
@@ -164,7 +163,7 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        print self.read(self)
+        print self.read()
         # # for RO register, RWR should NOT pass
         # if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
         #     return True
