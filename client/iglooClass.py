@@ -111,7 +111,7 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if !(i.RWR_randChange(b, i.iglooAdd, reg, size)):
+        if not (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
