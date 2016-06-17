@@ -4,6 +4,7 @@ import IglooLib
 
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 q = QIELib
+i = IglooLib
 
 
 class Test:
@@ -26,10 +27,10 @@ class Test:
 class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
     def testBody():
         name = "fpgaMajVer"
-        add = igloo[name]["address"]
-        size = igloo[name]["size"]
+        add = i.igloo[name]["address"]
+        size = i.igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
+        if not readWriteRead(b, i.iglooAdd, i.igloo[name][add],i.igloo[name][size]):
             return True
         else:
             return False
@@ -42,7 +43,7 @@ def runAll():
         b.sendBatch()
     openIgloo(0,0)
 
-    m = fpgaMajVer(b,igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
+    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
     m.testBody()
 
 runAll()
