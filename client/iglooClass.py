@@ -72,12 +72,44 @@ class ones(Test): #inherit from Test class, overload testBody() function
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
-        # print "----------NO CHANGE----------"
-        # # for RO register, RWR should NOT pass
-        # if not (i.RWR_noChange(b, i.iglooAdd, reg, size)):
-        #     return True
-        # else:
-        #     return False
+        print "----------%s----------" %name
+        # for RO register, RWR should NOT pass
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class zeroes(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "zeroes"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, RWR should NOT pass
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class fpgaTopOrBottom(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "fpgaTopOrBottom"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, RWR should NOT pass
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class uniqueID(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "ones"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
         # for RO register, RWR should NOT pass
