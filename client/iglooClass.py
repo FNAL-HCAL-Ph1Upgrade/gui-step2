@@ -125,6 +125,8 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
         allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
+        if (allRegList == False):
+            return False
         allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(allRegList))
 
         statusReg = {
