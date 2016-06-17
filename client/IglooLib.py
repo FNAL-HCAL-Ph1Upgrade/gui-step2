@@ -66,10 +66,10 @@ def writeToRegister(bus, address, register, toWrite):
     # print ret
 
     if not isError(ret):
-        print "Write Success: %d"  %ret
+        print "Write Success: %l"  %ret
         return True # write successful
     else:
-        print "Write ERROR: %d" %ret
+        print "Write ERROR: %l" %ret
         return False # write failed
 
 # ------------------------------------------------------------------------
