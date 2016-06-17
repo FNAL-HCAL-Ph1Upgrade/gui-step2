@@ -143,7 +143,7 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
             return allReg
         else:
             return statusReg[desiredReg]
-            
+
     def write(self, name, settingBits):
         # CODE HERE
         return True
@@ -154,7 +154,7 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        print read(self)
+        print self.read(self)
         # # for RO register, RWR should NOT pass
         # if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
         #     return True
