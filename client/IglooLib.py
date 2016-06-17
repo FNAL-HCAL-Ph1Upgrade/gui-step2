@@ -183,7 +183,7 @@ igloo = {
         "size" : 96,
         "RW" : 0,
         "expected" : ""
-        }
+        },
     "qie_ck_ph" :{
         "address" : {
             1 : 0x60,
@@ -220,7 +220,7 @@ igloo = {
         "size" : 32,
         "RW" : 1,
         "expected" : ""
-        }
+        },
     "addrToSERDES" :{
         "address" : : 0x83,
         "size" : 16,
