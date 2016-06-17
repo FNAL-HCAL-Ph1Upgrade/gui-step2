@@ -43,7 +43,7 @@ def runAll():
         b.sendBatch()
     openIgloo(0,0)
 
-    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["address"],'iglooClass.txt', 1)
+    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
     m.testBody()
 
 runAll()
