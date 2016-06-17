@@ -240,7 +240,7 @@ igloo = {
         "expected" : ""
         },
     "statFromSERDES" :{
-        "address" : : 0x86,
+        "address"  : 0x86,
         "size" : 32,
         "RW" : 0,
         "expected" : ""
