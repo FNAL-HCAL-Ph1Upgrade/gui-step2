@@ -33,6 +33,7 @@ def runAll():
     m = fpgaMajVer(b,igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
     m.testBody()
 
+runAll()
 
 class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
     def testBody():
