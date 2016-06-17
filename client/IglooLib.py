@@ -45,11 +45,11 @@ def readFromRegister(bus, address, register, numBytes):
         ret.append(int(i))
 
     if isError(ret):
-        print "Error in read!"
+        print "Read ERROR:"
         print ret
         return False
     else:
-        print "Read Success"
+        print "Read Success:"
         print ret
         return ret[1:] #ignore the leading error code
 
@@ -66,10 +66,10 @@ def writeToRegister(bus, address, register, toWrite):
     # print ret
 
     if not isError(ret):
-        print "Write Success"
+        print "Write Success: %d"  %ret
         return True # write successful
     else:
-        print "Write Fail"
+        print "Write ERROR: %d" %ret
         return False # write failed
 
 # ------------------------------------------------------------------------
