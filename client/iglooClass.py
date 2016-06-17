@@ -25,7 +25,7 @@ class Test:
 
 
 class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
-    def testBody():
+    def testBody(self):
         name = "fpgaMajVer"
         add = i.igloo[name]["address"]
         size = i.igloo[name]["size"]
