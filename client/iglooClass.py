@@ -24,7 +24,6 @@ class Test:
         return True
 
 # ------------------------------------------------------------------------
-
 class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
         name = "fpgaMajVer"
@@ -39,13 +38,12 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         #     return False
 
         print "----------%s----------" %name
-        # for RO register, RWR should NOT pass
+        # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
 # ------------------------------------------------------------------------
-
 class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
         name = "fpgaMinVer"
@@ -60,7 +58,7 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
         #     return False
 
         print "----------%s----------" %name
-        # for RO register, RWR should NOT pass
+        # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
@@ -73,7 +71,7 @@ class ones(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        # for RO register, RWR should NOT pass
+        # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
@@ -86,7 +84,7 @@ class zeroes(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        # for RO register, RWR should NOT pass
+        # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
@@ -99,7 +97,7 @@ class fpgaTopOrBottom(Test): #inherit from Test class, overload testBody() funct
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        # for RO register, RWR should NOT pass
+        # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
@@ -112,14 +110,14 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        # for RO register, RWR should NOT pass
-        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
+        # for RW register, read1 != read2 constitues a PASS
+        if !(i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
 # ------------------------------------------------------------------------
-
 class statusReg(Test): #inherit from Test class, overload testBody() function
+    # -------------------------------------------
     def read(self, desiredReg = "all"):
         name = "statusReg"
         reg = i.igloo[name]["register"]
@@ -153,11 +151,16 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         else:
             return statusReg[desiredReg]
 
-    def write(self, name, settingBits):
-        # CODE HERE
-        return True
+    # -------------------------------------------
+    # def write(self, name, settingBits):
+    #     # CODE HERE
+    #     return True
 
+    # -------------------------------------------
     def testBody(self):
+        readPass = False
+        rwrPass = False
+
         name = "statusReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
@@ -166,7 +169,16 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         print self.read()
 
         if self.read() !=False:
+            readPass = True
+
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
+            rwrPass = True
+
+        if (readPass and rwrPass):
             return True
+        else:
+            return False
 
 # ------------------------------------------------------------------------
 def runAll():
