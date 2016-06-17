@@ -13,6 +13,7 @@ from Tkinter import *
 from client import webBus
 from TestStand import TestStand
 from datetime import datetime
+import htrProcesses.histo_generator as histgen
 
 class makeGui:
 	def __init__(self, parent):
@@ -619,97 +620,51 @@ class makeGui:
 		self.uHTR_frame_Label.pack(side=TOP)
 
 		# Make many text variables
-		self.uHTR_Parameters = [StringVar() for i in range(0,6)]
+		self.uHTR_slotNumber = [IntVar() for i in range(0,7)]
 
-		# Make top subframe 1
-		self.uHTR_sub1 = Frame(self.microHTR_frame, bg="white")
-		self.uHTR_sub1.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
-			padx=frame_padx, pady="1m")
-
-		# Crate number parameter label & box
-		self.uHTR_crateNo_Lbl = Label(self.uHTR_sub1, text="Crate Number: ",bg="white")
-		self.uHTR_crateNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
-		self.uHTR_crateNo_Fld = Entry(self.uHTR_sub1, textvariable=self.uHTR_Parameters[0])
-		self.uHTR_crateNo_Fld.pack(side=LEFT)
-
-		# Make top subframe 2
+		# Make a subframe for the slot number label
 		self.uHTR_sub2 = Frame(self.microHTR_frame, bg="white")
 		self.uHTR_sub2.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
 			padx=frame_padx, pady="1m")
 
-		# Slot number parameter label & box
+		# Slot number parameter label
 		self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg="white")
 		self.uHTR_slotNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
-		self.uHTR_slotNo_Fld = Entry(self.uHTR_sub2, textvariable=self.uHTR_Parameters[1])
-		self.uHTR_slotNo_Fld.pack(side=LEFT)
 
-		# Make top subframe 3
+		# Make a subframe for the slot number vars
 		self.uHTR_sub3 = Frame(self.microHTR_frame, bg="white")
 		self.uHTR_sub3.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
 			padx=frame_padx, pady="1m")
 
-		# Num. of Orbits parameter label & box
-		self.uHTR_orbitsNo_Lbl = Label(self.uHTR_sub3, text="# of Orbits: ",bg="white")
-		self.uHTR_orbitsNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
-		self.uHTR_orbitsNo_Fld = Entry(self.uHTR_sub3, textvariable=self.uHTR_Parameters[2])
-		self.uHTR_orbitsNo_Fld.pack(side=LEFT)
+		# Make checkboxes for each uHTR slot
+		for i in range(0,6):
+				self.uHTR_radio = Checkbutton(
+					self.uHTR_sub3,
+					text = str(i+1), anchor=S,
+					variable = self.uHTR_slotNumber[i+1],
+					background = "lavender"
+					)
+				self.uHTR_radio.configure(
+					padx=button_padx,
+					pady=button_pady,
+					)
+				self.uHTR_radio.pack(side=LEFT)
 
 		# Make top subframe 4
 		self.uHTR_sub4 = Frame(self.microHTR_frame, bg="white")
 		self.uHTR_sub4.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
 			padx=frame_padx, pady="1m")
 
-		# Separate Cap Id parameter label & box
-		self.uHTR_sepCapId_Lbl = Label(self.uHTR_sub4, text="Separate Cap Id: ",bg="white")
-		self.uHTR_sepCapId_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
-		self.uHTR_sepCapId_Fld = Entry(self.uHTR_sub4, textvariable=self.uHTR_Parameters[3])
-		self.uHTR_sepCapId_Fld.pack(side=LEFT)
-	
-		# Make top subframe 5
-		self.uHTR_sub5 = Frame(self.microHTR_frame, bg="white")
-		self.uHTR_sub5.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
-			padx=frame_padx, pady="1m")
-
-		# Output directory parameter label & box
-		self.uHTR_outputDir_Lbl = Label(self.uHTR_sub5, text="Output Directory: ",bg="white")
-		self.uHTR_outputDir_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
-		self.uHTR_outputDir_Fld = Entry(self.uHTR_sub5, textvariable=self.uHTR_Parameters[4])
-		self.uHTR_outputDir_Fld.pack(side=LEFT)
-
-		# Make top subframe 6
-		self.uHTR_sub6 = Frame(self.microHTR_frame, bg="white")
-		self.uHTR_sub6.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
-			padx=frame_padx, pady="1m")
-
-		# Toggle Signal parameter label & box
-		self.uHTR_togSignal_Lbl = Label(self.uHTR_sub6, text="Toggle Signal: ",bg="white")
-		self.uHTR_togSignal_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
-		self.uHTR_togSignal_Fld = Entry(self.uHTR_sub6, textvariable=self.uHTR_Parameters[5])
-		self.uHTR_togSignal_Fld.pack(side=LEFT)
-
-		# Make top subframe 7
-		self.uHTR_sub7 = Frame(self.microHTR_frame, bg="white")
-		self.uHTR_sub7.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
-			padx=frame_padx, pady="1m")
-
 		# Button for doing uHTR tests
-		self.uHTR_tester_bttn = Button(self.uHTR_sub7, text="Run uHTR Tests", bg="turquoise",
+		self.uHTR_tester_bttn = Button(self.uHTR_sub4, text="Run uHTR Tests", bg="turquoise",
 						command=self.uHTR_tester_bttnPress)
 		self.uHTR_tester_bttn.configure(
 			padx=button_padx*2,
 			pady=button_pady*2,
 			)
-		self.uHTR_tester_bttn.pack(side=TOP)
+		self.uHTR_tester_bttn.pack(side=TOP)	
 
-		# Make defaults for the parameters:
-		self.uHTR_Parameters[0].set("41")
-		self.uHTR_Parameters[1].set("3")
-		self.uHTR_Parameters[2].set("1000")
-		self.uHTR_Parameters[3].set("0")
-		self.uHTR_Parameters[4].set("joshtest")
-		self.uHTR_Parameters[5].set("0")
-	
-	
+
 	#################################
 	###			      ###
 	###  BEGIN MEMBER FUNCTIONS   ###
@@ -777,7 +732,12 @@ class makeGui:
 		return self.stringList
 	
 	def uHTR_tester_bttnPress(self):
-		print "This is the worst easter egg ever made."
+		outSlotList = []
+		for i in range(len(self.uHTR_slotNumber)):
+			if (self.uHTR_slotNumber[i].get() == 1):
+				outSlotList.append(i)
+		print outSlotList
+		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
 
 	def prepareOutSlots(self):
 		for k in range(len(self.cardVarList)):

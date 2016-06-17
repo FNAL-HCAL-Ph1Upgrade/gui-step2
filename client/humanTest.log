@@ -647,3 +647,47 @@ Barcode: 9874
 Unique_ID: ['0 112 96 185 234 0 0 0 254']
 Temperature: ['0 109 56']
 
+Zeroes: (100, 0)
+Humidity: ['0 100 10']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 138 191 234 0 0 0 132']
+Temperature: ['0 105 24']
+
+Zeroes: (100, 0)
+Humidity: ['0 98 154']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 54 183 234 0 0 0 192']
+Temperature: ['0 105 148']
+
+Zeroes: (100, 0)
+Humidity: ['0 96 138']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 236 157 234 0 0 0 142']
+Temperature: ['0 106 220']
+
+Zeroes: (100, 0)
+Humidity: ['0 91 18']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 96 185 234 0 0 0 254']
+Temperature: ['0 108 4']
+
