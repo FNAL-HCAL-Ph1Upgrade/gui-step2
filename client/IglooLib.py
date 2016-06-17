@@ -43,7 +43,8 @@ def catBitsFromBytes(bitList, first = 0, length = 0):
     		bitString = bitString + i
 
     print "bitString: ", bitString
-	return bitString
+
+    return bitString
 
 
 ##############################
