@@ -30,7 +30,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         add = i.igloo[name]["address"]
         size = i.igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not readWriteRead(b, i.iglooAdd, i.igloo[name][add],i.igloo[name][size]):
+        if not i.readWriteRead(b, i.iglooAdd, i.igloo[name][add],i.igloo[name][size]):
             return True
         else:
             return False
