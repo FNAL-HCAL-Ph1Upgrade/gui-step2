@@ -11,7 +11,7 @@ def sensorTemp(rm,slot):
     b.write(0x40,[0xf3])
     b.read(0x40,3)
 
-    data = (b.sendBatch()[2]).split()
+    data = ((b.sendBatch()[2]).split())[1:]
     checksum = data[2] # 3rd byte of data is the checksum
     print "Checksum: " + hex(int(checksum))[2:]
 
@@ -65,7 +65,7 @@ def sensorHumid(rm,slot):
     b.write(0x40,[0xf5])
     b.read(0x40,2)
 
-    data = b.sendBatch()[2]
+    data = (b.sendBatch()[2].split())[1:]
     # Splitting the incoming data & concatenating strings of binary bytes
     data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
     # zero-ing out the 2 status bits, converting to int for calculations
