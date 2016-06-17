@@ -107,7 +107,7 @@ class fpgaTopOrBottom(Test): #inherit from Test class, overload testBody() funct
 # ------------------------------------------------------------------------
 class uniqueID(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
-        name = "ones"
+        name = "uniqueID"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
