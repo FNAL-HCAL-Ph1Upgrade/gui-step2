@@ -154,7 +154,7 @@ class Humidity(Test):
 		humid = -6 + 125.0*(data)/(2**16)
 		humid = round(humid,3)
 
-		if (temp > 0 and temp < 100):
+		if (humid > 0 and humid < 100):
 			return True
 		else:
 			return False
