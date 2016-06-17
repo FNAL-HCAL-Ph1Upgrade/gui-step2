@@ -44,13 +44,13 @@ def readFromRegister(bus, address, register, numBytes):
     for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
-    print ret
-
     if isError(ret):
         print "Error in read!"
+        print ret
         return False
     else:
         print "Read Success"
+        print ret
         return ret[1:] #ignore the leading error code
 
 # ------------------------------------------------------------------------
