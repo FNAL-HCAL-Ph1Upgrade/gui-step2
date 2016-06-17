@@ -41,7 +41,7 @@ def readFromRegister(bus, address, register, numBytes):
     bus.write(address, [register])
     bus.read(address, numBytes)
     ret = []
-    for i in bus.sendBatch()[1].split():
+    for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
     print ret
@@ -58,7 +58,7 @@ def writeToRegister(bus, address, register, toWrite):
     # toWrite can be the ret list from readFromRegister()
     bus.write(address, [register] + toWrite)
     ret = []
-    for i in bus.sendBatch()[0].split():
+    for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
     print "WRITE RET:"
