@@ -119,6 +119,37 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
             return False
 # ------------------------------------------------------------------------
 
+class statusReg(Test): #inherit from Test class, overload testBody() function
+    def read(self, desiredReg = "all"):
+        # CODE HERE
+        allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
+        allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(allRegList))
+
+        allReg = i.statusReg["InputSpyWordNum"] + " : " + i.statusReg["InputSpyFifoEmpty"]\
+            + " : " + i.statusReg["InputSpyFifoFull"] + " : " + i.statusReg["Qie_DLLNoLock"]\
+            + " : " + i.statusReg["BRIDGE_SPARE"] + " : " + i.statusReg["1_bit"]\
+            + " : " + i.statusReg["PLL_320MHz_Lock"]
+
+        if desiredReg == "all":
+            return allReg
+
+
+
+    def write(self, name, settingBits):
+        # CODE HERE
+    def testBody(self):
+        name = "statusReg"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        print read(self)
+        # # for RO register, RWR should NOT pass
+        # if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
+        #     return True
+        # else:
+        #     return False
+# ------------------------------------------------------------------------
 def runAll():
     def openIgloo(rm,slot):
         q.openChannel(rm,slot)
@@ -138,6 +169,8 @@ def runAll():
     m = fpgaTopOrBottom(b,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
     print m.run()
     m = uniqueID(b,i.igloo["uniqueID"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = statusReg(b,i.igloo["statusReg"]["register"],'iglooClass.txt', 2)
     print m.run()
 
 runAll()

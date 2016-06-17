@@ -8,24 +8,6 @@ q = QIELib
 # Helpful Tool Functions
 ##############################
 
-# # give this function a string (like '133 4 92 23') and returns the binary cat
-# def strToBin(aString):
-#     j = 0
-#     catBinary = ""
-#     for i in aString.split():
-#         catBinary = catBinary + format(int(aString.split()[j]),'08b')
-#         j += 1
-#     return catBinary
-#
-# # give a string (like '133 4 92 23') and returns those values in hex with spaces
-# def strToHex(string):
-#         catHex = ""
-#         j=0
-#         for i in string.split():
-#                 catHex = catHex + " " + hex(int(string.split()[j]))[2:]
-#                 j = j + 1
-#         return catHex
-
 # give function a r/w indexed from sendBatch() and will determine if first
 # value in the string is a non-zero error code
 def isError(ret):
@@ -33,6 +15,32 @@ def isError(ret):
         return True # error
     else:
         return False # no error
+
+# takes decimal byte, returns list filled with exactly 8 bits
+def getBitsFromByte(decimal):
+    return list('%08d' % int(bin(decimal)[2:]))
+
+# give a list with decimal bytes, returns list of all bits
+def getBitsFromBytes(decimalBytes):
+    ret = []
+    for i in decimalBytes:
+        ret = ret + getBitsFromByte(i)
+    return ret
+
+# give a list of bits (from getBitsFromBytes()), cats into bit string based on cuts
+# parameters:   bitList = list of bits
+#               first = bit element to begin cat with
+#               length = how many bits to cat after 'first'
+def catBitsFromBytes(bitList, first = 0, length = 0):
+	bitString = ""
+    if length == 0:
+        for i in bitList:
+            bitString = bitString + i
+    elif length > 0:
+    	for i in bitList[first:(first+length)]:
+    		bitString = bitString + i
+	return bitString
+
 
 ##############################
 # Read/write functions
@@ -290,4 +298,15 @@ igloo = {
         "RW" : 1,
         "expected" : ""
         }
+}
+
+statusReg = {
+    "InputSpyWordNum"   :   allRegStr[0:10], # number of words in InputSpyFifo (depth = 512)
+    "InputSpyFifoEmpty" :   allRegStr[10],
+    "InputSpyFifoFull"  :   allRegStr[11],
+    "Qie_DLLNoLock"     :   allRegStr[12:24], # good when '0'
+    "BRIDGE_SPARE"      :   allRegStr[24:30],
+    "1_bit"             :   allRegStr[30], # should be '0'
+    "PLL_320MHz_Lock"   :   allRegStr[31] # good when '1'
+    }
 }
