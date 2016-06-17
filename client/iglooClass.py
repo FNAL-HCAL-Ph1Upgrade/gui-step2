@@ -46,6 +46,19 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 
+def runAll():
+    def openIgloo(rm,slot):
+        q.openChannel(rm,slot)
+        #the igloo is value "3" in I2C_SELECT table
+        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
+        b.sendBatch()
+    openIgloo(0,0)
+
+    m = fpgaMajVer(b,igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
+    m.testBody()
+
+runAll()
+
 class fpgaMinVer(Test):
     def testBody():
         name = "fpgaMinVer"
