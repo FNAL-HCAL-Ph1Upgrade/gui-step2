@@ -164,11 +164,10 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         print self.read()
-        # # for RO register, RWR should NOT pass
-        # if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
-        #     return True
-        # else:
-        #     return False
+
+        if self.read() !=False:
+            return True
+
 # ------------------------------------------------------------------------
 def runAll():
     def openIgloo(rm,slot):
