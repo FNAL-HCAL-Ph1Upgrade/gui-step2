@@ -97,7 +97,7 @@ def readWriteRead_randChange(bus, address, register, numBytes):
 
     augRead1 = [] # augmented read1
     for i in read1:
-        augRead1[i] = i + 1
+        augRead1.append(i + 1)
 
     #if write is successful
     if (writeToRegister(bus,address, register, augRead1)):
