@@ -149,6 +149,7 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
 
         if desiredReg == "all":
             return allReg
+            
         else:
             return statusReg[desiredReg]
 
