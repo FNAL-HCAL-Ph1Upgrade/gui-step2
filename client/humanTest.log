@@ -559,3 +559,91 @@ Barcode: 4
 Unique_ID: ['0 112 96 185 234 0 0 0 254']
 Temperature: ['0 108 212']
 
+Zeroes: (100, 0)
+Humidity: ['0 99 18']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 138 191 234 0 0 0 132']
+Temperature: ['0 105 228']
+
+Zeroes: (100, 0)
+Humidity: ['0 97 146']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 54 183 234 0 0 0 192']
+Temperature: ['0 106 140']
+
+Zeroes: (100, 0)
+Humidity: ['0 96 162']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 236 157 234 0 0 0 142']
+Temperature: ['0 107 100']
+
+Zeroes: (100, 0)
+Humidity: ['0 90 134']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 
+Unique_ID: ['0 112 96 185 234 0 0 0 254']
+Temperature: ['0 108 132']
+
+Zeroes: (100, 0)
+Humidity: ['0 98 254']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 1234
+Unique_ID: ['0 112 138 191 234 0 0 0 132']
+Temperature: ['0 105 228']
+
+Zeroes: (100, 0)
+Humidity: ['0 97 110']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 5678
+Unique_ID: ['0 112 54 183 234 0 0 0 192']
+Temperature: ['0 106 140']
+
+Zeroes: (100, 0)
+Humidity: ['0 96 106']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 0987
+Unique_ID: ['0 112 236 157 234 0 0 0 142']
+Temperature: ['0 107 140']
+
+Zeroes: (100, 0)
+Humidity: ['0 88 238']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: 9874
+Unique_ID: ['0 112 96 185 234 0 0 0 254']
+Temperature: ['0 109 56']
+
