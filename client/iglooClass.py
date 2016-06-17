@@ -16,7 +16,7 @@ class Test:
     def run(self):
         passes = 0
         for i in xrange(self.iterations): #changed from iterations to self.iterations
-            if self.testBody() == true: passes += 1
+            if self.testBody() == True: passes += 1 #changed true to True
         return (passes, fails)
     def log(self, message):
         logprint(message, file=self.logfile)
