@@ -52,8 +52,16 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
+        print "***NO CHANGE***"
         # for RO register, RWR should NOT pass
-        if not (i.readWriteRead(b, i.iglooAdd, reg, size)):
+        if not (i.readWriteRead_noChange(b, i.iglooAdd, reg, size)):
+            return True
+        else:
+            return False
+
+        print "***RAND CHANGE***"
+        # for RO register, RWR should NOT pass
+        if not (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
