@@ -204,7 +204,7 @@ igloo = {
         "expected" : ""
         },
     "link_test_mode" :{
-        "address" : : 0x80,
+        "address" : 0x80,
         "size" : 8,
         "RW" : 1,
         "expected" : ""
