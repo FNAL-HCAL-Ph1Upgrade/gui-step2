@@ -184,8 +184,6 @@ igloo = {
         "RW" : 0,
         "expected" : ""
         }
-
-    readFunction["qie_ck_ph"]["address"][1]
     "qie_ck_ph" :{
         "address" : {
             1 : 0x60,
