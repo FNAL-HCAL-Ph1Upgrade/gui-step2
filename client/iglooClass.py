@@ -57,7 +57,7 @@ def runAll():
         #the igloo is value "3" in I2C_SELECT table
         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
         b.sendBatch()
-    openIgloo(0,2)
+    openIgloo(0,1)
 
     m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 3)
     print m.testBody()
