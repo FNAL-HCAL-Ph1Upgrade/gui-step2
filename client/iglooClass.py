@@ -40,7 +40,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
 
         print "----------RAND CHANGE----------"
         # for RO register, RWR should NOT pass
-        if not (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
+        if (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
@@ -61,7 +61,7 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
 
         print "----------RAND CHANGE----------"
         # for RO register, RWR should NOT pass
-        if not (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
+        if (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
