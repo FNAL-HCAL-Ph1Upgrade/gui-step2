@@ -26,10 +26,12 @@ class qCard:
         for i in xrange(len(self.passed)):
             s += "Test%s: %s \n" % (i, str(self.passed[i]))
         return s
-    def runAll(self,barcode):
+#    def runAll(self,barcode):
+    def runAll(self):
         '''Run all tests'''
         t = tests.testSuite("pi5", self.address)
-	t.runTests(barcode)
+#	t.runTests(barcode)
+	t.runTests()
 
     def runSingle(self, key):
 	t = tests.testSuite("pi5", self.address)

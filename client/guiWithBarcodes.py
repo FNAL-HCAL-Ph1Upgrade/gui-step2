@@ -268,12 +268,23 @@ class makeGui:
 		# Make right subframe
 		self.experi_subRight_frame = Frame(self.experiment_frame,background="white")
 		self.experi_subRight_frame.pack(
-			side=RIGHT,
+			side=LEFT,
+                        ipadx=frame_ipadx,
                         ipady=frame_ipady,
-			ipadx=frame_ipadx,
-			padx=frame_padx,
+                        padx=frame_padx,
                         pady=frame_pady
 			)
+
+		# Make far right subframe
+		self.experi_farRight_frame = Frame(self.experiment_frame,background="white")
+		self.experi_farRight_frame.pack(
+			side=LEFT,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+			)
+
 
 		# Label for higher-level hardware
 		self.experi_highlevel_lbl = Label(self.experi_subLeft_frame,text="High-Level\n")
@@ -369,6 +380,31 @@ class makeGui:
 				pady=button_pady,
 				)
 			self.cardRadio.pack(side=TOP)
+
+		# Now, we add stuff to the farRight frame
+		
+		# Far-right label
+		# Label for card barcode column
+		self.experi_barcode_lbl = Label(self.experi_farRight_frame,text="Barcodes\n")
+		self.experi_barcode_lbl.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.experi_barcode_lbl.pack(side=TOP)
+
+		# Create many barcode variables
+		self.barcodeVarList = [StringVar() for i in range(0,17)]
+
+		# Then, for each variable in barcodeVarList, add a Entry corresponding to it
+		for i in range(1,17):
+			self.barcodeEntry = Entry(
+				self.experi_farRight_frame,
+				textvariable=self.barcodeVarList[i],
+				borderwidth=4,
+				width=9
+				)
+			self.barcodeEntry.pack(side=TOP)
 
 		######################################
 		#####				 #####
@@ -684,17 +720,16 @@ class makeGui:
 	def runTestSuite(self):
 		self.prepareOutSlots()
 		self.myTestStand = TestStand(self.outSlotNumbers)
-#		self.myTestStand.runAll(self.barcodeVarsToStrs())
-		self.myTestStand.runAll()
+		self.myTestStand.runAll(self.barcodeVarsToStrs())
 		# Reset the active outSlots
 		self.outSlotNumbers = []
 
-#	def barcodeVarsToStrs(self):
-#		self.stringList = []
-#		for i in range(len(self.barcodeVarList)):
-#			if (self.cardVarList[i].get() == 1):
-#				self.stringList.append(self.barcodeVarList[i].get())
-#		return self.stringList
+	def barcodeVarsToStrs(self):
+		self.stringList = []
+		for i in range(len(self.barcodeVarList)):
+			if (self.cardVarList[i].get() == 1):
+				self.stringList.append(self.barcodeVarList[i].get())
+		return self.stringList
 	
 	def uHTR_tester_bttnPress(self):
 		outSlotList = []

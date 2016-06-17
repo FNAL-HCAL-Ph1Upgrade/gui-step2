@@ -121,13 +121,13 @@ class testSuite:
 	self.outCard.resultList[testName] = new_r
 	return new_r
 
-    def runTests(self,barcode):
+#   def runTests(self,barcode):
+    def runTests(self):
         for r in registers.keys():
-#	    yield self.readWithCheck(r, 100)
             self.readWithCheck(r, 100)
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
-	self.outCard.resultList["Barcode"] = barcode
+#	self.outCard.resultList["Barcode"]=barcode
 	self.outCard.printResults()
 	print "\n\n"
 	self.outCard.writeHumanLog()	
