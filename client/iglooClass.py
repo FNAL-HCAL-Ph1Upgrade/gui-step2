@@ -11,7 +11,7 @@ class Test:
     def __init__(self, bus, address, logfile, iterations = 1):
         self.bus = bus
         self.address = address
-        self.logstream = logstream
+        self.logstream = logfile #changed from logstream to logfile
         self.iterations = iterations
     def run(self):
         passes = 0
