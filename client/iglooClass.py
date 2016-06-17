@@ -49,7 +49,7 @@ def runAll():
 runAll()
 
 class fpgaMinVer(Test):
-    def testBody():
+    def testBody(self):
         name = "fpgaMinVer"
         add = igloo[name]["address"]
         size = igloo[name]["size"]
