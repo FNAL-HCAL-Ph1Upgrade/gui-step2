@@ -126,11 +126,14 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
         allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
         print "allRegList: ", allRegList
-        if (allRegList == False):
-            return False
-        allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(allRegList))
 
-        print "allRegStr", allRegStr
+        if (allRegList == False): return False
+
+        allRegBin = i.getBitsFromBytes(allRegList)
+        print "allRegBin: ", allRegBin
+        catAllRegStr = i.catBitsFromBytes(allRegBin)
+
+        print "catAllRegStr: ", catAllRegStr
 
         statusReg = {
             "InputSpyWordNum"   :   allRegStr[0:10], # number of words in InputSpyFifo (depth = 512)
