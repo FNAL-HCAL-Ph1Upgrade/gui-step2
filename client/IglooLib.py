@@ -311,4 +311,3 @@ statusReg = {
     "1_bit"             :   allRegStr[30], # should be '0'
     "PLL_320MHz_Lock"   :   allRegStr[31] # good when '1'
     }
-}
