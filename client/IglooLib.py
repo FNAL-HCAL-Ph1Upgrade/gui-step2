@@ -238,7 +238,7 @@ igloo = {
         "size" : 32,
         "RW" : 0,
         "expected" : ""
-        }
+        },
     "statFromSERDES" :{
         "address" : : 0x86,
         "size" : 32,
