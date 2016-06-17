@@ -60,6 +60,10 @@ def writeToRegister(bus, address, register, toWrite):
     ret = []
     for i in bus.sendBatch()[0].split():
         ret.append(int(i))
+
+    print "WRITE RET:"
+    print ret
+
     if not isError(ret):
         print "Write Success"
         return True # write successful
