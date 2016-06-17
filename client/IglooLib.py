@@ -32,13 +32,15 @@ def getBitsFromBytes(decimalBytes):
 #               first = bit element to begin cat with
 #               length = how many bits to cat after 'first'
 def catBitsFromBytes(bitList, first = 0, length = 0):
-	bitString = ""
+    bitString = ""
+
     if (length == 0):
         for i in bitList:
             bitString = bitString + i
     elif (length > 0):
     	for i in bitList[first:(first+length)]:
     		bitString = bitString + i
+
 	return bitString
 
 
