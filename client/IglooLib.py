@@ -45,12 +45,10 @@ def readFromRegister(bus, address, register, numBytes):
         ret.append(int(i))
 
     if isError(ret):
-        print "Read ERROR:"
-        print ret
+        print "Read ERROR: ", ret
         return False
     else:
-        print "Read Success:"
-        print ret
+        print "Read Success: ", ret
         return ret[1:] #ignore the leading error code
 
 # ------------------------------------------------------------------------
