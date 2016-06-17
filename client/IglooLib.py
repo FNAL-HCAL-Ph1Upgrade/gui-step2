@@ -73,7 +73,7 @@ def writeToRegister(bus, address, register, toWrite):
 
 # ------------------------------------------------------------------------
 
-def readWriteRead_noChange(bus, address, register, numBytes):
+def RWR_noChange(bus, address, register, numBytes):
     read1 = readFromRegister(bus, address, register, numBytes)
 
     #if write is successful
@@ -92,7 +92,7 @@ def readWriteRead_noChange(bus, address, register, numBytes):
 
 # ------------------------------------------------------------------------
 
-def readWriteRead_randChange(bus, address, register, numBytes):
+def RWR_randChange(bus, address, register, numBytes):
     read1 = readFromRegister(bus, address, register, numBytes)
 
     augRead1 = [] # augmented read1

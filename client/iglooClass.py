@@ -33,14 +33,14 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
 
         # print "----------NO CHANGE----------"
         # # for RO register, RWR should NOT pass
-        # if not (i.readWriteRead_noChange(b, i.iglooAdd, reg, size)):
+        # if not (i.RWR_noChange(b, i.iglooAdd, reg, size)):
         #     return True
         # else:
         #     return False
 
         print "----------RAND CHANGE----------"
         # for RO register, RWR should NOT pass
-        if (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
@@ -54,14 +54,14 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
 
         # print "----------NO CHANGE----------"
         # # for RO register, RWR should NOT pass
-        # if not (i.readWriteRead_noChange(b, i.iglooAdd, reg, size)):
+        # if not (i.RWR_noChange(b, i.iglooAdd, reg, size)):
         #     return True
         # else:
         #     return False
 
         print "----------RAND CHANGE----------"
         # for RO register, RWR should NOT pass
-        if (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
@@ -74,14 +74,14 @@ class ones(Test): #inherit from Test class, overload testBody() function
 
         # print "----------NO CHANGE----------"
         # # for RO register, RWR should NOT pass
-        # if not (i.readWriteRead_noChange(b, i.iglooAdd, reg, size)):
+        # if not (i.RWR_noChange(b, i.iglooAdd, reg, size)):
         #     return True
         # else:
         #     return False
 
         print "----------RAND CHANGE----------"
         # for RO register, RWR should NOT pass
-        if (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
+        if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
