@@ -31,14 +31,14 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8      # dict holds bits, we want bytes
 
-        # print "***NO CHANGE***"
+        # print "----------NO CHANGE----------"
         # # for RO register, RWR should NOT pass
         # if not (i.readWriteRead_noChange(b, i.iglooAdd, reg, size)):
         #     return True
         # else:
         #     return False
 
-        print "***RAND CHANGE***"
+        print "----------RAND CHANGE----------"
         # for RO register, RWR should NOT pass
         if not (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
             return True
@@ -52,14 +52,14 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
-        # print "***NO CHANGE***"
+        # print "----------NO CHANGE----------"
         # # for RO register, RWR should NOT pass
         # if not (i.readWriteRead_noChange(b, i.iglooAdd, reg, size)):
         #     return True
         # else:
         #     return False
 
-        print "***RAND CHANGE***"
+        print "----------RAND CHANGE----------"
         # for RO register, RWR should NOT pass
         if not (i.readWriteRead_randChange(b, i.iglooAdd, reg, size)):
             return True
