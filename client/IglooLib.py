@@ -1,24 +1,30 @@
+from client import webBus
+import QIELib
+
+b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
+q = QIELib
+
 ##############################
 # Helpful Tool Functions
 ##############################
 
-# give this function a string (like '133 4 92 23') and returns the binary cat
-def strToBin(aString):
-    j = 0
-    catBinary = ""
-    for i in aString.split():
-        catBinary = catBinary + format(int(aString.split()[j]),'08b')
-        j += 1
-    return catBinary
-
-# give a string (like '133 4 92 23') and returns those values in hex with spaces
-def strToHex(string):
-        catHex = ""
-        j=0
-        for i in string.split():
-                catHex = catHex + " " + hex(int(string.split()[j]))[2:]
-                j = j + 1
-        return catHex
+# # give this function a string (like '133 4 92 23') and returns the binary cat
+# def strToBin(aString):
+#     j = 0
+#     catBinary = ""
+#     for i in aString.split():
+#         catBinary = catBinary + format(int(aString.split()[j]),'08b')
+#         j += 1
+#     return catBinary
+#
+# # give a string (like '133 4 92 23') and returns those values in hex with spaces
+# def strToHex(string):
+#         catHex = ""
+#         j=0
+#         for i in string.split():
+#                 catHex = catHex + " " + hex(int(string.split()[j]))[2:]
+#                 j = j + 1
+#         return catHex
 
 # give function a r/w indexed from sendBatch() and will determine if first
 # value in the string is a non-zero error code

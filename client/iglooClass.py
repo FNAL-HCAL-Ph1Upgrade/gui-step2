@@ -22,59 +22,68 @@ class Test:
     def testBody(self):
         return True
 
+def runAll():
+    def openIgloo(rm,slot):
+        q.openChannel(rm,slot)
+        #the igloo is value "3" in I2C_SELECT table
+        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
+        b.sendBatch()
+    openIgloo(0,0)
+
+    fpgaMajVer(b,igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
+
+
 class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
     def testBody():
-        reg = "fpgaMajVer"
-        add = igloo[reg]["address"]
-        size = igloo[reg]["size"]
+        name = "fpgaMajVer"
+        add = igloo[name]["address"]
+        size = igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
+        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
             return True
         else:
             return False
 
-fpgaMajVer(b,igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
-
 class fpgaMinVer(Test):
     def testBody():
-        reg = "fpgaMinVer"
-        add = igloo[reg]["address"]
-        size = igloo[reg]["size"]
+        name = "fpgaMinVer"
+        add = igloo[name]["address"]
+        size = igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
+        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
             return True
         else:
             return False
 
 class ones(Test):
     def testBody():
-        reg = "ones"
-        add = igloo[reg]["address"]
-        size = igloo[reg]["size"]
+        name = "ones"
+        add = igloo[name]["address"]
+        size = igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
+        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
             return True
         else:
             return False
 
 class zeroes(Test):
     def testBody():
-        reg = "zeroes"
-        add = igloo[reg]["address"]
-        size = igloo[reg]["size"]
+        name = "zeroes"
+        add = igloo[name]["address"]
+        size = igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
+        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
             return True
         else:
             return False
 
 class fpgaTopOrBottom(Test):
     def testBody():
-        reg = "fpgaTopOrBottom"
-        add = igloo[reg]["address"]
-        size = igloo[reg]["size"]
+        name = "fpgaTopOrBottom"
+        add = igloo[name]["address"]
+        size = igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
+        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
             return True
         else:
             return False
