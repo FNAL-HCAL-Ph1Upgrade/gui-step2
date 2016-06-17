@@ -95,6 +95,8 @@ def RWR_noChange(bus, address, register, numBytes):
 def RWR_randChange(bus, address, register, numBytes):
     read1 = readFromRegister(bus, address, register, numBytes)
 
+    if read1 == False: return False
+
     augRead1 = [] # augmented read1
     for i in read1:
         if (i != 255): augRead1.append(i + 1)
