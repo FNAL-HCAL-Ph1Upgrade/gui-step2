@@ -50,7 +50,7 @@ def sensorTemp(rm,slot):
     temp = (-46.85) +175.72*(data)/(2**16)
 
     print "                             Temp: %.2f" %temp
-    
+
     return temp
 
 print "%.2f" %(sensorTemp(0,2))
@@ -95,26 +95,6 @@ def sensorHumid(rm,slot):
     humid = (-6.0) + 125.0 * (data)/(2**16)
     print "humid b4 return: %f" %humid
     return humid
-
-'''
-    byte1 = format(int(data.split()[0]),'08b')
-    byte2 = format(int(data.split()[1]),'08b')
-    print "humid byte1+byte2 = " + byte1 + "+" + byte2
-    catBytes = byte1+byte2
-    print "catBytes = " + catBytes
-    useTheseBytes = catBytes[0:14] + "00"
-    print "useThese = " + useTheseBytes
-
-    newData = int(useTheseBytes,2)
-
-    oldData = int((hex(int(data.split()[0])))[2:] + (hex(int(data.split()[1])))[2:],16)
-    #Converting the humidity using equation
-    newHumid = -6.0 + 125.0*(newData)/(2**16)
-    print "                             newHumid: " + str(newHumid)
-
-    oldHumid = -6.0 + 125.0*(oldData)/(2**16)
-    print "                             oldHumid: " + str(oldHumid)
-'''
 
     #return humid
 

@@ -214,9 +214,20 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
             return cntrReg[desiredReg]
 
     # -------------------------------------------
-    # def write(self, name, settingBits):
-    #     # CODE HERE
-    #     return True
+    # in theory, you can make parameter settingStr = "000000 11 001001 etc"
+    # and it will split string up and assign them to appropriate settings
+    # in cntrReg... Make sure your spacing is correct though!
+    def write(self, desiredReg = "all", settingStr):
+        name = "cntrReg"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        settingList = settingStr.split()
+
+
+
+        if desiredReg == "all":
+            writeToRegister(b, i.iglooAdd, reg, toWrite)
 
     # -------------------------------------------
     def testBody(self):
@@ -234,6 +245,7 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
             readPass = True
 
         # for RO register, read1 == read2 constitutes a PASS
+        # NEED TO CHANGE THIS FOR CNTRREG SINCE WE EXPECT TO R/W NON-RAND VALUES!!
         if (i.RWR_randChange(b, i.iglooAdd, reg, size)):
             rwrPass = True
 

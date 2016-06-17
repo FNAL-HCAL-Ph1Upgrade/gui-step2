@@ -55,7 +55,7 @@ def sensorTemp(rm,slot):
     temp = (-46.85) +175.72*(data)/(2**16)
     return temp
 
-print "%.2f" %(sensorTemp(0,2))
+print "%.2f" %(sensorTemp(0,0))
 
 
 #returns the relative humidity of the QIE card
@@ -75,4 +75,4 @@ def sensorHumid(rm,slot):
 
     return humid
 
-print "%.2f" %(sensorHumid(0,2))
+print "%.2f" %(sensorHumid(0,0))
