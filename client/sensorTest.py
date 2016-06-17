@@ -65,9 +65,10 @@ def sensorHumid(rm,slot):
     b.write(0x40,[0xf5])
     b.read(0x40,2)
 
-    data = (b.sendBatch()[2].split())[1:]
+    data = b.sendBatch()[2]
     # Splitting the incoming data & concatenating strings of binary bytes
-    data = format(int(data.split()[0]),'08b') + format(int(data.split()[1]),'08b')
+    # using [1] and [2] to skip over the error byte
+    data = format(int(data.split()[1]),'08b') + format(int(data.split()[2]),'08b')
     # zero-ing out the 2 status bits, converting to int for calculations
     data = int(data[0:14] + "00", 2)
     # Converting humidity using equation
