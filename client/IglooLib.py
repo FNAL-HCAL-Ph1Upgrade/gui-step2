@@ -50,6 +50,7 @@ def readFromRegister(bus, address, register, numBytes):
         print "Error in read!"
         return False
     else:
+        print "Read Success"
         return ret[1:] #ignore the leading error code
 
 # ------------------------------------------------------------------------
