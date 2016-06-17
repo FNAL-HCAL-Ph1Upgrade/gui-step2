@@ -121,6 +121,9 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
 
 class statusReg(Test): #inherit from Test class, overload testBody() function
     def read(self, desiredReg = "all"):
+        name = "statusReg"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
         allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
         allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(allRegList))
 
