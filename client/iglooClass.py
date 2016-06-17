@@ -33,7 +33,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 
-fpgaMajVer(self, b,igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
+fpgaMajVer(b,igloo["fpgaMajVer"]["address"],iglooClass.txt, 1)
 
 class fpgaMinVer(Test):
     def testBody():
