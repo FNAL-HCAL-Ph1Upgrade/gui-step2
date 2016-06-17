@@ -73,11 +73,11 @@ def writeToRegister(bus, address, register, toWrite):
 
 # ------------------------------------------------------------------------
 
-def readWriteRead(bus, address, register, numBytes):
+def readWriteRead_noChange(bus, address, register, numBytes):
     read1 = readFromRegister(bus, address, register, numBytes)
 
     #if write is successful
-    if (writeToRegister(bus,address, register,read1)):
+    if (writeToRegister(bus,address, register, read1)):
         read2 = readFromRegister(bus, address, register, numBytes)
         if (read1 == read2):
             print "Read1 = read2"
@@ -90,6 +90,28 @@ def readWriteRead(bus, address, register, numBytes):
         print "WRITE FAILED IN R/W/R CYCLE"
         return False
 
+# ------------------------------------------------------------------------
+
+def readWriteRead_randChange(bus, address, register, numBytes):
+    read1 = readFromRegister(bus, address, register, numBytes)
+
+    augRead1 = [] # augmented read1
+    for i in read1:
+        augRead1[i] = read1[i] + 1
+
+    #if write is successful
+    if (writeToRegister(bus,address, register, augRead1)):
+        read2 = readFromRegister(bus, address, register, numBytes)
+        if (read1 == read2):
+            print "Read1 = read2"
+            return True # R/W/R cycle gives identical reads, so PASS
+        if (read1 != read2):
+            print "READ1 != READ2"
+            return False # R/W/R cycle changed somehow, so FAIL
+    #if write failed
+    else:
+        print "WRITE FAILED IN R/W/R CYCLE"
+        return False
 
 
 
