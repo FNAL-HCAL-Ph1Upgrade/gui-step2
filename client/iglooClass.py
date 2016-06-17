@@ -75,9 +75,9 @@ def runAll():
         b.sendBatch()
     openIgloo(0,1)
 
-    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 3)
+    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 4)
     print m.testBody()
-    m = fpgaMinVer(b,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 3)
+    m = fpgaMinVer(b,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 4)
     print m.testBody()
 
 runAll()
