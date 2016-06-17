@@ -22,21 +22,75 @@ def strToHex(string):
 
 # give function a r/w indexed from sendBatch() and will determine if first
 # value in the string is a non-zero error code
-def checkForError(dataString):
-    if ((dataString.split())[0] == '0'):
-        return 0 # '0' means no error in r/w
+def isError(ret):
+    if (ret[0] != '0'): # '0' is non-error value
+        return True # error
     else:
-        return 1 # '1' indicates error
+        return False # no error
+
+##############################
+# Read/write functions
+##############################
+def readFromRegister(bus, address, register, numBytes):
+    bus.write(address, [register])
+    bus.read(address, numBytes)
+    ret = []
+    for i in bus.sendBatch()[1].split():
+        ret.append(int(i))
+    # print ret
+    if isError(ret):
+        #print "Error in read!"
+        return False
+    else:
+        return ret[1:] #ignore the leading error code
+
+# ------------------------------------------------------------------------
+
+def writeToRegister(bus, address, register, toWrite):
+    # toWrite can be the ret list from readFromRegister()
+    bus.write(address, [register] + toWrite)
+    ret = []
+    for i in bus.sendBatch()[1].split():
+        ret.append(int(i))
+    if !(isError(ret)):
+        return True # write successful
+    else:
+        return False # write failed
+
+# ------------------------------------------------------------------------
+
+def readWriteRead(bus, address, register, numBytes):
+    read1 = readFromRegister(bus, address, register, numBytes)
+
+    #if write is successful
+    if (writeToRegister(bus,address, register,read1)):
+        read2 = readFromRegister(bus, address, register, numBytes)
+        if (read1 == read2):
+            return True # R/W/R cycle gives identical reads, so PASS
+        if (read1 != read2):
+            # print "READ1 != READ2"
+            return False # R/W/R cycle changed somehow, so FAIL
+    #if write failed
+    else:
+        # print "WRITE FAILED IN R/W/R CYCLE"
+        return False
+
+
+
+
 
 ##############################
 # Library
 ##############################
-registers = {
+
+iglooAdd = 0x09
+
+igloo = {
     "fpgaMajVer" :{
         "address" : 0x00,
         "size" : 8,
         "RW" : 0,
-        "expected" : "77 82 69 72"
+        "expected" : ""
         },
     "fpgaMinVer" :{
         "address" : 0x01,
@@ -98,15 +152,15 @@ registers = {
         "RW" : 0,
         "expected" : ""
         },
-    "capIDErr_count" :{      # IS THIS NECESSARY TO SPLIT UP? PROBABLY
+    "capIDErr_count" :{
         "address" : {
             "link1" : 0x15,
             "link2" : 0x16,
             "link3" : 0x17
-                },         # COMMA HERE?
+                },
         "size" : 32,
         "RW" : 0,
-        "expected" : "",
+        "expected" : ""
         },
     "fifo_data" :{
         "address" : {
@@ -149,7 +203,7 @@ registers = {
                 },
         "size" : 8,
         "RW" : 1,
-        "expected" : "",
+        "expected" : ""
         },
     "link_test_mode" :{
         "address" : : 0x80,

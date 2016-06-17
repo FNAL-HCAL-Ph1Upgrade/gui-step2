@@ -1,14 +1,7 @@
-'''
-Goals:
-* understand the "spy" register (probably the 200-bit one)
-* try to write to a "read only" register and ensure that it didn't work
-    * but first, read what's there so that in case you overwrite, you can undo your mistakes...
-* understand the SERDES registers (see Microsemi documentation for meanings)
-* create functions to read (and if possible) write to internal registers
-'''
-
 from client import webBus
 import QIELib
+import IglooLib
+
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 q = QIELib
 
@@ -59,18 +52,26 @@ def openIgloo(rm,slot):
 ############################################################################
 
 # Register byte 0x00 (RO)
-def fpgaMajVer(set = "ro"): # "fpga major version"
-    b.write(0x09,[0x00])
-    b.read(0x09,1)
-    majVer = b.sendBatch()[1]
-    if (set == "rw"):
-        b.write(0x09,[0x00, int(majVer)]) ## SHOULD GIVE ME AN ERROR
-        b.read(0x09, 1)
-        batchArr = (b.sendBatch()[0]).split()
-        if (batchArr[0] != 0): # '0' indicates no errors. But we DO want a write error
-            return strToHex(majVer)
-        else:
-            return "FAIL"
+def fpgaMajVer(): # "fpga major version"
+    reg = "fpgaMajVer"
+    add = igloo[reg]["address"]
+    size = igloo[reg]["size"]
+    # for RO register, RWR should NOT pass
+    if readWriteRead(b, iglooAdd, igloo[reg][add],igloo[reg][size]):
+        return
+
+
+    # b.write(0x09,[0x00])
+    # b.read(0x09,1)
+    # majVer = b.sendBatch()[1]
+    # if (set == "rw"):
+    #     b.write(0x09,[0x00, int(majVer)]) ## SHOULD GIVE ME AN ERROR
+    #     b.read(0x09, 1)
+    #     batchArr = (b.sendBatch()[0]).split()
+    #     if (batchArr[0] != 0): # '0' indicates no errors. But we DO want a write error
+    #         return strToHex(majVer)
+    #     else:
+    #         return "FAIL"
 
 # Register byte 0x01 (RO)
 def fpgaMinVer(): # "fpga minor verison"
