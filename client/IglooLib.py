@@ -58,7 +58,7 @@ def writeToRegister(bus, address, register, toWrite):
     # toWrite can be the ret list from readFromRegister()
     bus.write(address, [register] + toWrite)
     ret = []
-    for i in bus.sendBatch()[1].split():
+    for i in bus.sendBatch()[0].split():
         ret.append(int(i))
     if not isError(ret):
         print "Write Success"
