@@ -29,7 +29,7 @@ q = QIELib
 # give function a r/w indexed from sendBatch() and will determine if first
 # value in the string is a non-zero error code
 def isError(ret):
-    if (ret[0] != '0'): # '0' is non-error value
+    if (ret[0] != 0): # '0' is non-error value
         return True # error
     else:
         return False # no error
