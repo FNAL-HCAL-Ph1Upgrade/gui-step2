@@ -137,7 +137,7 @@ def runAll():
     print m.run()
     m = fpgaTopOrBottom(b,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = uniqueID(b,i.igloo["uniqueID"]["register"],'iglooClass.txt', 1)
+    m = uniqueID(b,i.igloo["uniqueID"]["register"],'iglooClass.txt', 2)
     print m.run()
 
 runAll()
