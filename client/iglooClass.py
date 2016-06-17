@@ -120,7 +120,8 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
 # ------------------------------------------------------------------------
 
 class statusReg(Test): #inherit from Test class, overload testBody() function
-    def read(self, desiredReg = "all"):
+    def read(self):
+        desiredReg = "all"
         name = "statusReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
@@ -149,7 +150,7 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
 
         if desiredReg == "all":
             return allReg
-            
+
         else:
             return statusReg[desiredReg]
 
