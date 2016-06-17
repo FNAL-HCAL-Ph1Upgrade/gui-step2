@@ -21,7 +21,7 @@ class Test:
     def log(self, message):
         logprint(message, file=self.logfile)
     def testBody(self):
-        return True
+        return False
 
 # ------------------------------------------------------------------------
 
