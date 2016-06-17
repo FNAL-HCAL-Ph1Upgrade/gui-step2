@@ -222,7 +222,7 @@ igloo = {
         "expected" : ""
         },
     "addrToSERDES" :{
-        "address" : : 0x83,
+        "address" : 0x83,
         "size" : 16,
         "RW" : 1,
         "expected" : ""
