@@ -43,9 +43,9 @@ def readFromRegister(bus, address, register, numBytes):
     ret = []
     for i in bus.sendBatch()[1].split():
         ret.append(int(i))
-    # print ret
+     print ret
     if isError(ret):
-        #print "Error in read!"
+        print "Error in read!"
         return False
     else:
         return ret[1:] #ignore the leading error code
@@ -59,8 +59,10 @@ def writeToRegister(bus, address, register, toWrite):
     for i in bus.sendBatch()[1].split():
         ret.append(int(i))
     if not isError(ret):
+        print "Write Success"
         return True # write successful
     else:
+        print "Write Fail"
         return False # write failed
 
 # ------------------------------------------------------------------------
@@ -72,13 +74,14 @@ def readWriteRead(bus, address, register, numBytes):
     if (writeToRegister(bus,address, register,read1)):
         read2 = readFromRegister(bus, address, register, numBytes)
         if (read1 == read2):
+            print "Read1 = read2"
             return True # R/W/R cycle gives identical reads, so PASS
         if (read1 != read2):
-            # print "READ1 != READ2"
+            print "READ1 != READ2"
             return False # R/W/R cycle changed somehow, so FAIL
     #if write failed
     else:
-        # print "WRITE FAILED IN R/W/R CYCLE"
+        print "WRITE FAILED IN R/W/R CYCLE"
         return False
 
 
