@@ -43,7 +43,9 @@ def readFromRegister(bus, address, register, numBytes):
     ret = []
     for i in bus.sendBatch()[1].split():
         ret.append(int(i))
-     print ret
+
+    print ret
+
     if isError(ret):
         print "Error in read!"
         return False
