@@ -52,7 +52,7 @@ def writeToRegister(bus, address, register, toWrite):
     ret = []
     for i in bus.sendBatch()[1].split():
         ret.append(int(i))
-    if !(isError(ret)):
+    if not isError(ret):
         return True # write successful
     else:
         return False # write failed
