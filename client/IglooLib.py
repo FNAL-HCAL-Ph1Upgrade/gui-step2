@@ -93,73 +93,73 @@ iglooAdd = 0x09
 
 igloo = {
     "fpgaMajVer" :{
-        "address" : 0x00,
+        "register" : 0x00,
         "size" : 8,
         "RW" : 0,
         "expected" : ""
         },
     "fpgaMinVer" :{
-        "address" : 0x01,
+        "register" : 0x01,
         "size" : 8,
         "RW" : 0,
         "expected" : ""
         },
     "ones" :{
-        "address" : 0x02,
+        "register" : 0x02,
         "size" : 32,
         "RW" : 0,
         "expected" : "255 255 255 255"
         },
     "zeroes" :{
-        "address" : 0x03,
+        "register" : 0x03,
         "size" : 32,
         "RW" : 0,
         "expected" : "0 0 0 0"
         },
     "fpgaTopOrBottom" :{
-        "address" : 0x04,
+        "register" : 0x04,
         "size" : 8,
         "RW" : 0,
         "expected" : ""
         },
     "uniqueID" :{
-        "address" : 0x05,
+        "register" : 0x05,
         "size" : 64,
         "RW" : 1,
         "expected" : ""
         },
     "statusReg" :{       # has its own internal register even deeper
-        "address" : 0x10,
+        "register" : 0x10,
         "size" : 32,
         "RW" : 0,
         "expected" : "",
         },
     "cntrReg" :{         # has its own internal register even deeper
-        "address" : 0x11,
+        "register" : 0x11,
         "size" : 32,
         "RW" : 1,
         "expected" : ""
         },
     "clk_count" :{
-        "address" : 0x12,
+        "register" : 0x12,
         "size" : 32,
         "RW" : 0,
         "expected" : ""
         },
     "rst_QIE_count" :{
-        "address" : 0x13,
+        "register" : 0x13,
         "size" : 32,
         "RW" : 0,
         "expected" : ""
         },
     "wte_count" :{
-        "address" : 0x14,
+        "register" : 0x14,
         "size" : 32,
         "RW" : 0,
         "expected" : ""
         },
     "capIDErr_count" :{
-        "address" : {
+        "register" : {
             "link1" : 0x15,
             "link2" : 0x16,
             "link3" : 0x17
@@ -169,7 +169,7 @@ igloo = {
         "expected" : ""
         },
     "fifo_data" :{
-        "address" : {
+        "register" : {
             "data1" : 0x30,
             "data2" : 0x31,
             "data3" : 0x32
@@ -179,19 +179,19 @@ igloo = {
         "expected" : ""
         },
     "inputSpy" :{
-        "address" : 0x33,
+        "register" : 0x33,
         "size" : 200,
         "RW" : 0,
         "expected" : ""
         },
     "spy96Bits" :{
-        "address" : 0x40,
+        "register" : 0x40,
         "size" : 96,
         "RW" : 0,
         "expected" : ""
         },
     "qie_ck_ph" :{
-        "address" : {
+        "register" : {
             1 : 0x60,
             2 : 0x61,
             3 : 0x62,
@@ -210,49 +210,49 @@ igloo = {
         "expected" : ""
         },
     "link_test_mode" :{
-        "address" : 0x80,
+        "register" : 0x80,
         "size" : 8,
         "RW" : 1,
         "expected" : ""
         },
     "link_test_pattern" :{
-        "address" : 0x81,
+        "register" : 0x81,
         "size" : 32,
         "RW" : 1,
         "expected" : ""
         },
     "dataToSERDES" :{
-        "address" : 0x82,
+        "register" : 0x82,
         "size" : 32,
         "RW" : 1,
         "expected" : ""
         },
     "addrToSERDES" :{
-        "address" : 0x83,
+        "register" : 0x83,
         "size" : 16,
         "RW" : 1,
         "expected" : ""
         },
     "ctrlToSERDES" :{
-        "address" : 0x84,
+        "register" : 0x84,
         "size" : 8,
         "RW" : 1,
         "expected" : ""
         },
     "dataFromSERDES" :{
-        "address" : 0x85,
+        "register" : 0x85,
         "size" : 32,
         "RW" : 0,
         "expected" : ""
         },
     "statFromSERDES" :{
-        "address"  : 0x86,
+        "register"  : 0x86,
         "size" : 32,
         "RW" : 0,
         "expected" : ""
         },
     "scratchReg" :{
-        "address" : 0xFF,
+        "register" : 0xFF,
         "size" : 32,
         "RW" : 1,
         "expected" : ""

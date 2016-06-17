@@ -27,10 +27,10 @@ class Test:
 class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
         name = "fpgaMajVer"
-        add = i.igloo[name]["address"]
+        reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"]
         # for RO register, RWR should NOT pass
-        if not (i.readWriteRead(b, i.iglooAdd, i.igloo[name][add],i.igloo[name][size])):
+        if not (i.readWriteRead(b, i.iglooAdd, reg, size)):
             return True
         else:
             return False
@@ -47,47 +47,3 @@ def runAll():
     m.testBody()
 
 runAll()
-
-class fpgaMinVer(Test):
-    def testBody(self):
-        name = "fpgaMinVer"
-        add = igloo[name]["address"]
-        size = igloo[name]["size"]
-        # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
-            return True
-        else:
-            return False
-
-class ones(Test):
-    def testBody():
-        name = "ones"
-        add = igloo[name]["address"]
-        size = igloo[name]["size"]
-        # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
-            return True
-        else:
-            return False
-
-class zeroes(Test):
-    def testBody():
-        name = "zeroes"
-        add = igloo[name]["address"]
-        size = igloo[name]["size"]
-        # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
-            return True
-        else:
-            return False
-
-class fpgaTopOrBottom(Test):
-    def testBody():
-        name = "fpgaTopOrBottom"
-        add = igloo[name]["address"]
-        size = igloo[name]["size"]
-        # for RO register, RWR should NOT pass
-        if not readWriteRead(b, iglooAdd, igloo[name][add],igloo[name][size]):
-            return True
-        else:
-            return False
