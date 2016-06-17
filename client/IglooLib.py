@@ -37,11 +37,12 @@ def catBitsFromBytes(bitList, first = 0, length = 0):
     if (length == 0):
         for i in bitList:
             bitString = bitString + i
-            print "bitString: ", bitString
+
     elif (length > 0):
     	for i in bitList[first:(first+length)]:
     		bitString = bitString + i
 
+    print "bitString: ", bitString
 	return bitString
 
 
