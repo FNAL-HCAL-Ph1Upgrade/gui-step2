@@ -130,10 +130,7 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         if (allRegList == False): return False
 
         allRegBin = i.getBitsFromBytes(allRegList)
-        print "allRegBin: ", allRegBin
-        catAllRegStr = i.catBitsFromBytes(allRegBin)
-
-        print "catAllRegStr: ", catAllRegStr
+        allRegStr = i.catBitsFromBytes(allRegBin)
 
         statusReg = {
             "InputSpyWordNum"   :   allRegStr[0:10], # number of words in InputSpyFifo (depth = 512)
