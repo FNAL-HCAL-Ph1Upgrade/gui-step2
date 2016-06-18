@@ -283,6 +283,7 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
             print "31bX, " + "orbitHisto_clear, " + "orbitHisto_run, "\
                 + "2_bit_0, " + "WrEn_InputSpy, " + "CI_mode"
             desiredReg = raw_input("Enter cntrReg name: ")
+            if desiredReg == '': desiredReg = 'all'
 
         settingList = raw_input("Enter cntrReg setting list ['n1','n2', ...]: ")
 
