@@ -228,8 +228,9 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
 
         if (read1 == False): return False
 
-        allRegStr = ''.join(read1) #makes all bits form read1 into a solid string
-
+        #makes read1 (byte list) into a bit string
+        allRegStr = ''.join(i.catBitsFromBytes(i.getBitsFromBytes(read1)))
+        
         settingStr = ''.join(settingList)
         toWrite = i.getBytesFromBits(i.stringToBitList(settingStr))
 
