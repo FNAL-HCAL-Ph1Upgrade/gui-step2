@@ -278,7 +278,8 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
             readPass = True
 
         desiredReg = raw_input("Enter cntrReg name (skip if desire all reg): ")
-        if desiredReg
+        if desiredReg == '': desiredReg = 'all'
+        
         settingList = raw_input("Enter cntrReg setting list ['n1','n2', ...]: ")
 
         self.write(desiredReg, settingList)
