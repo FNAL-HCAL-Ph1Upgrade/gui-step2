@@ -27,6 +27,25 @@ def getBitsFromBytes(decimalBytes):
         ret = ret + getBitsFromByte(i)
     return ret
 
+def getByteFromBits(bitList):
+    return int(''.join(bitList), 2)
+
+# give a list with bits (list size should be a multiple of 8), returns list of each formed byte
+def getBytesFromBits(bitList):
+    ret = []
+    for i in xrange(len(bitList)/8):
+        ret.append(getByteFromBits(bitList[i * 8: (i + 1) * 8]))
+    return ret
+
+# give a string, returns list of each bit from string
+def stringToBitList(stringOfBits):
+    list = []
+    for i in stringOfBits:
+            list.append(i)
+
+    return list
+
+
 # give a list of bits (from getBitsFromBytes()), cats into bit string based on cuts
 # parameters:   bitList = list of bits
 #               first = bit element to begin cat with
@@ -44,6 +63,14 @@ def catBitsFromBytes(bitList, first = 0, length = 0):
 
     return bitString
 
+# helpful string to hex list
+def strToHex(string):
+        catHex = ""
+        j=0
+        for i in string.split():
+                catHex = catHex + " " + hex(int(string.split()[j]))[2:]
+                j = j + 1
+        return catHex
 
 ##############################
 # Read/write functions

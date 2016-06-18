@@ -189,6 +189,7 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
         allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
         #print "allRegList: ", allRegList
 
+        # if bad read
         if (allRegList == False): return False
 
         allRegBin = i.getBitsFromBytes(allRegList)
@@ -214,20 +215,52 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
             return cntrReg[desiredReg]
 
     # -------------------------------------------
-    # in theory, you can make parameter settingStr = "000000 11 001001 etc"
-    # and it will split string up and assign them to appropriate settings
-    # in cntrReg... Make sure your spacing is correct though!
-    def write(self, desiredReg = "all", settingStr):
+    # in theory, you can make string parameter settingList = ['000000', '11', '001001', etc]"
+    # and it will join the elements and assign them to appropriate settings
+    # in cntrReg...
+    def write(self, desiredReg = "all", settingList):
         name = "cntrReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
-        settingList = settingStr.split()
+        # READ FIRST
+        read1 = i.readFromRegister(b, i.iglooAdd, reg, size)
 
+        if (read1 == False): return False
 
+        allRegStr = ''.join(read1) #makes all bits form read1 into a solid string
 
+        settingStr = ''.join(settingList)
+        toWrite = i.getBytesFromBits(i.stringToBitList(settingStr))
+
+        # WRITE, THEN READ AGAIN TO SEE CHANGES
         if desiredReg == "all":
-            writeToRegister(b, i.iglooAdd, reg, toWrite)
+            write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the user-input new reg
+            read2 =i.readFromRegister(b, i.iglooAdd, reg, size) #displays new reg
+
+            if not (write1 and read2):
+                print "In 'if': WRITE1/READ2 ERROR"
+                return False
+
+        else:
+            cntrReg = {
+            "31'bX"             :   allRegStr[0:6],
+            "orbitHisto_clear"  :   allRegStr[6:12], # controls histo of the QIE_RST spacing
+            "orbitHisto_run"    :   allRegStr[12:18], # controls histo of the QIE_RST spacing
+            "2-bit 0"           :   allRegStr[18:20],
+            "WrEn_InputSpy"     :   allRegStr[20:26],
+            "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
+                }
+
+            cntrReg[desiredReg] = settingStr
+
+            toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
+            write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the user-input new reg
+            read2 = i.readFromRegister(b, i.iglooAdd, reg, size) #displays new reg
+
+            if not (write1 and read2):
+                print "In 'else': WRITE1/READ2 ERROR"
+                return False
 
     # -------------------------------------------
     def testBody(self):
@@ -243,6 +276,12 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
 
         if self.read() !=False:
             readPass = True
+
+        desiredReg = raw_input("Enter cntrReg name (skip if desire all reg): ")
+        if desiredReg
+        settingList = raw_input("Enter cntrReg setting list ['n1','n2', ...]: ")
+
+        self.write(desiredReg, settingList)
 
         # for RO register, read1 == read2 constitutes a PASS
         # NEED TO CHANGE THIS FOR CNTRREG SINCE WE EXPECT TO R/W NON-RAND VALUES!!
