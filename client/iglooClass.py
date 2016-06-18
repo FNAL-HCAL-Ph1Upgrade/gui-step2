@@ -196,16 +196,16 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
         allRegStr = i.catBitsFromBytes(allRegBin)
 
         cntrReg = {
-        "31'bX"             :   allRegStr[0:6],
+        "31bX"             :   allRegStr[0:6],
         "orbitHisto_clear"  :   allRegStr[6:12], # controls histo of the QIE_RST spacing
         "orbitHisto_run"    :   allRegStr[12:18], # controls histo of the QIE_RST spacing
-        "2-bit 0"           :   allRegStr[18:20],
+        "2_bit_0"           :   allRegStr[18:20],
         "WrEn_InputSpy"     :   allRegStr[20:26],
         "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
             }
 
-        allReg = cntrReg["31'bX"] + " : " + cntrReg["orbitHisto_clear"]\
-            + " : " + cntrReg["orbitHisto_run"] + " : " + cntrReg["2-bit 0"]\
+        allReg = cntrReg["31bX"] + " : " + cntrReg["orbitHisto_clear"]\
+            + " : " + cntrReg["orbitHisto_run"] + " : " + cntrReg["2_bit_0"]\
             + " : " + cntrReg["WrEn_InputSpy"] + " : " + cntrReg["CI_mode"]
 
         if desiredReg == "all":
@@ -244,10 +244,10 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
 
         else:
             cntrReg = {
-            "31'bX"             :   allRegStr[0:6],
+            "31bX"             :   allRegStr[0:6],
             "orbitHisto_clear"  :   allRegStr[6:12], # controls histo of the QIE_RST spacing
             "orbitHisto_run"    :   allRegStr[12:18], # controls histo of the QIE_RST spacing
-            "2-bit 0"           :   allRegStr[18:20],
+            "2_bit_0"           :   allRegStr[18:20],
             "WrEn_InputSpy"     :   allRegStr[20:26],
             "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
                 }
@@ -277,8 +277,12 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
         if self.read() !=False:
             readPass = True
 
-        desiredReg = raw_input("Enter cntrReg name (skip if desire all reg): ")
+        desiredReg = raw_input("Enter cntrReg name (enter=all, 'more'=ShowNames): ")
         if desiredReg == '': desiredReg = 'all'
+        elif desiredReg == 'more':
+            print "31bX, " + "orbitHisto_clear, " + "orbitHisto_run, "\
+                + "2_bit_0, " + "WrEn_InputSpy, " + "CI_mode"
+            desiredReg = raw_input("Enter cntrReg name: ")
 
         settingList = raw_input("Enter cntrReg setting list ['n1','n2', ...]: ")
 
