@@ -218,7 +218,7 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
     # in theory, you can make string parameter settingList = ['000000', '11', '001001', etc]"
     # and it will join the elements and assign them to appropriate settings
     # in cntrReg...
-    def write(self, desiredReg = "all", settingList):
+    def write(self, desiredReg, settingList):
         name = "cntrReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
@@ -279,7 +279,7 @@ class cntrReg(Test): #inherit from Test class, overload testBody() function
 
         desiredReg = raw_input("Enter cntrReg name (skip if desire all reg): ")
         if desiredReg == '': desiredReg = 'all'
-        
+
         settingList = raw_input("Enter cntrReg setting list ['n1','n2', ...]: ")
 
         self.write(desiredReg, settingList)
