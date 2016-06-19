@@ -348,11 +348,11 @@ class cntrRegChange(Test):
     def writeSet(self, desiredReg, settingStr):
         # desiredReg and settingStr are both strings!!
         # settingStr can be of form "010101...", "0101 111 0 11...", or "0101"
-        print "----------%s Change----------" %name
-
         name = 'cntrReg'
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
+
+        print "----------%s Change----------" %name
 
         settingStr = ''.join(settingStr)
         toWrite = i.getBytesFromBits(i.stringToBitList(settingStr))
