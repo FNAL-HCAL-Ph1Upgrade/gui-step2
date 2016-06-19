@@ -201,6 +201,7 @@ class cntrRegDisplay(Test): #inherit from Test class, overload testBody() functi
              + "WrEn_InputSpy: " + cntrReg["WrEn_InputSpy"] + '\n'\
              + "CI_mode: " + cntrReg["CI_mode"]
 
+        # another option for readout instead of allReg is simply cntrReg (prints list)
         if desiredReg == "all":
             return allReg
 
@@ -389,6 +390,7 @@ class cntrRegChange(Test):
             print "cntrReg[desiredReg]: ", cntrReg
 
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
+            print "toWrite: ", toWrite
             write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the change
             read2 = i.readFromRegister(b, i.iglooAdd, reg, size) #displays new reg
             print "cntrReg after %s WRITE: " %desiredReg, read2
