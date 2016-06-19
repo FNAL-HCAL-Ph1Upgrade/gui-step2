@@ -389,6 +389,7 @@ class cntrRegChange(Test):
             cntrReg[desiredReg] = settingStr
             print "cntrReg[desiredReg]: ", cntrReg
 
+            print "stringToBitList: ", i.stringToBitList(allRegStr)
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
             print "toWrite: ", toWrite
             write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the change
