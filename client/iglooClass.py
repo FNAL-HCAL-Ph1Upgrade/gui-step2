@@ -356,10 +356,12 @@ class cntrRegChange(Test):
 
         settingStr = ''.join(settingStr)
         toWrite = i.getBytesFromBits(i.stringToBitList(settingStr))
+        print "settingStr: ", settingStr
 
         # Read1 = current register status
         read1 = i.readFromRegister(b, i.iglooAdd, reg, size)
         allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(read1))
+        print "allRegStr: ", allRegStr
 
         # Write to 'all' ---------------------------------------------------
         if desiredReg == "all":
@@ -382,7 +384,9 @@ class cntrRegChange(Test):
             "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
                 }
 
+            print "settingStr confirm: ", settingStr
             cntrReg[desiredReg] = settingStr
+            print "cntrReg[desiredReg]: ", cntrReg
 
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
             write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the change
