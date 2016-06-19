@@ -348,6 +348,8 @@ class cntrRegChange(Test):
     def writeSet(self, desiredReg, settingStr):
         # desiredReg and settingStr are both strings!!
         # settingStr can be of form "010101...", "0101 111 0 11...", or "0101"
+        print "----------%s Change----------" %name
+
         name = 'cntrReg'
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
@@ -394,11 +396,12 @@ class cntrRegChange(Test):
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
-        print "----------%s Change----------" %name
-        print self.writeSet()
+        return True
+        #print "----------%s Change----------" %name
+        #print self.writeSet()
 
-        if self.writeSet() != False:
-            return True
+        #if self.writeSet() != False:
+        #    return True
 # ------------------------------------------------------------------------
 class cntrRegTerminalChange(Test): #inherit from Test class, overload testBody() function
     # FILL THIS IN
