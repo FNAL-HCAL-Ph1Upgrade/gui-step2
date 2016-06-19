@@ -133,7 +133,7 @@ def RWR_withRestore(bus, address, register, numBytes):
     #if write successully changed reg (aka read1 != read2)
     if (read1 != read2):
         # Write original values to register
-        w = writeToRegister(bus, address, register, read1))
+        w = writeToRegister(bus, address, register, read1)
         if w == False: return False
         # Get read3
         read3 = readFromRegister(bus, address, register, numBytes)
