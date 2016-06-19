@@ -314,7 +314,7 @@ class cntrRegDisplay(Test): #inherit from Test class, overload testBody() functi
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
-        print "----------%s----------" %name
+        print "----------%s Display----------" %name
         print self.read()
 
         if self.read() !=False:
@@ -394,7 +394,7 @@ class cntrRegChange(Test):
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
-        print "----------%s----------" %name
+        print "----------%s Change----------" %name
         print self.writeSet()
 
         if self.writeSet() != False:
