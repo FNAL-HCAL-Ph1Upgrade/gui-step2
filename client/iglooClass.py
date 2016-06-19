@@ -102,7 +102,7 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if not (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:

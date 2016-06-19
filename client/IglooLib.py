@@ -166,7 +166,7 @@ def RWR_forRO(bus, address, register, numBytes):
     if (writeToRegister(bus,address, register, augRead1)):
         read2 = readFromRegister(bus, address, register, numBytes)
         if (read1 == read2):
-            print "Read1 = read2"
+            print "Read1 = Read2"
             return True # R/W/R cycle gives identical reads, so PASS
         if (read1 != read2):
             print "READ1 != READ2"
