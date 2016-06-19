@@ -357,7 +357,7 @@ class cntrRegChange(Test):
 
         # Read1 = current register status
         read1 = i.readFromRegister(b, i.iglooAdd, reg, size)
-        allRegStr = catBitsFromBytes(getBitsFromBytes(read1))
+        allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(read1))
 
         # Write to 'all' ---------------------------------------------------
         if desiredReg == "all":
