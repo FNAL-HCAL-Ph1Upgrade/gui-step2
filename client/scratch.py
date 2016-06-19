@@ -1,12 +1,17 @@
-desiredReg = 'HELLO'
-desiredReg = raw_input("Enter cntrReg name (default = 'all'): ")
-if desiredReg == '':
-    print "empty string"
-elif desiredReg == 'HELLO':
-    print "dg " + desiredReg
-else:
-    print "dg " +desiredReg
+class myClass():
+    reg = []
+    myDict = {
+        'a' : reg[0:2],
+        'b' : reg[2:]
+    }
 
+    def test(self):
+        self.reg = "Hi there"
+        print "Assigned reg"
+        print self.myDict['a']
+
+m = myClass()
+m.test()
 # def getByteFromBits(bitList):
 #     return int(''.join(bitList), 2)
 #
