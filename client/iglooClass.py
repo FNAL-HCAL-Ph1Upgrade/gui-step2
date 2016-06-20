@@ -487,9 +487,9 @@ class clk_count(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
-            print "~~PASS: RO not writable~~"
+        # for RO count register, just test ability to read out
+        if (i.readFromRegister(b, i.iglooAdd, reg, size)):
+            print "~~PASS: Read from RO~~"
             return True
         else:
             return False
@@ -501,9 +501,9 @@ class rst_QIE_count(Test): #inherit from Test class, overload testBody() functio
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
-            print "~~PASS: RO not writable~~"
+        # for RO count register, just test ability to read out
+        if (i.readFromRegister(b, i.iglooAdd, reg, size)):
+            print "~~PASS: Read from RO~~"
             return True
         else:
             return False
@@ -515,9 +515,9 @@ class wte_count(Test): #inherit from Test class, overload testBody() function
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
-            print "~~PASS: RO not writable~~"
+        # for RO count register, just test ability to read out
+        if (i.readFromRegister(b, i.iglooAdd, reg, size)):
+            print "~~PASS: Read from RO~~"
             return True
         else:
             return False
@@ -532,11 +532,11 @@ class capIDErr_count(Test): #inherit from Test class, overload testBody() functi
         print "----------%s----------" %name
         linkPass = [False, False, False]
 
-        # for RO register, read1 == read2 constitutes a PASS
+        # for RO count register, just test ability to read out
         link = 0
         for n in reg:
             print '----Link',link+1,'----'
-            if (i.RWR_forRO(b, i.iglooAdd, n, size)):
+            if (i.readFromRegister(b, i.iglooAdd, n, size)):
                 linkPass[link] = True
 
             link = link + 1
