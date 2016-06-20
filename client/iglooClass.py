@@ -605,7 +605,7 @@ class qie_ck_ph(Test): #inherit from Test class, overload testBody() function
         name = "qie_ck_ph"
         reg = []
         for i in range(1,13):
-            reg.append(i.igloo[name]["register"][i])
+            reg.append(i.igloo[name]["register"][str(i)])
 
         size = i.igloo[name]["size"] / 8
 
