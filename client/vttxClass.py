@@ -59,7 +59,7 @@ class VTTX_RWR_withRestore(Test):
 # ---------RUN FUNCTIONS--------------------------------------------------
 def runAll():
     # -------VTTX 1----------
-    openVTTX(0,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
+    v.openVTTX(0,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, vttx['address'], 'vttx.txt', 2)
     print m.run()
@@ -70,7 +70,7 @@ def runAll():
     print m.run()
 
     # -------VTTX 2----------
-    openVTTX(0,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
+    v.openVTTX(0,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, vttx['address'], 'vttx.txt', 2)
     print m.run()
