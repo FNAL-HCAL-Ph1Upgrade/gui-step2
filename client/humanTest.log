@@ -1,0 +1,44 @@
+Zeroes: (100, 0)
+Humidity: ['0 96 50']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: []
+Unique_ID: ['0x00708abfea00000084']
+Temperature: ['0 106 20']
+
+Zeroes: (100, 0)
+Humidity: ['0 92 122']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: []
+Unique_ID: ['0x007036b7ea000000c0']
+Temperature: ['0 107 112']
+
+Zeroes: (100, 0)
+Humidity: ['0 96 102']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: []
+Unique_ID: ['0x84000000eabf8a7000']
+Temperature: ['0 105 240']
+
+Zeroes: (100, 0)
+Humidity: ['0 92 122']
+Ones: (100, 0)
+ID_string: (100, 0)
+Firmware_Ver: (0, 100)
+ID_string_cont: (100, 0)
+OnesZeroes: (100, 0)
+Barcode: []
+Unique_ID: ['0xc0000000eab7367000']
+Temperature: ['0 107 100']
+
