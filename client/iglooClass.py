@@ -389,6 +389,10 @@ class cntrRegChange(Test):
             cntrReg[desiredReg] = settingStr
             print "cntrReg[desiredReg]: ", cntrReg
 
+            # Since Python is 'pass-by-object-reference', just because we changed
+            # the dict cntrReg doesn't mean we changed allRegStr... So do that now
+            allRegStr = ''.join(cntrReg)
+
             print "stringToBitList: ", i.stringToBitList(allRegStr)
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
             print "toWrite: ", toWrite

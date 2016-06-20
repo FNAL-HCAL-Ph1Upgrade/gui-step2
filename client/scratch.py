@@ -1,17 +1,11 @@
-class myClass():
-    reg = []
-    myDict = {
-        'a' : reg[0:2],
-        'b' : reg[2:]
-    }
-
-    def test(self):
-        self.reg = "Hi there"
-        print "Assigned reg"
-        print self.myDict['a']
-
-m = myClass()
-m.test()
+emdict = {
+    "first" : '0101',
+    "second" : '111'
+}
+string = ''
+for i in mdict:
+    string = ''.join(mdict)
+print string
 # def getByteFromBits(bitList):
 #     return int(''.join(bitList), 2)
 #
