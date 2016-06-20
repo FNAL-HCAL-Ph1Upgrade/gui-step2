@@ -392,7 +392,7 @@ class cntrRegChange(Test):
             # Since Python is 'pass-by-object-reference', just because we changed
             # the dict cntrReg doesn't mean we changed allRegStr... So do that now
             #allRegStr = ''.join(cntrReg)
-            allRegStr = cntrReg['31bx'] + cntrReg['orbitHisto_clear']\
+            allRegStr = cntrReg['31bX'] + cntrReg['orbitHisto_clear']\
                 + cntrReg['orbitHisto_run'] + cntrReg["2_bit_0"]\
                 + cntrReg['WrEn_InputSpy'] + cntrReg['CI_mode']
 
