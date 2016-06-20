@@ -542,7 +542,7 @@ class capIDErr_count(Test): #inherit from Test class, overload testBody() functi
             link = link + 1
 
         if (linkPass[0] and linkPass[1] and linkPass[2]):
-            print "~~ALL PASS: RO not writable~~"
+            print "~~ALL PASS: Read from RO~~"
             return True
         else:
             return False
