@@ -96,7 +96,7 @@ def RWR_withRestore(bus, address, numBytes):
         w = writeToVTTX(bus, address, numBytes, read1)
         if w == False: return False
         # Get read3
-        read3 = readFromVTXX(bus, address, numBytes)
+        read3 = readFromVTTX(bus, address, numBytes)
         # if restored to original (aka read1 = read3)
         if read1 == read3:
             print "Read1 = Read3 --> Reg changed, now restored to original"
