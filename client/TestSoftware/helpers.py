@@ -24,3 +24,19 @@ def readFromRegister(bus, address, register, numBytes):
 def writeToRegister(bus, address, register, bytesToWrite):
     bus.write(address, [register] + list(bytesToWrite))
     return None
+def toHex(message):
+    message_list = message.split()
+    for byte in xrange(len(message_list)):
+        message_list[byte] = hex(int(message_list[byte]))
+        message_list[byte] = message_list[byte][2:]
+        if len(message_list[byte]) == 1:
+            message_list[byte] = '0' + message_list[byte]
+    s = ""
+    return '0x' + s.join(message_list)
+
+def reverseBytes(message):
+    message_list = message.split()
+    message_list.reverse()
+    s = " "
+    return s.join(message_list)
+
