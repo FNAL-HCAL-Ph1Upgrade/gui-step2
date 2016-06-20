@@ -50,7 +50,7 @@ def write(address, byteArray):
 
 #Waits a given number of microseconds
 def sleep(n):
-    bus.wait(n)
+    bus.wait(int(n))
 
 def parseMessage(m):
     message = m.split()
