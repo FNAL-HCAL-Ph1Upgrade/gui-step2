@@ -58,7 +58,7 @@ class makeGui:
 		# Add a flag to stop tests
 		self.quitTestsFlag = False
 		
-		#----- constants for controlling layout
+		# Constants for controlling layout
 		button_width = 6
 		
 		button_padx = "2m"
@@ -68,7 +68,7 @@ class makeGui:
 		frame_pady = "2m"
 		frame_ipadx = "3m"
 		frame_ipady = "1m"
-		#---------- end layout constants ------
+		# End layout constants
 
 	
 		##########################################
@@ -133,34 +133,19 @@ class makeGui:
 			pady=frame_pady
 			)
 
-		# Make a runtime frame. For now this will contain
+		# Make a uHTR frame. For now this will contain
 		# information regarding the tests being conducted.
-		self.runtime_frame = Frame(
+		self.uHTR_frame = Frame(
 			self.botHalf_frame,
 			borderwidth=5, relief=RIDGE,
 			height=250, width=400,
 			background="white"
 			)
 		# We don't want this frame to shrink when placing widgets:
-		self.runtime_frame.pack_propagate(False)		
+		self.uHTR_frame.pack_propagate(False)		
 
-		self.runtime_frame.pack(
+		self.uHTR_frame.pack(
 			side=TOP,
-			ipadx=frame_ipadx,
-			ipady=frame_ipady,
-			padx=frame_padx,
-			pady=frame_pady
-			)
-
-		# Make a rightmost subframe for uHTR stuff
-		self.microHTR_frame = Frame(
-			self.topMost_frame,
-			borderwidth=5, relief=RIDGE,
-			background="white",
-			height=40, width=50,
-			)
-		self.microHTR_frame.pack(
-			side=RIGHT,
 			ipadx=frame_ipadx,
 			ipady=frame_ipady,
 			padx=frame_padx,
@@ -505,77 +490,11 @@ class makeGui:
 
 		#################################
 		###			      ###
-		### WIDGETS IN RUNTIME FRAME  ###
-		###			      ###
-		#################################
-		
-		# Make and pack a text label for name selector
-		self.runtime_Label = Label(self.runtime_frame, text="Testing Status & Runtime Information")
-		self.runtime_Label.configure(
-			padx=button_padx,
-			pady=button_pady,
-			background="white"
-			)
-		self.runtime_Label.pack(side=TOP)
-
-		# Top sub-frame in runtime frame
-		self.runtime_subTop_frame = Frame(
-			self.runtime_frame,
-			background="white"
-			)
-		self.runtime_subTop_frame.pack(
-			side=TOP,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
-                        )
-
-		# Make a label for number of tests run
-		self.testsRun_Label = Label(self.runtime_subTop_frame, text="Number of tests run: ")
-		self.testsRun_Label.configure(
-			padx=button_padx,
-			pady=button_pady,
-			background="white"
-			)
-		self.testsRun_Label.pack(side=LEFT)
-
-		# Make a box to actually display the number of labels run
-		self.runtime_outputText = Entry(
-			self.runtime_subTop_frame,
-			textvariable=self.runtimeNumber)
-		self.runtime_outputText.pack(side=LEFT)
-		self.runtimeNumber.set(1)
-
-		#Make a button that removes all barcodes
-		self.clearBarcodeBttn = Button(
-			self.runtime_frame,
-			text="Clear Entered Barcodes",
-			background="salmon1",
-			command=self.clearBarcodePress
-			)
-		self.clearBarcodeBttn.configure(
-			padx=button_padx*2,
-			pady=button_pady*2
-			)
-		self.clearBarcodeBttn.pack(side=TOP)
-
-		#Make a widget that closes the GUI
-		self.closeButton = Button(self.runtime_frame, text="Close Window", background="orange red",
-					  command=self.closeButtonPress)
-		self.closeButton.configure(
-			padx=button_padx*2,
-			pady=button_pady*2,
-			)
-		self.closeButton.pack(side=TOP)
-
-		#################################
-		###			      ###
 		###   WIDGETS IN uHTR FRAME   ###
 		###			      ###
 		#################################
 		# Make and pack a text label for the box label
-		self.uHTR_frame_Label = Label(self.microHTR_frame, text="uHTR Runtime Parameters")
+		self.uHTR_frame_Label = Label(self.uHTR_frame, text="uHTR Runtime Parameters")
 		self.uHTR_frame_Label.configure(
 			padx=button_padx,
 			pady=button_pady,
@@ -587,7 +506,7 @@ class makeGui:
 		self.uHTR_slotNumber = [IntVar() for i in range(0,7)]
 
 		# Make a subframe for the slot number label
-		self.uHTR_sub2 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub2 = Frame(self.uHTR_frame, bg="white")
 		self.uHTR_sub2.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
 			padx=frame_padx, pady="1m")
 
@@ -596,7 +515,7 @@ class makeGui:
 		self.uHTR_slotNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
 
 		# Make a subframe for the slot number vars
-		self.uHTR_sub3 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub3 = Frame(self.uHTR_frame, bg="white")
 		self.uHTR_sub3.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
 			padx=frame_padx, pady="1m")
 
@@ -615,7 +534,7 @@ class makeGui:
 				self.uHTR_radio.pack(side=LEFT)
 
 		# Make top subframe 4
-		self.uHTR_sub4 = Frame(self.microHTR_frame, bg="white")
+		self.uHTR_sub4 = Frame(self.uHTR_frame, bg="white")
 		self.uHTR_sub4.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
 			padx=frame_padx, pady="1m")
 
@@ -655,13 +574,6 @@ class makeGui:
 		for i in range(9,13): self.cardVarList[i].set(self.readoutVarList[2].get())
 		for i in range(13,17): self.cardVarList[i].set(self.readoutVarList[3].get())
 
-	def clearBarcodePress(self):
-		for i in range(1,17):
-			print self.cardVarList[i].get()
-			print self.barcodeVarList[i].get()
-			self.barcodeVarList[i].set("")
-
-
 	def checksToHex(self,inCheck0,inCheck1,inCheck2,inCheck3,inCheck4,inCheck5,inCheck6,inCheck7):
 		hexVar = (inCheck0*1)+(inCheck1*2)+(inCheck2*4)+(inCheck3*8)+(inCheck4*16)+\
 			 (inCheck5*32)+(inCheck6*64)+(inCheck7*128)
@@ -684,18 +596,11 @@ class makeGui:
 	def runTestSuite(self):
 		self.prepareOutSlots()
 		self.myTestStand = TestStand(self.outSlotNumbers)
-#		self.myTestStand.runAll(self.barcodeVarsToStrs())
 		self.myTestStand.runAll()
 		# Reset the active outSlots
 		self.outSlotNumbers = []
 
-#	def barcodeVarsToStrs(self):
-#		self.stringList = []
-#		for i in range(len(self.barcodeVarList)):
-#			if (self.cardVarList[i].get() == 1):
-#				self.stringList.append(self.barcodeVarList[i].get())
-#		return self.stringList
-	
+
 	def uHTR_tester_bttnPress(self):
 		outSlotList = []
 		for i in range(len(self.uHTR_slotNumber)):

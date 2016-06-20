@@ -3,6 +3,7 @@ import sys
 #sys.path.append('../')
 from testSummary import testSummary
 import client
+import helpers
 #from registers import registers
 
 registers = {
@@ -119,6 +120,9 @@ class testSuite:
 		if (i != '0' and i != 'None'):
 			new_r.append(i)
 	self.outCard.resultList[testName] = new_r
+	if (testName == "Unique_ID"):
+		new_r[0] = helpers.reverseBytes(new_r[0])
+		new_r[0] = helpers.toHex(new_r[0])
 	return new_r
 
 #   def runTests(self,barcode):
