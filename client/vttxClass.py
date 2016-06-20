@@ -25,7 +25,7 @@ class Test:
 # ------------------------------------------------------------------------
 class VTTX_Display(Test):
     def testBody(self):
-        read1 = v.readFromVTTX(b, vttx["address"], vttx['size'])
+        read1 = v.readFromVTTX(b, v.vttx["address"], v.vttx['size'])
 
         if read1 == False: return False
         else:
@@ -34,7 +34,7 @@ class VTTX_Display(Test):
 # ------------------------------------------------------------------------
 class VTTX_Change(Test): # NOTE: the run() function is overloaded & takes list parameter toWrite
     def testBody(self, toWrite):
-        w = v.writeToVTTX(b, vttx['address'], vttx['size'], toWrite)
+        w = v.writeToVTTX(b, v.vttx['address'], v.vttx['size'], toWrite)
 
         if w == False: return False
         else:
@@ -49,7 +49,7 @@ class VTTX_Change(Test): # NOTE: the run() function is overloaded & takes list p
 
 class VTTX_RWR_withRestore(Test):
     def testBody(self):
-        ret = v.RWR_withRestore(b, vttx['address'], vttx['size'])
+        ret = v.RWR_withRestore(b, v.vttx['address'], v.vttx['size'])
         if ret == True:
             print "~~ PASS: RWR Success ~~"
             return True
@@ -61,23 +61,23 @@ def runAll():
     # -------VTTX 1----------
     v.openVTTX(0,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
-    m = VTTX_Display(b, vttx['address'], 'vttx.txt', 2)
+    m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
     print m.run()
     # m = VTTX_Change(b, vttx['address'], 'vttx.txt', 1)
     # print m.run() #TO ACTUALLY USE -> PARAMETER = toWrite list of 7 bytes
 
-    m = VTTX_RWR_withRestore(b, vttx['address'], 'vttx.txt', 2)
+    m = VTTX_RWR_withRestore(b, v.vttx['address'], 'vttx.txt', 2)
     print m.run()
 
     # -------VTTX 2----------
     v.openVTTX(0,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
-    m = VTTX_Display(b, vttx['address'], 'vttx.txt', 2)
+    m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
     print m.run()
     # m = VTTX_Change(b, vttx['address'], 'vttx.txt', 1)
     # print m.run() #TO ACTUALLY USE -> PARAMETER = toWrite list of 7 bytes
 
-    m = VTTX_RWR_withRestore(b, vttx['address'], 'vttx.txt', 2)
+    m = VTTX_RWR_withRestore(b, v.vttx['address'], 'vttx.txt', 2)
     print m.run()
 
 runAll()
