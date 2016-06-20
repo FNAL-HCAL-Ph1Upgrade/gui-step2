@@ -186,12 +186,12 @@ class cntrRegDisplay(Test): #inherit from Test class, overload testBody() functi
         allRegStr = i.catBitsFromBytes(allRegBin)
 
         cntrReg = {
-        "31bX"             :   allRegStr[0:6],
-        "orbitHisto_clear"  :   allRegStr[6:12], # controls histo of the QIE_RST spacing
-        "orbitHisto_run"    :   allRegStr[12:18], # controls histo of the QIE_RST spacing
-        "2_bit_0"           :   allRegStr[18:20],
-        "WrEn_InputSpy"     :   allRegStr[20:26],
-        "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
+        "31bX"             :   allRegStr[0:26],
+        "orbitHisto_clear"  :   allRegStr[26:27], # controls histo of the QIE_RST spacing
+        "orbitHisto_run"    :   allRegStr[27:28], # controls histo of the QIE_RST spacing
+        "2_bit_0"           :   allRegStr[28:30],
+        "WrEn_InputSpy"     :   allRegStr[30:31],
+        "CI_mode"           :   allRegStr[31:32], # Charge Injection mode of the QIE10
             }
 
         allReg = "31bx: " + cntrReg["31bX"] + '\n'\
@@ -439,12 +439,12 @@ class cntrRegChange(Test): # NOTE: this run() function is overloaded to require 
         # Write to specific setting ----------------------------------------
         else:
             cntrReg = {
-            "31bX"              :   allRegStr[0:6],
-            "orbitHisto_clear"  :   allRegStr[6:12], # controls histo of the QIE_RST spacing
-            "orbitHisto_run"    :   allRegStr[12:18], # controls histo of the QIE_RST spacing
-            "2_bit_0"           :   allRegStr[18:20],
-            "WrEn_InputSpy"     :   allRegStr[20:26],
-            "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
+            "31bX"             :   allRegStr[0:26],
+            "orbitHisto_clear"  :   allRegStr[26:27], # controls histo of the QIE_RST spacing
+            "orbitHisto_run"    :   allRegStr[27:28], # controls histo of the QIE_RST spacing
+            "2_bit_0"           :   allRegStr[28:30],
+            "WrEn_InputSpy"     :   allRegStr[30:31],
+            "CI_mode"           :   allRegStr[31:32], # Charge Injection mode of the QIE10
                 }
 
             #print "settingStr confirm: ", settingStr
