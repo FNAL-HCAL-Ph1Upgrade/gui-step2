@@ -807,7 +807,73 @@ def runAll():
     m = scratchReg(b,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
+runSelect()
+    def openIgloo(rm,slot):
+        q.openChannel(rm,slot)
+        #the igloo is value "3" in I2C_SELECT table
+        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
+        b.sendBatch()
+    openIgloo(0,0)
+
+    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = fpgaMinVer(b,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = ones(b,i.igloo["ones"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = zeroes(b,i.igloo["zeroes"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = fpgaTopOrBottom(b,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = uniqueID(b,i.igloo["uniqueID"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = statusReg(b,i.igloo["statusReg"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    print m.run("all", "")
+    m = clk_count(b,i.igloo["clk_count"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = rst_QIE_count(b,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = wte_count(b,i.igloo["wte_count"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = capIDErr_count(b,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    # m = fifo_data(b,i.igloo["fifo_data"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    # m = spy96Bits(b,i.igloo["spy96Bits"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = qie_ck_ph(b,i.igloo["qie_ck_ph"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = link_test_mode(b,i.igloo["link_test_mode"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = link_test_pattern(b,i.igloo["link_test_pattern"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = dataToSERDES(b,i.igloo["dataToSERDES"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = addrToSERDES(b,i.igloo["addrToSERDES"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = ctrlToSERDES(b,i.igloo["ctrlToSERDES"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = dataFromSERDES(b,i.igloo["dataFromSERDES"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = statFromSERDES(b,i.igloo["statFromSERDES"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+    # m = scratchReg(b,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
+    # print m.run()
+
+###########################################
+# RUN FUNCTIONS
+###########################################
+
 runAll()
+runSelect()
+
+
 
 # make sys.arg changes so taht when you run iglooClass.py from the terminal,
 # it will take "options" like user-input, with the default being just run
