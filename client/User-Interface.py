@@ -595,7 +595,7 @@ class makeGui:
 
 	def runTestSuite(self):
 		self.prepareOutSlots()
-		print self.outSlotNumbers
+		print len(self.outSlotNumbers)
 		self.myTestStand = TestStand(self.outSlotNumbers)
 		self.myTestStand.runAll()
 		# Reset the active outSlots
