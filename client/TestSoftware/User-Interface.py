@@ -4,32 +4,35 @@
 # with the setup in the lab.
 # Developed with the help of many people
 # For Baylor University, Summer 2016.
-
+#
 # This is a comment to see if I got git to work properly
 # round 2 electric boogaloo
 
+import qCard
 from Tkinter import *
 from client import webBus
-from qieCommands import qieCommands
+from TestStand import TestStand
 from datetime import datetime
+import htrProcesses.histo_generator as histgen
 
 class makeGui:
 	def __init__(self, parent):
 
 		# Create a list of QIECard slots:
-		self.cardSlots = ["Card 1", "Card 2", "Card 3", "Card 4", "Card 5",
-			     "Card 6","Card 7", "Card 8", "Card 9", "Card 10",
-			     "Card 11", "Card 12", "Card 13", "Card 14",
-			     "Card 15", "Card 16"]
+		self.cardSlots = ["Card 2", "Card 3", "Card 4", "Card 5", "Card 7",
+			     "Card 8","Card 9", "Card 10", "Card 18", "Card 19",
+			     "Card 20", "Card 21", "Card 23", "Card 24",
+			     "Card 25", "Card 26"]
 
 		# Create a list of nGCCme slots:
 		self.ngccmeSlots = ["nGCCme 1", "nGCCme 2"]
 
 		# Create a list of Readout Modules:
 		self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
-	
-		# Instantiate a qieCommands class member
-		self.myCommands = qieCommands()
+
+		# Make an empty list that will eventually contain all of
+		# the active card slots
+		self.outSlotNumbers = []
 
 		# Instantiate a webBus member:
 		self.gb = webBus("pi5")		
@@ -55,7 +58,7 @@ class makeGui:
 		# Add a flag to stop tests
 		self.quitTestsFlag = False
 		
-		#----- constants for controlling layout
+		# Constants for controlling layout
 		button_width = 6
 		
 		button_padx = "2m"
@@ -65,7 +68,7 @@ class makeGui:
 		frame_pady = "2m"
 		frame_ipadx = "3m"
 		frame_ipady = "1m"
-		#---------- end layout constants ------
+		# End layout constants
 
 	
 		##########################################
@@ -112,7 +115,7 @@ class makeGui:
 
 		# Make a bottom half-frame
 		self.botHalf_frame = Frame(self.topMost_frame)
-		self.botHalf_frame.pack(side=RIGHT)
+		self.botHalf_frame.pack(side=LEFT)
 
 		# Make and pack a sub-frame within topMost_frame that will contain
 		# all of the controls for talking with the QIE cards
@@ -130,18 +133,18 @@ class makeGui:
 			pady=frame_pady
 			)
 
-		# Make a runtime frame. For now this will contain
+		# Make a uHTR frame. For now this will contain
 		# information regarding the tests being conducted.
-		self.runtime_frame = Frame(
+		self.uHTR_frame = Frame(
 			self.botHalf_frame,
 			borderwidth=5, relief=RIDGE,
 			height=250, width=400,
 			background="white"
 			)
 		# We don't want this frame to shrink when placing widgets:
-		self.runtime_frame.pack_propagate(False)		
+		self.uHTR_frame.pack_propagate(False)		
 
-		self.runtime_frame.pack(
+		self.uHTR_frame.pack(
 			side=TOP,
 			ipadx=frame_ipadx,
 			ipady=frame_ipady,
@@ -250,23 +253,12 @@ class makeGui:
 		# Make right subframe
 		self.experi_subRight_frame = Frame(self.experiment_frame,background="white")
 		self.experi_subRight_frame.pack(
-			side=LEFT,
-                        ipadx=frame_ipadx,
+			side=RIGHT,
                         ipady=frame_ipady,
-                        padx=frame_padx,
+			ipadx=frame_ipadx,
+			padx=frame_padx,
                         pady=frame_pady
 			)
-
-		# Make far right subframe
-		self.experi_farRight_frame = Frame(self.experiment_frame,background="white")
-		self.experi_farRight_frame.pack(
-			side=LEFT,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
-			)
-
 
 		# Label for higher-level hardware
 		self.experi_highlevel_lbl = Label(self.experi_subLeft_frame,text="High-Level\n")
@@ -362,31 +354,6 @@ class makeGui:
 				pady=button_pady,
 				)
 			self.cardRadio.pack(side=TOP)
-
-		# Now, we add stuff to the farRight frame
-		
-		# Far-right label
-		# Label for card barcode column
-		self.experi_barcode_lbl = Label(self.experi_farRight_frame,text="Barcodes\n")
-		self.experi_barcode_lbl.configure(
-			padx=button_padx,
-			pady=button_pady,
-			background="white"
-			)
-		self.experi_barcode_lbl.pack(side=TOP)
-
-		# Create many barcode variables
-		self.barcodeVarList = [StringVar() for i in range(0,17)]
-
-		# Then, for each variable in barcodeVarList, add a Entry corresponding to it
-		for i in range(1,17):
-			self.barcodeEntry = Entry(
-				self.experi_farRight_frame,
-				textvariable=self.barcodeVarList[i],
-				borderwidth=4,
-				width=9
-				)
-			self.barcodeEntry.pack(side=TOP)
 
 		######################################
 		#####				 #####
@@ -494,11 +461,12 @@ class makeGui:
 
 		# Make and pack a PLACEHOLDER LISTBOX for the variable to read:
                 self.qie_readBox = OptionMenu(self.qie_subMid_frame, self.qieReadVar,
-                                              "Unique ID","Herm Test","Brdg Test",
-				              "255 Test","Zero Test","FW Version", "Humidity",
-					      "Temperature","Get Status")
+                                              "ID_string","ID_string_cont","Ones",
+				              "Zeroes","OnesZeroes","Firmware_Ver",
+					      "Unique_ID", "Temperature", "Humidity"
+					     )
                 self.qie_readBox.pack(side=LEFT)
-                self.qieReadVar.set("Unique ID") # initializes the OptionMenu
+                self.qieReadVar.set("ID_string") # initializes the OptionMenu
 
 		#Make a button to read what is at the address
 		self.qie_read_Button = Button(self.qie_subMid_frame, command=self.qieClickRead)
@@ -522,70 +490,64 @@ class makeGui:
 
 		#################################
 		###			      ###
-		### WIDGETS IN RUNTIME FRAME  ###
+		###   WIDGETS IN uHTR FRAME   ###
 		###			      ###
 		#################################
-		
-		# Make and pack a text label for name selector
-		self.runtime_Label = Label(self.runtime_frame, text="Testing Status & Runtime Information")
-		self.runtime_Label.configure(
+		# Make and pack a text label for the box label
+		self.uHTR_frame_Label = Label(self.uHTR_frame, text="uHTR Runtime Parameters")
+		self.uHTR_frame_Label.configure(
 			padx=button_padx,
 			pady=button_pady,
 			background="white"
 			)
-		self.runtime_Label.pack(side=TOP)
+		self.uHTR_frame_Label.pack(side=TOP)
 
-		# Top sub-frame in runtime frame
-		self.runtime_subTop_frame = Frame(
-			self.runtime_frame,
-			background="white"
-			)
-		self.runtime_subTop_frame.pack(
-			side=TOP,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
-                        )
+		# Make many text variables
+		self.uHTR_slotNumber = [IntVar() for i in range(0,7)]
 
-		# Make a label for number of tests run
-		self.testsRun_Label = Label(self.runtime_subTop_frame, text="Number of tests run: ")
-		self.testsRun_Label.configure(
-			padx=button_padx,
-			pady=button_pady,
-			background="white"
-			)
-		self.testsRun_Label.pack(side=LEFT)
+		# Make a subframe for the slot number label
+		self.uHTR_sub2 = Frame(self.uHTR_frame, bg="white")
+		self.uHTR_sub2.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
 
-		# Make a box to actually display the number of labels run
-		self.runtime_outputText = Entry(
-			self.runtime_subTop_frame,
-			textvariable=self.runtimeNumber)
-		self.runtime_outputText.pack(side=LEFT)
-		self.runtimeNumber.set(1)
+		# Slot number parameter label
+		self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg="white")
+		self.uHTR_slotNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
 
-		#Make a button that removes all barcodes
-		self.clearBarcodeBttn = Button(
-			self.runtime_frame,
-			text="Clear Entered Barcodes",
-			background="salmon1",
-			command=self.clearBarcodePress
-			)
-		self.clearBarcodeBttn.configure(
-			padx=button_padx*2,
-			pady=button_pady*2
-			)
-		self.clearBarcodeBttn.pack(side=TOP)
+		# Make a subframe for the slot number vars
+		self.uHTR_sub3 = Frame(self.uHTR_frame, bg="white")
+		self.uHTR_sub3.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
 
-		#Make a widget that closes the GUI
-		self.closeButton = Button(self.runtime_frame, text="Close Window", background="orange red",
-					  command=self.closeButtonPress)
-		self.closeButton.configure(
+		# Make checkboxes for each uHTR slot
+		for i in range(0,6):
+				self.uHTR_radio = Checkbutton(
+					self.uHTR_sub3,
+					text = str(i+1), anchor=S,
+					variable = self.uHTR_slotNumber[i+1],
+					background = "lavender"
+					)
+				self.uHTR_radio.configure(
+					padx=button_padx,
+					pady=button_pady,
+					)
+				self.uHTR_radio.pack(side=LEFT)
+
+		# Make top subframe 4
+		self.uHTR_sub4 = Frame(self.uHTR_frame, bg="white")
+		self.uHTR_sub4.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
+			padx=frame_padx, pady="1m")
+
+		# Button for doing uHTR tests
+		self.uHTR_tester_bttn = Button(self.uHTR_sub4, text="Run uHTR Tests", bg="turquoise",
+						command=self.uHTR_tester_bttnPress)
+		self.uHTR_tester_bttn.configure(
 			padx=button_padx*2,
 			pady=button_pady*2,
 			)
-		self.closeButton.pack(side=TOP)
-	
+		self.uHTR_tester_bttn.pack(side=TOP)	
+
+
 	#################################
 	###			      ###
 	###  BEGIN MEMBER FUNCTIONS   ###
@@ -612,13 +574,6 @@ class makeGui:
 		for i in range(9,13): self.cardVarList[i].set(self.readoutVarList[2].get())
 		for i in range(13,17): self.cardVarList[i].set(self.readoutVarList[3].get())
 
-	def clearBarcodePress(self):
-		for i in range(1,17):
-			print self.cardVarList[i].get()
-			print self.barcodeVarList[i].get()
-			self.barcodeVarList[i].set("")
-
-
 	def checksToHex(self,inCheck0,inCheck1,inCheck2,inCheck3,inCheck4,inCheck5,inCheck6,inCheck7):
 		hexVar = (inCheck0*1)+(inCheck1*2)+(inCheck2*4)+(inCheck3*8)+(inCheck4*16)+\
 			 (inCheck5*32)+(inCheck6*64)+(inCheck7*128)
@@ -633,42 +588,40 @@ class makeGui:
 		# See what test the user has selected, and then run that test from the
 		# qieCommands.py file. Display the results in the text field within the
 		# QIE frame on the main GUI window.
-		tempInt = int(self.qieChoiceVar.get(),16)
-		if self.qieReadVar.get() == "Herm Test": 
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.hermTest(tempInt))
-		elif self.qieReadVar.get() == "Brdg Test":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.brdgTest(tempInt))
-		elif self.qieReadVar.get() == "255 Test":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.tff_Test(tempInt))
-		elif self.qieReadVar.get() == "Zero Test":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.zeroTest(tempInt))
-		elif self.qieReadVar.get() == "FW Version":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.fwVerTest(tempInt))
-		elif self.qieReadVar.get() == "Get Status":
-			self.qieOutText.set(str(hex(tempInt))+":    "+qieCommands.statusCheck(tempInt))
-		elif self.qieReadVar.get() == "Temperature":
-			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.sensorTemp(0,tempInt))+" C")  #This will be changed as more slots get used
-		elif self.qieReadVar.get() == "Humidity":
-			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.sensorHumid(0,tempInt))) #Will be changes as more RM slots get used
-		elif self.qieReadVar.get() == "Unique ID":
-			self.qieOutText.set(str(hex(tempInt))+":    "+str(qieCommands.getUniqueID(0,tempInt)))
+		self.prepareOutSlots()
+		self.myTestStand = TestStand(self.outSlotNumbers)
+		self.myTestStand.runSingle(self.qieReadVar.get())
+		self.outSlotNumbers = []
 
 	def runTestSuite(self):
-		print str(datetime.now())
-		#ONCE IT'S TIME TO TEST OTHER READOUT MODULES, MAKE THE APPROPRIATE CHANGES HERE
-		for k in range(0,int(self.runtimeNumber.get())):
-			if (k%10 == 0):
-				print "Number of tests completed: ", k
-			for card in (0x19,0x1a,0x1b,0x1c):
-				self.runTestSuiteHelper(card,k)
-		print "\nSuite Completed! Thank you! (:"
-		print str(datetime.now())
+		self.prepareOutSlots()
+		self.myTestStand = TestStand(self.outSlotNumbers)
+		self.myTestStand.runAll()
+		# Reset the active outSlots
+		self.outSlotNumbers = []
 
-	def runTestSuiteHelper(self,card,inNumber):
-		self.myCommands.runCompleteSuite(card,inNumber)
 
-# These next few lines call the class and display the window
-# on the computer screen
+	def uHTR_tester_bttnPress(self):
+		outSlotList = []
+		for i in range(len(self.uHTR_slotNumber)):
+			if (self.uHTR_slotNumber[i].get() == 1):
+				outSlotList.append(i)
+		print outSlotList
+		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
+
+	def prepareOutSlots(self):
+		for k in range(len(self.cardVarList)):
+			if (self.cardVarList[k].get() == 1):
+				if k in [1,2,3,4]:
+					self.outSlotNumbers.append(k+1)
+				elif k in [5,6,7,8]:
+					self.outSlotNumbers.append(k+2)
+				elif k in [9,10,11,12]:
+					self.outSlotNumbers.append(k+9)
+				elif k in [13,14,15,16]:
+					self.outSlotNumbers.append(k+10)
+	
+				
 root = Tk()
 myapp = makeGui(root)
 root.mainloop()

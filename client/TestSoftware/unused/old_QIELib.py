@@ -1,6 +1,113 @@
-#QIE.py
+#!/usr/bin/python
+#
+#QIELib.py
+#Library of tables, functions, and classes for working with QIE11 test stands
 
-#QIE settings - Ordered by most significant bits
+####### Random Stuff that I need for openChannel ################
+
+from client import webBus
+import QIELib
+b = webBus("pi5")
+q = QIELib
+
+#MUX slave addresses (slave i2c addresses)
+MUXs = {
+    "fanout" : 0x72,
+    "ngccm" : {
+                "u10" : 0x74,
+                "u18" : 0x70
+                },
+    "bridge" : [0x19, 0x1a, 0x1b, 0x1c]
+        }
+#Register addresses
+REGs = {
+    "qie0" : 0x30,
+    "qie1" : 0x31,
+    "iscSelect" : 0x11,
+    "vttx" : 0x7E,
+    "igloo" : 0x09,
+    "ID" : 0x50,
+    "temp" : 0x40
+        }
+# Simplify your life today with RMi2c and QIEi2c. Boom dog.
+
+RMi2c = {
+    0 : 0x02,
+    1 : 0x20,
+    2 : 0x10,
+    3 : 0x01
+        }
+
+QIEi2c = {
+    0 : 0x19,
+    1 : 0x1a,
+    2 : 0x1b,
+    3 : 0x1c
+        }
+
+#Bit to write to mux for given twisted pair i2c
+i2cGroups = {
+    1 : 0x04,
+    2 : 0x02,
+    3 : 0x01,
+    4 : 0x20,
+    5 : 0x10,
+    6 : 0x20,
+    7 : 0x10,
+    8 : 0x02,
+    9 : 0x01
+            }
+
+RMs = {
+    1 : {
+        "slots" : ["J2", "J3", "J4", "J5"],
+        "sipm" : "J1",
+        "slotGroup" : 2,
+        "sipmGroup" : 1
+        },
+    2 : {
+        "slots" : ["J7", "J8", "J9", "J10"],
+        "sipm" : "J6",
+        "slotGroup" : 4,
+        "sipmGroup" : 3
+        },
+    3 : {
+        "slots" : ["J18", "J19", "J20", "J21"],
+        "sipm" : "J17",
+        "slotGroup" : 7,
+        "sipmGroup" : 6
+        },
+    4 : {
+        "slots" : ["J23", "J24", "J25", "J26"],
+        "sipm" : "J22",
+        "slotGroup" : 9,
+        "sipmGroup" : 8
+        }
+      }
+
+#For higher J, subtract 5
+JSlots = {
+    1  : 0x18,
+    2  : 0x19,
+    3  : 0x1A,
+    4  : 0x1B,
+    5  : 0x1C,
+    6  : 0x18,
+    7  : 0x19,
+    8  : 0x1A,
+    9  : 0x1B,
+    10 : 0x1C,
+    17 : 0x18,
+    18 : 0x19,
+    19 : 0x1A,
+    20 : 0x1B,
+    21 : 0x1C,
+    22 : 0x18,
+    23 : 0x19,
+    24 : 0x1A,
+    25 : 0x1B,
+    26 : 0x1C
+         }
 from collections import OrderedDict
 serialShiftRegisterBits = OrderedDict(
     [("LVDS/SLVS", [0]),
@@ -25,9 +132,84 @@ serialShiftRegisterBits = OrderedDict(
     ("PhaseDelay", [57, 58, 59, 60, 61, 62, 63])]
     )
 
-#QIE Class
+######## open channel to RM and Slot! ######################
 
+def openChannel(rm,slot):
+    if rm in [0,1]:
+        # Open channel to ngCCM for RM 1,2: J1 - J10
+        print '##### RM in 0,1 #####'
+        b.write(q.MUXs["fanout"],[0x02])
+        b.sendBatch()
+    elif rm in [2,3]:
+        # Open channel to ngCCM for RM 3, 4: J17 - J26
+        print '##### RM in 2,3 #####'
+        b.write(q.MUXs["fanout"],[0x01])
+        b.sendBatch()
+    else:
+        print 'Invalid RM = ', rm
+        print 'Please choose RM = {0,1,2,3}'
+        return 'closed channel'
+    # Open channel to i2c group
+    print '##### open i2c #####'
+    # b.clearBus()
+    b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
+    return b.sendBatch()
+
+def getBits(decimal):
+    return list('%05d' % int(bin(decimal)[2:]))
+
+class RM:
+    def __init__(self, rmNum):
+        self.sipm = RMs[rmNum]["sipm"]
+        self.slots = RMs[rmNum]["slots"]
+        self.cards = []
+        for i in slots:
+            self.cards.append(qCard(JSlots[int(i[1:])]))
+
+
+################################################################################
+# qCard Class
+################################################################################
+class qCard:
+    def __init__(self, address):
+        self.address = address
+        self.shiftRegisters = []
+        for i in range(2):
+            self.shiftRegisters.append(shiftRegister())
+    def __repr__(self):
+        return "qCard()"
+################################################################################
+
+
+################################################################################
+# shiftRegister Class
+################################################################################
+class shiftRegister:
+    def __init__(self, arr = list(0 for i in xrange(64 * 6))):
+        '''creates a shift register object with 6 QIEs, default 0s'''
+        self.QIEs = []
+        for i in range(6):
+            self.QIEs.append(QIE(arr[i*63:i*63 + 64]))
+
+    def __repr__(self):
+        return "shiftRegister"
+
+    #returns a flattened array of all QIE register bits to be written as a block
+    def flatten(self):
+        '''flatten all of the bits in the register's QIEs to one list'''
+        a = []
+        for q in self.QIEs:
+            for b in q.arr:
+                a.append(b)
+        return a
+################################################################################
+
+
+################################################################################
+# QIE Class
+################################################################################
 class QIE:
+
     ############################################################################
     # Core and I/O Functions
     ############################################################################
@@ -48,7 +230,7 @@ class QIE:
     def flatten(self):
         return list(self.arr)
     def load(self, arrayOfBits):
-        self.arr = arrayOfBits
+        self.arr = list(arrayOfBits)
     ############################################################################
 
 
@@ -119,7 +301,7 @@ class QIE:
         for i in xrange(5):
             self.arr[17 + i] = bits[i]
 
-#Change bits 22-25
+    #Change bits 22-25
     def CapID0pedastal(self, polarity, magnitude):
         #pedastal = polarity * magnitude * ~1.9 fC
         if polarity == 1:
@@ -239,6 +421,6 @@ class QIE:
         for i in xrange(7):
             self.arr[57 + i] = t[i]
 
-############################################################################
+    ############################################################################
 
-############################################################################
+################################################################################
