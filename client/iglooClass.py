@@ -505,7 +505,7 @@ def runAll():
     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
     print m.run()
     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
-    print m.run("all", "00000000000000000000000000000000")
+    print m.run("all", "111111 000000 010101 00 000000 111111")
 
 
 runAll()
