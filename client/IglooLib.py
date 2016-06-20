@@ -185,6 +185,8 @@ def RWR_forRO(bus, address, register, numBytes):
 
 iglooAdd = 0x09
 
+#'size' is measured in bits
+
 igloo = {
     "fpgaMajVer" :{
         "register" : 0x00,

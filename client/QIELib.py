@@ -3,8 +3,8 @@ from client import webBus
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 
 def openChannel():
-  b.write(0x72,[0x00])
-  b.write(0x74,[])
+  b.write(0x72,[0x02])
+  b.write(0x74,[0x02,0x19])
 
 #Library of tables, functions, and classes for working with QIE11 test stands
 
