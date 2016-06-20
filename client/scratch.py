@@ -1,10 +1,5 @@
-link = [False, False, False]
-if link == True:
-    print "hi!"
-
-link = [True, True, True]
-if link == True:
-    print "hello"
+for i in range(1,13):
+    print i
 
 # emdict = {
 #     "first" : '0101',

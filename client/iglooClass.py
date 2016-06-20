@@ -536,22 +536,211 @@ class capIDErr_count(Test): #inherit from Test class, overload testBody() functi
         link = 0
         for n in reg:
             print '----Link',link+1,'----'
-            # i.readFromRegister(b, i.iglooAdd, n, size)
-            # i.readFromRegister(b, i.iglooAdd, n, size)
-            # i.readFromRegister(b, i.iglooAdd, n, size)
             if (i.RWR_forRO(b, i.iglooAdd, n, size)):
-            #if (i.readFromRegister(b, i.iglooAdd, n, size)):
-                #print "~~PASS: RO not writable~~"
                 linkPass[link] = True
 
             link = link + 1
 
         if (linkPass[0] and linkPass[1] and linkPass[2]):
+            print "~~ALL PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class fifo_data(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "fifo_data"
+        reg = [i.igloo[name]["register"]["data1"],\
+            i.igloo[name]["register"]["data2"],i.igloo[name]["register"]["data3"]]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        dataPass = [False, False, False]
+
+        # for RO register, read1 == read2 constitutes a PASS
+        data = 0
+        for n in reg:
+            print '----Data',data+1,'----'
+            if (i.RWR_forRO(b, i.iglooAdd, n, size)):
+                dataPass[data] = True
+
+            data = data + 1
+
+        if (dataPass[0] and dataPass[1] and dataPass[2]):
+            print "~~ALL PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class inputSpy(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "inputSpy"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8      # dict holds bits, we want bytes
+
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
             return False
+# ------------------------------------------------------------------------
+class spy96Bits(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "spy96Bits"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8      # dict holds bits, we want bytes
 
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class qie_ck_ph(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "qie_ck_ph"
+        reg = []
+        for i in range(1,13):
+            reg.append(i.igloo[name]["register"][i])
+
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        qiePass = [False,False,False,False,False,False,False,False,\
+            False,False,False,False]
+
+        # for RO register, read1 == read2 constitutes a PASS
+        count = 0
+        for n in reg:
+            print '----Qie',count+1,'----'
+            if (i.RWR_withRestore(b, i.iglooAdd, n, size)):
+                qiePass[count] = True
+
+            count = count + 1
+
+        if (qiePass[0] and qiePass[1] and qiePass[2] and qiePass[3] and \
+            qiePass[4] and qiePass[5] and qiePass[6] and qiePass[7] and \
+            qiePass[8] and qiePass[9] and qiePass[10] and qiePass[11]):
+            print "~~ALL PASS: RW = Writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class link_test_mode(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "link_test_mode"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RW register, read1 != read2 constitues a PASS
+        if (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RW = Writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class link_test_pattern(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "link_test_pattern"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RW register, read1 != read2 constitues a PASS
+        if (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RW = Writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class dataToSERDES(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "dataToSERDES"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RW register, read1 != read2 constitues a PASS
+        if (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RW = Writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class addrToSERDES(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "addrToSERDES"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RW register, read1 != read2 constitues a PASS
+        if (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RW = Writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class ctrlToSERDES(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "ctrlToSERDES"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RW register, read1 != read2 constitues a PASS
+        if (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RW = Writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class dataFromSERDES(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "dataFromSERDES"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class statFromSERDES(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "statFromSERDES"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class scratchReg(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "wte_count"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_withRestore(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RW = Writable~~"
+            return True
+        else:
+            return False
 # ------------------------------------------------------------------------
 def runAll():
     def openIgloo(rm,slot):
@@ -586,6 +775,18 @@ def runAll():
     m = wte_count(b,i.igloo["wte_count"]["register"],'iglooClass.txt', 2)
     print m.run()
     m = capIDErr_count(b,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = fifo_data(b,i.igloo["fifo_data"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = spy96Bits(b,i.igloo["spy96Bits"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = qie_ck_ph(b,i.igloo["qie_ck_ph"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = link_test_mode(b,i.igloo["link_test_mode"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = link_test_pattern(b,i.igloo["link_test_pattern"]["register"],'iglooClass.txt', 2)
     print m.run()
 
 runAll()
