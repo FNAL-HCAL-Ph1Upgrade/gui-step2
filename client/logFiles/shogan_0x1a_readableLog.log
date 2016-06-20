@@ -1,0 +1,16 @@
+Test performed by: shogan
+Time of testing: 2016-06-10 13:19:02.693986
+Testing comment(s):burnt smell?
+
+QIE Card being tested: 0x1a
+Unique ID:  00:00:00:ea:b7:36
+Herm test:  PASS
+Brdg test:  PASS
+Ones Register:  PASS
+Zero Register:  PASS
+Firmware Ver.:  1 11 0 0
+Temperature: 28.601 C
+Humidity: 35.401
+Overall Status: 0 0 0 2
+
+Tests for 0x1a complete.

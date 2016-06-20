@@ -11,7 +11,7 @@ from websocket import create_connection
 ################################################################################
 
 class webBus:
-    def __init__(self, serverAddress = "pi5", VERBOSITY = 2):
+    def __init__(self, serverAddress = "pi5", VERBOSITY = 0):
         self.VERBOSITY = VERBOSITY
         self.messages = []
         a = "ws://%s:1738/ws" % serverAddress
