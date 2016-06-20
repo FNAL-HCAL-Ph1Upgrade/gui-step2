@@ -866,13 +866,22 @@ def runSelect():
     # m = scratchReg(b,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
     # print m.run()
 
+def readOutInputSpy():
+    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    print m.run()
+    m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    print m.run("WrEn_InputSpy", "1")
+
+    m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 512)
+    print m.run()
+
 ###########################################
 # RUN FUNCTIONS
 ###########################################
 
-runAll()
-runSelect()
-
+#runAll()
+#runSelect()
+readOutInputSpy()
 
 
 # make sys.arg changes so taht when you run iglooClass.py from the terminal,
