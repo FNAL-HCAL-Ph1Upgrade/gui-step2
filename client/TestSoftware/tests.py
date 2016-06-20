@@ -1,4 +1,5 @@
 #import helpers as h
+from __future__ import print_function as logprint
 import sys
 sys.path.append('../')
 import client
@@ -36,12 +37,31 @@ registers = {
         "expected" : "170 170 170 170"
         }
 }
+
+
+class Test:
+    def __init__(self, bus, address, logfile, iterations = 1):
+        self.bus = bus
+        self.address = address
+        self.logstream = logstream
+        self.iterations = iterations
+    def run(self):
+        passes = 0
+        for i in xrange(iterations):
+            if self.testBody() == true: passes += 1
+        return (passes, fails)
+    def log(self, message):
+        logprint(message, file=self.logfile)
+    def testBody(self):
+        return True
+
 class testSuite:
     def __init__(self, webAddress, address):
         '''create a new test suite object... initialize bus and address'''
         self.bus = client.webBus(webAddress, 0)
         self.address = address
 
+    #For basic read checks
     def readWithCheck(self, registerName, iterations = 1):
         passes = 0
         register = registers[registerName]["address"]
@@ -59,7 +79,7 @@ class testSuite:
 
     def runTests(self):
         for r in registers.keys():
-            yield self.readWithCheck(r, 100)[1:]
+            yield self.readWithCheck(r, 100)
 
     # for i in xrange(iterations):
     #     bus.read

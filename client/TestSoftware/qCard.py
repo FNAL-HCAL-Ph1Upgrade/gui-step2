@@ -11,12 +11,12 @@ def getCardAddress(slot):
 
 
 class qCard:
-    def __init__(self, slot, barcode='000_000'):
+    def __init__(self, slot, barcode='060_000'):
         '''Create a qCard object with basic info and no yet-passed tests'''
         self.slot = slot
         self.address = getCardAddress(slot)
         self.barcode = barcode
-        self.passed = []
+        self.passed = {}
     def __repr__(self):
         '''Object representation'''
         return "qCard()"
@@ -31,3 +31,4 @@ class qCard:
         t = tests.testSuite("pi5", self.address)
         for result in t.runTests():
             self.passed.append(result)
+    def changeSettings(cmdList)

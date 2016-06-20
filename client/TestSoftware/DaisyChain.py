@@ -22,6 +22,8 @@ class DaisyChain:
             r += "\n"
             r += "-------\n"
         return r
+    def __getitem__(self, i):
+        return self.QIEs[i]
     #returns a flattened array of all QIE register bits to be written as a block
     def flatten(self):
         '''flatten all of the bits in the register's QIEs to one list'''
