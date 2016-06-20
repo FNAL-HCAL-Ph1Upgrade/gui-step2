@@ -574,6 +574,14 @@ def runAll():
     print m.run()
     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
     print m.run("all", "")
+    m = clk_count(b,i.igloo["clk_count"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = rst_QIE_count(b,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = wte_count(b,i.igloo["wte_count"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = capIDErr_count(b,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 2)
+    print m.run()
 
 runAll()
 
