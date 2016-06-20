@@ -536,7 +536,11 @@ class capIDErr_count(Test): #inherit from Test class, overload testBody() functi
         link = 0
         for n in reg:
             print '----Link',link+1,'----'
-            if (i.RWR_forRO(b, i.iglooAdd, n, size)):
+            i.readFromRegister(b, i.iglooAdd, n, size)
+            i.readFromRegister(b, i.iglooAdd, n, size)
+            i.readFromRegister(b, i.iglooAdd, n, size)
+            #if (i.RWR_forRO(b, i.iglooAdd, n, size)):
+            if (i.readFromRegister(b, i.iglooAdd, n, size)):
                 #print "~~PASS: RO not writable~~"
                 linkPass[link] = True
 
