@@ -736,7 +736,7 @@ class statFromSERDES(Test): #inherit from Test class, overload testBody() functi
 # ------------------------------------------------------------------------
 class scratchReg(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
-        name = "wte_count"
+        name = "scratchReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
 
