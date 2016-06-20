@@ -1,0 +1,1 @@
+{"comment": "No comment.", "timeOfTest": "2016-06-10 13:57:31.341643", "temperature": 39.702, "tester": "shogan", "passedZero": true, "passedOnes": true, "humidity": 20.005, "firmwareVer": "1 11 0 0", "i2cAddress": "0x19", "passedBrdg": true, "uniqueID": "00:00:00:ea:bf:8a", "passedHerm": true}
