@@ -25,19 +25,6 @@ class ID_string(Test):
 
 class ID_string_cont(Test):
 	def __init__(self):
-		self.criteria = "0 77 82 69 72"
-
-	def testBody(self):
-		self.bus.write(self.address, [0x00])	
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r == self.criteria):
-			return True
-		else:
-			return False
-		
-class ID_string_cont(Test):
-	def __init__(self):
 		self.criteria = "0 103 100 114 66"
 
 	def testBody(self):
