@@ -79,3 +79,5 @@ def runAll():
 
     m = VTTX_RWR_withRestore(b, vttx['address'], 'vttx.txt', 2)
     print m.run()
+
+runAll()
