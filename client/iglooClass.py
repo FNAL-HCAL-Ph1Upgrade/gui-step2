@@ -391,7 +391,10 @@ class cntrRegChange(Test):
 
             # Since Python is 'pass-by-object-reference', just because we changed
             # the dict cntrReg doesn't mean we changed allRegStr... So do that now
-            allRegStr = ''.join(cntrReg)
+            #allRegStr = ''.join(cntrReg)
+            allRegStr = cntrReg['31bx'] + cntrReg['orbitHisto_clear']\
+                + cntrReg['orbitHisto_run'] + cntrReg["2_bit_0"]\
+                + cntrReg['WrEn_InputSpy'] + cntrReg['CI_mode']
 
             print "stringToBitList: ", i.stringToBitList(allRegStr)
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
