@@ -74,7 +74,7 @@ def runAll():
     print m.run()
 
     # -------VTTX 2----------
-    print '\n
+    print '\n'
     print "----------------------VTTX 2-------------------------"
     v.openVTTX(0,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
