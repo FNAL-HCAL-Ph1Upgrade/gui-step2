@@ -11,10 +11,10 @@ def getCardAddress(slot):
     if slot in [5,10,21,26]: return cardAddresses[3]
 
 def getReadoutSlot(slot):
-    if slot in [2,3,4,5] : return 4
-    if slot in [7,8,9,10] : return 3
-    if slot in [18,19,20,21] : return 2
-    if slot in [23,24,25,26] : return 1
+    if slot in [2,3,4,5] : return 1
+    if slot in [7,8,9,10] : return 2
+    if slot in [18,19,20,21] : return 3
+    if slot in [23,24,25,26] : return 4
 
 def ngccmGroup(rm):
     i2cGroups = [0x01, 0x10, 0x20, 0x02]
@@ -71,15 +71,18 @@ class RM:
         if self.location in [3,4]:
             # Open channel to ngCCM for RM 3,4: J1 - J10
             b.write(0x72,[0x02])
+	    b.read(0x72, 2)
         elif self.location in [1,2]:
             # Open channel to ngCCM for RM 1,2: J17 - J26
             b.write(0x72,[0x01])
+	    b.read(0x72, 2)
         else:
             print 'Invalid RM = ', self.location
             print 'Please choose RM = {1,2,3,4}'
             return 'closed channel'
         # Open channel to i2c group
         b.write(0x74, [ngccmGroup(self.location)])
+	b.read(0x74, 2)
         return b.sendBatch()
 
     def runAll(self):
