@@ -344,9 +344,71 @@ class cntrRegDisplay(Test): #inherit from Test class, overload testBody() functi
         # for RO register, read1 == read2 constitutes a PASS
         # NEED TO CHANGE THIS FOR CNTRREG SINCE WE EXPECT TO R/W NON-RAND VALUES!!
 # ------------------------------------------------------------------------
-class cntrRegChange(Test):
+class cntrRegChange(Test): # NOTE: this run() function is overloaded to require parameters
+    {
     # -------------------------------------------
-    def writeSet(self, desiredReg, settingStr):
+    # def writeSet(self, desiredReg, settingStr):
+    #     # desiredReg and settingStr are both strings!!
+    #     # settingStr can be of form "010101...", "0101 111 0 11...", or "0101"
+    #     name = 'cntrReg'
+    #     reg = i.igloo[name]["register"]
+    #     size = i.igloo[name]["size"] / 8
+    #
+    #     print "----------%s Change----------" %name
+    #
+    #     settingStr = ''.join(settingStr)
+    #     toWrite = i.getBytesFromBits(i.stringToBitList(settingStr))
+    #     print "settingStr: ", settingStr
+    #
+    #     # Read1 = current register status
+    #     read1 = i.readFromRegister(b, i.iglooAdd, reg, size)
+    #     allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(read1))
+    #     print "allRegStr: ", allRegStr
+    #
+    #     # Write to 'all' ---------------------------------------------------
+    #     if desiredReg == "all":
+    #         write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite)
+    #         read2 = i.readFromRegister(b, i.iglooAdd, reg, size) # gets new reg status
+    #         print "cntrReg after 'all' WRITE: ", read2
+    #
+    #         if not (write1 and read2): return False
+    #         else:
+    #             return True
+    #
+    #     # Write to specific setting ----------------------------------------
+    #     else:
+    #         cntrReg = {
+    #         "31bX"              :   allRegStr[0:6],
+    #         "orbitHisto_clear"  :   allRegStr[6:12], # controls histo of the QIE_RST spacing
+    #         "orbitHisto_run"    :   allRegStr[12:18], # controls histo of the QIE_RST spacing
+    #         "2_bit_0"           :   allRegStr[18:20],
+    #         "WrEn_InputSpy"     :   allRegStr[20:26],
+    #         "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
+    #             }
+    #
+    #         #print "settingStr confirm: ", settingStr
+    #         cntrReg[desiredReg] = settingStr
+    #         #print "cntrReg[desiredReg]: ", cntrReg
+    #
+    #         # Since Python is 'pass-by-object-reference', just because we changed
+    #         # the dict cntrReg doesn't mean we changed allRegStr... So do that now
+    #         #allRegStr = ''.join(cntrReg)
+    #         allRegStr = cntrReg['31bX'] + cntrReg['orbitHisto_clear']\
+    #             + cntrReg['orbitHisto_run'] + cntrReg["2_bit_0"]\
+    #             + cntrReg['WrEn_InputSpy'] + cntrReg['CI_mode']
+    #
+    #         #print "stringToBitList: ", i.stringToBitList(allRegStr)
+    #         toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
+    #         #print "toWrite: ", toWrite
+    #         write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the change
+    #         read2 = i.readFromRegister(b, i.iglooAdd, reg, size) #displays new reg
+    #         print "cntrReg after %s WRITE: " %desiredReg, read2
+    #         if not (write1 and read2): return False
+    #         else:
+    #             return True
+    }
+    # -------------------------------------------
+    def testBody(self, desiredReg, settingStr):
         # desiredReg and settingStr are both strings!!
         # settingStr can be of form "010101...", "0101 111 0 11...", or "0101"
         name = 'cntrReg'
@@ -385,9 +447,9 @@ class cntrRegChange(Test):
             "CI_mode"           :   allRegStr[26:32], # Charge Injection mode of the QIE10
                 }
 
-            print "settingStr confirm: ", settingStr
+            #print "settingStr confirm: ", settingStr
             cntrReg[desiredReg] = settingStr
-            print "cntrReg[desiredReg]: ", cntrReg
+            #print "cntrReg[desiredReg]: ", cntrReg
 
             # Since Python is 'pass-by-object-reference', just because we changed
             # the dict cntrReg doesn't mean we changed allRegStr... So do that now
@@ -396,26 +458,22 @@ class cntrRegChange(Test):
                 + cntrReg['orbitHisto_run'] + cntrReg["2_bit_0"]\
                 + cntrReg['WrEn_InputSpy'] + cntrReg['CI_mode']
 
-            print "stringToBitList: ", i.stringToBitList(allRegStr)
+            #print "stringToBitList: ", i.stringToBitList(allRegStr)
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
-            print "toWrite: ", toWrite
+            #print "toWrite: ", toWrite
             write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the change
             read2 = i.readFromRegister(b, i.iglooAdd, reg, size) #displays new reg
             print "cntrReg after %s WRITE: " %desiredReg, read2
             if not (write1 and read2): return False
             else:
                 return True
-    def testBody(self):
-        name = "cntrReg"
-        reg = i.igloo[name]["register"]
-        size = i.igloo[name]["size"] / 8
 
-        return True
-        #print "----------%s Change----------" %name
-        #print self.writeSet()
-
-        #if self.writeSet() != False:
-        #    return True
+    # -------------------------------------------
+    def run(self, desiredReg, settingStr):
+        passes = 0
+        for i in xrange(self.iterations): #changed from iterations to self.iterations
+            if self.testBody(desiredReg, settingStr) == True: passes += 1 #changed true to True
+        return (passes, self.iterations - passes) #changed fails to (self.iterations - passes)
 # ------------------------------------------------------------------------
 class cntrRegTerminalChange(Test): #inherit from Test class, overload testBody() function
     # FILL THIS IN
@@ -447,8 +505,8 @@ def runAll():
     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
     print m.run()
     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
-    m.writeSet("CI_mode", "111111")
-    print m.run()
+    print m.run("CI_mode", "111111")
+
 
 runAll()
 
