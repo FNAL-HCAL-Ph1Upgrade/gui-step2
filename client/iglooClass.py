@@ -505,7 +505,7 @@ def runAll():
     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
     print m.run()
     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
-    print m.run("CI_mode", "111111")
+    print m.run("31bX", "111111")
 
 
 runAll()
