@@ -788,6 +788,18 @@ def runAll():
     print m.run()
     m = link_test_pattern(b,i.igloo["link_test_pattern"]["register"],'iglooClass.txt', 2)
     print m.run()
+    m = dataToSERDES(b,i.igloo["dataToSERDES"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = addrToSERDES(b,i.igloo["addrToSERDES"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = ctrlToSERDES(b,i.igloo["ctrlToSERDES"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = dataFromSERDES(b,i.igloo["dataFromSERDES"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = statFromSERDES(b,i.igloo["statFromSERDES"]["register"],'iglooClass.txt', 2)
+    print m.run()
+    m = scratchReg(b,i.igloo["scratchReg"]["register"],'iglooClass.txt', 2)
+    print m.run()
 
 runAll()
 
