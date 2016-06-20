@@ -1,11 +1,21 @@
-emdict = {
-    "first" : '0101',
-    "second" : '111'
-}
-string = ''
-for i in mdict:
-    string = ''.join(mdict)
-print string
+link = [False, False, False]
+if link == True:
+    print "hi!"
+
+link = [True, True, True]
+if link == True:
+    print "hello"
+
+# emdict = {
+#     "first" : '0101',
+#     "second" : '111'
+# }
+# string = ''
+# for i in mdict:
+#     string = ''.join(mdict)
+# print string
+
+
 # def getByteFromBits(bitList):
 #     return int(''.join(bitList), 2)
 #

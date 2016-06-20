@@ -475,10 +475,78 @@ class cntrRegChange(Test): # NOTE: this run() function is overloaded to require 
             if self.testBody(desiredReg, settingStr) == True: passes += 1 #changed true to True
         return (passes, self.iterations - passes) #changed fails to (self.iterations - passes)
 # ------------------------------------------------------------------------
-class cntrRegTerminalChange(Test): #inherit from Test class, overload testBody() function
+class cntrRegTerminalChange(Test): # (NOT USED)
     # FILL THIS IN
     def testBody(self):
         return True
+# ------------------------------------------------------------------------
+class clk_count(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "clk_count"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class rst_QIE_count(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "rst_QIE_count"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class wte_count(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "wte_count"
+        reg = i.igloo[name]["register"]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        # for RO register, read1 == read2 constitutes a PASS
+        if (i.RWR_forRO(b, i.iglooAdd, reg, size)):
+            print "~~PASS: RO not writable~~"
+            return True
+        else:
+            return False
+# ------------------------------------------------------------------------
+class capIDErr_count(Test): #inherit from Test class, overload testBody() function
+    def testBody(self):
+        name = "capIDErr_count"
+        reg = [i.igloo[name]["register"]["link1"],\
+            i.igloo[name]["register"]["link2"],i.igloo[name]["register"]["link3"]]
+        size = i.igloo[name]["size"] / 8
+
+        print "----------%s----------" %name
+        linkPass = [False, False, False]
+
+        # for RO register, read1 == read2 constitutes a PASS
+        link = 0
+        for i in reg:
+            print '----Link',link+1,'----'
+            if (i.RWR_forRO(b, i.iglooAdd, i, size)):
+                #print "~~PASS: RO not writable~~"
+                linkPass[link] = True
+            link += link
+
+        if (linkPass[0] and linkPass[1] and linkPass[2]):
+            print "~~PASS: RO not writable~~"
+            return True
+        else:
+            return False
+
 # ------------------------------------------------------------------------
 def runAll():
     def openIgloo(rm,slot):
@@ -505,18 +573,13 @@ def runAll():
     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
     print m.run()
     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 2)
-    print m.run("all", "111111 000000 010101 00 000000 111111")
-
+    print m.run("all", "")
 
 runAll()
 
 # make sys.arg changes so taht when you run iglooClass.py from the terminal,
 # it will take "options" like user-input, with the default being just run
 # basic r/w capabilities.
-
-# ALSO, make a rwr test for RW registers that returns all the register to the
-# original values from read1 so that we don't make permanent changes we don't
-# intend to make.
 
 # Make 3 classes for cntrReg:
 # (1) read out reg, (2) write according to hard-code, (3) write by terminal input
