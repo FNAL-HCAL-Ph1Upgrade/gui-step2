@@ -603,13 +603,13 @@ class spy96Bits(Test): #inherit from Test class, overload testBody() function
 class qie_ck_ph(Test): #inherit from Test class, overload testBody() function
     def testBody(self):
         name = "qie_ck_ph"
-        reg = [i.igloo[name]["register"][1],i.igloo[name]["register"][2]\
-            i.igloo[name]["register"][3],i.igloo[name]["register"][4]\
-            i.igloo[name]["register"][5],i.igloo[name]["register"][6]\
-            i.igloo[name]["register"][7],i.igloo[name]["register"][8]\
-            i.igloo[name]["register"][9],i.igloo[name]["register"][10]\
+        reg = [i.igloo[name]["register"][1],i.igloo[name]["register"][2],\
+            i.igloo[name]["register"][3],i.igloo[name]["register"][4],\
+            i.igloo[name]["register"][5],i.igloo[name]["register"][6],\
+            i.igloo[name]["register"][7],i.igloo[name]["register"][8],\
+            i.igloo[name]["register"][9],i.igloo[name]["register"][10],\
             i.igloo[name]["register"][11],i.igloo[name]["register"][12]]
-            
+
         # for i in range(1,13):
         #     reg.append(i.igloo[name]["register"][str(i)])
 
