@@ -539,7 +539,8 @@ class capIDErr_count(Test): #inherit from Test class, overload testBody() functi
             if (i.RWR_forRO(b, i.iglooAdd, n, size)):
                 #print "~~PASS: RO not writable~~"
                 linkPass[link] = True
-            link += link
+
+            link = link + 1
 
         if (linkPass[0] and linkPass[1] and linkPass[2]):
             print "~~PASS: RO not writable~~"
