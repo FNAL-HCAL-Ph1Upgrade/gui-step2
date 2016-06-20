@@ -25,6 +25,7 @@ class Test:
 # ------------------------------------------------------------------------
 class VTTX_Display(Test):
     def testBody(self):
+        print "----------VTTX_Display----------"
         read1 = v.readFromVTTX(b, v.vttx["address"], v.vttx['size'])
 
         if read1 == False: return False
@@ -34,6 +35,7 @@ class VTTX_Display(Test):
 # ------------------------------------------------------------------------
 class VTTX_Change(Test): # NOTE: the run() function is overloaded & takes list parameter toWrite
     def testBody(self, toWrite):
+        print "----------VTTX_Change----------"
         w = v.writeToVTTX(b, v.vttx['address'], v.vttx['size'], toWrite)
 
         if w == False: return False
@@ -49,6 +51,7 @@ class VTTX_Change(Test): # NOTE: the run() function is overloaded & takes list p
 
 class VTTX_RWR_withRestore(Test):
     def testBody(self):
+        print "----------VTTX_RWR_withRestore----------"
         ret = v.RWR_withRestore(b, v.vttx['address'], v.vttx['size'])
         if ret == True:
             print "~~ PASS: RWR Success ~~"
@@ -59,6 +62,7 @@ class VTTX_RWR_withRestore(Test):
 # ---------RUN FUNCTIONS--------------------------------------------------
 def runAll():
     # -------VTTX 1----------
+    print "-----------------VTTX 1--------------------"
     v.openVTTX(0,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
@@ -70,6 +74,7 @@ def runAll():
     print m.run()
 
     # -------VTTX 2----------
+    print "-----------------VTTX 2--------------------"
     v.openVTTX(0,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
