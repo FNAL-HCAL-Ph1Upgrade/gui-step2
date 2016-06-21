@@ -16,5 +16,3 @@ class Test:
 
     def testBody(self):
         return True
-
-
