@@ -749,12 +749,12 @@ class scratchReg(Test): #inherit from Test class, overload testBody() function
             return False
 # ------------------------------------------------------------------------
 def runAll():
-    def openIgloo(rm,slot):
-        q.openChannel(rm,slot)
+    def openIgloo(slot):
+        q.openChannel()
         #the igloo is value "3" in I2C_SELECT table
         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
         b.sendBatch()
-    openIgloo(0,0)
+    openIgloo(0)
 
     m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
     print m.run()
@@ -808,12 +808,13 @@ def runAll():
     print m.run()
 
 def runSelect():
-    def openIgloo(rm,slot):
-        q.openChannel(rm,slot)
+    def openIgloo(slot):
+        q.openChannel()
         #the igloo is value "3" in I2C_SELECT table
         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
         b.sendBatch()
-    openIgloo(0,0)
+    openIgloo(0)
+
 
     m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
     print m.run()
@@ -880,8 +881,8 @@ def readOutInputSpy():
 ###########################################
 
 #runAll()
-#runSelect()
-readOutInputSpy()
+runSelect()
+#readOutInputSpy()
 
 
 # make sys.arg changes so taht when you run iglooClass.py from the terminal,
