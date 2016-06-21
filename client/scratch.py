@@ -1,41 +1,88 @@
-for i in range(1,13):
-    print i
+ from client import webBus
+ import QIELib
+ import vttxLib
 
-# emdict = {
-#     "first" : '0101',
-#     "second" : '111'
-# }
-# string = ''
-# for i in mdict:
-#     string = ''.join(mdict)
-# print string
+ b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
+ q = QIELib
+ v = vttxLib
 
+ class Test:
+     def __init__(self, bus, address, logfile, iterations = 1):
+         self.bus = bus
+         self.address = address
+         self.logstream = logfile #changed from logstream to logfile
+         self.iterations = iterations
+     def run(self):
+         passes = 0
+         for i in xrange(self.iterations): #changed from iterations to self.iterations
+             if self.testBody() == True: passes += 1 #changed true to True
+         return (passes, self.iterations - passes) #changed fails to (self.iterations - passes)
+     def log(self, message):
+         logprint(message, file=self.logfile)
+     def testBody(self):
+         return True
 
-# def getByteFromBits(bitList):
-#     return int(''.join(bitList), 2)
-#
-# # give a list with bits (list size should be a multiple of 8), returns list of each formed byte
-# def getBytesFromBits(bitList):
-#     ret = []
-#     for i in xrange(len(bitList)/8):
-#         ret.append(getByteFromBits(bitList[i * 8: (i + 1) * 8]))
-#     return ret
-#
-# # give a string, returns list of each bit from string
-# def stringToBitList(stringOfBits):
-#     list = []
-#     for i in stringOfBits:
-#             list.append(i)
-#
-#     return list
-#
-# settingList = []
-# settingList = raw_input("Please enter a List: ")
-# print "You entered", settingList
-# #we want to see if it cuts off leading zeroes for things like [01] -> 1
-#
-# settingStr = ''.join(settingList)
-#
-# print "settingStr: ", settingStr
-#
-# #toWrite = getBytesFromBits(stringToBitList(settingStr))
+ # ------------------------------------------------------------------------
+ class VTTX_Display(Test):
+     def testBody(self):
++        print "----------VTTX_Display----------"
+         read1 = v.readFromVTTX(b, v.vttx["address"], v.vttx['size'])
+
+         if read1 == False: return False
+         else:
+             print "~~ PASS: VTTX Register: ", read1
+             return True
+ # ------------------------------------------------------------------------
+ class VTTX_Change(Test): # NOTE: the run() function is overloaded & takes list parameter toWrite
+     def testBody(self, toWrite):
++        print "----------VTTX_Change----------"
+         w = v.writeToVTTX(b, v.vttx['address'], v.vttx['size'], toWrite)
+
+         if w == False: return False
+         else:
+             print "~~ PASS: VTTX Register: ", read1
+             return True
+
+     def run(self, toWrite):
+         passes = 0
+         for i in xrange(self.iterations):
+             if self.testBody(toWrite) == True: passes += 1
+         return (passes, self.iterations - passes)
+
+ class VTTX_RWR_withRestore(Test):
+     def testBody(self):
++        print "----------VTTX_RWR_withRestore----------"
+         ret = v.RWR_withRestore(b, v.vttx['address'], v.vttx['size'])
+         if ret == True:
+             print "~~ PASS: RWR Success ~~"
+             return True
+         else:
+             return False
+
+ # ---------RUN FUNCTIONS--------------------------------------------------
+ def runAll():
+     # -------VTTX 1----------
++    print "-----------------VTTX 1--------------------"
+     v.openVTTX(0,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
+
+     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
+     print m.run()
+     # m = VTTX_Change(b, vttx['address'], 'vttx.txt', 1)
+     # print m.run() #TO ACTUALLY USE -> PARAMETER = toWrite list of 7 bytes
+
+     m = VTTX_RWR_withRestore(b, v.vttx['address'], 'vttx.txt', 2)
+     print m.run()
+
+     # -------VTTX 2----------
++    print "-----------------VTTX 2--------------------"
+     v.openVTTX(0,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
+
+     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
+     print m.run()
+     # m = VTTX_Change(b, vttx['address'], 'vttx.txt', 1)
+     # print m.run() #TO ACTUALLY USE -> PARAMETER = toWrite list of 7 bytes
+
+     m = VTTX_RWR_withRestore(b, v.vttx['address'], 'vttx.txt', 2)
+     print m.run()
+
+runAll()
