@@ -45,6 +45,8 @@ class QIE:
                 s += str(self.arr[i])
             strs.append(k + ":\n    " + s)
         return "\n".join(strs)
+    def __getitem__(self, i):
+        return self.arr[i]
     def flatten(self):
         return list(self.arr)
     def load(self, arrayOfBits):
@@ -170,10 +172,10 @@ class QIE:
     #Change bits 38
     def FixRange(self, b):
         if b == 1:
-            #autorange mode
+            #fixed range mode
             self.arr[38] = 1
         elif b == 0:
-            #fixed range mode
+            #autorange mode
             self.arr[38] = 0
 
     #Change bits 39-40
