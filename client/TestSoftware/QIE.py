@@ -47,8 +47,10 @@ class QIE:
         return "\n".join(strs)
     def __getitem__(self, i):
         return self.arr[i]
+    def __setitem__(self, i, item):
+        self.arr[i] = item
     def flatten(self):
-        return list(self.arr)
+        return list(int(i) for i in self)
     def load(self, arrayOfBits):
         self.arr = arrayOfBits
     ############################################################################
@@ -59,9 +61,9 @@ class QIE:
     ############################################################################
     #Change bit 0
     def setLVDS(self):
-        self.arr[0] = 1
+        self[0] = 1
     def setSLVS(self):
-        self.arr[0] = 0
+        self[0] = 0
 
     #Change bits 1-2
     def setLVDS_output_level_trim(self, v):
@@ -70,29 +72,42 @@ class QIE:
             250 : (0,1),
             350 : (1,0),
             450 : (1,1)
-        }.get(v)
-        self.arr[1] = d[0]
-        self.arr[2] = d[1]
+        }.get(v, default = (-9,-9))
+        if d == (-9, -9):
+            print "INVALID INPUT IN setLVDS_output_level_trim... no change made"
+        else:
+            self[1] = d[0]
+            self[2] = d[1]
 
     #Change bit 3
     def discOn(self, b):
         if b == 0:
-            self.arr[3] = 0
+            self[3] = 0
         elif b == 1:
-            self.arr[3] = 1
+            self[3] = 1
+        else:
+            print "INVALID INPUT IN discOn... no change made"
 
     #Change bit 4
     def TGain(self, b):
         if b == 0:
-            self.arr[4] = 0
+            self[4] = 0
         elif b == 1:
-            self.arr[4] = 1
+            self[4] = 1
+        else:
+            print "INVALID INPUT IN TGain... no change made"
 
     #Change bits 5-12
-    def TimingThresholdDAC(self, t):
-        for i in xrange(8):
-            self.arr[i + 5] = t[i]
-
+    def TimingThresholdDAC(self, magnitude):
+        #accepts magnitudes -127 to 127
+        if abs(magnitude) <= 127:
+            self[5] = (0 if magnitude < 0 else 1)
+            a = "%07i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(7):
+                self[6 + i] = a[i]
+        else:
+            print "INVALID INPUT IN TimingThresholdDAC... no change made"
     #Change bits 13-15
     def TimingIref(self, q):
         d = {
@@ -104,84 +119,102 @@ class QIE:
             50 : (1,0,1),
             60 : (1,1,0),
             70 : (1,1,1)
-        }.get(q)
-        self.arr[13] = d[0]
-        self.arr[14] = d[1]
-        self.arr[15] = d[2]
+        }.get(q, default=(-9,-9,-9))
+        if d != (-9,-9,-9):
+            self[13] = d[0]
+            self[14] = d[1]
+            self[15] = d[2]
+        else:
+            print "INVALID INPUT IN TimingIref... no change made"
 
     #Change bits 16-21
-    def PedastalDAC(self, polarity, magnitude):
-        #pedastal = polarity * magnitude * 2 fC
-        if polarity == 1:
-            self.arr[16] = 1
-        elif polarity == 0 or polarity == -1:
-            self.arr[16] = 0
-        #set magnitude
-        bits = getBits(magnitude)
-        for i in xrange(5):
-            self.arr[17 + i] = bits[i]
+    def PedastalDAC(self, magnitude):
+        #pedastal = magnitude * 2 fC
+        #takes magnitudes -31 to 31
+        if abs(magnitude) <= 31:
+            self[16] = (1 if magnitude > 0 else 0)
+            #set magnitude
+            a = "%05i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(5):
+                self[17 + i] = a[i]
+        else:
+            print "INVALID INPUT IN PedastalDAC... no change made"
 
 #Change bits 22-25
-    def CapID0pedastal(self, polarity, magnitude):
-        #pedastal = polarity * magnitude * ~1.9 fC
-        if polarity == 1:
-            self.arr[22] = 1
-        elif polarity == 0 or polarity == -1:
-            self.arr[22] = 0
-        #set magnitude
-        bits = getBits(magnitude)
-        for i in xrange(3):
-            self.arr[23 + i] = bits[i]
+    def CapID0pedastal(self, magnitude):
+        #pedastal = magnitude * ~1.9 fC
+        #takes magnitudes -12 to 12
+        if abs(magnitude) <= 12:
+            self[22] = (1 if magnitude > 0 else 0)
+            #set magnitude
+            a = "%03i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(3):
+                self[23 + i] = a[i]
+        else:
+            print "INVALID INPUT IN CapID0pedastal... no change made"
 
     #Change bits 26-29
-    def CapID1pedastal(self, polarity, magnitude):
-        #pedastal = polarity * magnitude * ~1.9 fC
-        if polarity == 1:
-            self.arr[26] = 1
-        elif polarity == 0 or polarity == -1:
-            self.arr[26] = 0
-        #set magnitude
-        bits = getBits(magnitude)
-        for i in xrange(3):
-            self.arr[27 + i] = bits[i]
+    def CapID1pedastal(self, magnitude):
+        #pedastal = magnitude * ~1.9 fC
+        #takes magnitudes -12 to 12
+        if abs(magnitude) <= 12:
+            self[26] = (1 if magnitude > 0 else 0)
+            #set magnitude
+            a = "%03i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(3):
+                self[27 + i] = a[i]
+        else:
+            print "INVALID INPUT IN CapID1pedastal... no change made"
 
     #Change bits 30-33
-    def CapID2pedastal(self, polarity, magnitude):
-        #pedastal = polarity * magnitude * ~1.9 fC
-        if polarity == 1:
-            self.arr[30] = 1
-        elif polarity == 0 or polarity == -1:
-            self.arr[30] = 0
-        #set magnitude
-        bits = getBits(magnitude)
-        for i in xrange(3):
-            self.arr[31 + i] = bits[i]
+    def CapID2pedastal(self, magnitude):
+        #pedastal = magnitude * ~1.9 fC
+        #takes magnitudes -12 to 12
+        if abs(magnitude) <= 12:
+            self[30] = (1 if magnitude > 0 else 0)
+            #set magnitude
+            a = "%03i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(3):
+                self[31 + i] = a[i]
+        else:
+            print "INVALID INPUT IN CapID2pedastal... no change made"
 
     #Change bits 34-37
-    def CapID3pedastal(self, polarity, magnitude):
-        #pedastal = polarity * magnitude * ~1.9 fC
-        if polarity == 1:
-            self.arr[34] = 1
-        elif polarity == 0 or polarity == -1:
-            self.arr[34] = 0
-        #set magnitude
-        bits = getBits(magnitude)
-        for i in xrange(3):
-            self.arr[35 + i] = bits[i]
+    def CapID3pedastal(self, magnitude):
+        #pedastal = magnitude * ~1.9 fC
+        #takes magnitudes -12 to 12
+        if abs(magnitude) <= 12:
+            self[34] = (1 if magnitude > 0 else 0)
+            #set magnitude
+            a = "%03i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(3):
+                self[35 + i] = a[i]
+        else:
+            print "INVALID INPUT IN CapID3pedastal... no change made"
 
     #Change bits 38
     def FixRange(self, b):
-        if b == 1:
-            #fixed range mode
-            self.arr[38] = 1
-        elif b == 0:
-            #autorange mode
-            self.arr[38] = 0
+        if b == 1 or b == 0:
+            #fixed range mode = 1, autorange mode = 0
+            self[38] = b
+        else:
+            print "INVALID INPUT IN FixRange... no change made"
 
     #Change bits 39-40
-    def RangeSet(self, t):
-        self.arr[39] = t[0]
-        self.arr[40] = t[1]
+    def RangeSet(self, b):
+        #takes 0, 1, 2, or 3
+        if b >= 0 and b <= 3:
+            a = "%02i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(2):
+                self[39 + i] = a[i]
+        else:
+            print "INVALID INPUT IN RangeSet... no change made"
 
     #Change bits 41-43
     def ChargeInjectDAC(self, charge):
@@ -195,51 +228,73 @@ class QIE:
             2880 : (1,0,1),
             5760 : (1,1,0),
             8640 : (1,1,1)
-        }.get(charge)
-        for i in xrange(3):
-            self.arr[41 + i] = d[i]
+        }.get(charge, default=(-9,-9,-9))
+        if d != (-9,-9,-9):
+            for i in xrange(3):
+                self[41 + i] = d[i]
+        else:
+            print "INVALID INPUT IN ChargeInjectDAC... no change made"
 
     #Change bits 44-48
-    def Gsel(self, t):
-        for i in xrange(5):
-            self.arr[44 + i] = t[i]
+    def Gsel(self, b):
+        #takes arguments 0 - 31
+        if b >= 0 and b <= 31:
+            a = "%05i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(5):
+                self[44 + i] = a[i]
+        else:
+            print "INVALID INPUT IN Gsel... no change made"
 
     #Change bits 49-53
-    def Idcset(self, t):
-        for i in range(5):
-            self.arr[49 + i] = t[i]
-
+    def Idcset(self, b):
+        #takes arguments 0 - 31
+        if b >= 0 and b <= 31:
+            a = "%05i" % int(bin(abs(magnitude))[2:])
+            a = list(a)
+            for i in xrange(5):
+                self[49 + i] = a[i]
+        else:
+            print "INVALID INPUT IN Idcset... no change made"
     #Change bit 54
     def CkOutEn(self, b):
         if b == 0:
-            #Disable LVDS CkOut
-            self.arr[54] = 0
+            self[54] = 0
         elif b == 1:
-            #Enable LVDS CkOut
-            self.arr[54] = 1
+            self[54] = 1
+        else:
+            print "INVALID INPUT IN discOn... no change made"
 
     #Change bit 55
     def TDCmode(self, b):
         if b == 0:
-            #First mode
-            self.arr[55] = 1
+            self[55] = 0
         elif b == 1:
-            #Last mode
-            self.arr[55] = 1
+            self[55] = 1
+        else:
+            print "INVALID INPUT IN TDCmode... no change made"
 
     #Change bit 56
     def Hsel(self, b):
         if b == 0:
             #hysteresis is less than p2p noise
-            self.arr[56] = 0
+            self[56] = 0
         if b == 1:
             #amount of hysteresis is doubled as compared to b = 0
-            self.arr[56] = 1
+            self[56] = 1
+        else:
+            print "INVALID INPUT IN discOn... no change made"
 
     #Change bit 57-63
-    def PhaseDelay(self, t):
-        for i in xrange(7):
-            self.arr[57 + i] = t[i]
+    def PhaseDelay(self, b):
+        #takes arguments 0 - 127
+        if b <= 127 and b >= 0:
+            a = "%07i" % int(bin(abs(b))[2:])
+            a = list(a)
+            for i in xrange(7):
+                self[57 + i] = a[i]
+        else:
+            print "INVALID INPUT IN CapID3pedastal... no change made"
 
 ############################################################################
 

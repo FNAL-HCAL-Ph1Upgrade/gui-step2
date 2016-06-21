@@ -35,13 +35,13 @@ class TestStand:
 
 #    def runAll(self,barCodeList):
     def runAll(self):
-	for r in self.RMs:
-		#r.runAll(barCodeList)
-		r.runAll()
+        for r in self.RMs:
+            #r.runAll(barCodeList)
+		    r.runAll()
 
     def runSingle(self, key):
-	for r in self.RMs:
-		r.runSingle(key)
+        for r in self.RMs:
+            r.runSingle(key)
 
     def __repr__(self):
         '''Object representation'''

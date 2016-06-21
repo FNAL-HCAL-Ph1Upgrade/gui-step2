@@ -30,8 +30,8 @@ class RM:
         '''Initializes an RM object at a specific location on the test stand'''
         self.qCards = []
         for i in activeSlots:
-	    if self.checkCards(i):
-            	self.qCards.append(qCard(i))
+            if self.checkCards(i):
+                self.qCards.append(qCard(i))
     def __repr__(self):
         '''Object representation'''
         return "RM()"
@@ -45,26 +45,26 @@ class RM:
 # This next function is a test to make sure all cards
 # are actually in their slots
     def checkCards(self, slot):
-	myBus = webBus("pi5", 0)
-	activeCard = getCardAddress(slot)
-	myBus.write(activeCard,[0x00])
-	myBus.read(activeCard,4)
-	data=myBus.sendBatch()
-	if (data[0] == "1"):
-		return False
-	else:
-		return True
+    	myBus = webBus("pi5", 0)
+    	activeCard = getCardAddress(slot)
+    	myBus.write(activeCard,[0x00])
+    	myBus.read(activeCard,4)
+    	data=myBus.sendBatch()
+    	if (data[0] == "1"):
+    		return False
+    	else:
+    		return True
 
 #    def runAll(self,barCodeList):
 #        for q in range(len(self.qCards)):
 #            self.qCards[q].runAll(barCodeList[q])
     def runAll(self):
-	for q in range(len(self.qCards)):
-		self.qCards[q].runAll()
+    	for q in range(len(self.qCards)):
+    		self.qCards[q].runAll()
 
     def runSingle(self, key):
-	for q in self.qCards:
-	    q.runSingle(key)
+    	for q in self.qCards:
+    	    q.runSingle(key)
     def printAll(self):
         for q in self.qCards:
             print q
