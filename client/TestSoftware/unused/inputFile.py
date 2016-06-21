@@ -1,4 +1,4 @@
-#/usr/bin/python
+#!/usr/bin/python
 #
 #inputFile.py
 #a test input file for the client

@@ -2,13 +2,11 @@
 
 from histo_generator import *
 from histo_reader import *
-from DaisyChain import DaisyChain
-import argparse
+from QIELib.DaisyChain import DaisyChain
 import os
 
-
 class uHTR_Test:
-	def __init__(self, slots):
+	def __init__(self, slots, ts):
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, register)"
@@ -20,9 +18,10 @@ class uHTR_Test:
 		if isintance(slots, int): self.slots=[slots]
 		else: self.slots=slots
 		
-		self.dc=DaisyChain()
+		for i in xrange(num_qcards):
+			self.DCarr.append(DChains())
 		
-		self.QIE_mapping()
+#		self.QIE_mapping()
 
 #############################################################
 # Adding and extracting data from the master_dict
@@ -54,14 +53,12 @@ class uHTR_Test:
 # Mapping functions
 #############################################################
 
-#       def QIE_mapping(self):
+       def QIE_mapping(self):
                 # Records the uHTR slot, link, and channel of each QIE in master_dict
-#               for qcard_slot in #the teststand
-                        # change settings of registers 0 then 6
-#                       info=self.get_mapping_histo()
-#                       self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
-
-#               return None
+               for chain in self.DCarr
+                       # change settings of chian[0]
+			info=self.get_mapping_histo()
+			self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
 
 
         def get_mapping_histo(self):
@@ -69,11 +66,10 @@ class uHTR_Test:
                 test_results=self.get_histo_results()
                 for slot, slot_results in test_results.iteritems():
                         for chip, chip_results in slot_results.iteritems():
-                                chip_results["pedBinMax"]
-                                # find significant histo somehow
-#               return #(slot, link, channel) tuple of ints of sig histo
-
-
+				if chip_results["pedBinMax"] > 12
+					return (int(slot), chip_results["link"], chip_results["channel"])
+		print "Mapping failed. You suck"
+	
 #############################################################
 
 #############################################################
@@ -99,7 +95,7 @@ class uHTR_Test:
 			temp = temp[-1].split('.root')
 			slot_num = str(temp[0])
 			
-			test_results["slot_%s"%(slot_num)] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
+			test_results["%s"%(slot_num)] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
 		
 		os.removedirs(path_to_root)
 		
