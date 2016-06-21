@@ -4,9 +4,14 @@ import inspect
 #sys.path.append('../')
 import testSummary
 import bridgeTests as bt
+import vttxClass as vc
+import iglooClass as ic
 import client
 import helpers
 import Test
+import listOfTests
+import vttxLib
+
 #from registers import registers
 
 
@@ -19,7 +24,6 @@ noCheckRegis = {
 		"sleep" : 0,
 		"size" : 64,
 		"RW" : 0,
-#		"spaces" : 3 
 	},
 	"Temperature" : {
 		"i2c_path" : [0x11, 0x05, 0,0,0],
@@ -45,22 +49,12 @@ class testSuite:
         self.b = client.webBus(webAddress, 0)
 	self.outCard = testSummary.testSummary()
         self.a = address
-
-	#Variables to clean up the long list of registers
-	a = self.a
-	b = self.b
 	i = 100
 
-	self.registers = {"ID_string" : bt.ID_string(b,a,i), "ID_string_cont" : bt.ID_string_cont(b,a,i),
-    	"Ones" : bt.Ones(b,a,i), "Zeroes" : bt.Zeroes(b,a,i), "OnesZeroes" : bt.OnesZeroes(b,a,i),
-    	"Firmware_Ver" : bt.Firmware_Ver(b,a,i), "Status" : bt.statusCheck(b,a,i),
-	"Scratch" : bt.ScratchCheck(b,a,i), "ClockCnt" : bt.brdg_ClockCounter(b,a,i),
-	"QIECount" : bt.RES_QIE_Counter(b,a,i), "WTECount" : bt.WTE_Counter(b,a,i),
-	"BkPln_1" : bt.BkPln_Spare_1(b,a,i), "BkPln_2" : bt.BkPln_Spare_2(b,a,i), "BkPln_3" : bt.BkPln_Spare_3(b,a,i),
-	"OrbHist_1" : bt.OrbHist_1(b,a,i),"OrbHist_2" : bt.OrbHist_2(b,a,i), "OrbHist_3" : bt.OrbHist_3(b,a,i),
-	"OrbHist_4" : bt.OrbHist_4(b,a,i), "OrbHist_5" : bt.OrbHist_5(b,a,i)
-	}
-
+	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
+	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
+	self.vttxRegs  = listOfTests.initializeVttxList(self.b, self.a, i)
+	
     def readWithCheck(self, registerName, iterations = 1):
         passes = 0
         register = registers[registerName]["address"]
@@ -106,9 +100,31 @@ class testSuite:
 		new_r[0] = helpers.toHex(new_r[0])
 	return new_r
 
+    def openIgloo(self, slot):
+		#the igloo is value "3" in I2C_SELECT table
+		self.b.write(slot,[0x11,0x03,0,0,0])
+		self.b.sendBatch()
+
+    def openVTTX(self, slot, vttxNum):
+    	self.b.write(slot,[0x11] + vttxLib.vttx["i2c_select"][vttxNum])
+    	self.b.sendBatch()
+
     def runTests(self):
+	print "Running register tests!"
         for r in self.registers.keys():
 		self.outCard.resultList[r] = self.registers[r].run()
+	self.openIgloo(self.a)
+	print "Running IGLOO tests!"
+	for r in self.iglooRegs.keys():
+		self.outCard.iglooList[r] = self.iglooRegs[r].run()
+	self.openVTTX(self.a, 1)
+	print "Running VTTX_1 tests!"
+	for r in self.vttxRegs.keys():
+		self.outCard.vttxListOne[r] = self.vttxRegs[r].run()
+	self.openVTTX(self.a, 2)
+	print "Running VTTX_2 tests!"
+	for r in self.vttxRegs.keys():
+		self.outCard.vttxListTwo[r] = self.vttxRegs[r].run()
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
 	self.outCard.printResults()

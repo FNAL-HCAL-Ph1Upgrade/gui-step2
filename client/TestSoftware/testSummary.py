@@ -15,27 +15,53 @@ class testSummary:
 		}
 		self.iglooList = {"fpgaMajVer" : [], "fpgaMinVer" : [], "iglooOnes" : [],
 			"iglooZeros" : [],"fpgaTopOrBot" : [], "iglooUID" : [],
-			"statusReg" : [], "cntrRegDispaly" : [], "cntrRegChange" : [],
-			"cntrRegTerminalChange" : [], "rst_QIE_count" : [], "clk_count" : [],
+			"statusReg" : [], "cntrRegDisplay" : [], "rst_QIE_count" : [], "clk_count" : [],
 			"igloo_wte_count" : [], "capIDErr_count" : [], "fifo_data" : [],
 			"inputSpy" : [], "spy96Bits" : [], "qie_ck_ph" : [],
 			"link_test_mode" : [], "link_test_pattern" : [], 
 			"dataToSERDES" : [], "addrToSERDES" : [], "ctrlToSERDES" : [],
-			"statFromSERDES" : [], "iglooScratch" : []
+			"statFromSERDES" : [], "iglooScratch" : [], "dataFromSERDES" : []
 		}
+
+		self.vttxListOne = {"vttxDisplay" : [], "vttxChange" : [], "vttxRwrWithRestore" : []}
+		self.vttxListTwo = {"vttxDisplay" : [], "vttxChange" : [], "vttxRwrWithRestore" : []}
 			
 	def printResults(self):
+		print ("BRIDGE TESTS: \n")
 		for i in self.resultList:
 			if (i != []):
 				print i + ": ", self.resultList[i]
+		print ("\n\nIGLOO TESTS: \n")
+		for i in self.iglooList:
+			print i+ ": ", self.iglooList[i]
+		print ("\n\nVTTX_1 TESTS: \n")
+		for i in self.vttxListOne:
+			print i+ ": ", self.vttxListOne[i]
+		print ("\n\nVTTX_2 TESTS: \n")
+		for i in self.vttxListTwo:
+			print i+ ": ", self.vttxListTwo[i]
 
 	def writeHumanLog(self):
 		with open("humanTest.log", "a") as w:
+			w.write("\n\nBRIDGE TESTS: \n")
 			for i in self.resultList:
 				w.write(i+": "+str(self.resultList[i])+"\n")
 			w.write("\n")
+			w.write("\n\nIGLOO TESTS: \n")
+			for i in self.iglooList:
+				w.write(i+": "+str(self.iglooList[i])+"\n")
+			w.write("\n\n\nVTTX-1 TESTS: \n")
+			for i in self.vttxListOne:
+				w.write(i+": "+str(self.vttxListOne[i])+"\n")
+			w.write("\n\n\nVTTX_2 TESTS: \n")
+			for i in self.vttxListTwo:
+				w.write(i+": "+str(self.vttxListTwo[i])+"\n")
+			w.write("------------------------------------")
 	
 	def writeMachineJson(self):
 		fileName = str(self.resultList["Unique_ID"][0].replace(" ","")+"_raw.json")
 		with open(fileName, "w") as w:
 			w.write(str(self.resultList))
+			w.write(str(self.iglooList))
+			w.write(str(self.vttxListOne))
+			w.write(str(self.vttxListTwo))
