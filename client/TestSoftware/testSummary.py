@@ -11,11 +11,12 @@ class testSummary:
 			"Scratch" : [], "ClockCnt" : [], "QIECount" : [],
 			"WTECount" : [], "BkPln_1" : [], "BkPln_2" : [], "BkPln_3" :[],
 			"OrbHist_1" : [], "OrbHist_2" : [], "OrbHist_3" : [],
-			"OrbHist_4" : [], "OrbHist_5" : [], "fpgaMajVer" : [],
-			"fpgaMinVer" : [], "iglooOnes" : [], "iglooZeros" : [],
-			"fpgaTopOrBot" : [], "iglooUID" : [], "statusReg" : [],
-			"cntrRegDispaly" : [], "cntrRegChange" : [], "clk_count" : [],
-			"cntrRegTerminalChange" : [], "rst_QIE_count" : [],
+			"OrbHist_4" : [], "OrbHist_5" : [] 
+		}
+		self.iglooList = {"fpgaMajVer" : [], "fpgaMinVer" : [], "iglooOnes" : [],
+			"iglooZeros" : [],"fpgaTopOrBot" : [], "iglooUID" : [],
+			"statusReg" : [], "cntrRegDispaly" : [], "cntrRegChange" : [],
+			"cntrRegTerminalChange" : [], "rst_QIE_count" : [], "clk_count" : [],
 			"igloo_wte_count" : [], "capIDErr_count" : [], "fifo_data" : [],
 			"inputSpy" : [], "spy96Bits" : [], "qie_ck_ph" : [],
 			"link_test_mode" : [], "link_test_pattern" : [], 

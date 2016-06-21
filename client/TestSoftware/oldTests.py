@@ -2,14 +2,51 @@
 import sys
 import inspect
 #sys.path.append('../')
-import testSummary
-import bridgeTests as bt
+from testSummary import testSummary
+import bridgeTests
 import client
 import helpers
 import Test
 #from registers import registers
 
-
+registers = {
+    "ID_string" :{
+        "address" : 0x00,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "0 77 82 69 72" #MREH in ascii
+        },
+    "ID_string_cont" :{
+        "address" : 0x01,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "0 103 100 114 66" #gdrB in ascii
+        },
+    "Ones" :{
+        "address" : 0x08,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "0 255 255 255 255"
+        },
+    "Zeroes" :{
+        "address" : 0x09,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "0 0 0 0 0"
+        },
+    "OnesZeroes" :{
+        "address" : 0x0A,
+        "size" : 32,
+        "RW" : 0,
+        "expected" : "0 170 170 170 170"
+        },
+    "Firmware_Ver" :{
+	"address" : 0x04,
+	"size" : 32,
+	"RW" : 1,
+	"expected" : "0 0 0 11 01"
+	}
+}
 
 noCheckRegis = {
 	"Unique_ID" :{
@@ -42,24 +79,9 @@ noCheckRegis = {
 class testSuite:
     def __init__(self, webAddress, address):
         '''create a new test suite object... initialize bus and address'''
-        self.b = client.webBus(webAddress, 0)
-	self.outCard = testSummary.testSummary()
-        self.a = address
-
-	#Variables to clean up the long list of registers
-	a = self.a
-	b = self.b
-	i = 100
-
-	self.registers = {"ID_string" : bt.ID_string(b,a,i), "ID_string_cont" : bt.ID_string_cont(b,a,i),
-    	"Ones" : bt.Ones(b,a,i), "Zeroes" : bt.Zeroes(b,a,i), "OnesZeroes" : bt.OnesZeroes(b,a,i),
-    	"Firmware_Ver" : bt.Firmware_Ver(b,a,i), "Status" : bt.statusCheck(b,a,i),
-	"Scratch" : bt.ScratchCheck(b,a,i), "ClockCnt" : bt.brdg_ClockCounter(b,a,i),
-	"QIECount" : bt.RES_QIE_Counter(b,a,i), "WTECount" : bt.WTE_Counter(b,a,i),
-	"BkPln_1" : bt.BkPln_Spare_1(b,a,i), "BkPln_2" : bt.BkPln_Spare_2(b,a,i), "BkPln_3" : bt.BkPln_Spare_3(b,a,i),
-	"OrbHist_1" : bt.OrbHist_1(b,a,i),"OrbHist_2" : bt.OrbHist_2(b,a,i), "OrbHist_3" : bt.OrbHist_3(b,a,i),
-	"OrbHist_4" : bt.OrbHist_4(b,a,i), "OrbHist_5" : bt.OrbHist_5(b,a,i)
-	}
+        self.bus = client.webBus(webAddress, 0)
+        self.address = address
+	self.outCard = testSummary()
 
     def readWithCheck(self, registerName, iterations = 1):
         passes = 0
@@ -68,9 +90,9 @@ class testSuite:
         check = registers[registerName]["expected"]
 
         for i in xrange(iterations):
-            self.b.write(self.a, [register])
-            self.b.read(self.a, size)
-        r = self.b.sendBatch()
+            self.bus.write(self.address, [register])
+            self.bus.read(self.address, size)
+        r = self.bus.sendBatch()
         for i in xrange(iterations * 2):
             if (i % 2 == 1) and (r[i] == check):
                 passes += 1
@@ -86,15 +108,15 @@ class testSuite:
 	
 	for i in xrange(iterations):
 		# Clear the backplane
-		self.b.write(0x00,[0x06])
+		self.bus.write(0x00,[0x06])
 
-		self.b.write(self.a,i2c_pathway)
-		self.b.write(register,command)
+		self.bus.write(self.address,i2c_pathway)
+		self.bus.write(register,command)
 		if (napTime != 0):
-			self.b.sleep(napTime)  #catching some z's
-		self.b.read(register,size)
+			self.bus.sleep(napTime)  #catching some z's
+		self.bus.read(register,size)
 
-	r = self.b.sendBatch()
+	r = self.bus.sendBatch()
 	# Remove the entries in r that contain no information
 	new_r = []
 	for i in r:
@@ -106,11 +128,14 @@ class testSuite:
 		new_r[0] = helpers.toHex(new_r[0])
 	return new_r
 
+#   def runTests(self,barcode):
     def runTests(self):
-        for r in self.registers.keys():
-		self.outCard.resultList[r] = self.registers[r].run()
+	print inspect.getmembers(Test)
+        for r in registers.keys():
+            self.readWithCheck(r, 100)
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
+#	self.outCard.resultList["Barcode"]=barcode
 	self.outCard.printResults()
 	print "\n\n"
 	self.outCard.writeHumanLog()	
