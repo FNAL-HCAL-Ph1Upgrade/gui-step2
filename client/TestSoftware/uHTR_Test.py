@@ -2,23 +2,25 @@
 
 from histo_generator import *
 from histo_reader import *
-import TestStand
+import RM
+import DChain
+import DaisyChain
 import os
 
 class uHTR_Test:
-	def __init__(self, slots, ts):
+	def __init__(self, uhtr_slots, RMs):
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, register)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
 		### List of keys: "slot" "link" "channel" ........		
 
-		self.ts=ts		#TestStand object for communicating with DaisyChains
+		self.RMs=RMs		#Array of RMs for communicating with DaisyChains
 
 		self.crate=41		#Always 41 for summer 2016 QIE testing
 
-		if isintance(slots, int): self.slots=[slots]
-		else: self.slots=slots
+		if isintance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
+		else: self.uhtr_slots=uhtr_slots
 		
 #		self.QIE_mapping()
 
@@ -36,8 +38,8 @@ class uHTR_Test:
 		QIE=self.get_QIE(qcard_slot, register)
 		return QIE[test_key]
 	
-	def add_QIE(self, qcard_slot, register, slot, link, channel):
-		QIE_info["slot"]=slot
+	def add_QIE(self, qcard_slot, register, uhtr_slot, link, channel):
+		QIE_info["uhtr_slot"]=uhtr_slot
 		QIE_info["link"]=link		
 		QIE_info["channel"]=channel
 		
@@ -64,11 +66,11 @@ class uHTR_Test:
         def get_mapping_histo(self):
                 # matches histo to QIE chip for mapping
                 test_results=self.get_histo_results()
-                for slot, slot_results in test_results.iteritems():
-                        for chip, chip_results in slot_results.iteritems():
+                for uhtr_slot, uhtr_slot_results in test_results.iteritems():
+                        for chip, chip_results in uhtr_slot_results.iteritems():
 				if chip_results["pedBinMax"] > 12:
-					return (int(slot), chip_results["link"], chip_results["channel"])
-		print "Mapping failed. You suck"
+					return (int(uhtr_slot), chip_results["link"], chip_results["channel"])
+		print "Mapping failed"
 	
 #############################################################
 
@@ -124,9 +126,6 @@ class uHTR_Test:
 #############################################################
 
 
-if __name__=="__main__":
-	active_slots=[2, 3, 5, 7, 18, 20] 
-	ts=TestStand(active_slots)
-	str(ts)
+# if __name__=="__main__":
 
 
