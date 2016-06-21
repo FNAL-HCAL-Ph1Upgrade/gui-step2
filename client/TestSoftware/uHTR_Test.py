@@ -1,8 +1,8 @@
-# uHTR testing class
+# uHTR_Test.py
 
 from histo_generator import *
 from histo_reader import *
-from QIELib.DaisyChain import DaisyChain
+import TestStand
 import os
 
 class uHTR_Test:
@@ -10,16 +10,15 @@ class uHTR_Test:
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, register)"
-		### Each QIE chip returns a dictionary containing results from each of its tests as well as its uHTR mapping
+		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
 		### List of keys: "slot" "link" "channel" ........		
+
+		self.ts=ts		#TestStand object for communicating with DaisyChains
 
 		self.crate=41		#Always 41 for summer 2016 QIE testing
 
 		if isintance(slots, int): self.slots=[slots]
 		else: self.slots=slots
-		
-		for i in xrange(num_qcards):
-			self.DCarr.append(DChains())
 		
 #		self.QIE_mapping()
 
@@ -55,10 +54,11 @@ class uHTR_Test:
 
        def QIE_mapping(self):
                 # Records the uHTR slot, link, and channel of each QIE in master_dict
-               for chain in self.DCarr
-                       # change settings of chian[0]
-			info=self.get_mapping_histo()
-			self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
+               for rm in self.ts.RMs:
+			for dChain in rm.dChains: 
+                	       # change settings of chian[0]
+				info=self.get_mapping_histo()
+				self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
 
 
         def get_mapping_histo(self):
@@ -66,7 +66,7 @@ class uHTR_Test:
                 test_results=self.get_histo_results()
                 for slot, slot_results in test_results.iteritems():
                         for chip, chip_results in slot_results.iteritems():
-				if chip_results["pedBinMax"] > 12
+				if chip_results["pedBinMax"] > 12:
 					return (int(slot), chip_results["link"], chip_results["channel"])
 		print "Mapping failed. You suck"
 	
@@ -125,9 +125,8 @@ class uHTR_Test:
 
 
 if __name__=="__main__":
-	print "Whatcho doin running this file Willis?"
-	d=DaisyChain()
-	for i, QIE in enumerate(d.QIEs):
-		print i	
+	active_slots=[2, 3, 5, 7, 18, 20] 
+	ts=TestStand(active_slots)
+	str(ts)
 
 
