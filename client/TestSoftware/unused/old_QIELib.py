@@ -3,13 +3,6 @@
 #QIELib.py
 #Library of tables, functions, and classes for working with QIE11 test stands
 
-####### Random Stuff that I need for openChannel ################
-
-from client import webBus
-import QIELib
-b = webBus("pi5")
-q = QIELib
-
 #MUX slave addresses (slave i2c addresses)
 MUXs = {
     "fanout" : 0x72,
@@ -28,21 +21,6 @@ REGs = {
     "igloo" : 0x09,
     "ID" : 0x50,
     "temp" : 0x40
-        }
-# Simplify your life today with RMi2c and QIEi2c. Boom dog.
-
-RMi2c = {
-    0 : 0x02,
-    1 : 0x20,
-    2 : 0x10,
-    3 : 0x01
-        }
-
-QIEi2c = {
-    0 : 0x19,
-    1 : 0x1a,
-    2 : 0x1b,
-    3 : 0x1c
         }
 
 #Bit to write to mux for given twisted pair i2c
@@ -131,29 +109,6 @@ serialShiftRegisterBits = OrderedDict(
     ("Hsel", [56]),
     ("PhaseDelay", [57, 58, 59, 60, 61, 62, 63])]
     )
-
-######## open channel to RM and Slot! ######################
-
-def openChannel(rm,slot):
-    if rm in [0,1]:
-        # Open channel to ngCCM for RM 1,2: J1 - J10
-        print '##### RM in 0,1 #####'
-        b.write(q.MUXs["fanout"],[0x02])
-        b.sendBatch()
-    elif rm in [2,3]:
-        # Open channel to ngCCM for RM 3, 4: J17 - J26
-        print '##### RM in 2,3 #####'
-        b.write(q.MUXs["fanout"],[0x01])
-        b.sendBatch()
-    else:
-        print 'Invalid RM = ', rm
-        print 'Please choose RM = {0,1,2,3}'
-        return 'closed channel'
-    # Open channel to i2c group
-    print '##### open i2c #####'
-    # b.clearBus()
-    b.write(q.MUXs["ngccm"]["u10"], [q.RMi2c[rm]])
-    return b.sendBatch()
 
 def getBits(decimal):
     return list('%05d' % int(bin(decimal)[2:]))

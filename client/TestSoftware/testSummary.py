@@ -7,12 +7,26 @@ class testSummary:
 			"ID_string" : [], "ID_string_cont" : [], "Ones" : [],
 			"Zeroes" : [], "OnesZeroes" : [], "Firmware_Ver" : [],
 			"Unique_ID" : [], "Temperature" : [], "Humidity" : [],
-			"Barcode" : []
+			"Barcode" : [], "Status" : [], "TempPass" : [], "HumiPass" : [],
+			"Scratch" : [], "ClockCnt" : [], "QIECount" : [],
+			"WTECount" : [], "BkPln_1" : [], "BkPln_2" : [], "BkPln_3" :[],
+			"OrbHist_1" : [], "OrbHist_2" : [], "OrbHist_3" : [],
+			"OrbHist_4" : [], "OrbHist_5" : [], "fpgaMajVer" : [],
+			"fpgaMinVer" : [], "iglooOnes" : [], "iglooZeros" : [],
+			"fpgaTopOrBot" : [], "iglooUID" : [], "statusReg" : [],
+			"cntrRegDispaly" : [], "cntrRegChange" : [], "clk_count" : [],
+			"cntrRegTerminalChange" : [], "rst_QIE_count" : [],
+			"igloo_wte_count" : [], "capIDErr_count" : [], "fifo_data" : [],
+			"inputSpy" : [], "spy96Bits" : [], "qie_ck_ph" : [],
+			"link_test_mode" : [], "link_test_pattern" : [], 
+			"dataToSERDES" : [], "addrToSERDES" : [], "ctrlToSERDES" : [],
+			"statFromSERDES" : [], "iglooScratch" : []
 		}
 			
 	def printResults(self):
 		for i in self.resultList:
-			print i + ": ", self.resultList[i]
+			if (i != []):
+				print i + ": ", self.resultList[i]
 
 	def writeHumanLog(self):
 		with open("humanTest.log", "a") as w:
