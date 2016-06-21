@@ -1,0 +1,685 @@
+
+
+BRIDGE TEST
+
+
+##### RM  0  #####
+##### open i2c 0x2 #####
+
+-------------------- Test RM:  0  --------------------
+
+-------------------- Test Slot:  0  --------------------
+## Number of Tests:  27
+
+### Bridge Test:  0  ###
+
+### Test Name:  ID string
+correct value:  HERM
+ASCII message:  HERM
+
+### Bridge Test:  1  ###
+
+### Test Name:  ID string cont
+correct value:  Brdg
+ASCII message:  Brdg
+
+### Bridge Test:  2  ###
+
+### Test Name:  FW Version
+hex message:  0x010b0000
+
+### Bridge Test:  3  ###
+
+### Test Name:  Ones
+correct value:  0xffffffff
+int message:  255 255 255 255
+hex message:  0xffffffff
+
+### Bridge Test:  4  ###
+
+### Test Name:  Zeroes
+correct value:  0x00000000
+int message:  0 0 0 0
+hex message:  0x00000000
+
+### Bridge Test:  5  ###
+
+### Test Name:  OnesZeroes
+correct value:  0xaaaaaaaa
+int message:  170 170 170 170
+hex message:  0xaaaaaaaa
+
+### Bridge Test:  6  ###
+
+### Test Name:  Scratch
+int message:  0 0 0 1
+hex message: 00 00 00 01
+
+### Bridge Test:  7  ###
+
+### Test Name:  Status
+int message:  0 0 0 1
+hex message: 00 00 00 01
+
+### Bridge Test:  8  ###
+
+### Test Name:  I2C_SELECT
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  9  ###
+
+### Test Name:  Clock Counter
+int message:  0 0 4 218
+hex message: 00 00 04 da
+
+### Bridge Test:  10  ###
+
+### Test Name:  RES_QIE Counter
+int message:  0 223 62 125
+hex message: 00 df 3e 7d
+
+### Bridge Test:  11  ###
+
+### Test Name:  WTE Counter
+int message:  0 223 110 144
+hex message: 00 df 6e 90
+
+### Bridge Test:  12  ###
+
+### Test Name:  BkPln_Spare_1 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  13  ###
+
+### Test Name:  BkPln_Spare_2 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  14  ###
+
+### Test Name:  BkPln_Spare_3 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  15  ###
+
+### Test Name:  igloo2 FPGA Control
+int message:  224
+hex message: e0
+
+### Bridge Test:  16  ###
+
+### Test Name:  ControlReg
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  17  ###
+
+### Test Name:  orbit_histo[167:144]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  18  ###
+
+### Test Name:  orbit_histo[143:120]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  19  ###
+
+### Test Name:  orbit_histo[119:96]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  20  ###
+
+### Test Name:  orbit_histo[95:72]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  21  ###
+
+### Test Name:  orbit_histo[71:48]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  22  ###
+
+### Test Name:  orbit_histo[47:24]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  23  ###
+
+### Test Name:  orbit_histo[23:0]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  24  ###
+
+### Test Name:  QIE Daisy Chain 0
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  25  ###
+
+### Test Name:  QIE Daisy Chain 1
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  26  ###
+
+### Test Name:  Thermometer One Wire
+int message:  222 173 190 239
+hex message: de ad be ef
+[0, 0, 0]
+['HERM', 'Brdg', '0x010b0000', '0xffffffff', '0x00000000', '0xaaaaaaaa', '00 00 00 01', '00 00 00 01', '00 00 00 00', '00 00 04 da', '00 df 3e 7d', '00 df 6e 90', '00 00 00 00', '00 00 00 00', '00 00 00 00', 'e0', '00 00 00 00', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '26 1f e5', '26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', 'de ad be ef']
+
+-------------------- Test Slot:  1  --------------------
+## Number of Tests:  27
+
+### Bridge Test:  0  ###
+
+### Test Name:  ID string
+correct value:  HERM
+ASCII message:  HERM
+
+### Bridge Test:  1  ###
+
+### Test Name:  ID string cont
+correct value:  Brdg
+ASCII message:  Brdg
+
+### Bridge Test:  2  ###
+
+### Test Name:  FW Version
+hex message:  0x010b0000
+
+### Bridge Test:  3  ###
+
+### Test Name:  Ones
+correct value:  0xffffffff
+int message:  255 255 255 255
+hex message:  0xffffffff
+
+### Bridge Test:  4  ###
+
+### Test Name:  Zeroes
+correct value:  0x00000000
+int message:  0 0 0 0
+hex message:  0x00000000
+
+### Bridge Test:  5  ###
+
+### Test Name:  OnesZeroes
+correct value:  0xaaaaaaaa
+int message:  170 170 170 170
+hex message:  0xaaaaaaaa
+
+### Bridge Test:  6  ###
+
+### Test Name:  Scratch
+int message:  136 136 4 82
+hex message: 88 88 04 52
+
+### Bridge Test:  7  ###
+
+### Test Name:  Status
+int message:  0 0 0 2
+hex message: 00 00 00 02
+
+### Bridge Test:  8  ###
+
+### Test Name:  I2C_SELECT
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  9  ###
+
+### Test Name:  Clock Counter
+int message:  0 0 0 61
+hex message: 00 00 00 3d
+
+### Bridge Test:  10  ###
+
+### Test Name:  RES_QIE Counter
+int message:  0 223 56 249
+hex message: 00 df 38 f9
+
+### Bridge Test:  11  ###
+
+### Test Name:  WTE Counter
+int message:  0 223 117 195
+hex message: 00 df 75 c3
+
+### Bridge Test:  12  ###
+
+### Test Name:  BkPln_Spare_1 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  13  ###
+
+### Test Name:  BkPln_Spare_2 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  14  ###
+
+### Test Name:  BkPln_Spare_3 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  15  ###
+
+### Test Name:  igloo2 FPGA Control
+int message:  224
+hex message: e0
+
+### Bridge Test:  16  ###
+
+### Test Name:  ControlReg
+int message:  0 177 98 160
+hex message: 00 b1 62 a0
+
+### Bridge Test:  17  ###
+
+### Test Name:  orbit_histo[167:144]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  18  ###
+
+### Test Name:  orbit_histo[143:120]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  19  ###
+
+### Test Name:  orbit_histo[119:96]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  20  ###
+
+### Test Name:  orbit_histo[95:72]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  21  ###
+
+### Test Name:  orbit_histo[71:48]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  22  ###
+
+### Test Name:  orbit_histo[47:24]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  23  ###
+
+### Test Name:  orbit_histo[23:0]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  24  ###
+
+### Test Name:  QIE Daisy Chain 0
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  25  ###
+
+### Test Name:  QIE Daisy Chain 1
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  26  ###
+
+### Test Name:  Thermometer One Wire
+int message:  222 173 190 239
+hex message: de ad be ef
+[0, 0, 0]
+['HERM', 'Brdg', '0x010b0000', '0xffffffff', '0x00000000', '0xaaaaaaaa', '88 88 04 52', '00 00 00 02', '00 00 00 00', '00 00 00 3d', '00 df 38 f9', '00 df 75 c3', '00 00 00 00', '00 00 00 00', '00 00 00 00', 'e0', '00 b1 62 a0', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '26 1f e5', '26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', 'de ad be ef']
+
+-------------------- Test Slot:  2  --------------------
+## Number of Tests:  27
+
+### Bridge Test:  0  ###
+
+### Test Name:  ID string
+correct value:  HERM
+ASCII message:  HERM
+
+### Bridge Test:  1  ###
+
+### Test Name:  ID string cont
+correct value:  Brdg
+ASCII message:  Brdg
+
+### Bridge Test:  2  ###
+
+### Test Name:  FW Version
+hex message:  0x010b0000
+
+### Bridge Test:  3  ###
+
+### Test Name:  Ones
+correct value:  0xffffffff
+int message:  255 255 255 255
+hex message:  0xffffffff
+
+### Bridge Test:  4  ###
+
+### Test Name:  Zeroes
+correct value:  0x00000000
+int message:  0 0 0 0
+hex message:  0x00000000
+
+### Bridge Test:  5  ###
+
+### Test Name:  OnesZeroes
+correct value:  0xaaaaaaaa
+int message:  170 170 170 170
+hex message:  0xaaaaaaaa
+
+### Bridge Test:  6  ###
+
+### Test Name:  Scratch
+int message:  9 17 53 160
+hex message: 09 11 35 a0
+
+### Bridge Test:  7  ###
+
+### Test Name:  Status
+int message:  0 0 0 3
+hex message: 00 00 00 03
+
+### Bridge Test:  8  ###
+
+### Test Name:  I2C_SELECT
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  9  ###
+
+### Test Name:  Clock Counter
+int message:  0 0 0 76
+hex message: 00 00 00 4c
+
+### Bridge Test:  10  ###
+
+### Test Name:  RES_QIE Counter
+int message:  0 223 78 72
+hex message: 00 df 4e 48
+
+### Bridge Test:  11  ###
+
+### Test Name:  WTE Counter
+int message:  0 223 128 124
+hex message: 00 df 80 7c
+
+### Bridge Test:  12  ###
+
+### Test Name:  BkPln_Spare_1 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  13  ###
+
+### Test Name:  BkPln_Spare_2 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  14  ###
+
+### Test Name:  BkPln_Spare_3 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  15  ###
+
+### Test Name:  igloo2 FPGA Control
+int message:  224
+hex message: e0
+
+### Bridge Test:  16  ###
+
+### Test Name:  ControlReg
+int message:  132 16 88 71
+hex message: 84 10 58 47
+
+### Bridge Test:  17  ###
+
+### Test Name:  orbit_histo[167:144]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  18  ###
+
+### Test Name:  orbit_histo[143:120]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  19  ###
+
+### Test Name:  orbit_histo[119:96]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  20  ###
+
+### Test Name:  orbit_histo[95:72]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  21  ###
+
+### Test Name:  orbit_histo[71:48]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  22  ###
+
+### Test Name:  orbit_histo[47:24]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  23  ###
+
+### Test Name:  orbit_histo[23:0]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  24  ###
+
+### Test Name:  QIE Daisy Chain 0
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  25  ###
+
+### Test Name:  QIE Daisy Chain 1
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  26  ###
+
+### Test Name:  Thermometer One Wire
+int message:  222 173 190 239
+hex message: de ad be ef
+[0, 0, 0]
+['HERM', 'Brdg', '0x010b0000', '0xffffffff', '0x00000000', '0xaaaaaaaa', '09 11 35 a0', '00 00 00 03', '00 00 00 00', '00 00 00 4c', '00 df 4e 48', '00 df 80 7c', '00 00 00 00', '00 00 00 00', '00 00 00 00', 'e0', '84 10 58 47', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '26 1f e5', '26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', 'de ad be ef']
+
+-------------------- Test Slot:  3  --------------------
+## Number of Tests:  27
+
+### Bridge Test:  0  ###
+
+### Test Name:  ID string
+correct value:  HERM
+ASCII message:  HERM
+
+### Bridge Test:  1  ###
+
+### Test Name:  ID string cont
+correct value:  Brdg
+ASCII message:  Brdg
+
+### Bridge Test:  2  ###
+
+### Test Name:  FW Version
+hex message:  0x010b0000
+
+### Bridge Test:  3  ###
+
+### Test Name:  Ones
+correct value:  0xffffffff
+int message:  255 255 255 255
+hex message:  0xffffffff
+
+### Bridge Test:  4  ###
+
+### Test Name:  Zeroes
+correct value:  0x00000000
+int message:  0 0 0 0
+hex message:  0x00000000
+
+### Bridge Test:  5  ###
+
+### Test Name:  OnesZeroes
+correct value:  0xaaaaaaaa
+int message:  170 170 170 170
+hex message:  0xaaaaaaaa
+
+### Bridge Test:  6  ###
+
+### Test Name:  Scratch
+int message:  0 4 16 0
+hex message: 00 04 10 00
+
+### Bridge Test:  7  ###
+
+### Test Name:  Status
+int message:  0 0 0 4
+hex message: 00 00 00 04
+
+### Bridge Test:  8  ###
+
+### Test Name:  I2C_SELECT
+int message:  0 0 0 2
+hex message: 00 00 00 02
+
+### Bridge Test:  9  ###
+
+### Test Name:  Clock Counter
+int message:  0 0 13 9
+hex message: 00 00 0d 09
+
+### Bridge Test:  10  ###
+
+### Test Name:  RES_QIE Counter
+int message:  0 223 116 9
+hex message: 00 df 74 09
+
+### Bridge Test:  11  ###
+
+### Test Name:  WTE Counter
+int message:  0 223 149 86
+hex message: 00 df 95 56
+
+### Bridge Test:  12  ###
+
+### Test Name:  BkPln_Spare_1 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  13  ###
+
+### Test Name:  BkPln_Spare_2 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  14  ###
+
+### Test Name:  BkPln_Spare_3 Counter
+int message:  0 0 0 0
+hex message: 00 00 00 00
+
+### Bridge Test:  15  ###
+
+### Test Name:  igloo2 FPGA Control
+int message:  224
+hex message: e0
+
+### Bridge Test:  16  ###
+
+### Test Name:  ControlReg
+int message:  0 0 0 8
+hex message: 00 00 00 08
+
+### Bridge Test:  17  ###
+
+### Test Name:  orbit_histo[167:144]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  18  ###
+
+### Test Name:  orbit_histo[143:120]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  19  ###
+
+### Test Name:  orbit_histo[119:96]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  20  ###
+
+### Test Name:  orbit_histo[95:72]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  21  ###
+
+### Test Name:  orbit_histo[71:48]
+int message:  0 0 0
+hex message: 00 00 00
+
+### Bridge Test:  22  ###
+
+### Test Name:  orbit_histo[47:24]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  23  ###
+
+### Test Name:  orbit_histo[23:0]
+int message:  38 31 229
+hex message: 26 1f e5
+
+### Bridge Test:  24  ###
+
+### Test Name:  QIE Daisy Chain 0
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  25  ###
+
+### Test Name:  QIE Daisy Chain 1
+int message:  0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229 0 64 0 0 0 38 31 229
+hex message: 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5
+
+### Bridge Test:  26  ###
+
+### Test Name:  Thermometer One Wire
+int message:  222 173 190 239
+hex message: de ad be ef
+[0, 0, 0]
+['HERM', 'Brdg', '0x010b0000', '0xffffffff', '0x00000000', '0xaaaaaaaa', '00 04 10 00', '00 00 00 04', '00 00 00 02', '00 00 0d 09', '00 df 74 09', '00 df 95 56', '00 00 00 00', '00 00 00 00', '00 00 00 00', 'e0', '00 00 00 08', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '00 00 00', '26 1f e5', '26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', '00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5 00 40 00 00 00 26 1f e5', 'de ad be ef']
