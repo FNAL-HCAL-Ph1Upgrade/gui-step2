@@ -1,7 +1,7 @@
 from client import webBus
 import QIELib
-#b = webBus("pi5")
-#q = QIELib
+b = webBus("pi5")
+q = QIELib
 
 # helpful string to hex list
 def strToHex(string):
@@ -16,8 +16,8 @@ def strToHex(string):
 # VTTX Read Functions
 ########################################################
 
-def vttx1read(rm,slot,b):
-    #q.openChannel(rm,slot)
+def vttx1read(rm,slot):
+    q.openChannel(rm,slot)
     #VTTX 1 is value "1" in I2C_SELECT table
     b.write(q.QIEi2c[slot],[0x11,0x01,0,0,0])
     b.write(0x7E,[0x00])
@@ -26,8 +26,8 @@ def vttx1read(rm,slot,b):
 
     return data
 
-def vttx2read(rm,slot,b):
-    #q.openChannel(rm,slot)
+def vttx2read(rm,slot):
+    q.openChannel(rm,slot)
     #VTTX 2 is value "2" in I2C_SELECT table
     b.write(q.QIEi2c[slot],[0x11,0x02,0,0,0])
     b.write(0x7E,[0x00])
@@ -42,8 +42,8 @@ def vttx2read(rm,slot,b):
 # VTTX Write Functions
 ########################################################
 
-def vttx1write(rm,slot,b):
-    #q.openChannel(rm,slot)
+def vttx1write(rm,slot):
+    q.openChannel(rm,slot)
     #VTTX 1 is value "1" in I2C_SELECT table
     b.write(q.QIEi2c[slot],[0x11,0x01,0,0,0])
     b.write(0x7E,[0x00,0x87,0x99,0x19,0x88,0xff,0xff,0x04])
@@ -51,8 +51,8 @@ def vttx1write(rm,slot,b):
 
     return data
 
-def vttx2write(rm,slot,b):
-    #q.openChannel(rm,slot)
+def vttx2write(rm,slot):
+    q.openChannel(rm,slot)
     #VTTX 1 is value "1" in I2C_SELECT table
     b.write(q.QIEi2c[slot],[0x11,0x02,0,0,0])
     b.write(0x7E,[0x00,0x87,0x99,0x19,0x88,0xff,0xff,0x04])
@@ -66,11 +66,10 @@ def vttx2write(rm,slot,b):
 ########################################################
 
 # Read from Vttx1, write that same set of bytes, read again to confirm
-#def vttx1RWR(rm, slot, b):
-def vttx1RWR(card, b):
+def vttx1RWR(rm, slot):
     # First, read from vttx1 LDD to ascertain the register values
-    #q.openChannel(rm,slot)
-    b.write(card,[0x11,0x01,0,0,0])
+    q.openChannel(rm,slot)
+    b.write(q.QIEi2c[slot],[0x11,0x01,0,0,0])
     b.write(0x7E,[0x00])
     b.read(0x7E,7)
     read1 = b.sendBatch()[2] # store read data into "read1"
@@ -94,11 +93,10 @@ def vttx1RWR(card, b):
         return "Fail"
 
 # Read from Vttx2, write that same set of bytes, read again to confirm
-#def vttx2RWR(rm, slot, b):
-def vttx2RWR(card, b):
+def vttx2RWR(rm, slot):
     # First, read from vttx1 LDD to ascertain the register values
-    #q.openChannel(rm,slot)
-    b.write(card,[0x11,0x02,0,0,0])
+    q.openChannel(rm,slot)
+    b.write(q.QIEi2c[slot],[0x11,0x02,0,0,0])
     b.write(0x7E,[0x00])
     b.read(0x7E,7)
     read1 = b.sendBatch()[2] # store read data into "read1"
@@ -117,13 +115,13 @@ def vttx2RWR(card, b):
 
     # if read1 matches read2, then write was successful -- print register
     if (read1 == read2):
-        return "Pass " + strToHex(read2)
+        return "Pass, Reg = " + strToHex(read2)
     else:
         return "Fail"
 
 
-#print "From RWR of vttx1: " + vttx1RWR(0,0)
-#print "From RWR of vttx2: " + vttx2RWR(0,0)
+print "From RWR of vttx1: " + vttx1RWR(0,0)
+print "From RWR of vttx2: " + vttx2RWR(0,0)
 
 
 # output of successful execution of the code!

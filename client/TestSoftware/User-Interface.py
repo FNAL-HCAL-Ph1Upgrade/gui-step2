@@ -142,6 +142,7 @@ class makeGui:
 			background="white"
 			)
 		# We don't want this frame to shrink when placing widgets:
+
 		#self.uHTR_frame.pack_propagate(False)		
 
 		self.uHTR_frame.pack(

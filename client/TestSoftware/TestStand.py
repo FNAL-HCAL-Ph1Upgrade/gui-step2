@@ -35,6 +35,8 @@ class TestStand:
 
     def runAll(self):
 	for r in self.RMs:
+#   def runAll(self,barCodeList):
+		#r.runAll(barCodeList)
 		r.runAll()
 
     def runSingle(self, key):
