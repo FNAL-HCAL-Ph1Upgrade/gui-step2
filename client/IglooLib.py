@@ -194,6 +194,43 @@ def RWR_withRestore(bus, address, register, numBytes):
 
 
 # ------------------------------------------------------------------------
+def RWR_withRestore_Quiet(bus, address, register, numBytes):
+    # Get read1
+    read1 = readFromRegister_Quiet(bus, address, register, numBytes)
+
+    if read1 == False: return False
+
+    augRead1 = [] # holds augmented read1
+    for i in read1:
+        if (i != 255): augRead1.append(i + 1)
+        else: augRead1.append(i - 1)
+
+    # Write different values to register
+    w = writeToRegister(bus, address, register, augRead1)
+    if w == False: return False
+
+    # Get read2
+    read2 = readFromRegister_Quiet(bus, address, register, numBytes)
+    #if write successully changed reg (aka read1 != read2)
+    if (read1 != read2):
+        # Write original values to register
+        w = writeToRegister_Quiet(bus, address, register, read1)
+        if w == False: return False
+        # Get read3
+        read3 = readFromRegister_Quiet(bus, address, register, numBytes)
+        # if restored to original (aka read1 = read3)
+        if read1 == read3:
+            # print "Read1 = Read3 --> Reg changed, now restored to original"
+            return True
+        else:
+            # print "Read1 != Read3"
+            return False
+    elif (read1 == read2):
+        # print "Read1 = Read2 --> Write to RW Failed"
+        return False
+
+
+# ------------------------------------------------------------------------
 
 # designed for easy **RO reg** use, so returns True when read1 = read2
 def RWR_forRO(bus, address, register, numBytes):
@@ -219,7 +256,32 @@ def RWR_forRO(bus, address, register, numBytes):
     else:
         print "WRITE FAILED IN R/W/R CYCLE"
         return False
+# ------------------------------------------------------------------------
 
+# designed for easy **RO reg** use, so returns True when read1 = read2
+def RWR_forRO_Quiet(bus, address, register, numBytes):
+    read1 = readFromRegister_Quiet(bus, address, register, numBytes)
+
+    if read1 == False: return False
+
+    augRead1 = [] # augmented read1
+    for i in read1:
+        if (i != 255): augRead1.append(i + 1)
+        else: augRead1.append(i - 1)
+
+    #if write is successful
+    if (writeToRegister_Quiet(bus,address, register, augRead1)):
+        read2 = readFromRegister_Quiet(bus, address, register, numBytes)
+        if (read1 == read2):
+            # print "Read1 = Read2"
+            return True # R/W/R cycle gives identical reads, so PASS
+        if (read1 != read2):
+            # print "READ1 != READ2"
+            return False # R/W/R cycle changed somehow, so FAIL
+    #if write failed
+    else:
+        # print "WRITE FAILED IN R/W/R CYCLE"
+        return False
 
 
 

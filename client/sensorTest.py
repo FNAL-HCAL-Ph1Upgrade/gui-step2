@@ -60,7 +60,7 @@ def sensorTemp(slot):
     temp = (-46.85) +175.72*(data)/(2**16)
     return temp
 
-print "%.2f" %(sensorTemp(2))
+print "%.2f" %(sensorTemp(5))
 
 
 #returns the relative humidity of the QIE card
@@ -80,8 +80,9 @@ def sensorHumid(slot):
     # zero-ing out the 2 status bits, converting to int for calculations
     data = int(data[0:14] + "00", 2)
     # Converting humidity using equation
+    print "data: ", data
     humid = (-6.0) + 125.0 * (data)/(2**16)
 
     return humid
 
-print "%.2f" %(sensorHumid(2))
+print "%.2f" %(sensorHumid(5))
