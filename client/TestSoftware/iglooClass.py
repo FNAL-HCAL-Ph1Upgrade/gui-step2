@@ -214,7 +214,7 @@ class cntrRegDisplay(Test): #inherit from Test class, overload testBody() functi
 
 # ------------------------------------------------------------------------
 class cntrRegChange(Test): # NOTE: this run() function is overloaded to require parameters
-     def testBody(self, desiredReg, settingStr):
+     def testBody(self, desiredReg='CI_mode', settingStr='1'):
         # desiredReg and settingStr are both strings!!
         # settingStr can be of form "010101...", "0101 111 0 11...", or "0101"
         name = 'cntrReg'
@@ -275,7 +275,7 @@ class cntrRegChange(Test): # NOTE: this run() function is overloaded to require 
                 return True
 
     # -------------------------------------------
-     def run(self, desiredReg, settingStr):
+     def run(self, desiredReg='CI_mode', settingStr='1'):
         passes = 0
         for i in xrange(self.iterations): #changed from iterations to self.iterations
             if self.testBody(desiredReg, settingStr) == True: passes += 1 #changed true to True

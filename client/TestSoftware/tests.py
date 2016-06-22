@@ -1,7 +1,6 @@
-#import helpers as h
 import sys
+from datetime import datetime
 import inspect
-#sys.path.append('../')
 import testSummary
 import bridgeTests as bt
 import vttxClass as vc
@@ -11,10 +10,6 @@ import helpers
 import Test
 import listOfTests
 import vttxLib
-
-#from registers import registers
-
-
 
 noCheckRegis = {
 	"Unique_ID" :{
@@ -72,6 +67,7 @@ class testSuite:
 	return (passes, iterations - passes)
 
     def readNoCheck(self, testName, iterations = 1):
+	self.outCard.cardGenInfo["DateRun"] = str(datetime.now())
 	i2c_pathway = noCheckRegis[testName]["i2c_path"]
 	register = noCheckRegis[testName]["address"]
 	size = noCheckRegis[testName]["size"]/8
@@ -81,7 +77,6 @@ class testSuite:
 	for i in xrange(iterations):
 		# Clear the backplane
 		self.b.write(0x00,[0x06])
-
 		self.b.write(self.a,i2c_pathway)
 		self.b.write(register,command)
 		if (napTime != 0):
@@ -94,11 +89,11 @@ class testSuite:
 	for i in r:
 		if (i != '0' and i != 'None'):
 			new_r.append(i)
-	self.outCard.resultList[testName] = new_r
+	self.outCard.cardGenInfo[testName] = new_r
 	if (testName == "Unique_ID"):
 		new_r[0] = helpers.reverseBytes(new_r[0])
 		new_r[0] = helpers.toHex(new_r[0])
-	return new_r
+	self.outCard.cardGenInfo[testName]=new_r[0]
 
     def openIgloo(self, slot):
 		#the igloo is value "3" in I2C_SELECT table
@@ -127,6 +122,7 @@ class testSuite:
 		self.outCard.vttxListTwo[r] = self.vttxRegs[r].run()
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
+
 	self.outCard.printResults()
 	print "\n\n"
 	self.outCard.writeHumanLog()	

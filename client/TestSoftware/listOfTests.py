@@ -22,7 +22,7 @@ def initializeIglooList(b,a,i):
 	"statusReg" : ic.statusReg(b,a,i), "cntrRegDisplay" : ic.cntrRegDisplay(b,a,i),
 	"clk_count" : ic.clk_count(b,a,i), "rst_QIE_count" : ic.rst_QIE_count(b,a,i),
 	"igloo_wte_count" : ic.wte_count(b,a,i), "capIDErr_count" : ic.capIDErr_count(b,a,i),
-	"inputSpy" : ic.inputSpy(b,a,i)
+	"inputSpy" : ic.inputSpy(b,a,i), "cntrRegChange" : ic.cntrRegChange(b,a,i)
 	}
 	
 	return iglooRegs
