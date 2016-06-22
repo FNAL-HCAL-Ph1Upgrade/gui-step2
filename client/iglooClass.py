@@ -1,9 +1,14 @@
 from client import webBus
 import IglooLib
+import TestSoftware.Hardware as Hardware
+# import QIELib
 
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 i = IglooLib
+h = Hardware
 
+slot = 2 # the J_# slot
+# q = QIELib
 
 class Test:
     def __init__(self, bus, address, logfile, iterations = 1):
@@ -1022,13 +1027,8 @@ def runAll():
     print m.run()
 
 def runSelect():
-    def openIgloo(slot):
-        q.openChannel()
-        #the igloo is value "3" in I2C_SELECT table
-        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-        b.sendBatch()
-    openIgloo(0)
-
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
 
     m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
     print m.run()
@@ -1082,12 +1082,8 @@ def runSelect():
     # print m.run()
 
 def readOutInputSpy():
-    def openIgloo(slot):
-        q.openChannel()
-        #the igloo is value "3" in I2C_SELECT table
-        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-        b.sendBatch()
-    openIgloo(0)
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
@@ -1097,36 +1093,14 @@ def readOutInputSpy():
     print m.run()
 
 def processInputSpy():
-    def openIgloo(slot):
-        q.openChannel()
-        #the igloo is value "3" in I2C_SELECT table
-        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-        b.sendBatch()
-    openIgloo(0)
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
     m = inputSpy_512Reads(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
     print m.run()
 
-def changeCI_MODE():
-    def openIgloo(slot):
-        q.openChannel()
-        #the igloo is value "3" in I2C_SELECT table
-        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-        b.sendBatch()
-    openIgloo(0)
-    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-    print m.run("CI_mode", "1")
-    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-    print m.run()
-
-def cntrRegShow():
-    def openIgloo(slot):
-        q.openChannel()
-        #the igloo is value "3" in I2C_SELECT table
-        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-        b.sendBatch()
-    openIgloo(3)
+def cntrRegShowAll():
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
@@ -1137,7 +1111,7 @@ def setCI_mode(onOffBit):
         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
         b.sendBatch()
     openIgloo(0)
-    
+
     if onOffBit == 1:
         m = CI_Mode_On(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print m.run()
@@ -1147,20 +1121,6 @@ def setCI_mode(onOffBit):
         print m.run()
 
     else: print "Invalid onOffBit"
-
-# def SetQInjMode(onOffBit, slot, piAddress):
-# def SetQInjMode(onOffBit):
-#     #expects onOffBit of 0 or 1
-#     cntrRegShow()
-#     if onOffBit == 0 or onOffBit == 1:
-#         #b = webBus(piAddress, 0)
-#         b.write(0x1c,[0x11,0x03,0,0,0])
-#         b.write(0x09,[0x11,onOffBit,0,0,0])
-#         b.sendBatch()
-#     else:
-#         print "INVALID INPUT IN SetQInjMode... doing nothing"
-#
-#     cntrRegShow()
 
 
 ###########################################
@@ -1175,7 +1135,7 @@ processInputSpy()
 
 
 
-
+{
 # RW functions to do cursory RW test:
 #   * uniqueID
 #   * qie_ck_ph
@@ -1187,9 +1147,22 @@ processInputSpy()
 #   * scratchReg
 # RW functions to allow setting changes:
 #   * cntrReg
+}
 
-
-
+{
+# def SetQInjMode(onOffBit, slot, piAddress):
+# def SetQInjMode(onOffBit):
+#     #expects onOffBit of 0 or 1
+#     cntrRegShow()
+#     if onOffBit == 0 or onOffBit == 1:
+#         #b = webBus(piAddress, 0)
+#         b.write(0x1c,[0x11,0x03,0,0,0])
+#         b.write(0x09,[0x11,onOffBit,0,0,0])
+#         b.sendBatch()
+#     else:
+#         print "INVALID INPUT IN SetQInjMode... doing nothing"
+#
+#     cntrRegShow()
 
 # def changeCI_MODE():
 #     def openChannel():
@@ -1227,4 +1200,4 @@ processInputSpy()
 #     print m.run("CI_mode", "1")
 #     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
 #     print m.run()
-
+}

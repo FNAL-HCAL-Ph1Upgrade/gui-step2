@@ -1,9 +1,7 @@
-masterList = []
-for x in range(1,12):
-    row = []
-    for y in range(1,5):
-        row.append(None)
-    masterList.append(row)
+import TestSoftware.Hardware
 
-masterList[0][0] = "hi!"
-print masterList
+h = TestSoftware.Hardware
+
+myHardware = h.Hardware()
+
+print myHardware.cardAddresses

@@ -23,8 +23,9 @@ def getBitsFromByte(decimal):
 # give a list with decimal bytes, returns list of all bits
 def getBitsFromBytes(decimalBytes):
     ret = []
-    for i in decimalBytes:
-        ret = ret + getBitsFromByte(i)
+    if not isinstance(decimalBytes, bool):
+        for i in decimalBytes:
+            ret = ret + getBitsFromByte(i)
     return ret
 
 def getByteFromBits(bitList):
