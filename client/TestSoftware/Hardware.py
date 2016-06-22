@@ -6,6 +6,7 @@ from DChains import DChains
 #MUX dict
   #Given JX, set MUXes
 class Hardware:
+    cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
     def getCardAddress(slot):
         if slot in [2,7,18,23] : return cardAddresses[0]
         if slot in [3,8,19,24] : return cardAddresses[1]
@@ -21,9 +22,8 @@ class Hardware:
         i2cGroups = [0x01, 0x10, 0x20, 0x02]
         return i2cGroups[rm-1]
 
-    def openChannel(slot, piAddress):
+    def openChannel(slot, bus):
         rmLoc = getReadoutSlot(slot)
-        bus = webBus(piAddress,0)
         if rmLoc in [3,4]:
           # Open channel to ngCCM for RM 3,4: J1 - J10
             bus.write(0x72,[0x02])
@@ -40,9 +40,18 @@ class Hardware:
         return bus.sendBatch()
 
 #Get DChains
-    def getDChains(slot, piAddress):
-        Hardware.openChannel(slot, piAddress)
-        return DChains(getCardAddress(slot), webBus(piAddress))
+    def getDChains(slot, bus):
+        Hardware.openChannel(slot, bus)
+        return DChains(getCardAddress(slot), bus)
 
 
 #SetQInjMode(t)
+    def SetQInjMode(onOffBit, slot, bus):
+        openChannel(slot, bus)
+        #expects onOffBit of 0 or 1
+        if onOffBit == 0 or onOffBit == 1:
+            bus.write(getCardAddress(slot),[0x11,0x03,0,0,0])
+            bus.write(0x09,[0x11,onOffBit,0,0,0])
+            bus.sendBatch()
+        else:
+            print "INVALID INPUT IN SetQInjMode... doing nothing"

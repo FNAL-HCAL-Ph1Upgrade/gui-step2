@@ -63,7 +63,7 @@ class RM:
     	bus.write(activeCard,[0x00])
     	bus.read(activeCard,4)
     	data=bus.sendBatch()
-    	if (data[1] == "1"):
+    	if (data[-1][0] == "1"):
     		return False
     	else:
     		return True
