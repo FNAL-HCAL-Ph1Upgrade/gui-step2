@@ -8,10 +8,10 @@ q = QIELib
 # Helpful Tool Functions
 ##############################
 
-# give function a r/w indexed from sendBatch() and will determine if first
-# value in the string is a non-zero error code
+# give function a !!REVERSED!! r/w indexed from sendBatch() and will determine
+# if LAST value in the string is a non-zero error code
 def isError(ret):
-    if (ret[0] != 0): # '0' is non-error value
+    if (ret[-1] != 0): # '0' is non-error value
         return True # error
     else:
         return False # no error
@@ -73,10 +73,29 @@ def strToHex(string):
                 j = j + 1
         return catHex
 
+
+
 ##############################
 # Read/write functions
 ##############################
+
 def readFromRegister(bus, address, register, numBytes):
+    bus.write(address, [register])
+    bus.read(address, numBytes)
+    ret = []
+    for i in bus.sendBatch()[-1].split():
+        ret.append(int(i))
+
+    if isError(ret):
+        ret.reverse()
+        print "Read ERROR: ", ret
+        return False
+    else:
+        print "Read Success: ", ret
+        return ret[1:] #ignore the leading error code
+# ------------------------------------------------------------------------
+# quiet function, on successful read, returns without printing
+def readFromRegister_Quiet(bus, address, register, numBytes):
     bus.write(address, [register])
     bus.read(address, numBytes)
     ret = []
@@ -87,9 +106,7 @@ def readFromRegister(bus, address, register, numBytes):
         print "Read ERROR: ", ret
         return False
     else:
-        print "Read Success: ", ret
         return ret[1:] #ignore the leading error code
-
 # ------------------------------------------------------------------------
 
 def writeToRegister(bus, address, register, toWrite):
