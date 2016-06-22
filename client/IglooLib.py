@@ -134,6 +134,26 @@ def writeToRegister(bus, address, register, toWrite):
 
 # ------------------------------------------------------------------------
 
+def writeToRegister_Quiet(bus, address, register, toWrite):
+    # toWrite can be the ret list from readFromRegister()
+    toWrite.reverse()
+    bus.write(address, [register] + toWrite)
+    ret = []
+    for i in bus.sendBatch()[-1].split():
+        ret.append(int(i))
+
+    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
+    #ret.reverse()
+
+    if not isError(ret):
+        # print "Write Success: ", ret
+        return True # write successful
+    else:
+        print "Write ERROR: ", ret
+        return False # write failed
+
+# ------------------------------------------------------------------------
+
 # designed for easy **RW reg** use, so changes reg and then sets back to original
 # ... if that cycle is successful (ie read1 != r2,and r1 = r3), then returns True
 def RWR_withRestore(bus, address, register, numBytes):
