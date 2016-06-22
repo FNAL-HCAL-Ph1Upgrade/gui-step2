@@ -1,13 +1,18 @@
 from client import webBus
-import QIELib
+import TestSoftware.Hardware as Hardware
+
 b = webBus("pi5",0)
-q = QIELib
+h = Hardware
 
 
 #returns the temperature of the QIE card
-def sensorTemp(rm,slot):
-    q.openChannel(rm,slot)
-    b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
+def sensorTemp(slot):
+
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x05,0,0,0])
+
+    # q.openChannel(rm,slot)
+    # b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
     b.write(0x40,[0xf3])
     b.read(0x40,3)
 
@@ -55,13 +60,16 @@ def sensorTemp(rm,slot):
     temp = (-46.85) +175.72*(data)/(2**16)
     return temp
 
-print "%.2f" %(sensorTemp(0,0))
+print "%.2f" %(sensorTemp(2))
 
 
 #returns the relative humidity of the QIE card
-def sensorHumid(rm,slot):
-    q.openChannel(rm,slot)
-    b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
+def sensorHumid(slot):
+    # q.openChannel(rm,slot)
+    # b.write(q.QIEi2c[slot],[0x11,0x05,0,0,0])
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x05,0,0,0])
+
     b.write(0x40,[0xf5])
     b.read(0x40,2)
 
@@ -76,4 +84,4 @@ def sensorHumid(rm,slot):
 
     return humid
 
-print "%.2f" %(sensorHumid(0,0))
+print "%.2f" %(sensorHumid(2))
