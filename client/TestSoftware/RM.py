@@ -35,14 +35,21 @@ def get_NGCCM_Group(rmLoc):
                 }.get([9,7,4,2][rmLoc - 1])
 
 class RM:
-    def __init__(self, location, activeSlots, inBus):
+    def __init__(self, location, activeSlots, summaries, inBus):
         '''Initializes an RM object at a specific location on the test stand'''
         self.qCards = []
 	self.myBus = inBus
 	self.location = location
-        for i in activeSlots:
-            if self.checkCards(i):
-                self.qCards.append(qCard(i))
+	emptyCount = 0
+	print "activeslots length: ",len(activeSlots)
+	print "summaries   length: ",len(summaries)
+	print "activeslots       : ",activeSlots
+        for i in range(len(activeSlots)):
+            if self.checkCards(activeSlots[i]):
+                self.qCards.append(qCard(activeSlots[i],summaries[i-emptyCount]))
+	    else:
+		emptyCount += 1
+
     def __repr__(self):
         '''Object representation'''
         return "RM()"

@@ -39,32 +39,17 @@ noCheckRegis = {
 }
 
 class testSuite:
-    def __init__(self, webAddress, address):
+    def __init__(self, webAddress, address, inSummary):
         '''create a new test suite object... initialize bus and address'''
         self.b = client.webBus(webAddress, 0)
-	self.outCard = testSummary.testSummary()
+	self.outCard = inSummary
         self.a = address
-	i = 45
+	i = 15
 
 	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
 	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
 	self.vttxRegs_1  = listOfTests.initializeVttxList_1(self.b, self.a, i)
 	self.vttxRegs_2  = listOfTests.initializeVttxList_2(self.b, self.a, i)
-    def readWithCheck(self, registerName, iterations = 1):
-        passes = 0
-        register = registers[registerName]["address"]
-        size = 4#registers[registerName]["size"] / 8
-        check = registers[registerName]["expected"]
-
-        for i in xrange(iterations):
-            self.b.write(self.a, [register])
-            self.b.read(self.a, size)
-        r = self.b.sendBatch()
-        for i in xrange(iterations * 2):
-            if (i % 2 == 1) and (r[i] == check):
-                passes += 1
-        self.outCard.resultList[registerName] = (passes, iterations - passes) #(passes, fails)
-	return (passes, iterations - passes)
 
     def readNoCheck(self, testName, iterations = 1):
 	self.outCard.cardGenInfo["DateRun"] = str(datetime.now())
@@ -113,7 +98,10 @@ class testSuite:
 	print "Running register tests!"
 	print "-------------------------"
         for r in self.registers.keys():
-		self.outCard.resultList[r] = self.registers[r].run()
+		results = self.registers[r].run()
+		self.outCard.resultList[r][0] += results[0]
+		self.outCard.resultList[r][1] += results[1]
+#		self.outCard.resultList[r] = self.registers[r].run()
 		print r+" tests completed."
 
 	self.openIgloo(self.a)
@@ -121,7 +109,10 @@ class testSuite:
 	print "Running IGLOO tests!"
 	print "-------------------------"
 	for r in self.iglooRegs.keys():
-		self.outCard.iglooList[r] = self.iglooRegs[r].run()
+		results = self.iglooRegs[r].run()
+		self.outCard.iglooList[r][0] += results[0]
+		self.outCard.iglooList[r][1] += results[1]
+#		self.outCard.iglooList[r] = self.iglooRegs[r].run()
 		print r+" tests completed."
 
 	self.openVTTX(self.a, 1)
@@ -129,7 +120,10 @@ class testSuite:
 	print "Running VTTX_1 tests!"
 	print "-------------------------"
 	for r in self.vttxRegs_1.keys():
-		self.outCard.vttxListOne[r] = self.vttxRegs_1[r].run()
+		results = self.vttxRegs_1[r].run()
+		self.outCard.vttxListOne[r][0] += results[0]
+		self.outCard.vttxListOne[r][1] += results[1]
+#		self.outCard.vttxListOne[r] = self.vttxRegs_1[r].run()
 		print r+" tests completed."
 
 	self.openVTTX(self.a, 2)
@@ -137,7 +131,10 @@ class testSuite:
 	print "Running VTTX_2 tests!"
 	print "-------------------------"
 	for r in self.vttxRegs_2.keys():
-		self.outCard.vttxListTwo[r] = self.vttxRegs_2[r].run()
+		results = self.vttxRegs_2[r].run()
+		self.outCard.vttxListTwo[r][0] += results[0]
+		self.outCard.vttxListTwo[r][1] += results[1]
+#		self.outCard.vttxListTwo[r] = self.vttxRegs_2[r].run()
 		print r+" tests completed."
 
 	for r in noCheckRegis.keys():
@@ -153,3 +150,11 @@ class testSuite:
 		yield self.readWithCheck(key, 100)
 	elif key in noCheckRegis:
 		yield self.readNoCheck(key, 1)
+
+
+
+
+
+
+
+

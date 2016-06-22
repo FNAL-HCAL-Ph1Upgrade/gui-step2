@@ -9,6 +9,7 @@
 # round 2 electric boogaloo
 
 import qCard
+import testSummary
 from Tkinter import *
 from client import webBus
 from TestStand import TestStand
@@ -33,6 +34,10 @@ class makeGui:
 		# Make an empty list that will eventually contain all of
 		# the active card slots
 		self.outSlotNumbers = []
+
+		# make an empty list that will eventually contain all of
+		# the TestSummary instances that get sent out
+		self.outSummaries = []
 
 		# Instantiate a webBus member:
 		self.gb = webBus("pi5")		
@@ -536,6 +541,9 @@ class makeGui:
 			)
 		self.uHTR_tester_bttn.pack(side=TOP)	
 
+		# now, prepare the summaries:
+		self.prepareOutCards()
+
 
 	#################################
 	###			      ###
@@ -585,11 +593,9 @@ class makeGui:
 	def runTestSuite(self):
 		print str(datetime.now())
 		self.prepareOutSlots()
-		print self.outSlotNumbers
-		self.myTestStand = TestStand(self.outSlotNumbers,self.piChoiceVar.get())
+		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, self.piChoiceVar.get())
 		self.myTestStand.runAll()
 		# Reset the active outSlots
-		self.outSlotNumbers = []
 		print str(datetime.now())
 
 
@@ -601,6 +607,7 @@ class makeGui:
 		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
 
 	def prepareOutSlots(self):
+		self.outSlotNumbers = []
 		for k in range(len(self.cardVarList)):
 			if (self.cardVarList[k].get() == 1):
 				if k in [1,2,3,4]:
@@ -611,6 +618,17 @@ class makeGui:
 					self.outSlotNumbers.append(k+9)
 				elif k in [13,14,15,16]:
 					self.outSlotNumbers.append(k+10)
+
+	def prepareOutCards(self):
+		print len(self.cardVarList)
+		for k in range(len(self.cardVarList)):
+			self.outSummaries.append(testSummary.testSummary())
+
+#	def __del__(self):
+#		for k in self.outSummaries:
+#			k.writeHumanLog()
+#			k.writeMachineJson()
+			
 	
 				
 root = Tk()
