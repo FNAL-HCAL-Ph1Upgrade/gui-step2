@@ -30,8 +30,14 @@ def initializeIglooList(b,a,i):
 	return iglooRegs
 
 
-def initializeVttxList(b,a,i):
-	vttxRegs = {"vttxDisplay" : vc.VTTX_Display(b,a,i),
-		"vttxRwrWithRestore" : vc.VTTX_RWR_withRestore(b,a,i)\
+def initializeVttxList_1(b,a,i):
+	vttxRegs_1 = {"vttxDisplay_1" : vc.VTTX_Display(b,a,i),
+		"vttxRwrWithRestore_1" : vc.VTTX_RWR_withRestore(b,a,i)\
 		}
-	return vttxRegs
+	return vttxRegs_1
+
+def initializeVttxList_2(b,a,i):
+	vttxRegs_2 = {"vttxDisplay_2" : vc.VTTX_Display(b,a,i),
+		"vttxRwrWithRestore_2" : vc.VTTX_RWR_withRestore(b,a,i)\
+		}
+	return vttxRegs_2

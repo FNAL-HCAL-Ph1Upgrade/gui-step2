@@ -27,8 +27,8 @@ class testSummary:
 			"cntrRegChange" : []
 		}
 
-		self.vttxListOne = {"vttxDisplay" : [], "vttxChange" : [], "vttxRwrWithRestore" : []}
-		self.vttxListTwo = {"vttxDisplay" : [], "vttxChange" : [], "vttxRwrWithRestore" : []}
+		self.vttxListOne = {"vttxDisplay_1" : [], "vttxChange_1" : [], "vttxRwrWithRestore_1" : []}
+		self.vttxListTwo = {"vttxDisplay_2" : [], "vttxChange_2" : [], "vttxRwrWithRestore_2" : []}
 			
 	def printResults(self):
 		print ("\nGENERAL INFO: \n")
@@ -75,12 +75,20 @@ class testSummary:
 	def writeMachineJson(self):
 		fileName = str(self.cardGenInfo["Unique_ID"].replace(" ","")+"_raw.json")
 		with open(fileName, "w") as w:
-			w.write(str(self.cardGenInfo))
-			w.write("\n\n")
-			w.write(str(self.resultList))
-			w.write("\n\n")
-			w.write(str(self.iglooList))
-			w.write("\n\n")
-			w.write(str(self.vttxListOne))
-			w.write("\n\n")
-			w.write(str(self.vttxListTwo))
+			w.write("{")
+			for i in self.cardGenInfo.keys():
+				w.write('"'+i+'"'+" : "+str(self.cardGenInfo[i])+", ")
+			for i in self.resultList.keys():
+				w.write('"'+i+'"'+" : "+str(self.resultList[i])+", ")
+			for i in self.iglooList.keys():
+				w.write('"'+i+'"'+" : "+str(self.iglooList[i])+", ")
+			for i in self.vttxListOne.keys():
+				w.write('"'+i+'"'+" : "+str(self.vttxListOne[i])+", ")
+			for i in self.vttxListTwo.keys():
+				w.write('"'+i+'"'+" : "+str(self.vttxListTwo[i])+", ")
+			w.write("\n}")
+#			w.write(str(self.cardGenInfo))
+#			w.write(str(self.resultList))
+#			w.write(str(self.iglooList))
+#			w.write(str(self.vttxListOne))
+#			w.write(str(self.vttxListTwo))

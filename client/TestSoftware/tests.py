@@ -44,12 +44,12 @@ class testSuite:
         self.b = client.webBus(webAddress, 0)
 	self.outCard = testSummary.testSummary()
         self.a = address
-	i = 100
+	i = 45
 
 	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
 	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
-	self.vttxRegs  = listOfTests.initializeVttxList(self.b, self.a, i)
-	
+	self.vttxRegs_1  = listOfTests.initializeVttxList_1(self.b, self.a, i)
+	self.vttxRegs_2  = listOfTests.initializeVttxList_2(self.b, self.a, i)
     def readWithCheck(self, registerName, iterations = 1):
         passes = 0
         register = registers[registerName]["address"]
@@ -108,12 +108,14 @@ class testSuite:
     # The following function is for when we want to run ALL
     # tests on ALL active cards.
     def runTests(self):
+
 	print "-------------------------"
 	print "Running register tests!"
 	print "-------------------------"
         for r in self.registers.keys():
 		self.outCard.resultList[r] = self.registers[r].run()
 		print r+" tests completed."
+
 	self.openIgloo(self.a)
 	print "\n-------------------------"
 	print "Running IGLOO tests!"
@@ -121,20 +123,23 @@ class testSuite:
 	for r in self.iglooRegs.keys():
 		self.outCard.iglooList[r] = self.iglooRegs[r].run()
 		print r+" tests completed."
+
 	self.openVTTX(self.a, 1)
 	print "\n-------------------------"
 	print "Running VTTX_1 tests!"
 	print "-------------------------"
-	for r in self.vttxRegs.keys():
-		self.outCard.vttxListOne[r] = self.vttxRegs[r].run()
+	for r in self.vttxRegs_1.keys():
+		self.outCard.vttxListOne[r] = self.vttxRegs_1[r].run()
 		print r+" tests completed."
+
 	self.openVTTX(self.a, 2)
 	print "\n-------------------------"
 	print "Running VTTX_2 tests!"
 	print "-------------------------"
-	for r in self.vttxRegs.keys():
-		self.outCard.vttxListTwo[r] = self.vttxRegs[r].run()
+	for r in self.vttxRegs_2.keys():
+		self.outCard.vttxListTwo[r] = self.vttxRegs_2[r].run()
 		print r+" tests completed."
+
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
 
