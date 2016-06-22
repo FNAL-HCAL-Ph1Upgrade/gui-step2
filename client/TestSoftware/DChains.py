@@ -18,11 +18,8 @@ class DChains:
         for c in self.chains:
             ret += str(c)
         return ret
-
     def __getitem__(self, i):
-        if i < 6:
-            return self.chains[0][i]
-        return self.chains[1][i % 6]
+        return self.Chains[i/6][i % 6]
     def write(self):
         for i in range(2):
             register = [0x30, 0x31][i]

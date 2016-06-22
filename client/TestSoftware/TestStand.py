@@ -34,14 +34,12 @@ class TestStand:
         self.RMs.append(RM.RM(4, RM4_active,inBus))
 
     def runAll(self):
-	for r in self.RMs:
-#   def runAll(self,barCodeList):
-		#r.runAll(barCodeList)
+	    for r in self.RMs:
 		r.runAll()
 
     def runSingle(self, key):
-	for r in self.RMs:
-		r.runSingle(key)
+        for r in self.RMs:
+            r.runSingle(key)
 
     def __repr__(self):
         '''Object representation'''

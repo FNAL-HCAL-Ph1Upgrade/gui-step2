@@ -41,8 +41,8 @@ class RM:
 	self.myBus = inBus
 	self.location = location
         for i in activeSlots:
-	    if self.checkCards(i):
-            	self.qCards.append(qCard(i))
+            if self.checkCards(i):
+                self.qCards.append(qCard(i))
     def __repr__(self):
         '''Object representation'''
         return "RM()"
@@ -68,33 +68,31 @@ class RM:
 
     # Open Channel to RM
     def openChannel(self):
-	bus = webBus(self.myBus,0)
+    	bus = webBus(self.myBus,0)
         if self.location in [3,4]:
             # Open channel to ngCCM for RM 3,4: J1 - J10
             bus.write(0x72,[0x02])
-	    bus.read(0x72, 2)
         elif self.location in [1,2]:
             # Open channel to ngCCM for RM 1,2: J17 - J26
             bus.write(0x72,[0x01])
-	    bus.read(0x72, 2)
         else:
             print 'Invalid RM = ', self.location
             print 'Please choose RM = {1,2,3,4}'
             return 'closed channel'
         # Open channel to i2c group
         bus.write(0x74, [ngccmGroup(self.location)])
-	bus.read(0x74, 2)
+	    bus.read(0x74, 2)
         return bus.sendBatch()
 
     def runAll(self):
-	self.openChannel()
-	for q in range(len(self.qCards)):
-		self.qCards[q].runAll(self.myBus)
+    	self.openChannel()
+    	for q in range(len(self.qCards)):
+    		self.qCards[q].runAll(self.myBus)
 
     def runSingle(self, key):
-	self.openChannel()
-	for q in self.qCards:
-	    q.runSingle(key,self.myBus)
+    	self.openChannel()
+    	for q in self.qCards:
+    	    q.runSingle(key,self.myBus)
 
     def printAll(self):
         for q in self.qCards:
