@@ -25,6 +25,14 @@ class makeGui:
 			     "Card 20", "Card 21", "Card 23", "Card 24",
 			     "Card 25", "Card 26"]
 
+		# Create a dict for converting GUI list of suites to stuff for
+		# behind-the-scenes
+		self.suiteDict = {"Main Suite : All Tests" : "main",
+				  "Bridge Register Suite" : "bridge",
+				  "Igloo Register Suite"  : "igloo",
+				  "Vttx Register Suites"  : "vttx"
+				 }
+
 		# Create a list of nGCCme slots:
 		self.ngccmeSlots = ["nGCCme 1", "nGCCme 2"]
 
@@ -628,16 +636,6 @@ class makeGui:
 		for i in range(9,13): self.cardVarList[i].set(self.readoutVarList[2].get())
 		for i in range(13,17): self.cardVarList[i].set(self.readoutVarList[3].get())
 
-	def checksToHex(self,inCheck0,inCheck1,inCheck2,inCheck3,inCheck4,inCheck5,inCheck6,inCheck7):
-		hexVar = (inCheck0*1)+(inCheck1*2)+(inCheck2*4)+(inCheck3*8)+(inCheck4*16)+\
-			 (inCheck5*32)+(inCheck6*64)+(inCheck7*128)
-		return hexVar
-	
-	def closeButtonPress(self):
-		# IF ANYTHING SHOULD BE DONE ON CANCELLATION
-		# PUT IT IN THIS FUNCTION
-		self.myParent.destroy()
-
 	def qieClickRead(self):     # Where the magic(?) happens
 		# See what test the user has selected, and then run that test from the
 		# qieCommands.py file. Display the results in the text field within the
@@ -652,7 +650,8 @@ class makeGui:
 		for k in self.outSummaries:
 			k.cardGenInfo["User"] = self.nameChoiceVar.get()
 		self.prepareOutSlots()
-		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, self.piChoiceVar.get())
+		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
+		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection, self.piChoiceVar.get())
 		self.myTestStand.runAll()
 		# Reset the active outSlots
 		print str(datetime.now())
@@ -681,13 +680,6 @@ class makeGui:
 	def prepareOutCards(self):
 		for k in range(len(self.cardVarList)):
 			self.outSummaries.append(testSummary.testSummary())
-
-#	def __del__(self):
-#		for k in self.outSummaries:
-#			k.writeHumanLog()
-#			k.writeMachineJson()
-			
-	
 				
 root = Tk()
 myapp = makeGui(root)

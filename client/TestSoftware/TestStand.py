@@ -3,8 +3,10 @@
 import RM
 
 class TestStand:
-    def __init__(self, activeSlots, summaryList, inBus):
+    def __init__(self, activeSlots, summaryList, suiteSelection, inBus):
         '''Create a test stand object filled with necessary RMs, cards'''
+
+	self.suiteSelection = suiteSelection	
 
         self.activeSlots = activeSlots
         self.RMs = []
@@ -18,12 +20,6 @@ class TestStand:
 	RM3_summaries = summaryList[4:8]
 	RM2_summaries = summaryList[8:12]
 	RM1_summaries = summaryList[12:16]
-
-	print "RM1: ", len(RM1_summaries)
-	print "RM2: ", len(RM2_summaries)
-	print "RM3: ", len(RM3_summaries)
-	print "RM4: ", len(RM4_summaries)
-	
 
         for slot in self.activeSlots:
             if slot in [2,3,4,5]:
@@ -46,7 +42,7 @@ class TestStand:
 
     def runAll(self):
 	    for r in self.RMs:
-		r.runAll()
+		r.runAll(self.suiteSelection)
 
     def runSingle(self, key):
         for r in self.RMs:

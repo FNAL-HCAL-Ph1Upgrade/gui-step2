@@ -58,6 +58,7 @@ class testSuite:
 	size = noCheckRegis[testName]["size"]/8
 	command = noCheckRegis[testName]["command"]
 	napTime = noCheckRegis[testName]["sleep"]
+	new_r = []
 
 	for i in xrange(iterations):
 		# Clear the backplane
@@ -70,15 +71,23 @@ class testSuite:
 
 	r = self.b.sendBatch()
 	# Remove the entries in r that contain no information
-	new_r = []
 	for i in r:
 		if (i != '0' and i != 'None'):
 			new_r.append(i)
+
 	self.outCard.cardGenInfo[testName] = new_r
 	if (testName == "Unique_ID"):
 		new_r[0] = helpers.reverseBytes(new_r[0])
 		new_r[0] = helpers.toHex(new_r[0])
-	self.outCard.cardGenInfo[testName]=new_r[0]
+		self.outCard.cardGenInfo[testName]=new_r[0]
+	elif (testName == "Temperature"):
+		self.b.write(0x00,[0x06])
+		self.b.sendBatch()
+		self.outCard.cardGenInfo[testName] = helpers.sensorTemp(self.a,self.b)
+	elif (testName == "Humidity"):
+		self.b.write(0x00,[0x06])
+		self.b.sendBatch()
+		self.outCard.cardGenInfo[testName] = helpers.sensorHumid(self.a,self.b)
 
     def openIgloo(self, slot):
 		#the igloo is value "3" in I2C_SELECT table
@@ -92,50 +101,49 @@ class testSuite:
 
     # The following function is for when we want to run ALL
     # tests on ALL active cards.
-    def runTests(self):
+    def runTests(self, suite):
 
-	print "-------------------------"
-	print "Running register tests!"
-	print "-------------------------"
-        for r in self.registers.keys():
-		results = self.registers[r].run()
-		self.outCard.resultList[r][0] += results[0]
-		self.outCard.resultList[r][1] += results[1]
-#		self.outCard.resultList[r] = self.registers[r].run()
-		print r+" tests completed."
+	if (suite == "main" or suite == "bridge"):
+		print "-------------------------"
+		print "Running register tests!"
+		print "-------------------------"
+		for r in self.registers.keys():
+			results = self.registers[r].run()
+			self.outCard.resultList[r][0] += results[0]
+			self.outCard.resultList[r][1] += results[1]
+			print r+" tests completed."
 
-	self.openIgloo(self.a)
-	print "\n-------------------------"
-	print "Running IGLOO tests!"
-	print "-------------------------"
-	for r in self.iglooRegs.keys():
-		results = self.iglooRegs[r].run()
-		self.outCard.iglooList[r][0] += results[0]
-		self.outCard.iglooList[r][1] += results[1]
-#		self.outCard.iglooList[r] = self.iglooRegs[r].run()
-		print r+" tests completed."
+	if (suite == "main" or suite == "igloo"):
+		self.openIgloo(self.a)
+		print "\n-------------------------"
+		print "Running IGLOO tests!"
+		print "-------------------------"
+		for r in self.iglooRegs.keys():
+			results = self.iglooRegs[r].run()
+			self.outCard.iglooList[r][0] += results[0]
+			self.outCard.iglooList[r][1] += results[1]
+			print r+" tests completed."
 
-	self.openVTTX(self.a, 1)
-	print "\n-------------------------"
-	print "Running VTTX_1 tests!"
-	print "-------------------------"
-	for r in self.vttxRegs_1.keys():
-		results = self.vttxRegs_1[r].run()
-		self.outCard.vttxListOne[r][0] += results[0]
-		self.outCard.vttxListOne[r][1] += results[1]
-#		self.outCard.vttxListOne[r] = self.vttxRegs_1[r].run()
-		print r+" tests completed."
+	if (suite == "main" or suite == "vttx"):
+		self.openVTTX(self.a, 1)
+		print "\n-------------------------"
+		print "Running VTTX_1 tests!"
+		print "-------------------------"
+		for r in self.vttxRegs_1.keys():
+			results = self.vttxRegs_1[r].run()
+			self.outCard.vttxListOne[r][0] += results[0]
+			self.outCard.vttxListOne[r][1] += results[1]
+			print r+" tests completed."
 
-	self.openVTTX(self.a, 2)
-	print "\n-------------------------"
-	print "Running VTTX_2 tests!"
-	print "-------------------------"
-	for r in self.vttxRegs_2.keys():
-		results = self.vttxRegs_2[r].run()
-		self.outCard.vttxListTwo[r][0] += results[0]
-		self.outCard.vttxListTwo[r][1] += results[1]
-#		self.outCard.vttxListTwo[r] = self.vttxRegs_2[r].run()
-		print r+" tests completed."
+		self.openVTTX(self.a, 2)
+		print "\n-------------------------"
+		print "Running VTTX_2 tests!"
+		print "-------------------------"
+		for r in self.vttxRegs_2.keys():
+			results = self.vttxRegs_2[r].run()
+			self.outCard.vttxListTwo[r][0] += results[0]
+			self.outCard.vttxListTwo[r][1] += results[1]
+			print r+" tests completed."
 
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)

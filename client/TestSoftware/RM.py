@@ -41,9 +41,6 @@ class RM:
 	self.myBus = inBus
 	self.location = location
 	emptyCount = 0
-	print "activeslots length: ",len(activeSlots)
-	print "summaries   length: ",len(summaries)
-	print "activeslots       : ",activeSlots
         for i in range(len(activeSlots)):
             if self.checkCards(activeSlots[i]):
                 self.qCards.append(qCard(activeSlots[i],summaries[i-emptyCount]))
@@ -91,10 +88,10 @@ class RM:
 	bus.read(0x74, 2)
         return bus.sendBatch()
 
-    def runAll(self):
+    def runAll(self, suiteSelection):
     	self.openChannel()
     	for q in range(len(self.qCards)):
-    		self.qCards[q].runAll(self.myBus)
+    		self.qCards[q].runAll(suiteSelection, self.myBus)
 
     def runSingle(self, key):
     	self.openChannel()
