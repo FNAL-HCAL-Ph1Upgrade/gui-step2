@@ -1,20 +1,14 @@
 #qCard class
 import tests
+from Hardware import Hardware
 
 cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
 
-def getCardAddress(slot):
-    if slot in [2,7,18,23] : return cardAddresses[0]
-    if slot in [3,8,19,24] : return cardAddresses[1]
-    if slot in [4,9,20,25] : return cardAddresses[2]
-    if slot in [5,10,21,26]: return cardAddresses[3]
-
-
 class qCard:
-    def __init__(self, slot, barcode='000_000'):
+    def __init__(self, slot, bus, barcode='000_000'):
         '''Create a qCard object with basic info and no yet-passed tests'''
         self.slot = slot
-        self.address = getCardAddress(slot)
+        self.address = Hardware.getCardAddress(slot)
         self.barcode = barcode
         self.passed = []
     def __repr__(self):
@@ -27,16 +21,16 @@ class qCard:
             s += "Test%s: %s \n" % (i, str(self.passed[i]))
         return s
 #    def runAll(self,barcode):
-    def runAll(self,inBus):
+    def runAll(self,piAddress):
         '''Run all tests'''
-        t = tests.testSuite(inBus, self.address)
+        Hardware.openChannel(self.slot)
+        t = tests.testSuite(piAddress, self.address)
 #	t.runTests(barcode)
 	t.runTests()
 
-    def runSingle(self, key,inBus):
-	t = tests.testSuite(inBus, self.address)
-	for result in t.runSingleTest(key):
-		self.passed.append(result)
-	print self.passed
-	#print self.passed
-		
+    def runSingle(self, key,piAddress):
+        Hardware.openChannel(self.slot)
+	    t = tests.testSuite(piAddress, self.address)
+	    for result in t.runSingleTest(key):
+            self.passed.append(result)
+	    print self.passed

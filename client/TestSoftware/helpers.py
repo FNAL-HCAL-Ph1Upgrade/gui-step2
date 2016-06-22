@@ -39,4 +39,3 @@ def reverseBytes(message):
     message_list.reverse()
     s = " "
     return s.join(message_list)
-
