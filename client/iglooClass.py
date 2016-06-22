@@ -581,29 +581,61 @@ class fifo_data(Test): #inherit from Test class, overload testBody() function
             return False
 # ------------------------------------------------------------------------
 class inputSpy(Test): #NOTE: processes Spy Buffer Data with bitwise operations
+    # -------------------------------------------
     def testBody(self):
         name = "inputSpy"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8      # dict holds bits, we want bytes
 
         print "----------%s----------" %name
-        buff = i.readFromRegister(b, i.iglooAdd, reg, size)
-        if (buff) == False:
-            return False
+
+
+        passCount_512      = 0 # maximum = 512
+
+        prevCapId = []
+
+        for iter in range(0,3): # CHANGE THIS to 512 eventually!!
+            print "ITER: ", iter
+            capIdPass          = True
+            adcPass            = True
+
+            buff = i.readFromRegister(b, i.iglooAdd, reg, size)
+
+            # if good read
+            if (buff) != False:
+                buff.reverse() # InputSpy doesn't flip bytes like Bridge does
+                #print "buff from read: ", buff
+
+                # Get InputSpy data (qieList = [capIdConcise, adc, rangeQ, tdc])
+                qieList = self.printData(buff)
+
+                # Check CapID
+                if self.checkCapId(qieList[0], prevCapId, iter):
+                    print "~~CapIDs Rotate~~"
+                    capIdPass = True
+                else: print "CapId Rotation ERROR: ", prevCapId, ' -> ', qieList[0]
+
+                # Check ADC
+                if self.checkAdc(adc):
+                    print "~~ACD Good Range~~"
+                    pass
+
+                if (capIdPass and adcPass): passCount_512 += 1
+
+                prevCapId = qieList[0]
+
+            # if bad read
+            else: print "ERROR: Cannot Read Buffer, ITER: ",iter
+
+        # return after 512 iterations
+        if passCount_512 == 512:
+            print "~~ ALL 512 PASS ~~"
+            return True
         else:
-            print "buff from read: ", buff
-            capId = self.printData(buff)
-            # print "capId: ", capId
-            # if capIDs are rotating...
-            # capId = [0,1,2,3,0,1,2,3,0,1,2,3]
-            if self.checkCapId(capId):
-                print "~~PASS: CapIDs Rotate~~"
-                return True
-            else:
-                print "CapId Rotation ERROR: ", capId
-                return False
+            print ">> Pass Count (out of 512): ", passCount_512, " <<"
+            return False
 
-
+    # -------------------------------------------
     def interleave(self, c0, c1):
         retval = 0;
         for i in range(0,8):
@@ -611,14 +643,9 @@ class inputSpy(Test): #NOTE: processes Spy Buffer Data with bitwise operations
             retval |= ((c0 & bitmask) | ((c1 & bitmask) << 1)) << i
 
         return retval
-
-
-    def printData(self,buff):
-    # //000: f6 70 f6 70 f6 70 f6 70
-    # //008: f6 70 f4 70 f4 72 f6 70
-    # //016: f4 72 f6 70 f4 70 f4 70
-    # //024: 34
-
+    # -------------------------------------------
+    def printData(self,buff): # returns: qieList = [capIdConcise, adc, rangeQ, tdc]
+        # buff holds 25 bytes (first 24)
         pedArray = [] # dimensions: pedArray[12][4]
         for x in xrange(12):
             row = []
@@ -679,29 +706,45 @@ class inputSpy(Test): #NOTE: processes Spy Buffer Data with bitwise operations
         print "\nTDC:   ", tdc
         print '\n'
 
-        return capIdConcise
+        qieList = [capIdConcise, adc, rangeQ, tdc]
 
-    def checkCapId(self, capId, numChips = 12):
-        checkPass = True
-        checkList = []
+        return qieList
+    # -------------------------------------------
+    def checkCapId(self, capId, prevCapId, iter):
+        allSamePass = True
+        rotatePass  = True
+        checkList = [capId[0]]*12
+        rotateList = []
 
-        first = capId[0]
-        if first == 0:
-            checkList = [0,1,2,3,0,1,2,3,0,1,2,3]
-        elif first == 1:
-            checkList = [1,2,3,0,1,2,3,0,1,2,3,0]
-        elif first == 2:
-            checkList = [2,3,0,1,2,3,0,1,2,3,0,1]
-        elif first == 3:
-            checkList = [3,0,1,2,3,0,1,2,3,0,1,2]
-
+        # check that all 12 chips are same capId
         count = 0
         for i in capId:
             if (i != checkList[count]):
-                checkPass = False
+                allSamePass = False
             count += 1
 
-        return checkPass
+        if iter != 0: # if a legit prevCapId exists
+            if prevCapId[0]   == 0:   rotateList = [1]*12
+            elif prevCapId[0] == 1:   rotateList = [2]*12
+            elif prevCapId[0] == 2:   rotateList = [3]*12
+            elif prevCapId[0] == 3:   rotateList = [0]*12
+            else: print "PrevCapId out of Scope 0-3"
+
+            if capId != rotateList:
+                rotatePass = False
+
+        return (allSamePass and rotatePass)
+
+    # -------------------------------------------
+    def checkAdc(self, adc):
+        goodValPass = True
+
+        for i in adc:
+            if i >= 100:
+                print "Bad ADC Value: ", i
+                goodValPass = False
+
+        return goodValPass
 # ------------------------------------------------------------------------
 class inputSpyRWR(Test): #NOTE: confirms RO nature of reg... doesn't process Spy Buffer
     def testBody(self):
@@ -720,13 +763,15 @@ class inputSpyRWR(Test): #NOTE: confirms RO nature of reg... doesn't process Spy
 class inputSpy_512Reads(Test):
     def testBody(self):
         myCntrRegChange = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-        print myCntrRegChange.run("all", '00000010000000000000000000000000')
+        print myCntrRegChange.run("WrEn_InputSpy", '1')
         myCntrRegChange = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-        print myCntrRegChange.run("all", '00000000000000000000000000000000')
+        print myCntrRegChange.run("WrEn_InputSpy", '0')
         myCntrRegDisplay = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print myCntrRegDisplay.run()
         myInputSpy = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
         print myInputSpy.run()
+
+        return True
 
 # ------------------------------------------------------------------------
 class spy96Bits(Test): #inherit from Test class, overload testBody() function
@@ -1049,6 +1094,33 @@ def changeCI_MODE():
     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
+def cntrRegShow():
+    def openIgloo(slot):
+        q.openChannel()
+        #the igloo is value "3" in I2C_SELECT table
+        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
+        b.sendBatch()
+    openIgloo(3)
+    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    print m.run()
+
+
+
+# def SetQInjMode(onOffBit, slot, piAddress):
+# def SetQInjMode(onOffBit):
+#     #expects onOffBit of 0 or 1
+#     cntrRegShow()
+#     if onOffBit == 0 or onOffBit == 1:
+#         #b = webBus(piAddress, 0)
+#         b.write(0x1c,[0x11,0x03,0,0,0])
+#         b.write(0x09,[0x11,onOffBit,0,0,0])
+#         b.sendBatch()
+#     else:
+#         print "INVALID INPUT IN SetQInjMode... doing nothing"
+#
+#     cntrRegShow()
+
+
 ###########################################
 # RUN FUNCTIONS
 ###########################################
@@ -1056,10 +1128,12 @@ def changeCI_MODE():
 #runAll()
 #runSelect()
 #readOutInputSpy()
-runInputSpy()
+#runInputSpy()
 #changeCI_MODE()
 
-# make sys.arg changes so taht when you run iglooClass.py from the terminal,
+
+
+# make sys.arg changes so that when you run iglooClass.py from the terminal,
 # it will take "options" like user-input, with the default being just run
 # basic r/w capabilities.
 
@@ -1080,3 +1154,45 @@ runInputSpy()
 #   * scratchReg
 # RW functions to allow setting changes:
 #   * cntrReg
+
+
+
+
+
+
+# def changeCI_MODE():
+#     def openChannel():
+#       b.write(0x72,[0x02])
+#       b.write(0x74,[0x02])
+#       b.sendBatch()
+#     openChannel()
+#
+#     def openIgloo(slot):
+#         #the igloo is value "3" in I2C_SELECT table
+#         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
+#         b.sendBatch()
+#     openIgloo(3)
+#
+#         b.write(0x09,[0x11,1,0,0,0])
+#         b.sendBatch()
+#
+#
+# def changeCI_MODE():
+#     def openChannel():
+#       b.write(0x72,[0x02])
+#       b.write(0x74,[0x02])
+#       b.sendBatch()
+#     openChannel()
+#
+#     def openIgloo(slot):
+#         #the igloo is value "3" in I2C_SELECT table
+#         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
+#         b.sendBatch()
+#     openIgloo(3)
+#
+#     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+#     print m.run()
+#     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+#     print m.run("CI_mode", "1")
+#     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+#     print m.run()

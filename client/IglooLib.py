@@ -86,13 +86,15 @@ def readFromRegister(bus, address, register, numBytes):
     for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
+    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
+    ret.reverse()
+
     if isError(ret):
-        ret.reverse()
         print "Read ERROR: ", ret
         return False
     else:
         print "Read Success: ", ret
-        return ret[1:] #ignore the leading error code
+        return ret[:-1] #ignore the leading error code
 # ------------------------------------------------------------------------
 # quiet function, on successful read, returns without printing
 def readFromRegister_Quiet(bus, address, register, numBytes):
@@ -102,22 +104,26 @@ def readFromRegister_Quiet(bus, address, register, numBytes):
     for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
+    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
+    ret.reverse()
+
     if isError(ret):
         print "Read ERROR: ", ret
         return False
     else:
-        return ret[1:] #ignore the leading error code
+        return ret[:-1] #ignore the leading error code
 # ------------------------------------------------------------------------
 
 def writeToRegister(bus, address, register, toWrite):
     # toWrite can be the ret list from readFromRegister()
+    toWrite.reverse()
     bus.write(address, [register] + toWrite)
     ret = []
     for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
-    # print "WRITE RET:"
-    # print ret
+    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
+    #ret.reverse()
 
     if not isError(ret):
         print "Write Success: ", ret
