@@ -81,7 +81,7 @@ class RM:
             return 'closed channel'
         # Open channel to i2c group
         bus.write(0x74, [ngccmGroup(self.location)])
-	    bus.read(0x74, 2)
+	bus.read(0x74, 2)
         return bus.sendBatch()
 
     def runAll(self):

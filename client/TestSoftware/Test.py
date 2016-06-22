@@ -7,8 +7,6 @@ class Test:
     def run(self):
         passes = 0
         for i in xrange(self.iterations):
-	    if (i%50 == 0):
-		print str(i)+" test cycles completed."
             if self.testBody() == True: passes += 1
 	fails = self.iterations - passes
         return (passes, fails)

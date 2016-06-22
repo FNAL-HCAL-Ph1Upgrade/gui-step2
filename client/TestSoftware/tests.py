@@ -104,22 +104,37 @@ class testSuite:
     	self.b.write(slot,[0x11] + vttxLib.vttx["i2c_select"][vttxNum])
     	self.b.sendBatch()
 
+
+    # The following function is for when we want to run ALL
+    # tests on ALL active cards.
     def runTests(self):
+	print "-------------------------"
 	print "Running register tests!"
+	print "-------------------------"
         for r in self.registers.keys():
 		self.outCard.resultList[r] = self.registers[r].run()
+		print r+" tests completed."
 	self.openIgloo(self.a)
+	print "\n-------------------------"
 	print "Running IGLOO tests!"
+	print "-------------------------"
 	for r in self.iglooRegs.keys():
 		self.outCard.iglooList[r] = self.iglooRegs[r].run()
+		print r+" tests completed."
 	self.openVTTX(self.a, 1)
+	print "\n-------------------------"
 	print "Running VTTX_1 tests!"
+	print "-------------------------"
 	for r in self.vttxRegs.keys():
 		self.outCard.vttxListOne[r] = self.vttxRegs[r].run()
+		print r+" tests completed."
 	self.openVTTX(self.a, 2)
+	print "\n-------------------------"
 	print "Running VTTX_2 tests!"
+	print "-------------------------"
 	for r in self.vttxRegs.keys():
 		self.outCard.vttxListTwo[r] = self.vttxRegs[r].run()
+		print r+" tests completed."
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
 
