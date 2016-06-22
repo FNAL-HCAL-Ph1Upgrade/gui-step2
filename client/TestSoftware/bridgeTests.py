@@ -11,10 +11,8 @@ from Test import Test
 #  i2C addresses overlap with those of the 
 
 class ID_string(Test):
-	def __init__(self):
-		self.criteria = "0 77 82 69 72"
-
 	def testBody(self):
+		self.criteria = "0 77 82 69 72"
 		self.bus.write(self.address, [0x00])	
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -24,10 +22,8 @@ class ID_string(Test):
 			return False
 
 class ID_string_cont(Test):
-	def __init__(self):
-		self.criteria = "0 103 100 114 66"
-
 	def testBody(self):
+		self.criteria = "0 103 100 114 66"
 		self.bus.write(self.address, [0x01])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -37,10 +33,8 @@ class ID_string_cont(Test):
 			return False
 
 class Ones(Test):
-	def __init__(self):
-		self.criteria = "0 255 255 255 255"
-	
 	def testBody(self):
+		self.criteria = "0 255 255 255 255"
 		self.bus.write(self.address, [0x08])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -50,10 +44,8 @@ class Ones(Test):
 			return False
 
 class Zeroes(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x09])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -63,10 +55,8 @@ class Zeroes(Test):
 			return False
 
 class OnesZeroes(Test):
-	def __init__(self):
-		self.criteria = "0 170 170 170 170"
-
 	def testBody(self):
+		self.criteria = "0 170 170 170 170"
 		self.bus.write(self.address, [0x0A])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -76,10 +66,8 @@ class OnesZeroes(Test):
 			return False
 
 class Firmware_Ver(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 11 01"
-		
 	def testBody(self):
+		self.criteria = "0 0 0 11 01"
 		self.bus.write(self.address, [0x04])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -89,10 +77,8 @@ class Firmware_Ver(Test):
 			return False
 
 class statusCheck(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x10])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -102,10 +88,8 @@ class statusCheck(Test):
 			return False
 
 class Temperature(Test):
-	def __init__(self):
+	def testBody(self):
 		self.temp == -99.0
-	
-	def testBody(self)
 		self.bus.write(0x00, [0x06])
 		self.bus.write(self.address,[0x11,0x05,0,0,0])
 		self.bus.write(0x40,[0xf3])
@@ -124,10 +108,8 @@ class Temperature(Test):
 			return (False, temp)
 
 class Humidity(Test):
-	def __init__(self):
-		humid = -99.0
-
 	def testBody(self):
+		humid = -99.0
 		self.bus.write(0x00,[0x06])
 		self.bus.write(qieCard,[0x11,0x05,0,0,0])
 		self.bus.write(0x40,[0xf5])
@@ -147,10 +129,8 @@ class Humidity(Test):
 			return False
 
 class ScratchCheck(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x0B])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -160,10 +140,8 @@ class ScratchCheck(Test):
 			return False
 
 class brdg_ClockCounter(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x12])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -173,10 +151,8 @@ class brdg_ClockCounter(Test):
 			return False
 
 class RES_QIE_Counter(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x13])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -186,10 +162,8 @@ class RES_QIE_Counter(Test):
 			return False
 
 class WTE_Counter(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x14])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -199,10 +173,8 @@ class WTE_Counter(Test):
 			return False
 
 class BkPln_Spare_1(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x15])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -212,10 +184,8 @@ class BkPln_Spare_1(Test):
 			return False
 
 class BkPln_Spare_2(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x16])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -225,10 +195,8 @@ class BkPln_Spare_2(Test):
 			return False
 
 class BkPln_Spare_3(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x17])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -237,11 +205,9 @@ class BkPln_Spare_3(Test):
 		else: 
 			return False
 
-class orbit_histo_1(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
+class OrbHist_1(Test):
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x2B])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
@@ -250,11 +216,9 @@ class orbit_histo_1(Test):
 		else: 
 			return False
 
-class orbit_histo_2(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
+class OrbHist_2(Test):
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x2C])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
@@ -263,11 +227,9 @@ class orbit_histo_2(Test):
 		else: 
 			return False
 
-class orbit_histo_3(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
+class OrbHist_3(Test):
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x2D])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
@@ -276,24 +238,20 @@ class orbit_histo_3(Test):
 		else: 
 			return False
 
-class orbit_histo_4(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
+class OrbHist_4(Test):
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x2E])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
 			return True
-		 Michéleelse: 
+		else: 
 			return False
 
-class orbit_histo_5(Test):
-	def __init__(self):
-		self.criteria = "0 0 0 0 0"
-
+class OrbHist_5(Test):
 	def testBody(self):
+		self.criteria = "0 0 0 0 0"
 		self.bus.write(self.address, [0x2F])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
@@ -302,28 +260,3 @@ class orbit_histo_5(Test):
 		else: 
 			return False
 
-#class orbit_histo_6(Test):
-#	def __init__(self):
-#		self.criteria = "0 0 0 0 0"
-#
-#	def testBody(self):
-#		self.bus.write(self.address, [0x30])
-#		self.bus.read(self.address, 3)
-#		r=self.bus.sendBatch()[-1]
-#		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-#			return True
-#		else: 
-#			return False
-#
-#class orbit_histo_7(Test):
-#	def __init__(self):
-#		self.criteria = "0 0 0 0 0"
-#
-#	def testBody(self):
-#		self.bus.write(self.address, [0x31])
-#		self.bus.read(self.address, 3)
-#		r=self.bus.sendBatch()[-1]
-#		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-#			return True
-#		else: 
-#			return False

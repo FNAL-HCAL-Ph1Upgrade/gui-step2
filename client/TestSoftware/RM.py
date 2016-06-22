@@ -85,6 +85,7 @@ class RM:
 	#     bus.read(0x74, 2)
     #     return bus.sendBatch()
 
+
     def runAll(self):
     	for q in range(len(self.qCards)):
     		self.qCards[q].runAll(self.piAddress)

@@ -1,49 +1,15 @@
-#import helpers as h
 import sys
-sys.path.append('../')
-from testSummary import testSummary
+from datetime import datetime
+import inspect
+import testSummary
+import bridgeTests as bt
+import vttxClass as vc
+import iglooClass as ic
 import client
 import helpers
-#from registers import registers
-
-registers = {
-    "ID_string" :{
-        "address" : 0x00,
-        "size" : 32,
-        "RW" : 0,
-        "expected" : "0 77 82 69 72" #MREH in ascii
-        },
-    "ID_string_cont" :{
-        "address" : 0x01,
-        "size" : 32,
-        "RW" : 0,
-        "expected" : "0 103 100 114 66" #gdrB in ascii
-        },
-    "Ones" :{
-        "address" : 0x08,
-        "size" : 32,
-        "RW" : 0,
-        "expected" : "0 255 255 255 255"
-        },
-    "Zeroes" :{
-        "address" : 0x09,
-        "size" : 32,
-        "RW" : 0,
-        "expected" : "0 0 0 0 0"
-        },
-    "OnesZeroes" :{
-        "address" : 0x0A,
-        "size" : 32,
-        "RW" : 0,
-        "expected" : "0 170 170 170 170"
-        },
-    "Firmware_Ver" :{
-	"address" : 0x04,
-	"size" : 32,
-	"RW" : 1,
-	"expected" : "0 0 0 11 01"
-	}
-}
+import Test
+import listOfTests
+import vttxLib
 
 noCheckRegis = {
 	"Unique_ID" :{
@@ -53,7 +19,6 @@ noCheckRegis = {
 		"sleep" : 0,
 		"size" : 64,
 		"RW" : 0,
-#		"spaces" : 3
 	},
 	"Temperature" : {
 		"i2c_path" : [0x11, 0x05, 0,0,0],
@@ -76,10 +41,15 @@ noCheckRegis = {
 class testSuite:
     def __init__(self, webAddress, address):
         '''create a new test suite object... initialize bus and address'''
-        self.bus = client.webBus(webAddress, 0)
-        self.address = address
-	self.outCard = testSummary()
+        self.b = client.webBus(webAddress, 0)
+	self.outCard = testSummary.testSummary()
+        self.a = address
+	i = 100
 
+	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
+	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
+	self.vttxRegs  = listOfTests.initializeVttxList(self.b, self.a, i)
+	
     def readWithCheck(self, registerName, iterations = 1):
         passes = 0
         register = registers[registerName]["address"]
@@ -87,9 +57,9 @@ class testSuite:
         check = registers[registerName]["expected"]
 
         for i in xrange(iterations):
-            self.bus.write(self.address, [register])
-            self.bus.read(self.address, size)
-        r = self.bus.sendBatch()
+            self.b.write(self.a, [register])
+            self.b.read(self.a, size)
+        r = self.b.sendBatch()
         for i in xrange(iterations * 2):
             if (i % 2 == 1) and (r[i] == check):
                 passes += 1
@@ -97,6 +67,7 @@ class testSuite:
 	return (passes, iterations - passes)
 
     def readNoCheck(self, testName, iterations = 1):
+	self.outCard.cardGenInfo["DateRun"] = str(datetime.now())
 	i2c_pathway = noCheckRegis[testName]["i2c_path"]
 	register = noCheckRegis[testName]["address"]
 	size = noCheckRegis[testName]["size"]/8
@@ -105,33 +76,68 @@ class testSuite:
 
 	for i in xrange(iterations):
 		# Clear the backplane
-		self.bus.write(0x00,[0x06])
-
-		self.bus.write(self.address,i2c_pathway)
-		self.bus.write(register,command)
+		self.b.write(0x00,[0x06])
+		self.b.write(self.a,i2c_pathway)
+		self.b.write(register,command)
 		if (napTime != 0):
-			self.bus.sleep(napTime)  #catching some z's
-		self.bus.read(register,size)
+			self.b.sleep(napTime)  #catching some z's
+		self.b.read(register,size)
 
-	r = self.bus.sendBatch()
+	r = self.b.sendBatch()
 	# Remove the entries in r that contain no information
 	new_r = []
 	for i in r:
 		if (i != '0' and i != 'None'):
 			new_r.append(i)
-	self.outCard.resultList[testName] = new_r
+	self.outCard.cardGenInfo[testName] = new_r
 	if (testName == "Unique_ID"):
 		new_r[0] = helpers.reverseBytes(new_r[0])
 		new_r[0] = helpers.toHex(new_r[0])
-	return new_r
+	self.outCard.cardGenInfo[testName]=new_r[0]
 
-#   def runTests(self,barcode):
+    def openIgloo(self, slot):
+		#the igloo is value "3" in I2C_SELECT table
+		self.b.write(slot,[0x11,0x03,0,0,0])
+		self.b.sendBatch()
+
+    def openVTTX(self, slot, vttxNum):
+    	self.b.write(slot,[0x11] + vttxLib.vttx["i2c_select"][vttxNum])
+    	self.b.sendBatch()
+
+
+    # The following function is for when we want to run ALL
+    # tests on ALL active cards.
     def runTests(self):
-        for r in registers.keys():
-            self.readWithCheck(r, 100)
+	print "-------------------------"
+	print "Running register tests!"
+	print "-------------------------"
+        for r in self.registers.keys():
+		self.outCard.resultList[r] = self.registers[r].run()
+		print r+" tests completed."
+	self.openIgloo(self.a)
+	print "\n-------------------------"
+	print "Running IGLOO tests!"
+	print "-------------------------"
+	for r in self.iglooRegs.keys():
+		self.outCard.iglooList[r] = self.iglooRegs[r].run()
+		print r+" tests completed."
+	self.openVTTX(self.a, 1)
+	print "\n-------------------------"
+	print "Running VTTX_1 tests!"
+	print "-------------------------"
+	for r in self.vttxRegs.keys():
+		self.outCard.vttxListOne[r] = self.vttxRegs[r].run()
+		print r+" tests completed."
+	self.openVTTX(self.a, 2)
+	print "\n-------------------------"
+	print "Running VTTX_2 tests!"
+	print "-------------------------"
+	for r in self.vttxRegs.keys():
+		self.outCard.vttxListTwo[r] = self.vttxRegs[r].run()
+		print r+" tests completed."
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
-#	self.outCard.resultList["Barcode"]=barcode
+
 	self.outCard.printResults()
 	print "\n\n"
 	self.outCard.writeHumanLog()

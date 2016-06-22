@@ -583,13 +583,14 @@ class makeGui:
 		self.outSlotNumbers = []
 
 	def runTestSuite(self):
+		print str(datetime.now())
 		self.prepareOutSlots()
 		print self.outSlotNumbers
-		print self.piChoiceVar.get()
 		self.myTestStand = TestStand(self.outSlotNumbers,self.piChoiceVar.get())
 		self.myTestStand.runAll()
 		# Reset the active outSlots
 		self.outSlotNumbers = []
+		print str(datetime.now())
 
 
 	def uHTR_tester_bttnPress(self):
@@ -597,7 +598,6 @@ class makeGui:
 		for i in range(len(self.uHTR_slotNumber)):
 			if (self.uHTR_slotNumber[i].get() == 1):
 				outSlotList.append(i)
-		print outSlotList
 		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
 
 	def prepareOutSlots(self):
