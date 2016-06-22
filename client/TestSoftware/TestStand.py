@@ -1,11 +1,14 @@
 #TestStand.py
 
 import RM
+import sys
+sys.path.append('../')
+from client import webBus
 
 class TestStand:
     def __init__(self, activeSlots, piAddress):
         '''Create a test stand object filled with necessary RMs, cards'''
-
+        self.bus = webBus(piAddress)
         self.activeSlots = activeSlots
         self.RMs = []
 
@@ -28,10 +31,10 @@ class TestStand:
                 #RM1
                 RM1_active.append(slot)
         #initialize RMs
-        self.RMs.append(RM.RM(1, RM1_active,piAddress))
-        self.RMs.append(RM.RM(2, RM2_active,piAddress))
-        self.RMs.append(RM.RM(3, RM3_active,piAddress))
-        self.RMs.append(RM.RM(4, RM4_active,piAddress))
+        self.RMs.append(RM.RM(1, RM1_active,self.bus))
+        self.RMs.append(RM.RM(2, RM2_active,self.bus))
+        self.RMs.append(RM.RM(3, RM3_active,self.bus))
+        self.RMs.append(RM.RM(4, RM4_active,self.bus))
 
     def runAll(self):
 	    for r in self.RMs:

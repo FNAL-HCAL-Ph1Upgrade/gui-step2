@@ -36,14 +36,14 @@ def ngccmGroup(rm):
 #                 }.get([9,7,4,2][rmLoc - 1])
 
 class RM:
-    def __init__(self, location, activeSlots, piAddress):
+    def __init__(self, location, activeSlots, bus):
         '''Initializes an RM object at a specific location on the test stand'''
         self.qCards = []
-	self.piAddress = piAddress
-	self.location = location
+	    self.bus = bus
+	    self.location = location
         for i in activeSlots:
             if self.checkCards(i):
-                self.qCards.append(qCard(i))
+                self.qCards.append(qCard(i, bus, ))#barcode))
     def __repr__(self):
         '''Object representation'''
         return "RM()"
@@ -57,12 +57,11 @@ class RM:
 ##Needs to be part of QIE class
     def checkCards(self, slot):
     	self.openChannel()
-    	bus = webBus(self.piAddress, 0)
     	activeCard = Hardware.getCardAddress(slot)
-    	bus.write(0x00,[0x06])
-    	bus.write(activeCard,[0x00])
-    	bus.read(activeCard,4)
-    	data=bus.sendBatch()
+    	self.bus.write(0x00,[0x06])
+    	self.bus.write(activeCard,[0x00])
+    	self.bus.read(activeCard,4)
+    	data=self.bus.sendBatch()
     	if (data[-1][0] == "1"):
     		return False
     	else:

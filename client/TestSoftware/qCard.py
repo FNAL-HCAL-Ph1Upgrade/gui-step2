@@ -5,7 +5,7 @@ from Hardware import Hardware
 cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
 
 class qCard:
-    def __init__(self, slot, barcode='000_000'):
+    def __init__(self, slot, bus, barcode='000_000'):
         '''Create a qCard object with basic info and no yet-passed tests'''
         self.slot = slot
         self.address = Hardware.getCardAddress(slot)

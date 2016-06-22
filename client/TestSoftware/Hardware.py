@@ -1,7 +1,5 @@
 #Hardware.py
 import sys
-sys.append('../')
-from client import webBus
 from DChains import DChains
 #MUX dict
   #Given JX, set MUXes
