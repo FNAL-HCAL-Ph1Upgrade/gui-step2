@@ -53,7 +53,8 @@ class makeGui:
 		self.nameChoiceVar  =  StringVar()
 		self.infoCommentVar =  StringVar()
 		self.runtimeNumber  =  StringVar()
-		self.piChoiceVar =  StringVar()
+		self.suiteChoiceVar =  StringVar()
+		self.piChoiceVar    =  StringVar()
 		self.allCardSelection = IntVar()
 	
 		# Place an all-encompassing frame in the parent window. All of the following
@@ -211,10 +212,10 @@ class makeGui:
 
 		# Make and pack a listbox to pick which QIE card to talk to:
 		self.info_nameBox = OptionMenu(self.info_subTop_frame, self.nameChoiceVar,
-					      "shogan","csmith","asmith","jpotarf",
-					      "jlawrence","abaas")
+					      "Shaun Hogan","Caleb Smith","Adryanna Smith","Jordan Potarf",
+					      "John Lawrence","Andrew Baas")
 		self.info_nameBox.pack(side=LEFT)
-		self.nameChoiceVar.set("shogan") # initializes the OptionMenu
+		self.nameChoiceVar.set("Shaun Hogan") # initializes the OptionMenu
 
 		# Make a label for the name drop-down:
 		self.info_commentLabel = Label(self.info_subBot_frame, text="User Testing Comments: ")
@@ -390,18 +391,44 @@ class makeGui:
                         pady=frame_pady
                         )
 
-#		# Make a sub-frame below the top sub-frame in QIE frame
-#                self.qie_subTopMid_frame = Frame(
-#                        self.qie_frame,
-#                        background="white"
-#                        )
-#                self.qie_subTopMid_frame.pack(
-#                        side=TOP,
-#                        ipadx=frame_ipadx,
-#                        ipady=frame_ipady,
-#                        padx=frame_padx,
-#                        pady=frame_pady
-#                        )
+		# 2nd top sub-frame in QIE frame
+		self.qie_subTop2_frame = Frame(
+			self.qie_frame,
+			background="white"
+			)
+		self.qie_subTop2_frame.pack(
+			side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+		# Make a sub-frame below the top sub-frame in QIE frame
+                self.qie_subTopMid_frame = Frame(
+                        self.qie_frame,
+                        background="white"
+                        )
+                self.qie_subTopMid_frame.pack(
+                        side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+		# Make a 2nd sub-frame below the top sub-frame in QIE frame
+                self.qie_subTopMid2_frame = Frame(
+                        self.qie_frame,
+                        background="white"
+                        )
+                self.qie_subTopMid2_frame.pack(
+                        side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
 
 		# Mid sub-frame in QIE frame
 		self.qie_subMid_frame = Frame(
@@ -438,6 +465,11 @@ class makeGui:
 			)
 		self.piSelectionLbl.pack(side=LEFT)
 
+		# Make a separation line
+		self.separationLabelTop = Label(self.qie_subTop2_frame, text="-----------------------------")
+		self.separationLabelTop.configure(bg="white")
+		self.separationLabelTop.pack()
+
 		# Make a menu for the raspberry pi options
 		self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
 						"pi5", "pi6")
@@ -445,7 +477,7 @@ class makeGui:
 		self.piChoiceVar.set("pi5")
 
 		# Make a label for the test selection
-                self.qieReadLabel = Label(self.qie_subMid_frame, text="Select a test to run: ")
+                self.qieReadLabel = Label(self.qie_subTopMid_frame, text="Select a test to run: ")
                 self.qieReadLabel.configure(
                         padx=button_padx,
                         pady=button_pady,
@@ -454,7 +486,7 @@ class makeGui:
                 self.qieReadLabel.pack(side=LEFT)
 
 		# Make and pack a PLACEHOLDER LISTBOX for the variable to read:
-                self.qie_readBox = OptionMenu(self.qie_subMid_frame, self.qieReadVar,
+                self.qie_readBox = OptionMenu(self.qie_subTopMid_frame, self.qieReadVar,
                                               "ID_string","ID_string_cont","Ones",
 				              "Zeroes","OnesZeroes","Firmware_Ver",
 					      "Unique_ID", "Temperature", "Humidity"
@@ -463,7 +495,7 @@ class makeGui:
                 self.qieReadVar.set("ID_string") # initializes the OptionMenu
 
 		#Make a button to read what is at the address
-		self.qie_read_Button = Button(self.qie_subMid_frame, command=self.qieClickRead)
+		self.qie_read_Button = Button(self.qie_subTopMid_frame, command=self.qieClickRead)
 		self.qie_read_Button.configure(text="RUN TEST",background="khaki")
 		self.qie_read_Button.configure(
 			width=button_width*2,
@@ -472,9 +504,34 @@ class makeGui:
 			)
 		self.qie_read_Button.pack(side=RIGHT)
 
+		# Make a separation line
+		self.separationLabel = Label(self.qie_subTopMid2_frame, text="-----------------------------")
+		self.separationLabel.configure(bg="white")
+		self.separationLabel.pack()
+
+		# Make and pack a label for suite selection:
+		self.qie_suiteLabel = Label(self.qie_subMid_frame, text="Select a suite to run: ")
+		self.qie_suiteLabel.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.qie_suiteLabel.pack(side=LEFT)
+
+		# Make and pack a menu for the suite selection
+		self.qie_suiteMenu = OptionMenu(self.qie_subMid_frame, self.suiteChoiceVar,
+						"Main Suite : All Tests",
+						"Bridge Register Suite",
+						"Igloo Register Suite",
+						"Vttx Register Suites"
+						)
+		self.qie_suiteMenu.pack(side=LEFT)
+		self.suiteChoiceVar.set("Main Suite : All Tests")
+
+
 		#Make a button to run the main test suite
 		self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
-		self.qie_testSuite_button.configure(text="RUN MAIN TEST SUITE", background="turquoise")
+		self.qie_testSuite_button.configure(text="RUN SELECTED TEST SUITE", background="turquoise")
 		self.qie_testSuite_button.configure(
 			width=button_width*4,
 			padx=button_padx,
@@ -592,6 +649,8 @@ class makeGui:
 
 	def runTestSuite(self):
 		print str(datetime.now())
+		for k in self.outSummaries:
+			k.cardGenInfo["User"] = self.nameChoiceVar.get()
 		self.prepareOutSlots()
 		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, self.piChoiceVar.get())
 		self.myTestStand.runAll()
@@ -620,7 +679,6 @@ class makeGui:
 					self.outSlotNumbers.append(k+10)
 
 	def prepareOutCards(self):
-		print len(self.cardVarList)
 		for k in range(len(self.cardVarList)):
 			self.outSummaries.append(testSummary.testSummary())
 

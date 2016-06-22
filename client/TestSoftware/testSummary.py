@@ -3,7 +3,7 @@
 
 class testSummary:
 	def __init__(self):
-		self.cardGenInfo = {"Barcode" : [], "Unique_ID" : "", "DateRun" : []
+		self.cardGenInfo = {"Unique_ID" : "", "DateRun" : [], "User" : ""
 		}
 
 		self.resultList = {
@@ -79,7 +79,7 @@ class testSummary:
 			with open(fileName, "w") as w:
 				w.write("{")
 				for i in self.cardGenInfo.keys():
-					w.write('"'+i+'"'+" : "+str(self.cardGenInfo[i])+", ")
+					w.write('"'+i+'"'+" : "+'"'+str(self.cardGenInfo[i])+'"'+", ")
 				for i in self.resultList.keys():
 					w.write('"'+i+'"'+" : "+str(self.resultList[i])+", ")
 				for i in self.iglooList.keys():
