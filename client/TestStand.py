@@ -3,7 +3,7 @@
 import RM
 
 class TestStand:
-    def __init__(self, activeSlots,inBus):
+    def __init__(self, activeSlots):
         '''Create a test stand object filled with necessary RMs, cards'''
 
         self.activeSlots = activeSlots
@@ -28,18 +28,18 @@ class TestStand:
                 #RM1
                 RM1_active.append(slot)
         #initialize RMs
-        self.RMs.append(RM.RM(1, RM1_active,inBus))
-        self.RMs.append(RM.RM(2, RM2_active,inBus))
-        self.RMs.append(RM.RM(3, RM3_active,inBus))
-        self.RMs.append(RM.RM(4, RM4_active,inBus))
+        self.RMs.append(RM.RM(1, RM1_active))
+        self.RMs.append(RM.RM(2, RM2_active))
+        self.RMs.append(RM.RM(3, RM3_active))
+        self.RMs.append(RM.RM(4, RM4_active))
 
     def runAll(self):
-	    for r in self.RMs:
+	for r in self.RMs:
 		r.runAll()
 
     def runSingle(self, key):
-        for r in self.RMs:
-            r.runSingle(key)
+	for r in self.RMs:
+		r.runSingle(key)
 
     def __repr__(self):
         '''Object representation'''

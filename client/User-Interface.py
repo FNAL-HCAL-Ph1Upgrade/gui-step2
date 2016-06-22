@@ -48,7 +48,6 @@ class makeGui:
 		self.nameChoiceVar  =  StringVar()
 		self.infoCommentVar =  StringVar()
 		self.runtimeNumber  =  StringVar()
-		self.piChoiceVar =  StringVar()
 		self.allCardSelection = IntVar()
 	
 		# Place an all-encompassing frame in the parent window. All of the following
@@ -143,7 +142,6 @@ class makeGui:
 			background="white"
 			)
 		# We don't want this frame to shrink when placing widgets:
-
 		#self.uHTR_frame.pack_propagate(False)		
 
 		self.uHTR_frame.pack(
@@ -372,18 +370,18 @@ class makeGui:
 			)
 		self.qieFrameLabel.pack(side=TOP)
 
-		# Top sub-frame in QIE frame
-		self.qie_subTop_frame = Frame(
-			self.qie_frame,
-			background="white"
-			)
-		self.qie_subTop_frame.pack(
-			side=TOP,
-                        ipadx=frame_ipadx,
-                        ipady=frame_ipady,
-                        padx=frame_padx,
-                        pady=frame_pady
-                        )
+#		# Top sub-frame in QIE frame
+#		self.qie_subTop_frame = Frame(
+#			self.qie_frame,
+#			background="white"
+#			)
+#		self.qie_subTop_frame.pack(
+#			side=TOP,
+#                        ipadx=frame_ipadx,
+#                        ipady=frame_ipady,
+#                        padx=frame_padx,
+#                        pady=frame_pady
+#                        )
 
 #		# Make a sub-frame below the top sub-frame in QIE frame
 #                self.qie_subTopMid_frame = Frame(
@@ -424,22 +422,35 @@ class makeGui:
                         pady=frame_pady
                         )
 
-		# Make a label for rasp. pi selection
-		self.piSelectionLbl = Label(self.qie_subTop_frame, text="Choose the Pi to run on: ")
-		self.piSelectionLbl.configure(
-			padx=button_padx,
-			pady=button_pady,
-			background="white"
-			)
-		self.piSelectionLbl.pack(side=LEFT)
+		# Make and pack a text label for the following option menu
+#                self.qieChoiceLabel = Label(self.qie_subTop_frame, text="Choose QIE card to communicate with: ")
+#               self.qieChoiceLabel.configure(
+#                        padx=button_padx,
+#                        pady=button_pady,
+#                        background="white"
+#                        )
+#		self.qieChoiceLabel.pack(side=LEFT)
 
-		# Make a menu for the raspberry pi options
-		self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
-						"pi5", "pi6")
-		self.pi_choiceBox.pack(side=LEFT)
-		self.piChoiceVar.set("pi5")
+		# Make and pack a listbox to pick which QIE card to talk to:
+#		self.qie_listBox = OptionMenu(self.qie_subTop_frame, self.qieChoiceVar,
+#					      '0x19','0x1a','0x1b','0x1c')
+#		self.qie_listBox.pack(side=LEFT)
+#		self.qieChoiceVar.set('0x19') # initializes the OptionMenu
 
-		# Make a label for the test selection
+		# Make and pack a label for the following qie_outputText box
+#		self.qie_outputTextLabel = Label(self.qie_subTopMid_frame, text="QIE Returned: ")
+#		self.qie_outputTextLabel.configure(
+#			padx=button_padx,
+#			pady=button_pady,
+#			background="white"
+#			)
+#		self.qie_outputTextLabel.pack(side=LEFT)
+#
+#		# Make and pack a textbox to display the output from talking with QIE cards
+#		self.qie_outputText = Entry(self.qie_subTopMid_frame, textvariable=self.qieOutText,state="readonly",readonlybackground="gray90")
+#		self.qie_outputText.pack(side=LEFT)
+
+		# Make and pack a text label for the read test to run
                 self.qieReadLabel = Label(self.qie_subMid_frame, text="Select a test to run: ")
                 self.qieReadLabel.configure(
                         padx=button_padx,
@@ -583,14 +594,12 @@ class makeGui:
 		self.outSlotNumbers = []
 
 	def runTestSuite(self):
-		print str(datetime.now())
 		self.prepareOutSlots()
-		print self.outSlotNumbers
-		self.myTestStand = TestStand(self.outSlotNumbers,self.piChoiceVar.get())
+		print len(self.outSlotNumbers)
+		self.myTestStand = TestStand(self.outSlotNumbers)
 		self.myTestStand.runAll()
 		# Reset the active outSlots
 		self.outSlotNumbers = []
-		print str(datetime.now())
 
 
 	def uHTR_tester_bttnPress(self):
@@ -598,6 +607,7 @@ class makeGui:
 		for i in range(len(self.uHTR_slotNumber)):
 			if (self.uHTR_slotNumber[i].get() == 1):
 				outSlotList.append(i)
+		print outSlotList
 		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
 
 	def prepareOutSlots(self):

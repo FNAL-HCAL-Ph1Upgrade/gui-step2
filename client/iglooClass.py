@@ -1,9 +1,7 @@
 from client import webBus
-import QIELib
 import IglooLib
 
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
-q = QIELib
 i = IglooLib
 
 
@@ -1229,3 +1227,4 @@ processInputSpy()
 #     print m.run("CI_mode", "1")
 #     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
 #     print m.run()
+
