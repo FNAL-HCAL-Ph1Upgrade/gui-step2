@@ -14,6 +14,8 @@ def getBytesFromBits(bitList):
     for i in xrange(len(bitList)/8):
         ret.append(getByteFromBits(bitList[i * 8: (i + 1) * 8]))
     return ret
+def readBinaryRegister(bus, address, register, numBytes):
+    return getBitsFromBytes(readFromRegisterbus, address, register, numBytes))
 def readFromRegister(bus, address, register, numBytes):
     bus.write(address, [register])
     bus.read(address, numBytes)
