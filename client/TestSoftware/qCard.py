@@ -1,6 +1,6 @@
 #qCard class
 import tests
-from Hardware import Hardware
+import Hardware
 
 cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
 
