@@ -170,17 +170,23 @@ def RWR_withRestore(bus, address, register, numBytes):
 
     # Write different values to register
     w = writeToRegister(bus, address, register, augRead1)
+
     if w == False: return False
 
     # Get read2
     read2 = readFromRegister(bus, address, register, numBytes)
+
     #if write successully changed reg (aka read1 != read2)
     if (read1 != read2):
         # Write original values to register
         w = writeToRegister(bus, address, register, read1)
+
+        read1.reverse() #write function flips bytes... Flip them back to compare with read3 properly
+
         if w == False: return False
         # Get read3
         read3 = readFromRegister(bus, address, register, numBytes)
+
         # if restored to original (aka read1 = read3)
         if read1 == read3:
             print "Read1 = Read3 --> Reg changed, now restored to original"
@@ -206,7 +212,7 @@ def RWR_withRestore_Quiet(bus, address, register, numBytes):
         else: augRead1.append(i - 1)
 
     # Write different values to register
-    w = writeToRegister(bus, address, register, augRead1)
+    w = writeToRegister_Quiet(bus, address, register, augRead1)
     if w == False: return False
 
     # Get read2
@@ -215,7 +221,10 @@ def RWR_withRestore_Quiet(bus, address, register, numBytes):
     if (read1 != read2):
         # Write original values to register
         w = writeToRegister_Quiet(bus, address, register, read1)
+
+        read1.reverse() #write function flips bytes... Flip them back to compare with read3 properly
         if w == False: return False
+
         # Get read3
         read3 = readFromRegister_Quiet(bus, address, register, numBytes)
         # if restored to original (aka read1 = read3)

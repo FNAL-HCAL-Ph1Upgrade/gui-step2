@@ -35,7 +35,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
-            # print "~~PASS: RO not writable~~"
+            print "~~PASS: RO not writable~~"
             return True
         else:
             return False
@@ -110,14 +110,14 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class statusReg(Test): #inherit from Test class, overload testBody() function
+class statusReg(Test): #shows status register settings
     # -------------------------------------------
 
     def read(self, desiredReg = "all"):
         name = "statusReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
-        allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
+        allRegList = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)
         #print "allRegList: ", allRegList
 
         # if bad read
@@ -136,10 +136,18 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
             "PLL_320MHz_Lock"   :   allRegStr[31] # good when '1'
                 }
 
-        allReg = statusReg["InputSpyWordNum"] + " : " + statusReg["InputSpyFifoEmpty"]\
-            + " : " + statusReg["InputSpyFifoFull"] + " : " + statusReg["Qie_DLLNoLock"]\
-            + " : " + statusReg["BRIDGE_SPARE"] + " : " + statusReg["1_bit"]\
-            + " : " + statusReg["PLL_320MHz_Lock"]
+        allReg = "InputSpyWordNum: " + statusReg["InputSpyWordNum"] + '\n'\
+             + "InputSpyFifoEmpty: " + statusReg["InputSpyFifoEmpty"] + '\n'\
+             + "InputSpyFifoFull: " + statusReg["InputSpyFifoFull"] + '\n'\
+             + "Qie_DLLNoLock: " + statusReg["Qie_DLLNoLock"] + '\n'\
+             + "BRIDGE_SPARE: " + statusReg["BRIDGE_SPARE"] + '\n'\
+             + "1_bit: " + statusReg["1_bit"] + '\n'\
+             + "PLL_320MHz_Lock: " + statusReg["PLL_320MHz_Lock"]
+
+        # allReg = statusReg["InputSpyWordNum"] + " : " + statusReg["InputSpyFifoEmpty"]\
+        #     + " : " + statusReg["InputSpyFifoFull"] + " : " + statusReg["Qie_DLLNoLock"]\
+        #     + " : " + statusReg["BRIDGE_SPARE"] + " : " + statusReg["1_bit"]\
+        #     + " : " + statusReg["PLL_320MHz_Lock"]
 
         if desiredReg == "all":
             return allReg
@@ -172,13 +180,13 @@ class statusReg(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class cntrRegDisplay(Test): #inherit from Test class, overload testBody() function
+class cntrRegDisplay(Test): #shows control register settings
     # -------------------------------------------
     def read(self, desiredReg = "all"):
         name = "cntrReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
-        allRegList = i.readFromRegister(b, i.iglooAdd, reg, size)
+        allRegList = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)
         #print "allRegList: ", allRegList
 
         # if bad read
@@ -330,21 +338,6 @@ class cntrRegDisplay(Test): #inherit from Test class, overload testBody() functi
             return True
         else:
             return False
-
-        # desiredReg = raw_input("Enter cntrReg name (enter=all, 'more'=ShowNames): ")
-        # if desiredReg == '': desiredReg = 'all'
-        # elif desiredReg == 'more':
-        #     print "31bX, " + "orbitHisto_clear, " + "orbitHisto_run, "\
-        #         + "2_bit_0, " + "WrEn_InputSpy, " + "CI_mode"
-        #     desiredReg = raw_input("Enter cntrReg name: ")
-        #     if desiredReg == '': desiredReg = 'all'
-        #
-        # settingList = raw_input("Enter cntrReg setting list ['n1','n2', ...]: ")
-        #
-        # self.write(desiredReg, settingList)
-
-        # for RO register, read1 == read2 constitutes a PASS
-        # NEED TO CHANGE THIS FOR CNTRREG SINCE WE EXPECT TO R/W NON-RAND VALUES!!
 # ------------------------------------------------------------------------
 class cntrRegChange(Test): # NOTE: this run() function is overloaded to require parameters
     # -------------------------------------------
@@ -500,7 +493,7 @@ class cntrRegChange_Quiet(Test): # NOTE: this run() function is overloaded to re
             if self.testBody(desiredReg, settingStr) == True: passes += 1 #changed true to True
         return (passes, self.iterations - passes) #changed fails to (self.iterations - passes)
 # ------------------------------------------------------------------------
-class clk_count(Test): #inherit from Test class, overload testBody() function
+class clk_count(Test): #clock count
     def testBody(self):
         name = "clk_count"
         reg = i.igloo[name]["register"]
@@ -508,13 +501,13 @@ class clk_count(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RO count register, just test ability to read out
-        if (i.readFromRegister(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)):
             print "~~PASS: Read from RO~~"
             return True
         else:
             return False
 # ------------------------------------------------------------------------
-class rst_QIE_count(Test): #inherit from Test class, overload testBody() function
+class rst_QIE_count(Test): #reset qie count
     def testBody(self):
         name = "rst_QIE_count"
         reg = i.igloo[name]["register"]
@@ -522,13 +515,13 @@ class rst_QIE_count(Test): #inherit from Test class, overload testBody() functio
 
         print "----------%s----------" %name
         # for RO count register, just test ability to read out
-        if (i.readFromRegister(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)):
             print "~~PASS: Read from RO~~"
             return True
         else:
             return False
 # ------------------------------------------------------------------------
-class wte_count(Test): #inherit from Test class, overload testBody() function
+class wte_count(Test): #warning-test-enable count
     def testBody(self):
         name = "wte_count"
         reg = i.igloo[name]["register"]
@@ -536,38 +529,38 @@ class wte_count(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RO count register, just test ability to read out
-        if (i.readFromRegister(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)):
             print "~~PASS: Read from RO~~"
             return True
         else:
             return False
 # ------------------------------------------------------------------------
-class capIDErr_count(Test): #inherit from Test class, overload testBody() function
+class capIDErr_count(Test): # changed: deleted obselete Link 3
     def testBody(self):
         name = "capIDErr_count"
         reg = [i.igloo[name]["register"]["link1"],\
-            i.igloo[name]["register"]["link2"],i.igloo[name]["register"]["link3"]]
+            i.igloo[name]["register"]["link2"]]
         size = i.igloo[name]["size"] / 8
 
         print "----------%s----------" %name
-        linkPass = [False, False, False]
+        linkPass = [False, False]
 
         # for RO count register, just test ability to read out
         link = 0
         for n in reg:
             print '----Link',link+1,'----'
-            if (i.readFromRegister(b, i.iglooAdd, n, size)):
+            if (i.readFromRegister_Quiet(b, i.iglooAdd, n, size)):
                 linkPass[link] = True
 
             link = link + 1
 
-        if (linkPass[0] and linkPass[1] and linkPass[2]):
+        if (linkPass[0] and linkPass[1]):
             print "~~ALL PASS: Read from RO~~"
             return True
         else:
             return False
 # ------------------------------------------------------------------------
-class fifo_data(Test): #inherit from Test class, overload testBody() function
+class fifo_data(Test): #NOTE: Unused register
     def testBody(self):
         name = "fifo_data"
         reg = [i.igloo[name]["register"]["data1"],\
@@ -592,9 +585,18 @@ class fifo_data(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class inputSpy(Test): #NOTE: processes Spy Buffer Data with bitwise operations
+class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes Spy Buffer Data with bitwise operations
+    # NOTE: run() takes parameter for total fifo extractions from InputSpy. Default = 512 (full test)
     # -------------------------------------------
-    def testBody(self):
+    def run(self, fifoIterations=512):
+        passes = 0
+        for i in xrange(self.iterations): #changed from iterations to self.iterations
+            if self.testBody(fifoIterations) == True: passes += 1 #changed true to True
+        return (passes, self.iterations - passes)
+
+    # -------------------------------------------
+    def testBody(self, fifoIterations):
+        # Set total numbers of iterations (512 for full testing of InputSpy)
         name = "inputSpy"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8      # dict holds bits, we want bytes
@@ -603,46 +605,48 @@ class inputSpy(Test): #NOTE: processes Spy Buffer Data with bitwise operations
         passCount_512 = 0 # maximum = 512
         prevCapId = []
 
-        # Set total numbers of iterations (512 for full testing of InputSpy)
-        TotalIterations = 10
-
-        for iter in range(0, TotalIterations):
+        for iter in range(0, fifoIterations):
+            print '___________'
             print "ITER: ", iter
             capIdPass          = False
             adcPass            = False
 
-            buff = i.readFromRegister(b, i.iglooAdd, reg, size)
+            buff = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)
 
             # if good read
             if (buff) != False:
                 buff.reverse() # InputSpy doesn't flip bytes like Bridge does
-                #print "buff from read: ", buff
 
-                # Get InputSpy data (qieList = [capIdConcise, adc, rangeQ, tdc])
+            # Get InputSpy data (qieList = [capIdConcise, adc, rangeQ, tdc])
                 qieList = self.printData(buff)
 
-                # Check CapID
-                print "prevCapId: ", prevCapId
+            # Check CapID
+                # print "prevCapId: ", prevCapId
                 if self.checkCapId(qieList[0], prevCapId, iter):
                     print "~~CapIDs Rotate~~"
                     capIdPass = True
-                else: print "CapId Rotation ERROR: ", prevCapId, ' -> ', qieList[0]
+                else:
+                    print "CapId Rotation ERROR: ", prevCapId, ' -> ', qieList[0]
+                    capIdPass = False
 
-                # Check ADC
+            # Check ADC
                 if self.checkAdc(qieList[1]):
-                    print "~~ACD Good Range~~"
+                    print "~~ADC Good Zone~~"
                     adcPass = True
+                else:
+                    print "ADC Too High ERROR"
 
                 if (capIdPass and adcPass): passCount_512 += 1
 
                 prevCapId = qieList[0]
+                # print '\n'
 
             # if bad read
             else: print "ERROR: Cannot Read Buffer, ITER: ",iter
 
         # return after 512 iterations
-        if passCount_512 == TotalIterations:
-            print "~~ ALL 512 PASS ~~"
+        if passCount_512 == fifoIterations:
+            print "~~ ALL %d PASS ~~" %fifoIterations
             return True
         else:
             print ">> Pass Count (out of 512): ", passCount_512, " <<"
@@ -701,23 +705,19 @@ class inputSpy(Test): #NOTE: processes Spy Buffer Data with bitwise operations
 
             pedArray[i][0x03 & int(capId[i])] += int(0x3f & adc[i])
 
-        print "capID...", capId
-
-        print "FIFO empty: %1d   FIFO full: %1d   clk counter: %6d\n" % (fifoEmpty,fifoFull,clkctr)
+        print "FIFO empty: %1d   FIFO full: %1d   clk counter: %6d" % (fifoEmpty,fifoFull,clkctr)
         print "       "
-        # for i in range(12):
-        #     print "  QIE %2d  " % (i + 1)
 
 
         capIdConcise = []
         for i in capId:
             capIdConcise.append(i & 0x03)
 
-        print "\nCapID: ", capIdConcise
-        print "\nADC:   ", adc
-        print "\nRANGE: ", rangeQ
-        print "\nTDC:   ", tdc
-        print '\n'
+        print "CapID: ", capIdConcise
+        print "ADC:   ", adc
+        print "RANGE: ", rangeQ
+        print "TDC:   ", tdc
+        # print '\n'
 
         qieList = [capIdConcise, adc, rangeQ, tdc]
 
@@ -773,20 +773,21 @@ class inputSpyRWR(Test): #NOTE: confirms RO nature of reg... doesn't process Spy
         else:
             return False
 # ------------------------------------------------------------------------
-class inputSpy_512Reads(Test):
+class inputSpy_512Reads(Test): #flips bits in cntrReg then calls inputSpy() 512x
     def testBody(self):
+    # turn WrEn_InputSpy ON
         myCntrRegChange = cntrRegChange_Quiet(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print myCntrRegChange.run("WrEn_InputSpy", '1')
+    # turn WrEn_InputSpy OFF
         myCntrRegChange = cntrRegChange_Quiet(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print myCntrRegChange.run("WrEn_InputSpy", '0')
-        # myCntrRegDisplay = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-        # print myCntrRegDisplay.run()
+    # Read out InputSpy 512x
         myInputSpy = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
-        print myInputSpy.run()
+        print myInputSpy.run(512)
 
         return True
 # ------------------------------------------------------------------------
-class spy96Bits(Test): #inherit from Test class, overload testBody() function
+class spy96Bits(Test): #reads out orbit-histo data (diagnostic against same Bridge data)
     def testBody(self):
         name = "spy96Bits"
         reg = i.igloo[name]["register"]
@@ -800,7 +801,7 @@ class spy96Bits(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class qie_ck_ph(Test): #inherit from Test class, overload testBody() function
+class qie_ck_ph(Test): #NOTE: Uninterested in register at this time
     def testBody(self):
         name = "qie_ck_ph"
         reg = [i.igloo[name]["register"][1],i.igloo[name]["register"][2],\
@@ -836,7 +837,7 @@ class qie_ck_ph(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class link_test_mode(Test): #inherit from Test class, overload testBody() function
+class link_test_mode(Test): #NOTE: Uninterested in register at this time
     def testBody(self):
         name = "link_test_mode"
         reg = i.igloo[name]["register"]
@@ -850,7 +851,7 @@ class link_test_mode(Test): #inherit from Test class, overload testBody() functi
         else:
             return False
 # ------------------------------------------------------------------------
-class link_test_pattern(Test): #inherit from Test class, overload testBody() function
+class link_test_pattern(Test): #NOTE: Uninterested in register at this time
     def testBody(self):
         name = "link_test_pattern"
         reg = i.igloo[name]["register"]
@@ -864,7 +865,7 @@ class link_test_pattern(Test): #inherit from Test class, overload testBody() fun
         else:
             return False
 # ------------------------------------------------------------------------
-class dataToSERDES(Test): #inherit from Test class, overload testBody() function
+class dataToSERDES(Test): #NOTE: Will not test at this time
     def testBody(self):
         name = "dataToSERDES"
         reg = i.igloo[name]["register"]
@@ -878,7 +879,7 @@ class dataToSERDES(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class addrToSERDES(Test): #inherit from Test class, overload testBody() function
+class addrToSERDES(Test): #NOTE: Will not test at this time
     def testBody(self):
         name = "addrToSERDES"
         reg = i.igloo[name]["register"]
@@ -892,7 +893,7 @@ class addrToSERDES(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class ctrlToSERDES(Test): #inherit from Test class, overload testBody() function
+class ctrlToSERDES(Test): #NOTE: Will not test at this time
     def testBody(self):
         name = "ctrlToSERDES"
         reg = i.igloo[name]["register"]
@@ -906,7 +907,7 @@ class ctrlToSERDES(Test): #inherit from Test class, overload testBody() function
         else:
             return False
 # ------------------------------------------------------------------------
-class dataFromSERDES(Test): #inherit from Test class, overload testBody() function
+class dataFromSERDES(Test): #NOTE: Will not test at this time
     def testBody(self):
         name = "dataFromSERDES"
         reg = i.igloo[name]["register"]
@@ -920,7 +921,7 @@ class dataFromSERDES(Test): #inherit from Test class, overload testBody() functi
         else:
             return False
 # ------------------------------------------------------------------------
-class statFromSERDES(Test): #inherit from Test class, overload testBody() function
+class statFromSERDES(Test): #NOTE: Will not test at this time
     def testBody(self):
         name = "statFromSERDES"
         reg = i.igloo[name]["register"]
@@ -934,7 +935,7 @@ class statFromSERDES(Test): #inherit from Test class, overload testBody() functi
         else:
             return False
 # ------------------------------------------------------------------------
-class scratchReg(Test): #inherit from Test class, overload testBody() function
+class scratchReg(Test): #
     def testBody(self):
         name = "scratchReg"
         reg = i.igloo[name]["register"]
@@ -1048,8 +1049,8 @@ def runSelect():
     print m.run()
     m = capIDErr_count(b,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
-    print m.run()
+    # m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+    # print m.run()
     m = inputSpy_512Reads(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
     print m.run()
     m = CI_Mode_On(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
