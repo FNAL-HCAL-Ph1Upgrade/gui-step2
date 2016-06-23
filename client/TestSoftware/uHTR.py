@@ -14,15 +14,18 @@ from ROOT import *
 gROOT.SetBatch()
 
 class uHTR_Test:
-	def __init__(self, bus, uhtr_slots, qcard_slots):
+	def __init__(self, uhtr_slots, qcard_slots, bus):
+
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, register)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
 		### List of keys: "slot" "link" "channel" ........		
+		
+		self.bus=bus
 
-		for slot in qcard_slots:
-			self.qcards.append(hw.getDChains(slot, bus))
+#		for slot in qcard_slots:
+#			self.qcards.append(hw.getDChains(slot, bus))
 
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
@@ -75,22 +78,21 @@ class uHTR_Test:
 # Mapping functions
 #############################################################
 
-       def QIE_mapping(self):
-               # Records the uHTR slot, link, and channel of each QIE in master_dict
-               for qCard in self.qCards:
+	def QIE_mapping(self):
+		# Records the uHTR slot, link, and channel of each QIE in master_dict
+		for qCard in self.qCards:
 			qCard.read()
 			for i in [0,6]:
 				qie=qCard[i]
-				
 				info=self.get_mapping_histo()
 				if info is not None: self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
-				else: Print "mapping failed"
+				else: print "mapping failed"
 
-        def get_mapping_histo():
-                # matches histo to QIE chip for mapping
-                map_results=self.get_histo_results()
-                for uhtr_slot, uhtr_slot_results in map_results.iteritems():
-                        for chip, chip_results in uhtr_slot_results.iteritems():
+	def get_mapping_histo(self):
+		# matches histo to QIE chip for mapping
+		map_results=self.get_histo_results()
+		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
+			for chip, chip_results in uhtr_slot_results.iteritems():
 				if chip_results["pedBinMax"] > 12:
 					return (int(uhtr_slot), chip_results["link"], chip_results["channel"])
 		return None
@@ -115,29 +117,26 @@ class uHTR_Test:
 			print "WARNING, you need to run 'source ~daqowner/dist/etc/env.sh' before you can use uHTRtool.exe"
 
 
-	def get_histo_results(crate=None, slots=None, n_orbits=1000, sepCapID=0, signalOn=0, out_dir="histotest"):
+	def get_histo_results(self, crate=None, slots=None, n_orbits=1000, sepCapID=0, signalOn=0, out_dir="histotest"):
 		# Runs uHTRtool.exe and returns layered ditctionary of results. 
 		if slots is None:
 			slots=self.slots		
 		if crate is None:
 			crate=self.crate
 
-
 		test_results = {}
 		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir= out_dir)
 		
 		for file in os.listdir(path_to_root):
-			
 			# Extract slot number from file name
 			temp = file.split('_')
 			temp = temp[-1].split('.root')
 			slot_num = str(temp[0])
 			
-			test_results["%s"%(slot_num)] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
+			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
 		
-		os.removedirs(path_to_root)
-		
-		return test_results
+		os.removedirs(path_to_root)		
+		return histo_results
 		
 		
 	def send_commands(crate=None, slot=None, cmds=''):

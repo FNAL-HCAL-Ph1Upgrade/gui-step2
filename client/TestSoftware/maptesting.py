@@ -6,10 +6,11 @@ import DaisyChain
 import QIE
 
 
-active_slots=[2]
+qcard_slots=[2]
 bus=webBus()
+uhtr=uHTR(2, qcard_slots, bus)
 
-for i in active_slots:
+for i in qcard_slots:
 	dc=hw.getDChains(i, bus)
 	hw.openChannel(i, bus)
 	dc.read()
@@ -17,7 +18,7 @@ for i in active_slots:
 		qie=dc[j]
 		qie.ChargeInjectDAC(8640)
 		dc.write()
-		info=get_mapping_histo()
+		info=uhtr.get_mapping_histo()
 		print "Slot: {4} Qie: {3}, slot: {0}, link: {1}: channel: {2}".format(info[0], info[1], info[2], j, i)
 
 
