@@ -13,7 +13,7 @@ from commands import getoutput
 from ROOT import *
 gROOT.SetBatch()
 
-class uHTR:
+class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
 
 		self.master_dict={}
@@ -27,7 +27,7 @@ class uHTR:
 #		for slot in qcard_slots:
 #			self.qcards.append(hw.getDChains(slot, bus))
 
-		self.crate=41			#Always 41 for summer 2016 QIE testing
+		self.crate=[41]			#Always 41 for summer 2016 QIE testing
 
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
@@ -90,7 +90,7 @@ class uHTR:
 
 	def get_mapping_histo(self):
 		# matches histo to QIE chip for mapping
-		map_results=self.get_histo_results()
+		map_results=self.get_histo_results(out_dir="map_test")
 		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
 			for chip, chip_results in uhtr_slot_results.iteritems():
 				if chip_results["pedBinMax"] > 12:
@@ -120,12 +120,13 @@ class uHTR:
 	def get_histo_results(self, crate=None, slots=None, n_orbits=1000, sepCapID=0, signalOn=0, out_dir="histotest"):
 		# Runs uHTRtool.exe and returns layered ditctionary of results. 
 		if slots is None:
-			slots=self.slots		
+			slots=self.uhtr_slots
 		if crate is None:
 			crate=self.crate
+			
 
-		test_results = {}
-		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir= out_dir)
+		histo_results = {}
+		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir)
 		
 		for file in os.listdir(path_to_root):
 			# Extract slot number from file name
@@ -138,97 +139,130 @@ class uHTR:
 		os.removedirs(path_to_root)		
 		return histo_results
 		
-		
-	def send_commands(crate=None, slot=None, cmds=''):
-		# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
-		# Arguments and variables:
-		raw = ""
-		results = {}                # Results will be indexed by uHTR IP unless a "ts" has been specified, in which case they'll be indexed by (crate, slot).
-	
-		## Parse cmds:
-		if isinstance(cmds, str):
-			print 'WARNING (uhtr.send_commands): You probably didn\'t intend to run "uHTRtool.exe" with only one command: {0}'.format(cmds)
-			cmds = [cmds]
-	
-		# Prepare ip address:uhtr_ip = "192.168.%i.%i"%(crate, slot*4)
-		uhtr_ip = "192.168.%i.%i"%(crate, slot*4)
-	
-		# Prepare the uHTRtool arguments:
-		uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)   
-	
-		# Send commands and organize results:
-		# This puts the output of the command into a list called "raw_output" the first element of the list is stdout, the second is stderr.
-		raw_output = Popen(['printf "{0}" | {1}'.format(' '.join(cmds), uhtr_cmd)], shell = True, stdout = PIPE, stderr = PIPE).communicate()
-		raw += raw_output[0] + raw_output[1]
-		results[uhtr_ip] = raw
-		return results
-	
-	def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
-	        # Set up some variables:
-	        log = ""
-	        if not file_out:
-	                file_out = "histo_uhtr{0}.root".format(slot)
 
+#############################################################
+		
+def send_commands(crate=None, slot=None, cmds=''):
+	# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
+	# Arguments and variables:
+	raw = ""
+	results = {}                # Results will be indexed by uHTR IP unless a "ts" has been specified, in which case they'll be indexed by (crate, slot).
+
+	## Parse cmds:
+	if isinstance(cmds, str):
+		print 'WARNING (uhtr.send_commands): You probably didn\'t intend to run "uHTRtool.exe" with only one command: {0}'.format(cmds)
+		cmds = [cmds]
+
+	# Prepare ip address:uhtr_ip = "192.168.%i.%i"%(crate, slot*4)
+	uhtr_ip = "192.168.{0}.{1}".format(crate, slot*4)
+
+	# Prepare the uHTRtool arguments:
+	uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)   
+
+	# Send commands and organize results:
+	# This puts the output of the command into a list called "raw_output" the first element of the list is stdout, the second is stderr.
+	raw_output = Popen(['printf "{0}" | {1}'.format(' '.join(cmds), uhtr_cmd)], shell = True, stdout = PIPE, stderr = PIPE).communicate()
+	raw += raw_output[0] + raw_output[1]
+	results[uhtr_ip] = raw
+	return results
+
+def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
+        # Set up some variables:
+        log = ""
+        if not file_out:
+                file_out = "histo_uhtr{0}.root".format(slot)
 	        # Histogram:
-	        cmds = [
-	                '0',
-	                'link',
-	                'histo',
-	                'integrate',
-	                '{0}'.format(n_orbits),                # number of orbits to integrate over
-	                '{0}'.format(sepCapID),
-	                '{0}'.format(file_out),
-			'0',
-               		'quit',
-	                'quit',
-	                'exit',
-	                '-1'
-	        ]
-	        result = send_commands(crate=crate, slot=slot, cmds=cmds)
-	        return result
-		
-	def generate_histos(crates, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
+        cmds = [
+                '0',
+                'link',
+                'histo',
+                'integrate',
+                '{0}'.format(n_orbits),                # number of orbits to integrate over
+                '{0}'.format(sepCapID),
+                '{0}'.format(file_out),
+		'0',
+              		'quit',
+                'quit',
+                'exit',
+                '-1'
+        ]
+        result = send_commands(crate=crate, slot=slot, cmds=cmds)
+        return result
+	
+def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
+	#can only generate over a single crate
+	if not file_out_base:
+		file_out_base="uHTR_histotest"
 
-		###check for single crate/single slot	
-		if isinstance(crates, int):
-			crates=[crates]
+	cwd=os.getcwd()
+
+	### check to see if out_dir exists and set it up if it does
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	dir_path="{0}/{1}".format(cwd, out_dir)
+	os.chdir(dir_path)
+
 	
-		if isinstance(slots, int):
-			slots=[slots] 
+	for slot in slots:
+		file_out=file_out_base+"_{0}_{1}.root".format(crate, slot)
+		p = mp.Process(target=get_histo, args=(crate, slot, n_orbits, sepCapID, file_out,))
+		p.start()
+
+	while mp.active_children():
+		time.sleep(0.1)	
+			
+	os.chdir(cwd)	
+
+	### return the the full path to out_dir
+	return dir_path
+
+def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
+	slot_result = {}
+	f = TFile(file_in, "READ")
+	if sepCapID:
+		rangeADCoffset = qieRange*64.
+		for i_link in range(24):
+			for i_ch in range(6):
+				histNum = 6*i_link + i_ch
+				h = f.Get("h%d"%(histNum))
+				chip_results = {}
+				chip_results["link"] = i_link
+				chip_results["channel"] = i_ch
+				chip_results["binMax"] = []
+				chip_results["RMS"] = []
+				for i_capID in range(4):
+					offset = 64*(i_capID)
+					h.GetXaxis().SetRangeUser(offset, offset+63)
+					chip_results["RMS"].append(max(h.GetRMS(), 0.01))
+
+				slot_result[histNum] = chip_results
 		
-		if not file_out_base:
-			file_out_base="uHTR_histotest"
-	
-		cwd=os.getcwd()
-	
-		### check to see if out_dir exists and set it up if it does
-		if not os.path.exists(out_dir):
-			os.makedirs(out_dir)
-	
-		dir_path="{0}/{1}".format(cwd, out_dir)
-		os.chdir(dir_path)
-	
-		for crate in crates:
-			for slot in slots:
-				file_out=file_out_base+"_{0}_{1}.root".format(crate, slot)
-				p = mp.Process(target=get_histo, args=(crate, slot, n_orbits, sepCapID, file_out,))
-				p.start()
-	
-		while mp.active_children():
-			time.sleep(0.1)
-	
-		print "All tests complete"	
-				
-		os.chdir(cwd)	
-	
-		### return the the full path to out_dir
-		return dir_path
-	
-	def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
-		slot_result = {}
-		f = TFile(file_in, "READ")
-		if sepCapID:
-			rangeADCoffset = qieRange*64.
+	else:
+                if signal:
+			for i_link in range(24):
+				for i_ch in range(6):
+					histNum = 6*i_link + i_ch
+					h = f.Get("h%d"%(histNum))
+					lastBin = h.GetSize() - 3
+					chip_results = {}
+					chip_results["link"] = i_link
+					chip_results["channel"] = i_ch
+                                        #Transition from pedestal to signal is consistently around 10
+					h.GetXaxis().SetRangeUser(7,13)
+					cutoff = h.GetMinimum()
+					h.GetXaxis().SetRangeUser(0,cutoff)
+					binMax = h.GetMaximumBin()
+					chip_results["pedBinMax"] = h.GetBinContent(binMax) 
+					chip_results["pedRMS"] = h.GetRMS()
+					h.GetXaxis().SetRangeUser(cutoff,lastBin)
+					binMax = h.GetMaximumBin()
+					chip_results["signalBinMax"] = h.GetBinContent(binMax)
+					chip_results["signalRMS"] = h.GetRMS()
+
+					slot_result[histNum] = chip_results
+
+		else:
 			for i_link in range(24):
 				for i_ch in range(6):
 					histNum = 6*i_link + i_ch
@@ -236,52 +270,11 @@ class uHTR:
 					chip_results = {}
 					chip_results["link"] = i_link
 					chip_results["channel"] = i_ch
-					chip_results["binMax"] = []
-					chip_results["RMS"] = []
-					for i_capID in range(4):
-						offset = 64*(i_capID)
-						h.GetXaxis().SetRangeUser(offset, offset+63)
-						chip_results["RMS"].append(max(h.GetRMS(), 0.01))
-	
+					chip_results["pedBinMax"] = h.GetMaximumBin() 
+					chip_results["pedRMS"] = h.GetRMS()
+					
 					slot_result[histNum] = chip_results
-			
-		else:
-	                if signal:
-				for i_link in range(24):
-					for i_ch in range(6):
-						histNum = 6*i_link + i_ch
-						h = f.Get("h%d"%(histNum))
-						lastBin = h.GetSize() - 3
-						chip_results = {}
-						chip_results["link"] = i_link
-						chip_results["channel"] = i_ch
-	                                        #Transition from pedestal to signal is consistently around 10
-						h.GetXaxis().SetRangeUser(7,13)
-						cutoff = h.GetMinimum()
-						h.GetXaxis().SetRangeUser(0,cutoff)
-						binMax = h.GetMaximumBin()
-						chip_results["pedBinMax"] = h.GetBinContent(binMax) 
-						chip_results["pedRMS"] = h.GetRMS()
-						h.GetXaxis().SetRangeUser(cutoff,lastBin)
-						binMax = h.GetMaximumBin()
-						chip_results["signalBinMax"] = h.GetBinContent(binMax)
-						chip_results["signalRMS"] = h.GetRMS()
-	
-						slot_result[histNum] = chip_results
-	
-			else:
-				for i_link in range(24):
-					for i_ch in range(6):
-						histNum = 6*i_link + i_ch
-						h = f.Get("h%d"%(histNum))
-						chip_results = {}
-						chip_results["link"] = i_link
-						chip_results["channel"] = i_ch
-						chip_results["pedBinMax"] = h.GetMaximumBin() 
-						chip_results["pedRMS"] = h.GetRMS()
-						
-						slot_result[histNum] = chip_results
-	 
-		f.Close()
-		return slot_result
+ 
+	f.Close()
+	return slot_result
 		

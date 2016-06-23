@@ -8,7 +8,7 @@ def getBitsFromBytes(decimalBytes):
         ret = ret + getBitsFromByte(i)
     return ret
 def getByteFromBits(bitList):
-    return int(''.join(bitList), 2)
+    return int(''.join(str(i) for i in bitList), 2)
 def getBytesFromBits(bitList):
     ret = []
     for i in xrange(len(bitList)/8):
