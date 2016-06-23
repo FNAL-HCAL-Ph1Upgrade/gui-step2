@@ -10,6 +10,7 @@ import helpers
 import Test
 import listOfTests
 import vttxLib
+import temp
 
 noCheckRegis = {
 	"Unique_ID" :{
@@ -80,14 +81,8 @@ class testSuite:
 		new_r[0] = helpers.reverseBytes(new_r[0])
 		new_r[0] = helpers.toHex(new_r[0])
 		self.outCard.cardGenInfo[testName]=new_r[0]
-	elif (testName == "Temperature"):
-		self.b.write(0x00,[0x06])
-		self.b.sendBatch()
-		self.outCard.cardGenInfo[testName] = helpers.sensorTemp(self.a,self.b)
-	elif (testName == "Humidity"):
-		self.b.write(0x00,[0x06])
-		self.b.sendBatch()
-		self.outCard.cardGenInfo[testName] = helpers.sensorHumid(self.a,self.b)
+	elif (testName == "Temperature" or testName == "Humidity"):
+		self.outCard.cardGenInfo[testName] = temp.readManyTemps(self.a,25,testName,"nohold")
 
     def openIgloo(self, slot):
 		#the igloo is value "3" in I2C_SELECT table
@@ -119,6 +114,7 @@ class testSuite:
 		print "Running IGLOO tests!"
 		print "-------------------------"
 		for r in self.iglooRegs.keys():
+			print r
 			results = self.iglooRegs[r].run()
 			self.outCard.iglooList[r][0] += results[0]
 			self.outCard.iglooList[r][1] += results[1]

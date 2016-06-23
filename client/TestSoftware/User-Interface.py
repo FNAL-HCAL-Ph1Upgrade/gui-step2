@@ -47,8 +47,6 @@ class makeGui:
 		# the TestSummary instances that get sent out
 		self.outSummaries = []
 
-		# Instantiate a webBus member:
-		self.gb = webBus("pi5")		
 
 		# Name the parent. This is mostly for bookkeeping purposes
 		# and doesn't really get used too much.
@@ -63,6 +61,7 @@ class makeGui:
 		self.runtimeNumber  =  StringVar()
 		self.suiteChoiceVar =  StringVar()
 		self.piChoiceVar    =  StringVar()
+		self.iterationVar   =  StringVar()
 		self.allCardSelection = IntVar()
 	
 		# Place an all-encompassing frame in the parent window. All of the following
@@ -399,6 +398,20 @@ class makeGui:
                         pady=frame_pady
                         )
 
+		# Top sub-frame 1 in QIE frame
+		self.qie_subTop_1_frame = Frame(
+			self.qie_frame,
+			background="white"
+			)
+		self.qie_subTop_1_frame.pack(
+			side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+
 		# 2nd top sub-frame in QIE frame
 		self.qie_subTop2_frame = Frame(
 			self.qie_frame,
@@ -407,9 +420,7 @@ class makeGui:
 		self.qie_subTop2_frame.pack(
 			side=TOP,
                         ipadx=frame_ipadx,
-                        ipady=frame_ipady,
                         padx=frame_padx,
-                        pady=frame_pady
                         )
 
 		# Make a sub-frame below the top sub-frame in QIE frame
@@ -420,9 +431,7 @@ class makeGui:
                 self.qie_subTopMid_frame.pack(
                         side=TOP,
                         ipadx=frame_ipadx,
-                        ipady=frame_ipady,
                         padx=frame_padx,
-                        pady=frame_pady
                         )
 
 		# Make a 2nd sub-frame below the top sub-frame in QIE frame
@@ -433,9 +442,7 @@ class makeGui:
                 self.qie_subTopMid2_frame.pack(
                         side=TOP,
                         ipadx=frame_ipadx,
-                        ipady=frame_ipady,
                         padx=frame_padx,
-                        pady=frame_pady
                         )
 
 		# Mid sub-frame in QIE frame
@@ -473,47 +480,67 @@ class makeGui:
 			)
 		self.piSelectionLbl.pack(side=LEFT)
 
-		# Make a separation line
-		self.separationLabelTop = Label(self.qie_subTop2_frame, text="-----------------------------")
-		self.separationLabelTop.configure(bg="white")
-		self.separationLabelTop.pack()
-
 		# Make a menu for the raspberry pi options
 		self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
 						"pi5", "pi6")
 		self.pi_choiceBox.pack(side=LEFT)
-		self.piChoiceVar.set("pi5")
+		self.piChoiceVar.set("pi6")
 
-		# Make a label for the test selection
-                self.qieReadLabel = Label(self.qie_subTopMid_frame, text="Select a test to run: ")
-                self.qieReadLabel.configure(
-                        padx=button_padx,
-                        pady=button_pady,
-                        background="white"
-                        )
-                self.qieReadLabel.pack(side=LEFT)
+		# Make a label for number of iterations
+		self.iter_label = Label(self.qie_subTop_1_frame, text="Number of iterations: ")
+		self.iter_label.configure(bg="white")
+		self.iter_label.pack(side=LEFT)
 
-		# Make and pack a PLACEHOLDER LISTBOX for the variable to read:
-                self.qie_readBox = OptionMenu(self.qie_subTopMid_frame, self.qieReadVar,
-                                              "ID_string","ID_string_cont","Ones",
-				              "Zeroes","OnesZeroes","Firmware_Ver",
-					      "Unique_ID", "Temperature", "Humidity"
-					     )
-                self.qie_readBox.pack(side=LEFT)
-                self.qieReadVar.set("ID_string") # initializes the OptionMenu
+		# Make a field for number of iterations
+		self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar)
+		self.iter_entry.pack(side=RIGHT)
 
-		#Make a button to read what is at the address
-		self.qie_read_Button = Button(self.qie_subTopMid_frame, command=self.qieClickRead)
-		self.qie_read_Button.configure(text="RUN TEST",background="khaki")
-		self.qie_read_Button.configure(
-			width=button_width*2,
+		# Make a separation line
+		self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
+		self.separationLabelTop.configure(bg="white")
+		self.separationLabelTop.pack()
+
+		# Make a button to reset the backplane
+		self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.qie_resetPress)
+		self.qie_resetButton.configure(text="Reset Backplane", bg="red")
+		self.qie_resetButton.configure(
+			width=button_width*4,
 			padx=button_padx,
 			pady=button_pady
 			)
-		self.qie_read_Button.pack(side=RIGHT)
+		self.qie_resetButton.pack()
+
+#
+#		# Make a label for the test selection
+#                self.qieReadLabel = Label(self.qie_subTopMid_frame, text="Select a test to run: ")
+#                self.qieReadLabel.configure(
+#                        padx=button_padx,
+#                        pady=button_pady,
+#                        background="white"
+#                        )
+#                self.qieReadLabel.pack(side=LEFT)
+#
+#		# Make and pack a PLACEHOLDER LISTBOX for the variable to read:
+#                self.qie_readBox = OptionMenu(self.qie_subTopMid_frame, self.qieReadVar,
+#                                              "ID_string","ID_string_cont","Ones",
+#				              "Zeroes","OnesZeroes","Firmware_Ver",
+#					      "Unique_ID", "Temperature", "Humidity"
+#					     )
+#                self.qie_readBox.pack(side=LEFT)
+#                self.qieReadVar.set("ID_string") # initializes the OptionMenu
+#
+#		#Make a button to read what is at the address
+#		self.qie_read_Button = Button(self.qie_subTopMid_frame, command=self.qieClickRead)
+#		self.qie_read_Button.configure(text="RUN TEST",background="khaki")
+#		self.qie_read_Button.configure(
+#			width=button_width*2,
+#			padx=button_padx,
+#			pady=button_pady
+#			)
+#		self.qie_read_Button.pack(side=RIGHT)
 
 		# Make a separation line
-		self.separationLabel = Label(self.qie_subTopMid2_frame, text="-----------------------------")
+		self.separationLabel = Label(self.qie_subTopMid2_frame, text="------------------------------------------")
 		self.separationLabel.configure(bg="white")
 		self.separationLabel.pack()
 
@@ -534,12 +561,12 @@ class makeGui:
 						"Vttx Register Suites"
 						)
 		self.qie_suiteMenu.pack(side=LEFT)
-		self.suiteChoiceVar.set("Main Suite : All Tests")
+		self.suiteChoiceVar.set("Bridge Register Suite")
 
 
 		#Make a button to run the main test suite
 		self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
-		self.qie_testSuite_button.configure(text="RUN SELECTED TEST SUITE", background="turquoise")
+		self.qie_testSuite_button.configure(text="Run Selected Test Suite", background="turquoise")
 		self.qie_testSuite_button.configure(
 			width=button_width*4,
 			padx=button_padx,
@@ -644,6 +671,13 @@ class makeGui:
 		self.myTestStand = TestStand(self.outSlotNumbers)
 		self.myTestStand.runSingle(self.qieReadVar.get())
 		self.outSlotNumbers = []
+	
+	def qie_resetPress(self):
+		# Instantiate a webBus member:
+		b = webBus(self.piChoiceVar.get(),0)
+		b.write(0x00,[0x06])
+		b.sendBatch()
+		print "\n\nBackplane for "+self.piChoiceVar.get()+" reset!\n\n"
 
 	def runTestSuite(self):
 		print str(datetime.now())
@@ -678,7 +712,15 @@ class makeGui:
 
 	def prepareOutCards(self):
 		for k in range(len(self.cardVarList)):
-			self.outSummaries.append(testSummary.testSummary(k))
+			if k in [1,2,3,4]:
+				self.outSummaries.append(testSummary.testSummary(k+1))
+			elif k in [5,6,7,8]:
+				self.outSummaries.append(testSummary.testSummary(k+2))
+			elif k in [9,10,11,12]:
+				self.outSummaries.append(testSummary.testSummary(k+9))
+			elif k in [13,14,15,16]:
+				self.outSummaries.append(testSummary.testSummary(k+10))
+				
 				
 root = Tk()
 myapp = makeGui(root)
