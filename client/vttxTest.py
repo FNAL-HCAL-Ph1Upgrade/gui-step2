@@ -1,9 +1,9 @@
 from client import webBus
 import QIELib
-b = webBus("pi5")
+b = webBus("pi5",0)
 q = QIELib
 
-# helpful string to hex list
+# helpful string decimal to string hex
 def strToHex(string):
         catBinary = ""
         j=0
