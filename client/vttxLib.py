@@ -1,7 +1,9 @@
 from client import webBus
-import QIELib
+import TestSoftware.Hardware as Hardware
+
+h = Hardware
 b = webBus("pi5",0)
-q = QIELib
+
 
 ######################################################
 # VTTX Dict
@@ -40,9 +42,10 @@ def strToHex(string):
 # Read/write functions
 ######################################################
 def openVTTX(slot, vttxNum):
-    q.openChannel()
-    b.write(q.QIEi2c[slot],[0x11] + vttx["i2c_select"][vttxNum])
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11] + vttx["i2c_select"][vttxNum])
     b.sendBatch()
+
 
 def readFromVTTX(bus, address, numBytes):
     bus.write(address, [0x00])

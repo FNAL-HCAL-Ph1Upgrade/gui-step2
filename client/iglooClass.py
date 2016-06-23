@@ -1,7 +1,6 @@
 from client import webBus
 import IglooLib
 import TestSoftware.Hardware as Hardware
-# import QIELib
 
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 i = IglooLib
@@ -783,9 +782,11 @@ class inputSpy_512Reads(Test): #flips bits in cntrReg then calls inputSpy() 512x
         print myCntrRegChange.run("WrEn_InputSpy", '0')
     # Read out InputSpy 512x
         myInputSpy = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
-        print myInputSpy.run(512)
-
-        return True
+        runReturn = myInputSpy.run(512)
+        if runReturn == (1,0):
+            return True
+        else:
+            return False
 # ------------------------------------------------------------------------
 class spy96Bits(Test): #reads out orbit-histo data (diagnostic against same Bridge data)
     def testBody(self):
@@ -963,12 +964,8 @@ class CI_Mode_Off(Test): # turns off Charge Injection on card
 # ------------------------------------------------------------------------
 
 def runAll():
-    def openIgloo(slot):
-        q.openChannel()
-        #the igloo is value "3" in I2C_SELECT table
-        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-        b.sendBatch()
-    openIgloo(0)
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
 
     m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
     print m.run()

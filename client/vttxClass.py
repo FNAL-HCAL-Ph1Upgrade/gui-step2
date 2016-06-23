@@ -1,10 +1,13 @@
 from client import webBus
-import QIELib
 import vttxLib
+import TestSoftware.Hardware as Hardware
+
+h = Hardware
 
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
-q = QIELib
 v = vttxLib
+
+slot = 2 # the J_# slot
 
 class Test:
     def __init__(self, bus, address, logfile, iterations = 1):
@@ -63,7 +66,7 @@ class VTTX_RWR_withRestore(Test):
 def runAll():
     # -------VTTX 1----------
     print "----------------------VTTX 1-------------------------"
-    v.openVTTX(0,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
+    v.openVTTX(slot,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
     print m.run()
@@ -76,7 +79,7 @@ def runAll():
     # -------VTTX 2----------
     #print '\n'
     print "----------------------VTTX 2-------------------------"
-    v.openVTTX(0,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
+    v.openVTTX(slot,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
     print m.run()
