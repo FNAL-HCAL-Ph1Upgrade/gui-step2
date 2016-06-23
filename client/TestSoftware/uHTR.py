@@ -13,7 +13,7 @@ from commands import getoutput
 from ROOT import *
 gROOT.SetBatch()
 
-class uHTR_Test:
+class uHTR:
 	def __init__(self, uhtr_slots, qcard_slots, bus):
 
 		self.master_dict={}
@@ -29,7 +29,7 @@ class uHTR_Test:
 
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
-		if isintance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
+		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
 		
 
@@ -256,8 +256,8 @@ class uHTR_Test:
 						chip_results["link"] = i_link
 						chip_results["channel"] = i_ch
 	                                        #Transition from pedestal to signal is consistently around 10
-	                                        h.GetXaxis().SetRangeUser(7,13)
-	                                        cutoff = h.GetMinimum()
+						h.GetXaxis().SetRangeUser(7,13)
+						cutoff = h.GetMinimum()
 						h.GetXaxis().SetRangeUser(0,cutoff)
 						binMax = h.GetMaximumBin()
 						chip_results["pedBinMax"] = h.GetBinContent(binMax) 
@@ -269,18 +269,18 @@ class uHTR_Test:
 	
 						slot_result[histNum] = chip_results
 	
-	                else:
-	                        for i_link in range(24):
-	                                for i_ch in range(6):
-       	                                 histNum = 6*i_link + i_ch
-       	                                 h = f.Get("h%d"%(histNum))
-       	                                 chip_results = {}
-       	                                	chip_results["link"] = i_link
+			else:
+				for i_link in range(24):
+					for i_ch in range(6):
+						histNum = 6*i_link + i_ch
+						h = f.Get("h%d"%(histNum))
+						chip_results = {}
+						chip_results["link"] = i_link
 						chip_results["channel"] = i_ch
 						chip_results["pedBinMax"] = h.GetMaximumBin() 
 						chip_results["pedRMS"] = h.GetRMS()
 						
-	                                        slot_result[histNum] = chip_results
+						slot_result[histNum] = chip_results
 	 
 		f.Close()
 		return slot_result

@@ -19,7 +19,8 @@ for i in qcard_slots:
 		qie.ChargeInjectDAC(8640)
 		dc.write()
 		info=uhtr.get_mapping_histo()
-		print "Slot: {4} Qie: {3}, slot: {0}, link: {1}: channel: {2}".format(info[0], info[1], info[2], j, i)
+		if info is not None:
+			print "Slot: {4} Qie: {3}, slot: {0}, link: {1}: channel: {2}".format(info[0], info[1], info[2], j, i)
 
 
 

@@ -38,7 +38,7 @@ def openChannel(slot, bus):
 
 #Get DChains
 def getDChains(slot, bus):
-    Hardware.openChannel(slot, bus)
+    openChannel(slot, bus)
     return DChains(getCardAddress(slot), bus)
 
 
