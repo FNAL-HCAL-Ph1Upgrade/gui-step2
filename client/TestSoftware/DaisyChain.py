@@ -1,7 +1,8 @@
 #DaisyChain.py
 #QIE DaisyChain class
 
-import QIE
+from QIE import QIE
+
 
 class DaisyChain:
     def __init__(self, arr = list(0 for i in xrange(64 * 6))):
