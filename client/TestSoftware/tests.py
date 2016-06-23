@@ -41,7 +41,7 @@ noCheckRegis = {
 class testSuite:
     def __init__(self, webAddress, address, inSummary):
         '''create a new test suite object... initialize bus and address'''
-        self.b = client.webBus(webAddress, 0)
+        self.b = webAddress
 	self.outCard = inSummary
         self.a = address
 	i = 15

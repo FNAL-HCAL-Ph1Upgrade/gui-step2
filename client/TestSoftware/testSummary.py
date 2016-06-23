@@ -2,7 +2,9 @@
 # between Jordan's code and the log files.
 
 class testSummary:
-	def __init__(self):
+	def __init__(self, summaryNo):
+		self.idNo = summaryNo
+
 		self.cardGenInfo = {"Unique_ID" : "", "DateRun" : [], "User" : ""
 		}
 

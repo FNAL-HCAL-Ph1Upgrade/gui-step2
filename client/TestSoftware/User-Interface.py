@@ -651,11 +651,10 @@ class makeGui:
 			k.cardGenInfo["User"] = self.nameChoiceVar.get()
 		self.prepareOutSlots()
 		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
+		print self.outSlotNumbers
 		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection, self.piChoiceVar.get())
 		self.myTestStand.runAll()
-		# Reset the active outSlots
 		print str(datetime.now())
-
 
 	def uHTR_tester_bttnPress(self):
 		outSlotList = []
@@ -679,7 +678,7 @@ class makeGui:
 
 	def prepareOutCards(self):
 		for k in range(len(self.cardVarList)):
-			self.outSummaries.append(testSummary.testSummary())
+			self.outSummaries.append(testSummary.testSummary(k))
 				
 root = Tk()
 myapp = makeGui(root)

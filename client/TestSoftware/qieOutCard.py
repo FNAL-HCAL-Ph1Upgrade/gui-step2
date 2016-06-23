@@ -8,7 +8,7 @@ class qCardOut:
 			"Zeroes" : [], "OnesZeroes" : [], "Firmware_Ver" : [],
 			"Unique_ID" : [], "Temperature" : [], "Humidity" : []
 		}
-			
+
 	def printResults(self):
 		for i in self.resultList:
 			print i + ": ", self.resultList[i]
