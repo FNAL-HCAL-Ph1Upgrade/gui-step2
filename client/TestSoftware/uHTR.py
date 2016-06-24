@@ -136,7 +136,7 @@ class uHTR():
 			
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
 		
-		os.removedirs(path_to_root)		
+#		os.removedirs(path_to_root)		
 		return histo_results
 		
 

@@ -2,7 +2,7 @@ from client import webBus
 import TestSoftware.Hardware as Hardware
 
 h = Hardware
-b = webBus("pi5",0)
+b = webBus("pi6",0)
 
 
 ######################################################
