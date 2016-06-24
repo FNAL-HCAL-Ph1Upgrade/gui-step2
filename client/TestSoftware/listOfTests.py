@@ -20,18 +20,25 @@ def initializeBridgeList(b,a,i):
 
 def initializeIglooList(b,a,i):
 	iglooRegs = {"fpgaMajVer" : ic.fpgaMajVer(b,a,i), "fpgaMinVer" : ic.fpgaMinVer(b,a,i),
-	"iglooOnes" : ic.ones(b,a,i), "fpgaTopOrBot" : ic.fpgaTopOrBottom(b,a,i),
+	"iglooOnes" : ic.ones(b,a,i), "fpgaTopOrBot" : ic.fpgaTopOrBottom(b,a,i), "iglooZeros" : ic.zeroes(b,a,i),
 	"statusReg" : ic.statusReg(b,a,i), "cntrRegDisplay" : ic.cntrRegDisplay(b,a,i),
 	"clk_count" : ic.clk_count(b,a,i), "rst_QIE_count" : ic.rst_QIE_count(b,a,i),
 	"igloo_wte_count" : ic.wte_count(b,a,i), "capIDErr_count" : ic.capIDErr_count(b,a,i),
-	"inputSpy" : ic.inputSpy(b,a,i), "cntrRegChange" : ic.cntrRegChange(b,a,i)
+	"inputSpy_512Reads" : ic.inputSpy_512Reads(b,a,i),"igloo_UID" : ic.uniqueID(b,a,i),
+	 "CI_Mode_On" : ic.CI_Mode_On(b,a,i), "CI_Mode_Off" : ic.CI_Mode_Off(b,a,i),
 	}
 	
 	return iglooRegs
 
 
-def initializeVttxList(b,a,i):
-	vttxRegs = {"vttxDisplay" : vc.VTTX_Display(b,a,i),
-		"vttxRwrWithRestore" : vc.VTTX_RWR_withRestore(b,a,i)\
+def initializeVttxList_1(b,a,i):
+	vttxRegs_1 = {"vttxDisplay_1" : vc.VTTX_Display(b,a,i),
+		"vttxRwrWithRestore_1" : vc.VTTX_RWR_withRestore(b,a,i)\
 		}
-	return vttxRegs
+	return vttxRegs_1
+
+def initializeVttxList_2(b,a,i):
+	vttxRegs_2 = {"vttxDisplay_2" : vc.VTTX_Display(b,a,i),
+		"vttxRwrWithRestore_2" : vc.VTTX_RWR_withRestore(b,a,i)\
+		}
+	return vttxRegs_2

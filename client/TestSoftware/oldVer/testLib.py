@@ -3,7 +3,7 @@
 
 from client import webBus
 import QIELib
-b = webBus("pi5",0)
+b = webBus("pi7",0)
 q = QIELib
 
 #MUX slave addresses (slave i2c addresses)

@@ -10,6 +10,7 @@ import helpers
 import Test
 import listOfTests
 import vttxLib
+import temp
 
 noCheckRegis = {
 	"Unique_ID" :{
@@ -39,32 +40,17 @@ noCheckRegis = {
 }
 
 class testSuite:
-    def __init__(self, webAddress, address):
+    def __init__(self, webAddress, address, inSummary, iters):
         '''create a new test suite object... initialize bus and address'''
-        self.b = client.webBus(webAddress, 0)
-	self.outCard = testSummary.testSummary()
+        self.b = webAddress
+	self.outCard = inSummary
         self.a = address
-	i = 100
+	i = iters
 
 	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
 	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
-	self.vttxRegs  = listOfTests.initializeVttxList(self.b, self.a, i)
-	
-    def readWithCheck(self, registerName, iterations = 1):
-        passes = 0
-        register = registers[registerName]["address"]
-        size = 4#registers[registerName]["size"] / 8
-        check = registers[registerName]["expected"]
-
-        for i in xrange(iterations):
-            self.b.write(self.a, [register])
-            self.b.read(self.a, size)
-        r = self.b.sendBatch()
-        for i in xrange(iterations * 2):
-            if (i % 2 == 1) and (r[i] == check):
-                passes += 1
-        self.outCard.resultList[registerName] = (passes, iterations - passes) #(passes, fails)
-	return (passes, iterations - passes)
+	self.vttxRegs_1  = listOfTests.initializeVttxList_1(self.b, self.a, i)
+	self.vttxRegs_2  = listOfTests.initializeVttxList_2(self.b, self.a, i)
 
     def readNoCheck(self, testName, iterations = 1):
 	self.outCard.cardGenInfo["DateRun"] = str(datetime.now())
@@ -73,6 +59,7 @@ class testSuite:
 	size = noCheckRegis[testName]["size"]/8
 	command = noCheckRegis[testName]["command"]
 	napTime = noCheckRegis[testName]["sleep"]
+	new_r = []
 
 	for i in xrange(iterations):
 		# Clear the backplane
@@ -85,15 +72,17 @@ class testSuite:
 
 	r = self.b.sendBatch()
 	# Remove the entries in r that contain no information
-	new_r = []
 	for i in r:
 		if (i != '0' and i != 'None'):
 			new_r.append(i)
+
 	self.outCard.cardGenInfo[testName] = new_r
 	if (testName == "Unique_ID"):
 		new_r[0] = helpers.reverseBytes(new_r[0])
 		new_r[0] = helpers.toHex(new_r[0])
-	self.outCard.cardGenInfo[testName]=new_r[0]
+		self.outCard.cardGenInfo[testName]=new_r[0]
+	elif (testName == "Temperature" or testName == "Humidity"):
+		self.outCard.cardGenInfo[testName] = temp.readManyTemps(self.a,15,testName,"nohold")
 
     def openIgloo(self, slot):
 		#the igloo is value "3" in I2C_SELECT table
@@ -107,34 +96,51 @@ class testSuite:
 
     # The following function is for when we want to run ALL
     # tests on ALL active cards.
-    def runTests(self):
-	print "-------------------------"
-	print "Running register tests!"
-	print "-------------------------"
-        for r in self.registers.keys():
-		self.outCard.resultList[r] = self.registers[r].run()
-		print r+" tests completed."
-	self.openIgloo(self.a)
-	print "\n-------------------------"
-	print "Running IGLOO tests!"
-	print "-------------------------"
-	for r in self.iglooRegs.keys():
-		self.outCard.iglooList[r] = self.iglooRegs[r].run()
-		print r+" tests completed."
-	self.openVTTX(self.a, 1)
-	print "\n-------------------------"
-	print "Running VTTX_1 tests!"
-	print "-------------------------"
-	for r in self.vttxRegs.keys():
-		self.outCard.vttxListOne[r] = self.vttxRegs[r].run()
-		print r+" tests completed."
-	self.openVTTX(self.a, 2)
-	print "\n-------------------------"
-	print "Running VTTX_2 tests!"
-	print "-------------------------"
-	for r in self.vttxRegs.keys():
-		self.outCard.vttxListTwo[r] = self.vttxRegs[r].run()
-		print r+" tests completed."
+    def runTests(self, suite):
+
+	if (suite == "main" or suite == "bridge"):
+		print "-------------------------"
+		print "Running register tests!"
+		print "-------------------------"
+		for r in self.registers.keys():
+			results = self.registers[r].run()
+			self.outCard.resultList[r][0] += results[0]
+			self.outCard.resultList[r][1] += results[1]
+			print r+" tests completed."
+
+	if (suite == "main" or suite == "igloo"):
+		self.openIgloo(self.a)
+		print "\n-------------------------"
+		print "Running IGLOO tests!"
+		print "-------------------------"
+		for r in self.iglooRegs.keys():
+			print r
+			results = self.iglooRegs[r].run()
+			self.outCard.iglooList[r][0] += results[0]
+			self.outCard.iglooList[r][1] += results[1]
+			print r+" tests completed."
+
+	if (suite == "main" or suite == "vttx"):
+		self.openVTTX(self.a, 1)
+		print "\n-------------------------"
+		print "Running VTTX_1 tests!"
+		print "-------------------------"
+		for r in self.vttxRegs_1.keys():
+			results = self.vttxRegs_1[r].run()
+			self.outCard.vttxListOne[r][0] += results[0]
+			self.outCard.vttxListOne[r][1] += results[1]
+			print r+" tests completed."
+
+		self.openVTTX(self.a, 2)
+		print "\n-------------------------"
+		print "Running VTTX_2 tests!"
+		print "-------------------------"
+		for r in self.vttxRegs_2.keys():
+			results = self.vttxRegs_2[r].run()
+			self.outCard.vttxListTwo[r][0] += results[0]
+			self.outCard.vttxListTwo[r][1] += results[1]
+			print r+" tests completed."
+
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
 
@@ -148,3 +154,11 @@ class testSuite:
 		yield self.readWithCheck(key, 100)
 	elif key in noCheckRegis:
 		yield self.readNoCheck(key, 1)
+
+
+
+
+
+
+
+

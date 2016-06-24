@@ -1,13 +1,17 @@
 from client import webBus
+#import QIELib
+
+b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
+#q = QIELib
 
 ##############################
 # Helpful Tool Functions
 ##############################
 
-# give function a !!REVERSED!! r/w indexed from sendBatch() and will determine
-# if LAST value in the string is a non-zero error code
+# give function a r/w indexed from sendBatch() and will determine if first
+# value in the string is a non-zero error code
 def isError(ret):
-    if (ret[-1] != 0): # '0' is non-error value
+    if (ret[0] != 0): # '0' is non-error value
         return True # error
     else:
         return False # no error
@@ -19,9 +23,8 @@ def getBitsFromByte(decimal):
 # give a list with decimal bytes, returns list of all bits
 def getBitsFromBytes(decimalBytes):
     ret = []
-    if not isinstance(decimalBytes, bool):
-        for i in decimalBytes:
-            ret = ret + getBitsFromByte(i)
+    for i in decimalBytes:
+        ret = ret + getBitsFromByte(i)
     return ret
 
 def getByteFromBits(bitList):
@@ -70,83 +73,39 @@ def strToHex(string):
                 j = j + 1
         return catHex
 
-
-
 ##############################
 # Read/write functions
 ##############################
-
 def readFromRegister(bus, address, register, numBytes):
     bus.write(address, [register])
     bus.read(address, numBytes)
     ret = []
     for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
-
-    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
-    ret.reverse()
-
     if isError(ret):
-        print "Read ERROR: ", ret
+        #print "Read ERROR: ", ret
         return False
     else:
-        print "Read Success: ", ret
-        return ret[:-1] #ignore the leading error code
-# ------------------------------------------------------------------------
-# quiet function, on successful read, returns without printing
-def readFromRegister_Quiet(bus, address, register, numBytes):
-    bus.write(address, [register])
-    bus.read(address, numBytes)
-    ret = []
-    for i in bus.sendBatch()[-1].split():
-        ret.append(int(i))
+        #print "Read Success: ", ret
+        return ret[1:] #ignore the leading error code
 
-    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
-    ret.reverse()
-
-    if isError(ret):
-        print "Read ERROR: ", ret
-        return False
-    else:
-        return ret[:-1] #ignore the leading error code
 # ------------------------------------------------------------------------
 
 def writeToRegister(bus, address, register, toWrite):
     # toWrite can be the ret list from readFromRegister()
-    toWrite.reverse()
     bus.write(address, [register] + toWrite)
     ret = []
     for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
-    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
-    #ret.reverse()
+    # print "WRITE RET:"
+    # print ret
 
     if not isError(ret):
-        print "Write Success: ", ret
+        #print "Write Success: ", ret
         return True # write successful
     else:
-        print "Write ERROR: ", ret
-        return False # write failed
-
-# ------------------------------------------------------------------------
-
-def writeToRegister_Quiet(bus, address, register, toWrite):
-    # toWrite can be the ret list from readFromRegister()
-    toWrite.reverse()
-    bus.write(address, [register] + toWrite)
-    ret = []
-    for i in bus.sendBatch()[-1].split():
-        ret.append(int(i))
-
-    # flip the bytes around (Bridge gives us LSB first... We want MSB first)
-    #ret.reverse()
-
-    if not isError(ret):
-        # print "Write Success: ", ret
-        return True # write successful
-    else:
-        print "Write ERROR: ", ret
+        #print "Write ERROR: ", ret
         return False # write failed
 
 # ------------------------------------------------------------------------
@@ -166,72 +125,26 @@ def RWR_withRestore(bus, address, register, numBytes):
 
     # Write different values to register
     w = writeToRegister(bus, address, register, augRead1)
-
     if w == False: return False
 
     # Get read2
     read2 = readFromRegister(bus, address, register, numBytes)
-
     #if write successully changed reg (aka read1 != read2)
     if (read1 != read2):
         # Write original values to register
         w = writeToRegister(bus, address, register, read1)
-
-        read1.reverse() #write function flips bytes... Flip them back to compare with read3 properly
-
         if w == False: return False
         # Get read3
         read3 = readFromRegister(bus, address, register, numBytes)
-
         # if restored to original (aka read1 = read3)
         if read1 == read3:
-            print "Read1 = Read3 --> Reg changed, now restored to original"
+#            print "Read1 = Read3 --> Reg changed, now restored to original"
             return True
         else:
-            print "Read1 != Read3"
+#            print "Read1 != Read3"
             return False
     elif (read1 == read2):
-        print "Read1 = Read2 --> Write to RW Failed"
-        return False
-
-
-# ------------------------------------------------------------------------
-def RWR_withRestore_Quiet(bus, address, register, numBytes):
-    # Get read1
-    read1 = readFromRegister_Quiet(bus, address, register, numBytes)
-
-    if read1 == False: return False
-
-    augRead1 = [] # holds augmented read1
-    for i in read1:
-        if (i != 255): augRead1.append(i + 1)
-        else: augRead1.append(i - 1)
-
-    # Write different values to register
-    w = writeToRegister_Quiet(bus, address, register, augRead1)
-    if w == False: return False
-
-    # Get read2
-    read2 = readFromRegister_Quiet(bus, address, register, numBytes)
-    #if write successully changed reg (aka read1 != read2)
-    if (read1 != read2):
-        # Write original values to register
-        w = writeToRegister_Quiet(bus, address, register, read1)
-
-        read1.reverse() #write function flips bytes... Flip them back to compare with read3 properly
-        if w == False: return False
-
-        # Get read3
-        read3 = readFromRegister_Quiet(bus, address, register, numBytes)
-        # if restored to original (aka read1 = read3)
-        if read1 == read3:
-            # print "Read1 = Read3 --> Reg changed, now restored to original"
-            return True
-        else:
-            # print "Read1 != Read3"
-            return False
-    elif (read1 == read2):
-        # print "Read1 = Read2 --> Write to RW Failed"
+#        print "Read1 = Read2 --> Write to RW Failed"
         return False
 
 
@@ -252,41 +165,16 @@ def RWR_forRO(bus, address, register, numBytes):
     if (writeToRegister(bus,address, register, augRead1)):
         read2 = readFromRegister(bus, address, register, numBytes)
         if (read1 == read2):
-            print "Read1 = Read2"
+            #print "Read1 = Read2"
             return True # R/W/R cycle gives identical reads, so PASS
         if (read1 != read2):
-            print "READ1 != READ2"
+            #print "READ1 != READ2"
             return False # R/W/R cycle changed somehow, so FAIL
     #if write failed
     else:
-        print "WRITE FAILED IN R/W/R CYCLE"
+        #print "WRITE FAILED IN R/W/R CYCLE"
         return False
-# ------------------------------------------------------------------------
 
-# designed for easy **RO reg** use, so returns True when read1 = read2
-def RWR_forRO_Quiet(bus, address, register, numBytes):
-    read1 = readFromRegister_Quiet(bus, address, register, numBytes)
-
-    if read1 == False: return False
-
-    augRead1 = [] # augmented read1
-    for i in read1:
-        if (i != 255): augRead1.append(i + 1)
-        else: augRead1.append(i - 1)
-
-    #if write is successful
-    if (writeToRegister_Quiet(bus,address, register, augRead1)):
-        read2 = readFromRegister_Quiet(bus, address, register, numBytes)
-        if (read1 == read2):
-            # print "Read1 = Read2"
-            return True # R/W/R cycle gives identical reads, so PASS
-        if (read1 != read2):
-            # print "READ1 != READ2"
-            return False # R/W/R cycle changed somehow, so FAIL
-    #if write failed
-    else:
-        # print "WRITE FAILED IN R/W/R CYCLE"
-        return False
 
 
 
@@ -295,8 +183,6 @@ def RWR_forRO_Quiet(bus, address, register, numBytes):
 ##############################
 
 iglooAdd = 0x09
-
-#'size' is measured in bits
 
 igloo = {
     "fpgaMajVer" :{

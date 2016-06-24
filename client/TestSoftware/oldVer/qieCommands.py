@@ -20,7 +20,7 @@ class qieCommands:
 		self.tempStore = -99.0
 		self.passesTemp = False
 		self.passesHumi = False
-		self.b = webBus("pi5")
+		self.b = webBus("pi7")
 
 	def jdefault(self,o):
 		return o.__dict__

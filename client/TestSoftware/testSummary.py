@@ -1,34 +1,37 @@
-# This is a test class that will be the bridge
+#This is a test class that will be the bridge
 # between Jordan's code and the log files.
 
 class testSummary:
-	def __init__(self):
-		self.cardGenInfo = {"Barcode" : [], "Unique_ID" : [], "DateRun" : []
+	def __init__(self, summaryNo):
+		self.idNo = summaryNo
+
+		self.cardGenInfo = {"Unique_ID" : "", "DateRun" : [], "User" : "", "JSlot" : -99
 		}
 
 		self.resultList = {
-			"ID_string" : [], "ID_string_cont" : [], "Ones" : [],
-			"Zeroes" : [], "OnesZeroes" : [], "Firmware_Ver" : [],
-			"Temperature" : [], "Humidity" : [],
-			"Status" : [], "TempPass" : [], "HumiPass" : [],
-			"Scratch" : [], "ClockCnt" : [], "QIECount" : [],
-			"WTECount" : [], "BkPln_1" : [], "BkPln_2" : [], "BkPln_3" :[],
-			"OrbHist_1" : [], "OrbHist_2" : [], "OrbHist_3" : [],
-			"OrbHist_4" : [], "OrbHist_5" : [] 
+			"ID_string" : [0,0], "ID_string_cont" : [0,0], "Ones" : [0,0],
+			"Zeroes" : [0,0], "OnesZeroes" : [0,0], "Firmware_Ver" : [0,0],
+			"Status" : [0,0], "TempPass" : [0,0], "HumiPass" : [0,0],
+			"Scratch" : [0,0], "ClockCnt" : [0,0], "QIECount" : [0,0],
+			"WTECount" : [0,0], "BkPln_1" : [0,0], "BkPln_2" : [0,0], "BkPln_3" :[0,0],
+			"OrbHist_1" : [0,0], "OrbHist_2" : [0,0], "OrbHist_3" : [0,0],
+			"OrbHist_4" : [0,0], "OrbHist_5" : [0,0] 
 		}
-		self.iglooList = {"fpgaMajVer" : [], "fpgaMinVer" : [], "iglooOnes" : [],
-			"iglooZeros" : [],"fpgaTopOrBot" : [], "iglooUID" : [],
-			"statusReg" : [], "cntrRegDisplay" : [], "rst_QIE_count" : [], "clk_count" : [],
-			"igloo_wte_count" : [], "capIDErr_count" : [], "fifo_data" : [],
-			"inputSpy" : [], "spy96Bits" : [], "qie_ck_ph" : [],
-			"link_test_mode" : [], "link_test_pattern" : [], 
-			"dataToSERDES" : [], "addrToSERDES" : [], "ctrlToSERDES" : [],
-			"statFromSERDES" : [], "iglooScratch" : [], "dataFromSERDES" : [],
-			"cntrRegChange" : []
+		self.iglooList = {"fpgaMajVer" : [0,0], "fpgaMinVer" : [0,0], "iglooOnes" : [0,0],
+			"iglooZeros" : [0,0],"fpgaTopOrBot" : [0,0], "iglooUID" : [0,0],
+			"statusReg" : [0,0], "cntrRegDisplay" : [0,0], "rst_QIE_count" : [0,0], "clk_count" : [0,0],
+			"igloo_wte_count" : [0,0], "capIDErr_count" : [0,0], "fifo_data" : [0,0],
+			"inputSpy_512Reads" : [0,0], "spy96Bits" : [0,0], "qie_ck_ph" : [0,0],
+			"link_test_mode" : [0,0], "link_test_pattern" : [0,0], 
+			"dataToSERDES" : [0,0], "addrToSERDES" : [0,0], "ctrlToSERDES" : [0,0],
+			"statFromSERDES" : [0,0], "iglooScratch" : [0,0], "dataFromSERDES" : [0,0],
+			"iglooZeros" : [0,0], "igloo_UID" : [0,0], 
+			"CI_Mode_On" : [0,0] , "CI_Mode_Off" : [0,0]
 		}
 
-		self.vttxListOne = {"vttxDisplay" : [], "vttxChange" : [], "vttxRwrWithRestore" : []}
-		self.vttxListTwo = {"vttxDisplay" : [], "vttxChange" : [], "vttxRwrWithRestore" : []}
+		self.vttxListOne = {"vttxDisplay_1" : [0,0], "vttxChange_1" : [0,0], "vttxRwrWithRestore_1" : [0,0]}
+		self.vttxListTwo = {"vttxDisplay_2" : [0,0], "vttxChange_2" : [0,0], "vttxRwrWithRestore_2" : [0,0]}
+		self.cardGenInfo["JSlot"] = self.idNo
 			
 	def printResults(self):
 		print ("\nGENERAL INFO: \n")
@@ -49,38 +52,51 @@ class testSummary:
 			print i+ ": ", self.vttxListTwo[i]
 
 	def writeHumanLog(self):
-		with open("humanTest.log", "a") as w:
-			w.write("\nGENERAL INFO: \n")
-			for i in self.cardGenInfo:
-				w.write(i+": "+str(self.cardGenInfo[i])+"\n")
+		if (self.cardGenInfo["Unique_ID"] != ""):
+			with open("humanTest.log", "a") as w:
+				w.write("\nGENERAL INFO: \n")
+				for i in self.cardGenInfo:
+					w.write(i+": "+str(self.cardGenInfo[i])+"\n")
 
-			w.write("\n\nBRIDGE TESTS: \n")
-			for i in self.resultList:
-				w.write(i+": "+str(self.resultList[i])+"\n")
-			w.write("\n")
+				w.write("\n\nBRIDGE TESTS: \n")
+				for i in self.resultList:
+					w.write(i+": "+str(self.resultList[i])+"\n")
+				w.write("\n")
 
-			w.write("\n\nIGLOO TESTS: \n")
-			for i in self.iglooList:
-				w.write(i+": "+str(self.iglooList[i])+"\n")
+				w.write("\n\nIGLOO TESTS: \n")
+				for i in self.iglooList:
+					w.write(i+": "+str(self.iglooList[i])+"\n")
 
-			w.write("\n\n\nVTTX-1 TESTS: \n")
-			for i in self.vttxListOne:
-				w.write(i+": "+str(self.vttxListOne[i])+"\n")
+				w.write("\n\n\nVTTX-1 TESTS: \n")
+				for i in self.vttxListOne:
+					w.write(i+": "+str(self.vttxListOne[i])+"\n")
 
-			w.write("\n\n\nVTTX_2 TESTS: \n")
-			for i in self.vttxListTwo:
-				w.write(i+": "+str(self.vttxListTwo[i])+"\n")
-			w.write("------------------------------------")
+				w.write("\n\n\nVTTX_2 TESTS: \n")
+				for i in self.vttxListTwo:
+					w.write(i+": "+str(self.vttxListTwo[i])+"\n")
+				w.write("------------------------------------")
 	
 	def writeMachineJson(self):
-		fileName = str(self.cardGenInfo["Unique_ID"].replace(" ","")+"_raw.json")
-		with open(fileName, "w") as w:
-			w.write(str(self.cardGenInfo))
-			w.write("\n\n")
-			w.write(str(self.resultList))
-			w.write("\n\n")
-			w.write(str(self.iglooList))
-			w.write("\n\n")
-			w.write(str(self.vttxListOne))
-			w.write("\n\n")
-			w.write(str(self.vttxListTwo))
+		if (self.cardGenInfo["Unique_ID"] != ""):
+			fileName = str(self.cardGenInfo["Unique_ID"].replace(" ","")+"_raw.json")
+			with open("/home/hep/jsonResults/"+fileName, "w") as w:
+				w.write("{")
+				w.write('"TestType" : "Machine Readable Output"')
+				for i in self.cardGenInfo.keys():
+					w.write(", "+'"'+i+'"'+" : "+'"'+str(self.cardGenInfo[i])+'"')
+				for i in self.resultList.keys():
+					w.write(", "+'"'+i+'"'+" : "+str(self.resultList[i]))
+				for i in self.iglooList.keys():
+					w.write(", "+'"'+i+'"'+" : "+str(self.iglooList[i]))
+				for i in self.vttxListOne.keys():
+					w.write(", "+'"'+i+'"'+" : "+str(self.vttxListOne[i]))
+				for i in self.vttxListTwo.keys():
+					w.write(", "+'"'+i+'"'+" : "+str(self.vttxListTwo[i]))
+				w.write("\n}")
+		else:
+			print "Card has no attributes! Skipping log generation."
+#			w.write(str(self.cardGenInfo))
+#			w.write(str(self.resultList))
+#			w.write(str(self.iglooList))
+#			w.write(str(self.vttxListOne))
+#			w.write(str(self.vttxListTwo))
