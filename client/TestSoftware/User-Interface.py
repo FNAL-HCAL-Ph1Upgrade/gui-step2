@@ -508,36 +508,19 @@ class makeGui:
 			padx=button_padx,
 			pady=button_pady
 			)
-		self.qie_resetButton.pack()
+		self.qie_resetButton.pack(side=TOP)
 
-#
-#		# Make a label for the test selection
-#                self.qieReadLabel = Label(self.qie_subTopMid_frame, text="Select a test to run: ")
-#                self.qieReadLabel.configure(
-#                        padx=button_padx,
-#                        pady=button_pady,
-#                        background="white"
-#                        )
-#                self.qieReadLabel.pack(side=LEFT)
-#
-#		# Make and pack a PLACEHOLDER LISTBOX for the variable to read:
-#                self.qie_readBox = OptionMenu(self.qie_subTopMid_frame, self.qieReadVar,
-#                                              "ID_string","ID_string_cont","Ones",
-#				              "Zeroes","OnesZeroes","Firmware_Ver",
-#					      "Unique_ID", "Temperature", "Humidity"
-#					     )
-#                self.qie_readBox.pack(side=LEFT)
-#                self.qieReadVar.set("ID_string") # initializes the OptionMenu
-#
-#		#Make a button to read what is at the address
-#		self.qie_read_Button = Button(self.qie_subTopMid_frame, command=self.qieClickRead)
-#		self.qie_read_Button.configure(text="RUN TEST",background="khaki")
-#		self.qie_read_Button.configure(
-#			width=button_width*2,
-#			padx=button_padx,
-#			pady=button_pady
-#			)
-#		self.qie_read_Button.pack(side=RIGHT)
+		# Make a button to reset the backplane
+		self.qie_magicButton = Button(self.qie_subTopMid_frame, command=self.magicResetPress)
+		self.qie_magicButton.configure(text="    Magic Reset    ", bg="DarkOrchid1")
+		self.qie_magicButton.configure(
+			width=button_width*4,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.qie_magicButton.pack(side=TOP)
+
+
 
 		# Make a separation line
 		self.separationLabel = Label(self.qie_subTopMid2_frame, text="------------------------------------------")
@@ -696,6 +679,19 @@ class makeGui:
 			if (self.uHTR_slotNumber[i].get() == 1):
 				outSlotList.append(i)
 		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
+
+	def magicResetPress(self):
+		b = webBus(self.piChoiceVar.get(),0)
+		for i in [1,2]:
+			b.write(0x72,[i])
+			b.write(0x74,[0x08])
+			b.write(0x70,[0x03,0])
+			b.write(0x70,[0x01,0])
+			b.sendBatch()
+		print "\n\n Magic reset completed!\n\n"
+		for j in range(2):
+			self.qie_magicButton.flash()
+			
 
 	def prepareOutSlots(self):
 		self.outSlotNumbers = []
