@@ -34,6 +34,9 @@ def openChannel(slot, bus):
   # Open channel to i2c group
     bus.write(0x74, [ngccmGroup(rmLoc)])
     bus.read(0x74, 2)
+
+  # Reset the backplane
+    bus.write(0x00,[0x06])
     return bus.sendBatch()
 
 #Get DChains
@@ -52,3 +55,11 @@ def SetQInjMode(onOffBit, slot, bus):
         bus.sendBatch()
     else:
         print "INVALID INPUT IN SetQInjMode... doing nothing"
+
+# Cryptic 0x70 Reset
+def reset(ngccm): #RM4,3->ngccm2 -- RM2,1->ngccm1
+    b.write(0x72,[ngccm])
+    b.write(0x74,[0x08])
+    b.write(0x70,[0x3,0])
+    b.write(0x70,[0x1,0])
+    b.sendBatch()
