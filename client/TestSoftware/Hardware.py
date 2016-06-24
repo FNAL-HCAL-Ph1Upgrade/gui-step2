@@ -12,10 +12,10 @@ def getCardAddress(slot):
     if slot in [5,10,21,26]: return cardAddresses[3]
 
 def getReadoutSlot(slot):
-    if slot in [2,3,4,5] : return     1
-    if slot in [7,8,9,10] : return    2
-    if slot in [18,19,20,21] : return 3
-    if slot in [23,24,25,26] : return 4
+    if slot in [2,3,4,5] : return     4
+    if slot in [7,8,9,10] : return    3
+    if slot in [18,19,20,21] : return 2
+    if slot in [23,24,25,26] : return 1
 def ngccmGroup(rm):
     i2cGroups = [0x01, 0x10, 0x20, 0x02]
     return i2cGroups[rm-1]
@@ -37,11 +37,12 @@ def openChannel(slot, bus):
     bus.read(0x74, 2)
     return bus.sendBatch()
 
+#Get DChains
 def getDChains(slot, bus):
     Hardware.openChannel(slot, bus)
     return DChains(getCardAddress(slot), bus)
 
-
+#SetQInjMode(t)
 def SetQInjMode(onOffBit, slot, bus):
     openChannel(slot, bus)
     #expects onOffBit of 0 or 1

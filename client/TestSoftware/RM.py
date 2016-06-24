@@ -1,5 +1,6 @@
 #RM.py
 from qCard import qCard
+import Hardware
 from client import *
 
 cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
