@@ -40,12 +40,12 @@ noCheckRegis = {
 }
 
 class testSuite:
-    def __init__(self, webAddress, address, inSummary):
+    def __init__(self, webAddress, address, inSummary, iters):
         '''create a new test suite object... initialize bus and address'''
         self.b = webAddress
 	self.outCard = inSummary
         self.a = address
-	i = 15
+	i = iters
 
 	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
 	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
@@ -82,7 +82,7 @@ class testSuite:
 		new_r[0] = helpers.toHex(new_r[0])
 		self.outCard.cardGenInfo[testName]=new_r[0]
 	elif (testName == "Temperature" or testName == "Humidity"):
-		self.outCard.cardGenInfo[testName] = temp.readManyTemps(self.a,25,testName,"nohold")
+		self.outCard.cardGenInfo[testName] = temp.readManyTemps(self.a,15,testName,"nohold")
 
     def openIgloo(self, slot):
 		#the igloo is value "3" in I2C_SELECT table

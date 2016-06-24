@@ -95,10 +95,10 @@ class RM:
         return bus.sendBatch()
 
 
-    def runAll(self, suiteSelection):
+    def runAll(self, suiteSelection, iters):
     	self.openChannel()
     	for q in range(len(self.qCards)):
-    		self.qCards[q].runAll(self.bus, suiteSelection)
+    		self.qCards[q].runAll(self.bus, suiteSelection,iters)
 
     def runSingle(self, key):
 	self.openChannel()

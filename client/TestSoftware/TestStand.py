@@ -6,10 +6,11 @@ sys.path.append('../')
 from client import webBus
 
 class TestStand:
-    def __init__(self, activeSlots, summaryList, suiteSelection, piAddress):
+    def __init__(self, activeSlots, summaryList, suiteSelection, piAddress, iterations):
         '''Create a test stand object filled with necessary RMs, cards'''
 	self.bus = webBus(piAddress, 0)
 	self.suiteSelection = suiteSelection	
+	self.iters = iterations
 
         self.activeSlots = activeSlots
         self.RMs = []
@@ -45,7 +46,7 @@ class TestStand:
 
     def runAll(self):
 	    for r in self.RMs:
-		r.runAll(self.suiteSelection)
+		r.runAll(self.suiteSelection,self.iters)
 
     def runSingle(self, key):
         for r in self.RMs:

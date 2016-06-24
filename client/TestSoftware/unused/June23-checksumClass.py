@@ -26,41 +26,12 @@ def toIntList(message):
     return intlist
 
 class Checksum:
-    def __init__(self, message, temp):
+    def __init__(self, message):
         self.message = message
-        if temp: # 1 = True for temp
-            self.result = self.tempCRC(0)
-        else: # 0 = False for uniqueID
-            self.result = self.idCRC()
-
-    # Check Sum function from Temp/Humi Documentation.
-    def tempCRC(self, verbose):
-        POLYNOMIAL = 0x131 # x^8 + x^5 + x^4 + 1 -> 9'b100110001 = 0x131
-        crc = 0
-        mList = toIntList(self.message)
-        errorCode = mList[0]
-        dataList = mList[1:-1]
-        checksum = mList[-1]
-        numBytes = len(dataList)
-        if errorCode != 0:
-            return 2 #'I2C_BUS_ERROR'
-        # calculates 8-bit checksum with give polynomial
-        for byteCtr in xrange(numBytes):
-            crc ^= dataList[byteCtr]
-            for bit in xrange(8,0,-1):
-                if crc & 0x80: # True if crc >= 128, False if crc < 128
-                    crc = (crc << 1) ^ POLYNOMIAL
-                else: # crc < 128
-                    crc = (crc << 1)
-        if verbose:
-            print 'CRC = ',crc
-            print 'checksum = ',checksum
-        if crc != checksum:
-            return 1 # 'CHECKSUM_ERROR'
-        return 0 # 'CHECKSUM_OK'
+        self.result = self.crc()
 
     # CRC (validate checksum)
-    def idCRC(self):
+    def crc(self):
         val = 0
         mlist = toIntList(self.message)
         error = mlist.pop(0)

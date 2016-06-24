@@ -1,6 +1,5 @@
 from client import webBus
 import collections
-import caleb_checksum as cc
 from checksumClass import Checksum
 # bus = webBus("pi5",0)
 bus = webBus("pi6",0)
@@ -78,7 +77,9 @@ def readTempHumi(slot, num_bytes, key, hold, verbosity=0):
     bus.read(0x40, num_bytes + 1) # also read checksum byte
     message = bus.sendBatch()[-1]
 
-    crc = cc.checkCRC(message,2)
+#    crc = cc.checkCRC(message,2)
+    check = Checksum(message,1)
+    crc = check.result
 
     value = getValue(message)
 
@@ -95,7 +96,7 @@ def readManyTemps(slot,iterations,key,hold,verbosity=0):
         if verbosity > 0:
             print tempList
         tempArray.append(tempList)
-        if tempList[0] != 'CHECKSUM_OK':
+        if int(tempList[0]) != 0:
             print '~~~~~ ERROR for Test ', i,' : ', tempList
     transpose = zip(*tempArray)
     finalTempList = transpose[1]
@@ -105,12 +106,6 @@ def readManyTemps(slot,iterations,key,hold,verbosity=0):
     tempCounter = collections.Counter(finalTempList)
     tempModeList = tempCounter.most_common()
 
-#    print 'Iterations: ',iterations
-#    print key,' Mean: ', tempMean
-#    print key,' Min: ', tempMin
-#    print key,' Max: ', tempMax
-#    print key,' Range: ', tempMax - tempMin
-#    print key,' Mode List: ', tempModeList
     return tempMean
 
 def run(slot,iterations,verbosity=0):

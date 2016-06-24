@@ -494,6 +494,7 @@ class makeGui:
 		# Make a field for number of iterations
 		self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar)
 		self.iter_entry.pack(side=RIGHT)
+		self.iterationVar.set("15")
 
 		# Make a separation line
 		self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
@@ -544,7 +545,7 @@ class makeGui:
 						"Vttx Register Suites"
 						)
 		self.qie_suiteMenu.pack(side=LEFT)
-		self.suiteChoiceVar.set("Bridge Register Suite")
+		self.suiteChoiceVar.set("Main Suite : All Tests")
 
 
 		#Make a button to run the main test suite
@@ -619,6 +620,9 @@ class makeGui:
 		# now, prepare the summaries:
 		self.prepareOutCards()
 
+###############################################################################################################
+###############################################################################################################
+###############################################################################################################
 
 	#################################
 	###			      ###
@@ -669,7 +673,7 @@ class makeGui:
 		self.prepareOutSlots()
 		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
 		print self.outSlotNumbers
-		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection, self.piChoiceVar.get())
+		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection, self.piChoiceVar.get(), int(self.iterationVar.get()))
 		self.myTestStand.runAll()
 		print str(datetime.now())
 
@@ -688,7 +692,7 @@ class makeGui:
 			b.write(0x70,[0x03,0])
 			b.write(0x70,[0x01,0])
 			b.sendBatch()
-		print "\n\n Magic reset completed!\n\n"
+		print "\n\nMagic reset completed!\n\n"
 		for j in range(2):
 			self.qie_magicButton.flash()
 			
