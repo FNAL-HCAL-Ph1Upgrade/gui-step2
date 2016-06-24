@@ -1,8 +1,9 @@
-# uHTR_Test.py
+# uHTR.py
 
-import Hardware
-import DChain
-import DaisyChain
+import Hardware as hw
+from DChains import DChains
+from DaisyChain import DaisyChain
+from QIE import QIE
 import os
 import sys
 import time 
@@ -12,22 +13,40 @@ from commands import getoutput
 from ROOT import *
 gROOT.SetBatch()
 
-class uHTR_Test:
-	def __init__(self, uhtr_slots, qcard_slots):
+class uHTR():
+	def __init__(self, uhtr_slots, qcard_slots, bus):
+
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, register)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
 		### List of keys: "slot" "link" "channel" ........		
+		
+		self.bus=bus
 
-		self.hw = Hardware(qcard_slots)	#Array of RMs for communicating with DaisyChains
+#		for slot in qcard_slots:
+#			self.qcards.append(hw.getDChains(slot, bus))
 
-		self.crate=41			#Always 41 for summer 2016 QIE testing
+		self.crate=[41]			#Always 41 for summer 2016 QIE testing
 
-		if isintance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
+		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
 		
-#		self.QIE_mapping()
+
+#############################################################
+# Higher level uHTR test functions
+# Results of each test recorded in master_dict
+#############################################################
+
+
+# eventually we might write functions that can actually be used to test things
+
+
+
+
+
+#############################################################
+
 
 #############################################################
 # Adding and extracting data from the master_dict
@@ -54,78 +73,40 @@ class uHTR_Test:
 
 #############################################################
 
-#############################################################
-# Higher level uHTR test functions
-# Results of each test recorded in master_dict
-#############################################################
-
-
-# eventually we might write functions that can actually be used to test things
-
-
-
-
-
-#############################################################
-
-
+ 
 #############################################################
 # Mapping functions
 #############################################################
 
-       def QIE_mapping(self):
-                # Records the uHTR slot, link, and channel of each QIE in master_dict
-               for rm in self.ts.RMs:
-			for dChain in rm.dChains: 
-                	       # change settings of chian[0]
+	def QIE_mapping(self):
+		# Records the uHTR slot, link, and channel of each QIE in master_dict
+		for qCard in self.qCards:
+			qCard.read()
+			for i in [0,6]:
+				qie=qCard[i]
 				info=self.get_mapping_histo()
-				self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
+				if info is not None: self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
+				else: print "mapping failed"
 
-
-        def get_mapping_histo(self):
-                # matches histo to QIE chip for mapping
-                test_results=self.get_histo_results()
-                for uhtr_slot, uhtr_slot_results in test_results.iteritems():
-                        for chip, chip_results in uhtr_slot_results.iteritems():
+	def get_mapping_histo(self):
+		# matches histo to QIE chip for mapping
+		map_results=self.get_histo_results(out_dir="map_test")
+		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
+			for chip, chip_results in uhtr_slot_results.iteritems():
 				if chip_results["pedBinMax"] > 12:
 					return (int(uhtr_slot), chip_results["link"], chip_results["channel"])
-		print "Mapping failed"
+		return None
 	
 #############################################################
 
+
 #############################################################
-# Basic uHTRtool functions 
-# Should only be used by higher level tests 
+# Other non-testing funtions 
+# Mainly used by higher level to make/read histos
 #############################################################
 
 
-	def get_histo_results(self, crate=None, slots=None, n_orbits=1000, sepCapID=0, signalOn=0, out_dir="histotest"):
-		# Runs uHTRtool.exe and returns layered ditctionary of results. 
-		if slots is None:
-			slots=self.slots		
-		if crate is None:
-			crate=self.crate
-
-
-		test_results = {}
-		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir= out_dir)
-		
-		for file in os.listdir(path_to_root):
-			
-			# Extract slot number from file name
-			temp = file.split('_')
-			temp = temp[-1].split('.root')
-			slot_num = str(temp[0])
-			
-			test_results["%s"%(slot_num)] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-		
-		os.removedirs(path_to_root)
-		
-		return test_results
-		
-
-	
-	def uHTRtool_source_test(self):
+	def uHTRtool_source_test():
 	        ### checks to see if the uHTRtool is sourced, and sources it if needed	
 		uhtr_cmd="uHTRtool.exe"
 		error="sh: uHTRtool.exe: command not found"
@@ -134,26 +115,33 @@ class uHTR_Test:
 
 		if check==error:
 			print "WARNING, you need to run 'source ~daqowner/dist/etc/env.sh' before you can use uHTRtool.exe"
+
+
+	def get_histo_results(self, crate=None, slots=None, n_orbits=1000, sepCapID=0, signalOn=0, out_dir="histotest"):
+		# Runs uHTRtool.exe and returns layered ditctionary of results. 
+		if slots is None:
+			slots=self.uhtr_slots
+		if crate is None:
+			crate=self.crate
+			
+
+		histo_results = {}
+		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir)
 		
+		for file in os.listdir(path_to_root):
+			# Extract slot number from file name
+			temp = file.split('_')
+			temp = temp[-1].split('.root')
+			slot_num = str(temp[0])
+			
+			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
+		
+#		os.removedirs(path_to_root)		
+		return histo_results
+		
+
 #############################################################
-
-
-#############################################################
-# Non-member functions used to generate and read histos
-
-
-def uHTRtool_source_test():
-	### checks to see if the uHTRtool is sourced, and sources it if needed	
-	uhtr_cmd="uHTRtool.exe"
-	error="sh: uHTRtool.exe: command not found"
-	check=getoutput(uhtr_cmd)
-	source_cmd=["source /home/daqowner/dist/etc/env.sh"]
-
-	if check==error:
-		print "WARNING, you need to run 'source ~daqowner/dist/etc/env.sh' before you can use uHTRtool.exe"
-
-	return None
-
+		
 def send_commands(crate=None, slot=None, cmds=''):
 	# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
 	# Arguments and variables:
@@ -166,7 +154,7 @@ def send_commands(crate=None, slot=None, cmds=''):
 		cmds = [cmds]
 
 	# Prepare ip address:uhtr_ip = "192.168.%i.%i"%(crate, slot*4)
-	uhtr_ip = "192.168.%i.%i"%(crate, slot*4)
+	uhtr_ip = "192.168.{0}.{1}".format(crate, slot*4)
 
 	# Prepare the uHTRtool arguments:
 	uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)   
@@ -183,8 +171,7 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
         log = ""
         if not file_out:
                 file_out = "histo_uhtr{0}.root".format(slot)
-
-        # Histogram:
+	        # Histogram:
         cmds = [
                 '0',
                 'link',
@@ -193,8 +180,8 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
                 '{0}'.format(n_orbits),                # number of orbits to integrate over
                 '{0}'.format(sepCapID),
                 '{0}'.format(file_out),
-                '0',
-                'quit',
+		'0',
+              		'quit',
                 'quit',
                 'exit',
                 '-1'
@@ -202,15 +189,8 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
         result = send_commands(crate=crate, slot=slot, cmds=cmds)
         return result
 	
-def generate_histos(crates, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
-
-	###check for single crate/single slot	
-	if isinstance(crates, int):
-		crates=[crates]
-
-	if isinstance(slots, int):
-		slots=[slots] 
-	
+def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
+	#can only generate over a single crate
 	if not file_out_base:
 		file_out_base="uHTR_histotest"
 
@@ -223,16 +203,14 @@ def generate_histos(crates, slots, n_orbits=5000, sepCapID=0, file_out_base="", 
 	dir_path="{0}/{1}".format(cwd, out_dir)
 	os.chdir(dir_path)
 
-	for crate in crates:
-		for slot in slots:
-			file_out=file_out_base+"_{0}_{1}.root".format(crate, slot)
-			p = mp.Process(target=get_histo, args=(crate, slot, n_orbits, sepCapID, file_out,))
-			p.start()
+	
+	for slot in slots:
+		file_out=file_out_base+"_{0}_{1}.root".format(crate, slot)
+		p = mp.Process(target=get_histo, args=(crate, slot, n_orbits, sepCapID, file_out,))
+		p.start()
 
 	while mp.active_children():
-		time.sleep(0.1)
-
-	print "All tests complete"	
+		time.sleep(0.1)	
 			
 	os.chdir(cwd)	
 
@@ -271,8 +249,8 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 					chip_results["link"] = i_link
 					chip_results["channel"] = i_ch
                                         #Transition from pedestal to signal is consistently around 10
-                                        h.GetXaxis().SetRangeUser(7,13)
-                                        cutoff = h.GetMinimum()
+					h.GetXaxis().SetRangeUser(7,13)
+					cutoff = h.GetMinimum()
 					h.GetXaxis().SetRangeUser(0,cutoff)
 					binMax = h.GetMaximumBin()
 					chip_results["pedBinMax"] = h.GetBinContent(binMax) 
@@ -284,19 +262,19 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 
 					slot_result[histNum] = chip_results
 
-                else:
-                        for i_link in range(24):
-                                for i_ch in range(6):
-                                        histNum = 6*i_link + i_ch
-                                        h = f.Get("h%d"%(histNum))
-                                        chip_results = {}
-                                       	chip_results["link"] = i_link
+		else:
+			for i_link in range(24):
+				for i_ch in range(6):
+					histNum = 6*i_link + i_ch
+					h = f.Get("h%d"%(histNum))
+					chip_results = {}
+					chip_results["link"] = i_link
 					chip_results["channel"] = i_ch
 					chip_results["pedBinMax"] = h.GetMaximumBin() 
 					chip_results["pedRMS"] = h.GetRMS()
 					
-                                        slot_result[histNum] = chip_results
+					slot_result[histNum] = chip_results
  
 	f.Close()
 	return slot_result
-	
+		

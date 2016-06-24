@@ -72,7 +72,7 @@ class QIE:
             250 : (0,1),
             350 : (1,0),
             450 : (1,1)
-        }.get(v, default = (-9,-9))
+        }.get(v, (-9,-9))
         if d == (-9, -9):
             print "INVALID INPUT IN setLVDS_output_level_trim... no change made"
         else:
@@ -119,7 +119,7 @@ class QIE:
             50 : (1,0,1),
             60 : (1,1,0),
             70 : (1,1,1)
-        }.get(q, default=(-9,-9,-9))
+        }.get(q, (-9,-9,-9))
         if d != (-9,-9,-9):
             self[13] = d[0]
             self[14] = d[1]
@@ -228,7 +228,7 @@ class QIE:
             2880 : (1,0,1),
             5760 : (1,1,0),
             8640 : (1,1,1)
-        }.get(charge, default=(-9,-9,-9))
+        }.get(charge, (-9,-9,-9))
         if d != (-9,-9,-9):
             for i in xrange(3):
                 self[41 + i] = d[i]
