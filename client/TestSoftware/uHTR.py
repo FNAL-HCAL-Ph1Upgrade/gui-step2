@@ -6,7 +6,7 @@ from DaisyChain import DaisyChain
 from QIE import QIE
 import os
 import sys
-import time 
+import time
 import multiprocessing as mp
 from subprocess import Popen, PIPE
 from commands import getoutput
@@ -20,18 +20,18 @@ class uHTR():
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, register)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
-		### List of keys: "slot" "link" "channel" ........		
-		
+		### List of keys: "slot" "link" "channel" ........
+
 		self.bus=bus
 
 #		for slot in qcard_slots:
 #			self.qcards.append(hw.getDChains(slot, bus))
 
-		self.crate=[41]			#Always 41 for summer 2016 QIE testing
+		self.crate=41			#Always 41 for summer 2016 QIE testing
 
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
-		
+
 
 #############################################################
 # Higher level uHTR test functions
@@ -50,30 +50,30 @@ class uHTR():
 
 #############################################################
 # Adding and extracting data from the master_dict
-#############################################################	
-	
+#############################################################
+
 	def get_QIE(self, qcard_slot, register):
 		### Returns the dictionary storing the test results of the specified QIE chip
 		key="({0}, {1})".format(qcard_slot, register)
 		return self.master_dict[key]
-	
+
 	def get_QIE_results(self, qcard_slot, register, test_key=""):
 		### Returns the (pass, fail) tuple of specific test
 		QIE=self.get_QIE(qcard_slot, register)
 		return QIE[test_key]
-	
+
 	def add_QIE(self, qcard_slot, register, uhtr_slot, link, channel):
 		QIE_info["uhtr_slot"]=uhtr_slot
-		QIE_info["link"]=link		
+		QIE_info["link"]=link
 		QIE_info["channel"]=channel
-		
+
 		key="({0}, {1})".format(qcard_slot, register)
 		self.master_dict[key]=QIE_info
-		
+
 
 #############################################################
 
- 
+
 #############################################################
 # Mapping functions
 #############################################################
@@ -93,21 +93,21 @@ class uHTR():
 		map_results=self.get_histo_results(out_dir="map_test")
 		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
 			for chip, chip_results in uhtr_slot_results.iteritems():
-				if chip_results["pedBinMax"] > 12:
+				if chip_results["pedBinMax"] > 15:
 					return (int(uhtr_slot), chip_results["link"], chip_results["channel"])
 		return None
-	
+
 #############################################################
 
 
 #############################################################
-# Other non-testing funtions 
+# Other non-testing funtions
 # Mainly used by higher level to make/read histos
 #############################################################
 
 
 	def uHTRtool_source_test():
-	        ### checks to see if the uHTRtool is sourced, and sources it if needed	
+	        ### checks to see if the uHTRtool is sourced, and sources it if needed
 		uhtr_cmd="uHTRtool.exe"
 		error="sh: uHTRtool.exe: command not found"
 		check=getoutput(uhtr_cmd)
@@ -118,30 +118,30 @@ class uHTR():
 
 
 	def get_histo_results(self, crate=None, slots=None, n_orbits=1000, sepCapID=0, signalOn=0, out_dir="histotest"):
-		# Runs uHTRtool.exe and returns layered ditctionary of results. 
+		# Runs uHTRtool.exe and returns layered ditctionary of results.
 		if slots is None:
 			slots=self.uhtr_slots
 		if crate is None:
 			crate=self.crate
-			
+
 
 		histo_results = {}
 		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir)
-		
+
 		for file in os.listdir(path_to_root):
 			# Extract slot number from file name
 			temp = file.split('_')
 			temp = temp[-1].split('.root')
 			slot_num = str(temp[0])
-			
+
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-		
-#		os.removedirs(path_to_root)		
+
+#		os.removedirs(path_to_root)
 		return histo_results
-		
+
 
 #############################################################
-		
+
 def send_commands(crate=None, slot=None, cmds=''):
 	# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
 	# Arguments and variables:
@@ -157,7 +157,7 @@ def send_commands(crate=None, slot=None, cmds=''):
 	uhtr_ip = "192.168.{0}.{1}".format(crate, slot*4)
 
 	# Prepare the uHTRtool arguments:
-	uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)   
+	uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)
 
 	# Send commands and organize results:
 	# This puts the output of the command into a list called "raw_output" the first element of the list is stdout, the second is stderr.
@@ -188,7 +188,7 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
         ]
         result = send_commands(crate=crate, slot=slot, cmds=cmds)
         return result
-	
+
 def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
 	#can only generate over a single crate
 	if not file_out_base:
@@ -203,16 +203,16 @@ def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", o
 	dir_path="{0}/{1}".format(cwd, out_dir)
 	os.chdir(dir_path)
 
-	
+
 	for slot in slots:
 		file_out=file_out_base+"_{0}_{1}.root".format(crate, slot)
 		p = mp.Process(target=get_histo, args=(crate, slot, n_orbits, sepCapID, file_out,))
 		p.start()
 
 	while mp.active_children():
-		time.sleep(0.1)	
-			
-	os.chdir(cwd)	
+		time.sleep(0.1)
+
+	os.chdir(cwd)
 
 	### return the the full path to out_dir
 	return dir_path
@@ -237,7 +237,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 					chip_results["RMS"].append(max(h.GetRMS(), 0.01))
 
 				slot_result[histNum] = chip_results
-		
+
 	else:
                 if signal:
 			for i_link in range(24):
@@ -253,7 +253,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 					cutoff = h.GetMinimum()
 					h.GetXaxis().SetRangeUser(0,cutoff)
 					binMax = h.GetMaximumBin()
-					chip_results["pedBinMax"] = h.GetBinContent(binMax) 
+					chip_results["pedBinMax"] = h.GetBinContent(binMax)
 					chip_results["pedRMS"] = h.GetRMS()
 					h.GetXaxis().SetRangeUser(cutoff,lastBin)
 					binMax = h.GetMaximumBin()
@@ -270,11 +270,10 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 					chip_results = {}
 					chip_results["link"] = i_link
 					chip_results["channel"] = i_ch
-					chip_results["pedBinMax"] = h.GetMaximumBin() 
+					chip_results["pedBinMax"] = h.GetMaximumBin()
 					chip_results["pedRMS"] = h.GetRMS()
-					
+
 					slot_result[histNum] = chip_results
- 
+
 	f.Close()
 	return slot_result
-		

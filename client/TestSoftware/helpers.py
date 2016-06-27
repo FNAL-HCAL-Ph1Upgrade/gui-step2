@@ -18,10 +18,12 @@ def readBinaryRegister(bus, address, register, numBytes):
     return getBitsFromBytes(readFromRegister(bus, address, register, numBytes))
 def readFromRegister(bus, address, register, numBytes):
     bus.write(address, [register])
+    bus.sleep(1000)
     bus.read(address, numBytes)
     ret = []
-    for i in bus.sendBatch()[1].split():
+    for i in bus.sendBatch()[2].split():
         ret.append(int(i))
+    ret = ret[1:]
     return ret
 def writeToRegister(bus, address, register, bytesToWrite):
     bus.write(address, [register] + list(bytesToWrite))

@@ -1,3 +1,130 @@
+
+# ###########################
+# #### TABLE OF CONTENTS ####
+# * client.py (webBus)
+# * helpers.py
+# * QIE.py
+# * DaisyChain.py
+# * DChains.py
+# * Hardware.py
+# ###########################
+
+
+
+#############################################################################
+# C L I E N T . P Y #########################################################
+#############################################################################
+
+#client.py
+#client /library/ with which to send commands to server
+
+#websocket (install websocket-client)
+from websocket import create_connection
+
+################################################################################
+# webBus class
+################################################################################
+
+class webBus:
+    def __init__(self, serverAddress = "pi5", VERBOSITY = 2):
+        self.VERBOSITY = VERBOSITY
+        self.messages = []
+        a = "ws://%s:1738/ws" % serverAddress
+        self.ws = create_connection(a)
+
+    def read(self, address, numbytes):
+        m = "r %i %i" % (address, numbytes)
+        self.messages.append(m)
+
+    def write(self, address, byteArray):
+        m = "w %i " % address
+        for h in byteArray:
+            m += str(h) + " "
+        self.messages.append(m)
+    def sleep(self, n):
+        m = "s %i" % n
+        self.messages.append(m)
+    def sendBatch(self):
+        self.ws.send('|'.join(self.messages))
+        ret = self.ws.recv().split('|')
+        if self.VERBOSITY >= 1:
+            for e in xrange(len(self.messages)):
+                print "SENT: %s" % self.messages[e]
+                print "RECEIVED: %s" % ret[e]
+        self.messages = []
+        return ret
+
+################################################################################
+if __name__ == "__main__":
+    print "What you just ran is a library. Correct usage is to import this file\
+    and use its class(es) and functions."
+
+
+
+#############################################################################
+# H E L P E R S . P Y #######################################################
+#############################################################################
+
+
+
+# helpers.py
+# Helper functions for tests:
+
+def getBitsFromByte(decimal):
+    return list('%08d' % int(bin(decimal)[2:]))
+def getBitsFromBytes(decimalBytes):
+    ret = []
+    for i in decimalBytes:
+        ret = ret + getBitsFromByte(i)
+    return ret
+def getByteFromBits(bitList):
+    return int(''.join(str(i) for i in bitList), 2)
+def getBytesFromBits(bitList):
+    ret = []
+    for i in xrange(len(bitList)/8):
+        ret.append(getByteFromBits(bitList[i * 8: (i + 1) * 8]))
+    return ret
+def readBinaryRegister(bus, address, register, numBytes):
+    return getBitsFromBytes(readFromRegister(bus, address, register, numBytes))
+def readFromRegister(bus, address, register, numBytes):
+    bus.write(address, [register])
+    bus.sleep(1000)
+    bus.read(address, numBytes)
+    ret = []
+    for i in bus.sendBatch()[2].split():
+        ret.append(int(i))
+    ret = ret[1:]
+    return ret
+def writeToRegister(bus, address, register, bytesToWrite):
+    bus.write(address, [register] + list(bytesToWrite))
+    return None
+def toHex(message):
+    message_list = message.split()
+    for byte in xrange(len(message_list)):
+        message_list[byte] = hex(int(message_list[byte]))
+        message_list[byte] = message_list[byte][2:]
+        if len(message_list[byte]) == 1:
+            message_list[byte] = '0' + message_list[byte]
+    s = ""
+    return '0x' + s.join(message_list)
+
+def reverseBytes(message):
+    message_list = message.split()
+    message_list.reverse()
+    s = " "
+    return s.join(message_list)
+
+
+
+
+
+
+
+#############################################################################
+# Q I E . P Y ###############################################################
+#############################################################################
+
+
 #QIE.py
 
 #QIE settings - Ordered by most significant bits
@@ -297,7 +424,7 @@ class QIE:
             print "INVALID INPUT IN CapID3pedastal... no change made"
 
 
-##############################################
+    ##############################################
 
     #Change bits 41-43
     def getChargeInjectDAC(self):
@@ -319,6 +446,164 @@ class QIE:
             print "INVALID INPUT IN ChargeInjectDAC... no change made"
 
 
-############################################################################
 
-############################################################################
+
+
+
+
+
+
+#############################################################################
+# D A I S Y C H A I N . P Y #################################################
+#############################################################################
+
+#DaisyChain.py
+#QIE DaisyChain class
+
+# from QIE import QIE
+
+
+class DaisyChain:
+    def __init__(self, arr = list(0 for i in xrange(64 * 6))):
+        '''creates a shift register object with 6 QIEs, default 0s'''
+        self.QIEs = []
+        for i in xrange(6):
+            self.QIEs.append(QIE(arr[i * 64:(i + 1) * 64]))
+        #Adry (6/24)
+        # for i in xrange(6):
+        #     self.CI.append(QIE(arr[]))
+    def __repr__(self):
+        return "DaisyChain()"
+    def __str__(self):
+        r = ""
+        for q in self.QIEs:
+            r += "-------\n"
+            r += str(q)
+            r += "\n"
+            r += "-------\n"
+        return r
+    def __getitem__(self, i):
+        return self.QIEs[i]
+    #returns a flattened array of all QIE register bits to be written as a block
+    def flatten(self):
+        '''flatten all of the bits in the register's QIEs to one list'''
+        a = []
+        for q in self.QIEs:
+            a += q.flatten()
+        return a
+    # def getCI(self):
+
+
+
+
+
+
+
+
+
+#############################################################################
+# D C H A I N S . P Y #######################################################
+#############################################################################
+
+#DChains.py
+
+# from DaisyChain import DaisyChain
+# from client import webBus
+# from helpers import *
+from optparse import OptionParser
+
+class DChains:
+    def __init__(self, address, bus):
+        self.bus = bus
+        self.chains = []
+        self.address = address
+    def read(self):
+        for register in [0x30, 0x31]:
+            self.chains.append(DaisyChain(readBinaryRegister(self.bus, self.address, register, 48)))
+    def __str__(self):
+        ret = ""
+        for c in self.chains:
+            ret += str(c)
+        return ret
+    def __getitem__(self, i):
+        return self.chains[i/6][i % 6]
+    def write(self):
+        for i in range(2):
+            register = [0x30, 0x31][i]
+            writeToRegister(self.bus, self.address, register, getBytesFromBits(self.chains[i].flatten()))
+
+
+
+
+
+
+
+#############################################################################
+# H A R D W A R E . P Y #####################################################
+#############################################################################
+
+#Hardware.py
+import sys
+# from DChains import DChains
+
+#MUX dict
+  #Given JX, set MUXes
+cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
+def getCardAddress(slot):
+    if slot in [2,7,18,23] : return cardAddresses[0]
+    if slot in [3,8,19,24] : return cardAddresses[1]
+    if slot in [4,9,20,25] : return cardAddresses[2]
+    if slot in [5,10,21,26]: return cardAddresses[3]
+
+def getReadoutSlot(slot):
+    if slot in [2,3,4,5] : return     4
+    if slot in [7,8,9,10] : return    3
+    if slot in [18,19,20,21] : return 2
+    if slot in [23,24,25,26] : return 1
+def ngccmGroup(rm):
+    i2cGroups = [0x01, 0x10, 0x20, 0x02]
+    return i2cGroups[rm-1]
+
+def openChannel(slot, bus):
+    rmLoc = getReadoutSlot(slot)
+    if rmLoc in [3,4]:
+      # Open channel to ngCCM for RM 3,4: J1 - J10
+        bus.write(0x72,[0x02])
+    elif rmLoc in [1,2]:
+      # Open channel to ngCCM for RM 1,2: J17 - J26
+        bus.write(0x72,[0x01])
+    else:
+        print 'Invalid RM = ', rmLoc
+        print 'Please choose RM = {1,2,3,4}'
+        return 'closed channel'
+  # Open channel to i2c group
+    bus.write(0x74, [ngccmGroup(rmLoc)])
+    bus.read(0x74, 2)
+
+  # Reset the backplane
+    bus.write(0x00,[0x06])
+    return bus.sendBatch()
+
+#Get DChains
+def getDChains(slot, bus):
+    openChannel(slot, bus)
+    return DChains(getCardAddress(slot), bus)
+
+#SetQInjMode(t)
+def SetQInjMode(onOffBit, slot, bus):
+    openChannel(slot, bus)
+    #expects onOffBit of 0 or 1
+    if onOffBit == 0 or onOffBit == 1:
+        bus.write(getCardAddress(slot),[0x11,0x03,0,0,0])
+        bus.write(0x09,[0x11,onOffBit,0,0,0])
+        bus.sendBatch()
+    else:
+        print "INVALID INPUT IN SetQInjMode... doing nothing"
+
+# Cryptic 0x70 Reset
+def reset(ngccm): #RM4,3->ngccm2 -- RM2,1->ngccm1
+    b.write(0x72,[ngccm])
+    b.write(0x74,[0x08])
+    b.write(0x70,[0x3,0])
+    b.write(0x70,[0x1,0])
+    b.sendBatch()

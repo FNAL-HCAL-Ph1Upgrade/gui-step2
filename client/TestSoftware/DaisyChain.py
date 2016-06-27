@@ -10,6 +10,9 @@ class DaisyChain:
         self.QIEs = []
         for i in xrange(6):
             self.QIEs.append(QIE(arr[i * 64:(i + 1) * 64]))
+        #Adry (6/24)
+        # for i in xrange(6):
+        #     self.CI.append(QIE(arr[]))
     def __repr__(self):
         return "DaisyChain()"
     def __str__(self):
@@ -29,4 +32,6 @@ class DaisyChain:
         for q in self.QIEs:
             a += q.flatten()
         return a
+    # def getCI(self):
+
 ################################################################################
