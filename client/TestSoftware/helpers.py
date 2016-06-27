@@ -22,6 +22,7 @@ def readFromRegister(bus, address, register, numBytes):
     ret = []
     for i in bus.sendBatch()[1].split():
         ret.append(int(i))
+    ret=ret[1:]
     return ret
 def writeToRegister(bus, address, register, bytesToWrite):
     bus.write(address, [register] + list(bytesToWrite))

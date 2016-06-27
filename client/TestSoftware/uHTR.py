@@ -18,18 +18,23 @@ class uHTR():
 
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
-		### The name of each QIE is "(qcard_slot, register)"
+		### The name of each QIE is "(qcard_slot, chip)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
 		### List of keys: "slot" "link" "channel" ........		
 		
-		self.bus=bus
-
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
+
+		self.bus=bus
+
+		self.qcards=qcard_slots
 		
-		clock_setup(41, qcard_slots)
+		# setup functions
+		clock_setup(self.crate, qcard_slots)
+
+#		self.QIE_mapping()
 
 #############################################################
 # Higher level uHTR test functions
@@ -50,22 +55,31 @@ class uHTR():
 # Adding and extracting data from the master_dict
 #############################################################	
 	
-	def get_QIE(self, qcard_slot, register):
+	def get_QIE(self, qcard_slot, chip):
 		### Returns the dictionary storing the test results of the specified QIE chip
-		key="({0}, {1})".format(qcard_slot, register)
+		key="({0}, {1})".format(qcard_slot, chip)
 		return self.master_dict[key]
 	
-	def get_QIE_results(self, qcard_slot, register, test_key=""):
+	def get_QIE_results(self, qcard_slot, chip, test_key=""):
 		### Returns the (pass, fail) tuple of specific test
-		QIE=self.get_QIE(qcard_slot, register)
+		QIE=self.get_QIE(qcard_slot, chip)
 		return QIE[test_key]
 	
-	def add_QIE(self, qcard_slot, register, uhtr_slot, link, channel):
+	def get_QIE_map(self, qcard_slot, chip):
+		key="({0}, {1})".format(qcard_slot, chip)
+                qie=self.master_dict[key]
+		slot=qie["uhtr_slot"]
+		link=qie["link"]
+		channel=qie["channel"]
+		return (slot, link, channel)
+
+	def add_QIE(self, qcard_slot, chip, uhtr_slot, link, channel):
+		QIE_info={}
 		QIE_info["uhtr_slot"]=uhtr_slot
 		QIE_info["link"]=link		
 		QIE_info["channel"]=channel
 		
-		key="({0}, {1})".format(qcard_slot, register)
+		key="({0}, {1})".format(qcard_slot, chip)
 		self.master_dict[key]=QIE_info
 		
 
@@ -78,12 +92,23 @@ class uHTR():
 
 	def QIE_mapping(self):
 		# Records the uHTR slot, link, and channel of each QIE in master_dict
-		for qCard in self.qCards:
-			qCard.read()
-			for i in [0,6]:
-				qie=qCard[i]
+		for qslot in self.qcards:
+			dc=hw.getDChains(qslot, self.bus)
+			hw.SetQInjMode(0, qslot, self.bus)
+			dc.read()
+			for chip in [0,6]:
+				for num in xrange(12):
+					dc[num].PedastalDAC(-9)
+					if num==chip:
+						dc[num].PedastalDAC(31)
+				dc.write()
+				dc.read()
 				info=self.get_mapping_histo()
-				if info is not None: self.add_QIE(qcard_slot, register, info[0], info[1], info[2])
+				if info is not None:
+					uhtr_slot=info[0]
+					link=info[1]
+					for i in xrange(6):
+						self.add_QIE(qslot, chip+i, uhtr_slot, link, 5-i)
 				else: print "mapping failed"
 
 	def get_mapping_histo(self):
@@ -91,7 +116,7 @@ class uHTR():
 		map_results=self.get_histo_results(out_dir="map_test")
 		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
 			for chip, chip_results in uhtr_slot_results.iteritems():
-				if chip_results["pedBinMax"] > 12:
+				if chip_results["pedBinMax"] > 15:
 					return (int(uhtr_slot), chip_results["link"], chip_results["channel"])
 		return None
 	
@@ -215,7 +240,7 @@ def clock_setup(crate, slots):
 		'exit'
 		]
 	for slot in slots:
-		send_cpommands(crate=crate, slot=slot, cmds=cmds)
+		send_commands(crate=crate, slot=slot, cmds=cmds)
 	
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
@@ -278,4 +303,25 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
  
 	f.Close()
 	return slot_result
-		
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+
+	from client import webBus
+	
+	qcard_slots = [21]
+	b = webBus("pi6",0)
+	uhtr = uHTR(6,qcard_slots,b)
+	uhtr.QIE_mapping()
+	for slot in qcard_slots:
+		for chip in xrange(12):
+			info=uhtr.get_QIE_map(slot, chip)
+			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link {1}: channel: {2}".format(info[0],info[1],info[2],chip,slot)
+
+
