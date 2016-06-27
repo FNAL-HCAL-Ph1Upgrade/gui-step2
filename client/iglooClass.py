@@ -1068,7 +1068,7 @@ def displayCI(slot):
 #runAll()
 # runSelect()
 #readOutInputSpy()
-# processInputSpy()
+processInputSpy()
 #setCI_MODE(1)
 # readBridgeIglooReg()
 # writeBridgeIglooReg()
