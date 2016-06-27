@@ -24,14 +24,12 @@ class uHTR():
 		
 		self.bus=bus
 
-#		for slot in qcard_slots:
-#			self.qcards.append(hw.getDChains(slot, bus))
-
-		self.crate=[41]			#Always 41 for summer 2016 QIE testing
+		self.crate=41			#Always 41 for summer 2016 QIE testing
 
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
 		
+		clock_setup(41, qcard_slots)
 
 #############################################################
 # Higher level uHTR test functions
@@ -123,11 +121,8 @@ class uHTR():
 			slots=self.uhtr_slots
 		if crate is None:
 			crate=self.crate
-			
-
 		histo_results = {}
-		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir)
-		
+		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir=out_dir)
 		for file in os.listdir(path_to_root):
 			# Extract slot number from file name
 			temp = file.split('_')
@@ -135,12 +130,32 @@ class uHTR():
 			slot_num = str(temp[0])
 			
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-		
 #		os.removedirs(path_to_root)		
 		return histo_results
 		
 
 #############################################################
+
+def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
+	#can only generate over a single crate
+	if not file_out_base:
+		file_out_base="uHTR_histotest"
+	cwd=os.getcwd()
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+	dir_path="{0}/{1}".format(cwd, out_dir)
+	os.chdir(dir_path)
+
+	for slot in slots:
+		file_out=file_out_base+"_{0}_{1}.root".format(crate, slot)
+		p = mp.Process(target=get_histo, args=(crate, slot, n_orbits, sepCapID, file_out,))
+		p.start()
+
+	while mp.active_children():
+		time.sleep(0.1)	
+	
+	os.chdir(cwd)	
+	return dir_path
 		
 def send_commands(crate=None, slot=None, cmds=''):
 	# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
@@ -181,41 +196,27 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
                 '{0}'.format(sepCapID),
                 '{0}'.format(file_out),
 		'0',
-              		'quit',
+		'quit',
                 'quit',
                 'exit',
                 '-1'
         ]
         result = send_commands(crate=crate, slot=slot, cmds=cmds)
         return result
-	
-def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
-	#can only generate over a single crate
-	if not file_out_base:
-		file_out_base="uHTR_histotest"
 
-	cwd=os.getcwd()
 
-	### check to see if out_dir exists and set it up if it does
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
-
-	dir_path="{0}/{1}".format(cwd, out_dir)
-	os.chdir(dir_path)
-
-	
+def clock_setup(crate, slots):
+	cmds = [
+		'0'
+		'clock'
+		'setup'
+		'3'
+		'quit'
+		'exit'
+		]
 	for slot in slots:
-		file_out=file_out_base+"_{0}_{1}.root".format(crate, slot)
-		p = mp.Process(target=get_histo, args=(crate, slot, n_orbits, sepCapID, file_out,))
-		p.start()
-
-	while mp.active_children():
-		time.sleep(0.1)	
-			
-	os.chdir(cwd)	
-
-	### return the the full path to out_dir
-	return dir_path
+		send_cpommands(crate=crate, slot=slot, cmds=cmds)
+	
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	slot_result = {}

@@ -6,16 +6,18 @@ import DaisyChain
 import QIE
 
 
-qcard_slots=[20, 21]
+qcard_slots=[21]
 bus=webBus(serverAddress = "pi6", VERBOSITY=0)
 uhtr=uHTR(6, qcard_slots, bus)
 
 for i in qcard_slots:
+	print "I AM QCARD", i
 	dc=hw.getDChains(i, bus)
 	hw.openChannel(i, bus)
 	dc.read()
 	hw.SetQInjMode(1,i,bus)
 	for j in xrange(12):
+		print "I AM QIE", j
 		qie=dc[j]
 		qie.ChargeInjectDAC(8640)
 		dc.write()
