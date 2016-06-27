@@ -65,12 +65,8 @@ class Checksum:
         mlist = toIntList(self.message)
         error = mlist.pop(0)
         if int(error) != 0:
-            print 'I2C_ERROR'
             return 2 # i2c bus error
         for x in mlist:
             val = crctab[val ^ x]
-        if val != 0:
-            print 'CHECKSUM_ERROR'
-            return 1 # checksum error
-        return 0 # checksum ok... crc = 0
+	return val
 

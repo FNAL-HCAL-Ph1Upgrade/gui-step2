@@ -11,6 +11,7 @@ import Test
 import listOfTests
 import vttxLib
 import temp
+from checksumClass import Checksum
 
 noCheckRegis = {
 	"Unique_ID" :{
@@ -77,10 +78,17 @@ class testSuite:
 			new_r.append(i)
 
 	self.outCard.cardGenInfo[testName] = new_r
+
 	if (testName == "Unique_ID"):
-		new_r[0] = helpers.reverseBytes(new_r[0])
-		new_r[0] = helpers.toHex(new_r[0])
-		self.outCard.cardGenInfo[testName]=new_r[0]
+		message = r[-1]
+		check = Checksum(message,0)
+		if (check.result != 0):
+			print "Unique ID checksum error! Continuing..."
+			self.outCard.cardGenInfo[testName] = "0xXXXXXXXXXXXXX"
+		else:
+			new_r[0] = helpers.reverseBytes(new_r[0])
+			new_r[0] = helpers.toHex(new_r[0])
+			self.outCard.cardGenInfo[testName]=new_r[0]
 	elif (testName == "Temperature" or testName == "Humidity"):
 		self.outCard.cardGenInfo[testName] = temp.readManyTemps(self.a,15,testName,"nohold")
 

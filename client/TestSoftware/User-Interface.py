@@ -683,7 +683,6 @@ class makeGui:
 			k.cardGenInfo["User"] = self.nameChoiceVar.get()
 		self.prepareOutSlots()
 		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
-		print self.outSlotNumbers
 		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection, self.piChoiceVar.get(), int(self.iterationVar.get()))
 		self.myTestStand.runAll()
 		print str(datetime.now())
