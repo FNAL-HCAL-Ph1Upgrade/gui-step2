@@ -263,7 +263,7 @@ class OrbHist_4(Test):
 
 class OrbHist_5(Test):
 	def testBody(self):
-		return co.calcOrbs(self.bus,self.address,1,1)
+		return co.calcOrbs(self.bus,self.address,0.5,0)
 #		self.criteria = "0 0 0 0 0"
 #		self.bus.write(self.address, [0x1d])
 #		self.bus.read(self.address, 3)

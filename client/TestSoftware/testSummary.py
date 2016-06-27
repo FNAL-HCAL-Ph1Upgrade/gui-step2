@@ -97,8 +97,3 @@ class testSummary:
 				w.write("\n}")
 		else:
 			print "Card has no attributes! Skipping log generation."
-#			w.write(str(self.cardGenInfo))
-#			w.write(str(self.resultList))
-#			w.write(str(self.iglooList))
-#			w.write(str(self.vttxListOne))
-#			w.write(str(self.vttxListTwo))
