@@ -2,6 +2,7 @@
 # on bridge registers
 
 from Test import Test
+import calculateOrbits as co
 
 # NOTE: some tests not included here are
 # -I2C_SELECT (Address 0x11)
@@ -204,11 +205,22 @@ class BkPln_Spare_3(Test):
 			return True
 		else: 
 			return False
+class ControlReg(Test):
+	def testBody(self):
+		self.criteria = "0 0 0 0 0"
+		self.bus.write(self.address, [0x18])
+		self.bus.read(self.address, 3)
+		r=self.bus.sendBatch()[-1]
+		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
+			return True
+		else: 
+			return False
+
 
 class OrbHist_1(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x2B])
+		self.bus.write(self.address, [0x19])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
@@ -219,7 +231,7 @@ class OrbHist_1(Test):
 class OrbHist_2(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x2C])
+		self.bus.write(self.address, [0x1a])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
@@ -230,7 +242,7 @@ class OrbHist_2(Test):
 class OrbHist_3(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x2D])
+		self.bus.write(self.address, [0x1b])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
@@ -241,7 +253,7 @@ class OrbHist_3(Test):
 class OrbHist_4(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x2E])
+		self.bus.write(self.address, [0x1c])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
@@ -251,8 +263,30 @@ class OrbHist_4(Test):
 
 class OrbHist_5(Test):
 	def testBody(self):
+		return co.calcOrbs(self.bus,self.address,1,1)
+#		self.criteria = "0 0 0 0 0"
+#		self.bus.write(self.address, [0x1d])
+#		self.bus.read(self.address, 3)
+#		r=self.bus.sendBatch()[-1]
+#		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
+#			return True
+#		else: 
+#			return False
+class OrbHist_6(Test):
+	def testBody(self):
 		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x2F])
+		self.bus.write(self.address, [0x1e])
+		self.bus.read(self.address, 3)
+		r=self.bus.sendBatch()[-1]
+		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
+			return True
+		else: 
+			return False
+
+class OrbHist_7(Test):
+	def testBody(self):
+		self.criteria = "0 0 0 0 0"
+		self.bus.write(self.address, [0x1f])
 		self.bus.read(self.address, 3)
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria): # Note we want it to be equal to to the criteria string.

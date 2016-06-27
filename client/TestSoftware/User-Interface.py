@@ -14,6 +14,7 @@ from Tkinter import *
 from client import webBus
 from TestStand import TestStand
 from datetime import datetime
+import subprocess
 import htrProcesses.histo_generator as histgen
 
 class makeGui:
@@ -411,7 +412,6 @@ class makeGui:
                         pady=frame_pady
                         )
 
-
 		# 2nd top sub-frame in QIE frame
 		self.qie_subTop2_frame = Frame(
 			self.qie_frame,
@@ -556,7 +556,18 @@ class makeGui:
 			padx=button_padx,
 			pady=button_pady
 			)
-		self.qie_testSuite_button.pack(side=LEFT)
+		self.qie_testSuite_button.pack(side=TOP)
+
+		#Make a button to submit the results from tests.
+		self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.submitToDatabase)
+		self.qie_testSuite_button.configure(text="Upload Results to Database", background="pale green")
+		self.qie_testSuite_button.configure(
+			width=button_width*4,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.qie_testSuite_button.pack(side=TOP)
+
 
 		#################################
 		###			      ###
@@ -696,7 +707,6 @@ class makeGui:
 		for j in range(2):
 			self.qie_magicButton.flash()
 			
-
 	def prepareOutSlots(self):
 		self.outSlotNumbers = []
 		for k in range(len(self.cardVarList)):
@@ -720,7 +730,10 @@ class makeGui:
 				self.outSummaries.append(testSummary.testSummary(k+9))
 			elif k in [13,14,15,16]:
 				self.outSummaries.append(testSummary.testSummary(k+10))
-				
+
+	def submitToDatabase(self):
+		subprocess.call("ssh cmshcal11 /home/hep/abaas/testing_database/uploader/upload.sh", shell=True)
+		print "Files submitted to database!"
 				
 root = Tk()
 myapp = makeGui(root)

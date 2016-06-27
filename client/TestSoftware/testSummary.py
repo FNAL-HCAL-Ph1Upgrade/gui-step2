@@ -78,12 +78,13 @@ class testSummary:
 	
 	def writeMachineJson(self):
 		if (self.cardGenInfo["Unique_ID"] != ""):
-			fileName = str(self.cardGenInfo["Unique_ID"].replace(" ","")+"_raw.json")
+			fileName = str(self.cardGenInfo["Unique_ID"].replace(" ","")+"_test_raw.json")
 			with open("/home/hep/jsonResults/"+fileName, "w") as w:
 				w.write("{")
 				w.write('"TestType" : "Machine Readable Output"')
 				for i in self.cardGenInfo.keys():
 					w.write(", "+'"'+i+'"'+" : "+'"'+str(self.cardGenInfo[i])+'"')
+				w.write(', "Tests" : {"TestType" : "Machine Readable Output"')
 				for i in self.resultList.keys():
 					w.write(", "+'"'+i+'"'+" : "+str(self.resultList[i]))
 				for i in self.iglooList.keys():
@@ -92,6 +93,7 @@ class testSummary:
 					w.write(", "+'"'+i+'"'+" : "+str(self.vttxListOne[i]))
 				for i in self.vttxListTwo.keys():
 					w.write(", "+'"'+i+'"'+" : "+str(self.vttxListTwo[i]))
+				w.write("\n}")
 				w.write("\n}")
 		else:
 			print "Card has no attributes! Skipping log generation."
