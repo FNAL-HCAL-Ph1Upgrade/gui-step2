@@ -9,6 +9,7 @@
 # round 2 electric boogaloo
 
 import qCard
+import loggerClass as logClass
 import testSummary
 from Tkinter import *
 from client import webBus
@@ -28,10 +29,13 @@ class makeGui:
 
 		# Create a dict for converting GUI list of suites to stuff for
 		# behind-the-scenes
-		self.suiteDict = {"Main Suite : All Tests" : "main",
-				  "Bridge Register Suite" : "bridge",
-				  "Igloo Register Suite"  : "igloo",
-				  "Vttx Register Suites"  : "vttx"
+		self.suiteDict = {
+				  "Main Suite : All Tests" : "main",
+				  "Bridge Register Suite"  : "bridge",
+				  "Igloo Register Suite"   : "igloo",
+				  "Vttx Register Suites"   : "vttx",
+				  "Run Long Tests"         : "long",
+				  "Run Short Tests"        : "short"
 				 }
 
 		# Create a list of nGCCme slots:
@@ -39,6 +43,9 @@ class makeGui:
 
 		# Create a list of Readout Modules:
 		self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
+
+		# Create a string that uniquely defines a human log file
+		self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())+"_tests.log"
 
 		# Make an empty list that will eventually contain all of
 		# the active card slots
@@ -484,7 +491,7 @@ class makeGui:
 		self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
 						"pi5", "pi6")
 		self.pi_choiceBox.pack(side=LEFT)
-		self.piChoiceVar.set("pi6")
+		self.piChoiceVar.set("pi5")
 
 		# Make a label for number of iterations
 		self.iter_label = Label(self.qie_subTop_1_frame, text="Number of iterations: ")
@@ -512,6 +519,16 @@ class makeGui:
 		self.qie_resetButton.pack(side=TOP)
 
 		# Make a button to reset the backplane
+		self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.powerResetPress)
+		self.qie_resetButton.configure(text="Reset/Cycle Power", bg="#E60066")
+		self.qie_resetButton.configure(
+			width=button_width*4,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.qie_resetButton.pack(side=TOP)
+
+		# Make a button to reset the backplane
 		self.qie_magicButton = Button(self.qie_subTopMid_frame, command=self.magicResetPress)
 		self.qie_magicButton.configure(text="    Magic Reset    ", bg="DarkOrchid1")
 		self.qie_magicButton.configure(
@@ -520,8 +537,6 @@ class makeGui:
 			pady=button_pady
 			)
 		self.qie_magicButton.pack(side=TOP)
-
-
 
 		# Make a separation line
 		self.separationLabel = Label(self.qie_subTopMid2_frame, text="------------------------------------------")
@@ -542,7 +557,9 @@ class makeGui:
 						"Main Suite : All Tests",
 						"Bridge Register Suite",
 						"Igloo Register Suite",
-						"Vttx Register Suites"
+						"Vttx Register Suites",
+						"Run Long Tests",
+						"Run Short Tests"
 						)
 		self.qie_suiteMenu.pack(side=LEFT)
 		self.suiteChoiceVar.set("Main Suite : All Tests")
@@ -679,6 +696,8 @@ class makeGui:
 
 	def runTestSuite(self):
 		print str(datetime.now())
+		self.magicResetPress()
+		self.qie_resetPress()
 		for k in self.outSummaries:
 			k.cardGenInfo["User"] = self.nameChoiceVar.get()
 		self.prepareOutSlots()
@@ -696,16 +715,33 @@ class makeGui:
 
 	def magicResetPress(self):
 		b = webBus(self.piChoiceVar.get(),0)
-		for i in [1,2]:
-			b.write(0x72,[i])
-			b.write(0x74,[0x08])
-			b.write(0x70,[0x03,0])
-			b.write(0x70,[0x01,0])
-			b.sendBatch()
+		for ngccm in [1,2]: #both ngccm
+			b.write(0x72,[ngccm])
+			b.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
+			# bus.write(0x70,[0x01,0x00]) # GPIO PwrEn is register 3
+			#power on and reset
+			#register 3 is control reg for i/o modes
+			b.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
+			b.write(0x70,[0x01,0x00])
+			b.write(0x70,[0x01,0x08])
+			b.write(0x70,[0x01,0x18]) # GPIO reset is 10
+			b.write(0x70,[0x01,0x08])
+			batch = b.sendBatch()
+			print 'initial = ', batch
+
 		print "\n\nMagic reset completed!\n\n"
 		for j in range(2):
 			self.qie_magicButton.flash()
-			
+
+	def powerResetPress(self):
+		b = webBus(self.piChoiceVar.get(),0)
+		for i in [1,2]:
+			b.write(0x72,[i])
+			b.write(0x74,[0x08])
+			b.write(0x70,[0x08,0])
+			b.sendBatch()
+		print "\n\nPower reset completed!\n\n"
+	
 	def prepareOutSlots(self):
 		self.outSlotNumbers = []
 		for k in range(len(self.cardVarList)):
@@ -722,18 +758,20 @@ class makeGui:
 	def prepareOutCards(self):
 		for k in range(len(self.cardVarList)):
 			if k in [1,2,3,4]:
-				self.outSummaries.append(testSummary.testSummary(k+1))
+				self.outSummaries.append(testSummary.testSummary((k+1), self.humanLogName))
 			elif k in [5,6,7,8]:
-				self.outSummaries.append(testSummary.testSummary(k+2))
+				self.outSummaries.append(testSummary.testSummary((k+2), self.humanLogName))
 			elif k in [9,10,11,12]:
-				self.outSummaries.append(testSummary.testSummary(k+9))
+				self.outSummaries.append(testSummary.testSummary((k+9), self.humanLogName))
 			elif k in [13,14,15,16]:
-				self.outSummaries.append(testSummary.testSummary(k+10))
+				self.outSummaries.append(testSummary.testSummary((k+10), self.humanLogName))
 
 	def submitToDatabase(self):
 		subprocess.call("ssh cmshcal11 /home/hep/abaas/testing_database/uploader/upload.sh", shell=True)
 		print "Files submitted to database!"
-				
+
+
 root = Tk()
 myapp = makeGui(root)
+sys.stdout = logClass.logger(myapp.humanLogName)
 root.mainloop()

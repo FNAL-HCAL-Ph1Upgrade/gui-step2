@@ -55,6 +55,7 @@ class testSuite:
 	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
 	self.vttxRegs_1  = listOfTests.initializeVttxList_1(self.b, self.a, i)
 	self.vttxRegs_2  = listOfTests.initializeVttxList_2(self.b, self.a, i)
+	self.longRegs  = listOfTests.initializeLongTests(self.b, self.a, i)
 
     # This function is used for getting stuff like temp., humid., and UID
     def readNoCheck(self, testName, iterations = 1):
@@ -112,7 +113,7 @@ class testSuite:
     # tests on ALL active cards.
     def runTests(self, suite):
 
-	if (suite == "main" or suite == "bridge"):
+	if (suite == "main" or suite == "bridge" or suite =="short"):
 		print "-------------------------"
 		print "Running register tests!"
 		print "-------------------------"
@@ -122,7 +123,7 @@ class testSuite:
 			self.outCard.resultList[r][1] += results[1]
 			print r+" tests completed."
 
-	if (suite == "main" or suite == "igloo"):
+	if (suite == "main" or suite == "igloo" or suite == "short"):
 		self.openIgloo(self.a)
 		print "\n-------------------------"
 		print "Running IGLOO tests!"
@@ -134,7 +135,7 @@ class testSuite:
 			self.outCard.iglooList[r][1] += results[1]
 			print r+" tests completed."
 
-	if (suite == "main" or suite == "vttx"):
+	if (suite == "main" or suite == "vttx" or suite == "short"):
 		self.openVTTX(self.a, 1)
 		print "\n-------------------------"
 		print "Running VTTX_1 tests!"
@@ -153,6 +154,18 @@ class testSuite:
 			results = self.vttxRegs_2[r].run()
 			self.outCard.vttxListTwo[r][0] += results[0]
 			self.outCard.vttxListTwo[r][1] += results[1]
+			print r+" tests completed."
+
+	if (suite == "main" or suite == "long"):
+		print "\n-------------------------"
+		print "Running long tests!"
+		print "-------------------------"
+		for r in self.longRegs.keys():
+			if (r == "inputSpy_512Reads"):
+				self.openIgloo(self.a)
+			results = self.longRegs[r].run()
+			self.outCard.longTestList[r][0] += results[0]
+			self.outCard.longTestList[r][1] += results[1]
 			print r+" tests completed."
 
 	for r in noCheckRegis.keys():
