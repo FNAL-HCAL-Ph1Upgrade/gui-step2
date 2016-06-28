@@ -1,6 +1,6 @@
 from client import webBus
 
-b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
+b = webBus("pi6",0) #can add "pi5,0" so won't print send/receive messages
 
 ##############################
 # Helpful Tool Functions

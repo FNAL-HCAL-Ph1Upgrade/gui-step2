@@ -10,7 +10,7 @@ def getBitsFromBytes(decimalBytes):
     return ret
 
 def getByteFromBits(bitList):
-    return int(''.join(bitList), 2)
+    return int(''.join(str(i) for i in bitList), 2)
 
 def getBytesFromBits(bitList):
     ret = []
@@ -18,12 +18,17 @@ def getBytesFromBits(bitList):
         ret.append(getByteFromBits(bitList[i * 8: (i + 1) * 8]))
     return ret
 
+def readBinaryRegister(bus, address, register, numBytes):
+    return getBitsFromBytes(readFromRegister(bus, address, register, numBytes))
+
 def readFromRegister(bus, address, register, numBytes):
     bus.write(address, [register])
+    bus.sleep(1000)
     bus.read(address, numBytes)
     ret = []
-    for i in bus.sendBatch()[1].split():
+    for i in bus.sendBatch()[2].split():
         ret.append(int(i))
+    ret = ret[1:]
     return ret
 
 def writeToRegister(bus, address, register, bytesToWrite):
