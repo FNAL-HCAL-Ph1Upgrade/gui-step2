@@ -6,12 +6,29 @@ from DaisyChain import DaisyChain
 from QIE import QIE
 import os
 import sys
-import time 
+import time
+import numpy 
 import multiprocessing as mp
 from subprocess import Popen, PIPE
 from commands import getoutput
 from ROOT import *
 gROOT.SetBatch()
+
+
+if __name__ == "__main__":
+
+	from client import webBus
+	from uHTR import uHTR
+
+	qcard_slots = [2, 5]
+	b = webBus("pi6", 0)
+	uhtr = uHTR(6, qcard_slots, b)
+	for slot in qcard_slots:
+		for chip in xrange(12):
+			info=uhtr.get_QIE_map(slot, chip)
+			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
+
+
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
@@ -34,9 +51,10 @@ class uHTR():
 		
 		# setup functions
 		clock_setup(self.crate, qcard_slots)
-
-#		self.QIE_mapping()
-
+		for slot in self.uhtr_slots:
+			init_links(self.crate, slot)
+		self.QIE_mapping()
+		
 #############################################################
 # Higher level uHTR test functions
 # Results of each test recorded in master_dict
@@ -195,22 +213,15 @@ def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", o
 		
 def send_commands(crate=None, slot=None, cmds=''):
 	# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
-	# Arguments and variables:
 	raw = ""
-	results = {}                # Results will be indexed by uHTR IP unless a "ts" has been specified, in which case they'll be indexed by (crate, slot).
+	results = {}
 
-	## Parse cmds:
 	if isinstance(cmds, str):
 		print 'WARNING (uhtr.send_commands): You probably didn\'t intend to run "uHTRtool.exe" with only one command: {0}'.format(cmds)
 		cmds = [cmds]
 
-	# Prepare ip address:uhtr_ip = "192.168.%i.%i"%(crate, slot*4)
 	uhtr_ip = "192.168.{0}.{1}".format(crate, slot*4)
-
-	# Prepare the uHTRtool arguments:
 	uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)   
-
-	# Send commands and organize results:
 	# This puts the output of the command into a list called "raw_output" the first element of the list is stdout, the second is stderr.
 	raw_output = Popen(['printf "{0}" | {1}'.format(' '.join(cmds), uhtr_cmd)], shell = True, stdout = PIPE, stderr = PIPE).communicate()
 	raw += raw_output[0] + raw_output[1]
@@ -317,22 +328,101 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 
 
 
+def init_links(crate, slot):
+	linkInfo = get_link_info(crate, slot)
+	onLinks, goodLinks, badLinks = check_link_status(linkInfo)
+	if onLinks == 0:
+		print "All crate %d, slot %d links are OFF! NOT initializing that slot!"%(crate,slot)
+		return
+	medianOrbitDelay = int(median_orbit_delay(linkInfo))
+	if badLinks > 0:
+		initCMDS = ["0","link","init","1","%d"%(medianOrbitDelay),"0","0","0","quit","exit"]
+		send_commands(crate=crate, slot=slot, cmds=initCMDS)
+		init_links(crate, slot)
 
 
+def get_BCN_status(uHTRPrintOut):
+	for key, value in uHTRPrintOut.iteritems():
+		linesList = value.split("\n")
+		BCNs = []
+		for j in range(len(linesList)):
+			if len(linesList[j].split("Align BCN")) == 2:
+				BCNLine = filter(None, linesList[j].split("Align BCN"))
+				BCNList = filter(None, BCNLine[0].split(" "))
+				BCNList = map(int, BCNList)
+				BCNs = BCNs + BCNList
+	return BCNs 
 
 
+def get_ON_links(uHTRPrintOut):
+	for key, value in uHTRPrintOut.iteritems():
+		linesList = value.split("\n")
+		ONLinks = []
+		for j in range(len(linesList)):
+			if len(linesList[j].split("BadCounter")) == 2:
+				ONLine = filter(None, linesList[j].split("BadCounter"))
+				ONList = filter(None, ONLine[0].split(" "))
+				ONLinks = ONLinks + ONList
+	return ONLinks
 
-if __name__ == "__main__":
 
-	from client import webBus
-	
-	qcard_slots = [18, 21]
-	b = webBus("pi6", 0)
-	uhtr = uHTR(6, qcard_slots, b)
-	uhtr.QIE_mapping()
-	for slot in qcard_slots:
-		for chip in xrange(12):
-			info=uhtr.get_QIE_map(slot, chip)
-			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
+def get_BPR_status(uHTRPrintOut):
+	for key, value in uHTRPrintOut.iteritems():
+		linesList = value.split("\n")
+		BPRs = []
+		for j in range(len(linesList)):
+			if len(linesList[j].split("BPR Status")) == 2:
+				BPRLine = filter(None, linesList[j].split("BPR Status"))
+				BPRList = filter(None, BPRLine[0].split(" "))
+				BPRs = BPRs + BPRList
+	return BPRs
+
+
+def get_AOD_status(uHTRPrintOut):
+	for key, value in uHTRPrintOut.iteritems():
+		linesList = value.split("\n")
+		AODs = []
+		for j in range(len(linesList)):
+			if len(linesList[j].split("AOD Status")) == 2:
+				AODLine = filter(None, linesList[j].split("AOD Status"))
+				AODList = filter(None, AODLine[0].split(" "))
+				AODs = AODs + AODList
+	return AODs
+
+
+def median_orbit_delay(linkInfo):
+	BCNList = []
+	for k in range(len(linkInfo["BCN Status"])):
+		if linkInfo["ON Status"][k] == "ON":
+			BCNList = BCNList + [linkInfo["BCN Status"][k]]	
+	BCNMedian = int(numpy.median(BCNList))
+	return BCNMedian
+
+		
+def check_link_status(linkInfo):
+	goodLinks = 0
+	badLinks = 0
+	onLinks = 0
+	for l in range(len(linkInfo["BPR Status"])):
+		if linkInfo["ON Status"][l] == "ON":
+			onLinks += 1
+		if linkInfo["BPR Status"][l] == "111" and linkInfo["AOD Status"][l] == "111" and linkInfo["ON Status"][l] == "ON":
+			goodLinks += 1
+		elif linkInfo["ON Status"][l] == "ON" and not (linkInfo["BPR Status"][l] == "111" and linkInfo["AOD Status"][l] == "111"):
+			badLinks += 1
+	print onLinks, goodLinks, badLinks
+	print linkInfo["ON Status"] 
+	return onLinks, goodLinks, badLinks 
+
+
+def get_link_info(crate, slot):
+	linkInfo = {}
+        statCMDs = ["0", "link", "status", "quit", "exit"]
+        statsPrintOut = send_commands(crate=crate, slot=slot, cmds=statCMDs)
+        linkInfo["BCN Status"] = get_BCN_status(statsPrintOut)
+        linkInfo["BPR Status"] = get_BPR_status(statsPrintOut)
+        linkInfo["AOD Status"] = get_AOD_status(statsPrintOut)
+        linkInfo["ON Status"] = get_ON_links(statsPrintOut)
+	return linkInfo
 
 

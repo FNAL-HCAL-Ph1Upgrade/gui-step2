@@ -13,5 +13,5 @@ for num in list(i-31 for i in xrange(63)):
 	dc.write()
 	dc.read()
 	generate_histos(41, 6, file_out_base=file_out, out_dir="ped_test")
-
+	print "ped {0} done".format(num)
 
