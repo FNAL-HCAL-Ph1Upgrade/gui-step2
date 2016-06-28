@@ -72,7 +72,7 @@ class QIE:
             250 : (0,1),
             350 : (1,0),
             450 : (1,1)
-        }.get(v, default = (-9,-9))
+        }.get(v, (-9,-9))
         if d == (-9, -9):
             print "INVALID INPUT IN setLVDS_output_level_trim... no change made"
         else:
@@ -119,7 +119,7 @@ class QIE:
             50 : (1,0,1),
             60 : (1,1,0),
             70 : (1,1,1)
-        }.get(q, default=(-9,-9,-9))
+        }.get(q, (-9,-9,-9))
         if d != (-9,-9,-9):
             self[13] = d[0]
             self[14] = d[1]
@@ -209,7 +209,7 @@ class QIE:
     def RangeSet(self, b):
         #takes 0, 1, 2, or 3
         if b >= 0 and b <= 3:
-            a = "%02i" % int(bin(abs(magnitude))[2:])
+            a = "%02i" % int(bin(abs(b))[2:]) #Adry (6/27/16 -> changed 'magnitude' to 'b')
             a = list(a)
             for i in xrange(2):
                 self[39 + i] = a[i]
@@ -228,7 +228,7 @@ class QIE:
             2880 : (1,0,1),
             5760 : (1,1,0),
             8640 : (1,1,1)
-        }.get(charge, default=(-9,-9,-9))
+        }.get(charge, (-9,-9,-9))
         if d != (-9,-9,-9):
             for i in xrange(3):
                 self[41 + i] = d[i]
@@ -295,6 +295,29 @@ class QIE:
                 self[57 + i] = a[i]
         else:
             print "INVALID INPUT IN CapID3pedastal... no change made"
+
+
+##############################################
+
+    #Change bits 41-43
+    def getChargeInjectDAC(self):
+        #in fC
+        d = {
+            90   : (0,0,0),
+            180  : (0,0,1),
+            360  : (0,1,0),
+            720  : (0,1,1),
+            1440 : (1,0,0),
+            2880 : (1,0,1),
+            5760 : (1,1,0),
+            8640 : (1,1,1)
+        }.get(charge, (-9,-9,-9))
+        if d != (-9,-9,-9):
+            for i in xrange(3):
+                self[41 + i] = d[i]
+        else:
+            print "INVALID INPUT IN ChargeInjectDAC... no change made"
+
 
 ############################################################################
 

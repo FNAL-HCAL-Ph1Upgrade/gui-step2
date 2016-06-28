@@ -18,5 +18,6 @@ if pgrep -f server.py >/dev/null 2>&1
         echo "server.py is not running"
         echo "starting server.py..."
     fi
+    source /home/pi/NGCCMeFEC/server/configPath.sh
     nohup python /home/pi/NGCCMeFEC/server/server.py > /dev/null 2>&1 &
 fi

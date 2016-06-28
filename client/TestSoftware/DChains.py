@@ -6,7 +6,7 @@ from helpers import *
 from optparse import OptionParser
 
 class DChains:
-    def __init__(self, bus, address):
+    def __init__(self, address, bus):
         self.bus = bus
         self.chains = []
         self.address = address
