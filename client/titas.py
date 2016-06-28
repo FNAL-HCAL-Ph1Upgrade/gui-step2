@@ -38,8 +38,13 @@ def printDaisyChain(slots, bus):
 
 
 ''' change pedestal values for all chips on all cards in 'slots' list '''
+<<<<<<< HEAD
 def setPedastalDAC(slots, pedastal_val, bus):
     #pedastal = magnitude * 2 fC
+=======
+def setPedestalDAC(slots, pedestal_val):
+    #pedestal = magnitude * 2 fC
+>>>>>>> 079597af776a98abf8f6d76e9515f2751859b144
     #takes magnitudes -31 to 31
 
     for i_slot in slots: # all desired slots
@@ -48,14 +53,19 @@ def setPedastalDAC(slots, pedastal_val, bus):
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
-            dcs[chip].PedastalDAC(pedastal_val) # change pedestal
+            dcs[chip].PedestalDAC(pedestal_val) # change pedestal
 
         dcs.write() # write the changes for both daisy chains
 
 
 ''' change pedestal for capID0 for all chips/slots '''
+<<<<<<< HEAD
 def setCapID0pedastal(slots, pedastal_val, bus):
     #pedastal = magnitude * ~1.9 fC
+=======
+def setCapID0pedestal(slots, pedestal_val):
+    #pedestal = magnitude * ~1.9 fC
+>>>>>>> 079597af776a98abf8f6d76e9515f2751859b144
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
@@ -64,14 +74,19 @@ def setCapID0pedastal(slots, pedastal_val, bus):
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
-            dcs[chip].CapID0pedastal(pedastal_val) # change pedestal
+            dcs[chip].CapID0pedestal(pedestal_val) # change pedestal
 
         dcs.write() # write the changes for both daisy chains
 
 
 ''' change pedestal for capID1 for all chips/slots'''
+<<<<<<< HEAD
 def setCapID1pedastal(slots, pedastal_val, bus):
     #pedastal = magnitude * ~1.9 fC
+=======
+def setCapID1pedestal(slots, pedestal_val):
+    #pedestal = magnitude * ~1.9 fC
+>>>>>>> 079597af776a98abf8f6d76e9515f2751859b144
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
@@ -80,14 +95,19 @@ def setCapID1pedastal(slots, pedastal_val, bus):
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
-            dcs[chip].CapID1pedastal(pedastal_val) # change pedestal
+            dcs[chip].CapID1pedestal(pedestal_val) # change pedestal
 
         dcs.write() # write the changes for both daisy chains
 
 
 ''' change pedestal for capID2 for all chips/slots'''
+<<<<<<< HEAD
 def setCapID2pedastal(slots, pedastal_val, bus):
     #pedastal = magnitude * ~1.9 fC
+=======
+def setCapID2pedestal(slots, pedestal_val):
+    #pedestal = magnitude * ~1.9 fC
+>>>>>>> 079597af776a98abf8f6d76e9515f2751859b144
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
@@ -96,14 +116,19 @@ def setCapID2pedastal(slots, pedastal_val, bus):
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
-            dcs[chip].CapID2pedastal(pedastal_val) # change pedestal
+            dcs[chip].CapID2pedestal(pedestal_val) # change pedestal
 
         dcs.write() # write the changes for both daisy chains
 
 
 ''' change pedestal for capID3 for all chips/slots'''
+<<<<<<< HEAD
 def setCapID3pedastal(slots, pedastal_val, bus):
     #pedastal = magnitude * ~1.9 fC
+=======
+def setCapID3pedestal(slots, pedestal_val):
+    #pedestal = magnitude * ~1.9 fC
+>>>>>>> 079597af776a98abf8f6d76e9515f2751859b144
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
@@ -112,7 +137,7 @@ def setCapID3pedastal(slots, pedastal_val, bus):
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
-            dcs[chip].CapID3pedastal(pedastal_val) # change pedestal
+            dcs[chip].CapID3pedestal(pedestal_val) # change pedestal
 
         dcs.write() # write the changes for both daisy chains
 
@@ -201,6 +226,7 @@ def powerEnable(bus):
 
 
 ##### Calling functions #####
+<<<<<<< HEAD
 powerEnable(b)
 # printDaisyChain(slots,b)
 # setPedastalDAC(slots,31,b)
@@ -211,3 +237,14 @@ powerEnable(b)
 # setFixRangeModeOn(slots,3,b)
 # print "\n\n\n\n AFTER CHANGES: \n"
 # printDaisyChain(slots,b)
+=======
+printDaisyChain(slots)
+setPedestalDAC(slots,31)
+setCapID0pedestal(slots,0)
+setCapID1pedestal(slots,1)
+setCapID2pedestal(slots,1)
+setCapID3pedestal(slots,1)
+setFixRangeModeOn(slots,3)
+print "\n\n\n\n AFTER CHANGES: \n"
+printDaisyChain(slots)
+>>>>>>> 079597af776a98abf8f6d76e9515f2751859b144
