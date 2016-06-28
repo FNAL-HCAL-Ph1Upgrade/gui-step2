@@ -410,8 +410,7 @@ def check_link_status(linkInfo):
 			goodLinks += 1
 		elif linkInfo["ON Status"][l] == "ON" and not (linkInfo["BPR Status"][l] == "111" and linkInfo["AOD Status"][l] == "111"):
 			badLinks += 1
-	print onLinks, goodLinks, badLinks
-	print linkInfo["ON Status"] 
+
 	return onLinks, goodLinks, badLinks 
 
 
