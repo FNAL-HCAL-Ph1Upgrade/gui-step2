@@ -209,7 +209,7 @@ class QIE:
     def RangeSet(self, b):
         #takes 0, 1, 2, or 3
         if b >= 0 and b <= 3:
-            a = "%02i" % int(bin(abs(magnitude))[2:])
+            a = "%02i" % int(bin(abs(b))[2:]) #Adry (6/27/16 -> changed 'magnitude' to 'b')
             a = list(a)
             for i in xrange(2):
                 self[39 + i] = a[i]
