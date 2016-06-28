@@ -9,7 +9,7 @@ Goals:
 
 from client import webBus
 import QIELib
-wb = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
+wb = webBus("pi7",0) #can add "pi5,0" so won't print send/receive messages
 #q = QIELib
 
 ##############################

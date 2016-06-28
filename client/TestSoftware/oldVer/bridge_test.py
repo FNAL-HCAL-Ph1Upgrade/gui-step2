@@ -2,7 +2,7 @@ from client import webBus
 from operator import add
 import testLib as t
 import QIELib as q
-b = webBus("pi5",0)
+b = webBus("pi7",0)
 
 # Examlpe...
 def bridge0(rm,slot):

@@ -9,6 +9,7 @@
 # round 2 electric boogaloo
 
 import qCard
+import testSummary
 from Tkinter import *
 from client import webBus
 from TestStand import TestStand
@@ -24,6 +25,14 @@ class makeGui:
 			     "Card 20", "Card 21", "Card 23", "Card 24",
 			     "Card 25", "Card 26"]
 
+		# Create a dict for converting GUI list of suites to stuff for
+		# behind-the-scenes
+		self.suiteDict = {"Main Suite : All Tests" : "main",
+				  "Bridge Register Suite" : "bridge",
+				  "Igloo Register Suite"  : "igloo",
+				  "Vttx Register Suites"  : "vttx"
+				 }
+
 		# Create a list of nGCCme slots:
 		self.ngccmeSlots = ["nGCCme 1", "nGCCme 2"]
 
@@ -34,8 +43,10 @@ class makeGui:
 		# the active card slots
 		self.outSlotNumbers = []
 
-		# Instantiate a webBus member:
-		self.gb = webBus("pi5")		
+		# make an empty list that will eventually contain all of
+		# the TestSummary instances that get sent out
+		self.outSummaries = []
+
 
 		# Name the parent. This is mostly for bookkeeping purposes
 		# and doesn't really get used too much.
@@ -48,7 +59,9 @@ class makeGui:
 		self.nameChoiceVar  =  StringVar()
 		self.infoCommentVar =  StringVar()
 		self.runtimeNumber  =  StringVar()
-		self.piChoiceVar =  StringVar()
+		self.suiteChoiceVar =  StringVar()
+		self.piChoiceVar    =  StringVar()
+		self.iterationVar   =  StringVar()
 		self.allCardSelection = IntVar()
 	
 		# Place an all-encompassing frame in the parent window. All of the following
@@ -206,10 +219,10 @@ class makeGui:
 
 		# Make and pack a listbox to pick which QIE card to talk to:
 		self.info_nameBox = OptionMenu(self.info_subTop_frame, self.nameChoiceVar,
-					      "shogan","csmith","asmith","jpotarf",
-					      "jlawrence","abaas")
+					      "Shaun Hogan","Caleb Smith","Adryanna Smith","Jordan Potarf",
+					      "John Lawrence","Andrew Baas")
 		self.info_nameBox.pack(side=LEFT)
-		self.nameChoiceVar.set("shogan") # initializes the OptionMenu
+		self.nameChoiceVar.set("Shaun Hogan") # initializes the OptionMenu
 
 		# Make a label for the name drop-down:
 		self.info_commentLabel = Label(self.info_subBot_frame, text="User Testing Comments: ")
@@ -385,18 +398,52 @@ class makeGui:
                         pady=frame_pady
                         )
 
-#		# Make a sub-frame below the top sub-frame in QIE frame
-#                self.qie_subTopMid_frame = Frame(
-#                        self.qie_frame,
-#                        background="white"
-#                        )
-#                self.qie_subTopMid_frame.pack(
-#                        side=TOP,
-#                        ipadx=frame_ipadx,
-#                        ipady=frame_ipady,
-#                        padx=frame_padx,
-#                        pady=frame_pady
-#                        )
+		# Top sub-frame 1 in QIE frame
+		self.qie_subTop_1_frame = Frame(
+			self.qie_frame,
+			background="white"
+			)
+		self.qie_subTop_1_frame.pack(
+			side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+
+		# 2nd top sub-frame in QIE frame
+		self.qie_subTop2_frame = Frame(
+			self.qie_frame,
+			background="white"
+			)
+		self.qie_subTop2_frame.pack(
+			side=TOP,
+                        ipadx=frame_ipadx,
+                        padx=frame_padx,
+                        )
+
+		# Make a sub-frame below the top sub-frame in QIE frame
+                self.qie_subTopMid_frame = Frame(
+                        self.qie_frame,
+                        background="white"
+                        )
+                self.qie_subTopMid_frame.pack(
+                        side=TOP,
+                        ipadx=frame_ipadx,
+                        padx=frame_padx,
+                        )
+
+		# Make a 2nd sub-frame below the top sub-frame in QIE frame
+                self.qie_subTopMid2_frame = Frame(
+                        self.qie_frame,
+                        background="white"
+                        )
+                self.qie_subTopMid2_frame.pack(
+                        side=TOP,
+                        ipadx=frame_ipadx,
+                        padx=frame_padx,
+                        )
 
 		# Mid sub-frame in QIE frame
 		self.qie_subMid_frame = Frame(
@@ -437,39 +484,73 @@ class makeGui:
 		self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
 						"pi5", "pi6")
 		self.pi_choiceBox.pack(side=LEFT)
-		self.piChoiceVar.set("pi5")
+		self.piChoiceVar.set("pi6")
 
-		# Make a label for the test selection
-                self.qieReadLabel = Label(self.qie_subMid_frame, text="Select a test to run: ")
-                self.qieReadLabel.configure(
-                        padx=button_padx,
-                        pady=button_pady,
-                        background="white"
-                        )
-                self.qieReadLabel.pack(side=LEFT)
+		# Make a label for number of iterations
+		self.iter_label = Label(self.qie_subTop_1_frame, text="Number of iterations: ")
+		self.iter_label.configure(bg="white")
+		self.iter_label.pack(side=LEFT)
 
-		# Make and pack a PLACEHOLDER LISTBOX for the variable to read:
-                self.qie_readBox = OptionMenu(self.qie_subMid_frame, self.qieReadVar,
-                                              "ID_string","ID_string_cont","Ones",
-				              "Zeroes","OnesZeroes","Firmware_Ver",
-					      "Unique_ID", "Temperature", "Humidity"
-					     )
-                self.qie_readBox.pack(side=LEFT)
-                self.qieReadVar.set("ID_string") # initializes the OptionMenu
+		# Make a field for number of iterations
+		self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar)
+		self.iter_entry.pack(side=RIGHT)
+		self.iterationVar.set("15")
 
-		#Make a button to read what is at the address
-		self.qie_read_Button = Button(self.qie_subMid_frame, command=self.qieClickRead)
-		self.qie_read_Button.configure(text="RUN TEST",background="khaki")
-		self.qie_read_Button.configure(
-			width=button_width*2,
+		# Make a separation line
+		self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
+		self.separationLabelTop.configure(bg="white")
+		self.separationLabelTop.pack()
+
+		# Make a button to reset the backplane
+		self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.qie_resetPress)
+		self.qie_resetButton.configure(text="Reset Backplane", bg="red")
+		self.qie_resetButton.configure(
+			width=button_width*4,
 			padx=button_padx,
 			pady=button_pady
 			)
-		self.qie_read_Button.pack(side=RIGHT)
+		self.qie_resetButton.pack(side=TOP)
+
+		# Make a button to reset the backplane
+		self.qie_magicButton = Button(self.qie_subTopMid_frame, command=self.magicResetPress)
+		self.qie_magicButton.configure(text="    Magic Reset    ", bg="DarkOrchid1")
+		self.qie_magicButton.configure(
+			width=button_width*4,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.qie_magicButton.pack(side=TOP)
+
+
+
+		# Make a separation line
+		self.separationLabel = Label(self.qie_subTopMid2_frame, text="------------------------------------------")
+		self.separationLabel.configure(bg="white")
+		self.separationLabel.pack()
+
+		# Make and pack a label for suite selection:
+		self.qie_suiteLabel = Label(self.qie_subMid_frame, text="Select a suite to run: ")
+		self.qie_suiteLabel.configure(
+			padx=button_padx,
+			pady=button_pady,
+			background="white"
+			)
+		self.qie_suiteLabel.pack(side=LEFT)
+
+		# Make and pack a menu for the suite selection
+		self.qie_suiteMenu = OptionMenu(self.qie_subMid_frame, self.suiteChoiceVar,
+						"Main Suite : All Tests",
+						"Bridge Register Suite",
+						"Igloo Register Suite",
+						"Vttx Register Suites"
+						)
+		self.qie_suiteMenu.pack(side=LEFT)
+		self.suiteChoiceVar.set("Main Suite : All Tests")
+
 
 		#Make a button to run the main test suite
 		self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
-		self.qie_testSuite_button.configure(text="RUN MAIN TEST SUITE", background="turquoise")
+		self.qie_testSuite_button.configure(text="Run Selected Test Suite", background="turquoise")
 		self.qie_testSuite_button.configure(
 			width=button_width*4,
 			padx=button_padx,
@@ -536,6 +617,12 @@ class makeGui:
 			)
 		self.uHTR_tester_bttn.pack(side=TOP)	
 
+		# now, prepare the summaries:
+		self.prepareOutCards()
+
+###############################################################################################################
+###############################################################################################################
+###############################################################################################################
 
 	#################################
 	###			      ###
@@ -563,16 +650,6 @@ class makeGui:
 		for i in range(9,13): self.cardVarList[i].set(self.readoutVarList[2].get())
 		for i in range(13,17): self.cardVarList[i].set(self.readoutVarList[3].get())
 
-	def checksToHex(self,inCheck0,inCheck1,inCheck2,inCheck3,inCheck4,inCheck5,inCheck6,inCheck7):
-		hexVar = (inCheck0*1)+(inCheck1*2)+(inCheck2*4)+(inCheck3*8)+(inCheck4*16)+\
-			 (inCheck5*32)+(inCheck6*64)+(inCheck7*128)
-		return hexVar
-	
-	def closeButtonPress(self):
-		# IF ANYTHING SHOULD BE DONE ON CANCELLATION
-		# PUT IT IN THIS FUNCTION
-		self.myParent.destroy()
-
 	def qieClickRead(self):     # Where the magic(?) happens
 		# See what test the user has selected, and then run that test from the
 		# qieCommands.py file. Display the results in the text field within the
@@ -581,17 +658,24 @@ class makeGui:
 		self.myTestStand = TestStand(self.outSlotNumbers)
 		self.myTestStand.runSingle(self.qieReadVar.get())
 		self.outSlotNumbers = []
+	
+	def qie_resetPress(self):
+		# Instantiate a webBus member:
+		b = webBus(self.piChoiceVar.get(),0)
+		b.write(0x00,[0x06])
+		b.sendBatch()
+		print "\n\nBackplane for "+self.piChoiceVar.get()+" reset!\n\n"
 
 	def runTestSuite(self):
 		print str(datetime.now())
+		for k in self.outSummaries:
+			k.cardGenInfo["User"] = self.nameChoiceVar.get()
 		self.prepareOutSlots()
+		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
 		print self.outSlotNumbers
-		self.myTestStand = TestStand(self.outSlotNumbers,self.piChoiceVar.get())
+		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection, self.piChoiceVar.get(), int(self.iterationVar.get()))
 		self.myTestStand.runAll()
-		# Reset the active outSlots
-		self.outSlotNumbers = []
 		print str(datetime.now())
-
 
 	def uHTR_tester_bttnPress(self):
 		outSlotList = []
@@ -600,7 +684,21 @@ class makeGui:
 				outSlotList.append(i)
 		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
 
+	def magicResetPress(self):
+		b = webBus(self.piChoiceVar.get(),0)
+		for i in [1,2]:
+			b.write(0x72,[i])
+			b.write(0x74,[0x08])
+			b.write(0x70,[0x03,0])
+			b.write(0x70,[0x01,0])
+			b.sendBatch()
+		print "\n\nMagic reset completed!\n\n"
+		for j in range(2):
+			self.qie_magicButton.flash()
+			
+
 	def prepareOutSlots(self):
+		self.outSlotNumbers = []
 		for k in range(len(self.cardVarList)):
 			if (self.cardVarList[k].get() == 1):
 				if k in [1,2,3,4]:
@@ -611,7 +709,18 @@ class makeGui:
 					self.outSlotNumbers.append(k+9)
 				elif k in [13,14,15,16]:
 					self.outSlotNumbers.append(k+10)
-	
+
+	def prepareOutCards(self):
+		for k in range(len(self.cardVarList)):
+			if k in [1,2,3,4]:
+				self.outSummaries.append(testSummary.testSummary(k+1))
+			elif k in [5,6,7,8]:
+				self.outSummaries.append(testSummary.testSummary(k+2))
+			elif k in [9,10,11,12]:
+				self.outSummaries.append(testSummary.testSummary(k+9))
+			elif k in [13,14,15,16]:
+				self.outSummaries.append(testSummary.testSummary(k+10))
+				
 				
 root = Tk()
 myapp = makeGui(root)

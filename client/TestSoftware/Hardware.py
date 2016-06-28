@@ -3,6 +3,7 @@ import sys
 from DChains import DChains
 #MUX dict
   #Given JX, set MUXes
+
 cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
 def getCardAddress(slot):
     if slot in [2,7,18,23] : return cardAddresses[0]
@@ -43,7 +44,6 @@ def openChannel(slot, bus):
 def getDChains(slot, bus):
     openChannel(slot, bus)
     return DChains(getCardAddress(slot), bus)
-
 
 #SetQInjMode(t)
 def SetQInjMode(onOffBit, slot, bus):

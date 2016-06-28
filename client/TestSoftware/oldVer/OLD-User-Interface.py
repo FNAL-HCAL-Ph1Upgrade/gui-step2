@@ -19,7 +19,7 @@ class makeGui:
 		self.myCommands = qieCommands()
 
 		# Instantiate a webBus member:
-		self.gb = webBus("pi5")		
+		self.gb = webBus("pi7")		
 
 		# Name the parent. This is mostly for bookkeeping purposes
 		# and doesn't really get used too much.
