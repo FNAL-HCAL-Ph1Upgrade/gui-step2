@@ -3,7 +3,7 @@ from client import webBus
 import Hardware as h
 #import iglooClass as i
 from uHTR import uHTR
-qcard_slots = [21]
+qcard_slots = [18, 21]
 b = webBus("pi6",0)
 uhtr = uHTR(6,qcard_slots,b)
 

@@ -15,13 +15,7 @@ gROOT.SetBatch()
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
-
-		self.master_dict={}
-		### Each key of master_dict corresponds to a QIE chip
-		### The name of each QIE is "(qcard_slot, chip)"
-		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
-		### List of keys: "slot" "link" "channel" ........		
-		
+	
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
@@ -30,6 +24,13 @@ class uHTR():
 		self.bus=bus
 
 		self.qcards=qcard_slots
+
+		self.master_dict={}
+		### Each key of master_dict corresponds to a QIE chip
+		### The name of each QIE is "(qcard_slot, chip)"
+		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
+		### List of keys: "slot" "link" "channel" "ped_test"	
+	
 		
 		# setup functions
 		clock_setup(self.crate, qcard_slots)
@@ -41,12 +42,17 @@ class uHTR():
 # Results of each test recorded in master_dict
 #############################################################
 
-
-# eventually we might write functions that can actually be used to test things
-
-
-
-
+	def ped_test(self):
+		for setting in list(i-31 for i in xrange(63)):
+			for qslot in self.qcards:
+				dc=hw.getDChains(qslot, self.bus)
+				dc.read()
+				for i in xrange(12):
+					dc[i].PedastalDAC[setting]
+				dc.write()
+				dc.read()
+			info=get_histo_results(self.crate, self.uhtr_slots)
+			
 
 #############################################################
 
@@ -110,6 +116,11 @@ class uHTR():
 					for i in xrange(6):
 						self.add_QIE(qslot, chip+i, uhtr_slot, link, 5-i)
 				else: print "mapping failed"
+			for num in xrange(12):
+				dc[num].PedastalDAC(-9)
+				dc.write()
+				dc.read()
+
 
 	def get_mapping_histo(self):
 		# matches histo to QIE chip for mapping
@@ -315,13 +326,13 @@ if __name__ == "__main__":
 
 	from client import webBus
 	
-	qcard_slots = [21]
-	b = webBus("pi6",0)
-	uhtr = uHTR(6,qcard_slots,b)
+	qcard_slots = [18, 21]
+	b = webBus("pi6", 0)
+	uhtr = uHTR(6, qcard_slots, b)
 	uhtr.QIE_mapping()
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
-			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link {1}: channel: {2}".format(info[0],info[1],info[2],chip,slot)
+			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 
 
