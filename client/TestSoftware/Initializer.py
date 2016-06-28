@@ -10,7 +10,7 @@ def init_links(crate, slot):
 
 	if onLinks == 0:
 
-		print "All slot %d links are OFF! Aborting link initialization for slot %d!"%(slot,slot)
+		print "All crate %d, slot %d links are OFF! k initialization for that slot!"%(crate,slot)
 		return
 
 	medianOrbitDelay = int(median_orbit_delay(linkInfo))
