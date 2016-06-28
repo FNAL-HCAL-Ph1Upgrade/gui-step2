@@ -26,10 +26,10 @@ uhtr = uHTR(6,qcard_slots,b)
 #
 #     for chip in xrange(12):
 #         myDC[chip].ChargeInjectDAC(8640)
-#         myDC[chip].PedastalDAC(-9)
-#         # myDC[chip].CapID0pedastal(0)
+#         myDC[chip].PedestalDAC(-9)
+#         # myDC[chip].CapID0pedestal(0)
 #         if chip == 0:
-#             myDC[chip].PedastalDAC(31)
+#             myDC[chip].PedestalDAC(31)
 #
 #
 #     myDC.write()
@@ -65,10 +65,10 @@ for slot in qcard_slots:
     for num in xrange(12):
         for chip in xrange(12):
             myDC[chip].ChargeInjectDAC(8640)
-            myDC[chip].PedastalDAC(-9)
-            # myDC[chip].CapID0pedastal(0)
+            myDC[chip].PedestalDAC(-9)
+            # myDC[chip].CapID0pedestal(0)
             if chip == num:
-                myDC[chip].PedastalDAC(31)
+                myDC[chip].PedestalDAC(31)
 
         myDC.write()
         myDC.read()
