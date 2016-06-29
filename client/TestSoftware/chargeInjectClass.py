@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from client import webBus
 import TestSoftware.Hardware as h
 import iglooClass as i

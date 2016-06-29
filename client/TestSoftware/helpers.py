@@ -45,6 +45,11 @@ def toHex(message):
     s = ""
     return '0x' + s.join(message_list)
 
+def getValue(message):
+    print message
+    hex_message = toHex(message)[2:]
+    return int(hex_message,16)
+
 def reverseBytes(message):
     message_list = message.split()
     message_list.reverse()

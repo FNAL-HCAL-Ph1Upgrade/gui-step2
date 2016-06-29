@@ -7,7 +7,8 @@ Goals:
 * create functions to read (and if possible) write to internal registers
 
 '''
-
+import sys
+sys.path.append('../')
 from client import webBus
 import QIELib
 b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
@@ -103,7 +104,7 @@ def statusReg(desiredReg = "all"): # default = display all of register
     #Now split up the 32 bits into their appropriate status chunks:
     #10-bit InputSpyWordNum, InputSpyFifoEmpty, InputSpyFifoFull,
     #Qie_DLLNoLock[12:1], BRIDGE_SPARE[5:0], 1-bit 0, PLL 320MHz Lock
-    
+
     regBin = strToBin(reg)
 
     regBinDict = {
