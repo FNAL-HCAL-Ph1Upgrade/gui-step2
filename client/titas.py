@@ -10,7 +10,7 @@ import TestSoftware.Hardware as h
 
 
 ##### Global Vars #####
-pi    = "pi6" # 'pi5' or 'pi6' etc
+pi    = "pi5" # 'pi5' or 'pi6' etc
 b     = webBus(pi,0) # webBus sets active pi; 0 = server verbosity off
 slots = [18,21] # list of active J slots
 
@@ -196,10 +196,26 @@ def powerEnable(bus):
         batch = bus.sendBatch()
         # print 'final = ', batch
 
+''' GPIO power enable via PCA9538 (address 0x70) (magic reset) '''
+def powerEnable(bus):
+    for ngccm in [1,2]: #both ngccm
+        bus.write(0x72,[ngccm])
+        bus.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
 
+        #power on and toggle reset
+        bus.write(0x70,[0x03,0x00]) # Register 3 sets all GPIO pins to 'output' mode
+        bus.write(0x70,[0x01,0x08]) # GPIO PwrEn is 0x08
+        bus.write(0x70,[0x01,0x18]) # GPIO reset is 0x10
+        bus.write(0x70,[0x01,0x08])
+
+        #jtag selectors for slot 26
+        # bus.write(0x70,[0x01,0x4A])
+
+        b.sendBatch()
 
 
 ##### Calling functions #####
+
 powerEnable(b)
 # printDaisyChain(slots,b)
 # setPedastalDAC(slots,31,b)

@@ -2,11 +2,11 @@ from client import webBus
 import IglooLib
 import TestSoftware.Hardware as Hardware
 
-b = webBus("pi6",0) #can add "pi5,0" so won't print send/receive messages
+b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 i = IglooLib
 h = Hardware
 
-slot = 21 # the J_# slot
+slot = 18 # the J_# slot
 
 class Test:
     def __init__(self, bus, address, logfile, iterations = 1):
