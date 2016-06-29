@@ -1,10 +1,7 @@
-from client import webBus
 import IglooLib
-import TestSoftware.Hardware as Hardware
+import Hardware as h
 
-b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
 i = IglooLib
-h = Hardware
 
 slot = 18 # the J_# slot
 
@@ -33,7 +30,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
@@ -47,7 +44,7 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
@@ -62,8 +59,8 @@ class ones(Test): #inherit from Test class, overload testBody() function
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
 
-        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size) == [255,255,255,255]):
-        # if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size) == [255,255,255,255]):
+        # if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
         #     print "~~PASS: RO not writable~~"
             print "~~PASS: all ones~~"
             return True
@@ -78,8 +75,8 @@ class zeroes(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size) == [0,0,0,0]):
-        # if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size) == [0,0,0,0]):
+        # if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
         #     print "~~PASS: RO not writable~~"
             print "~~PASS: all zeroes~~"
             return True
@@ -94,7 +91,7 @@ class fpgaTopOrBottom(Test): #inherit from Test class, overload testBody() funct
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
@@ -108,7 +105,7 @@ class uniqueID(Test): #inherit from Test class, overload testBody() function
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:
@@ -121,7 +118,7 @@ class statusReg(Test): #shows status register settings
         name = "statusReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
-        allRegList = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)
+        allRegList = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
         #print "allRegList: ", allRegList
 
         # if bad read
@@ -175,7 +172,7 @@ class statusReg(Test): #shows status register settings
             readPass = True
 
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             rwrPass = True
 
         if (readPass and rwrPass):
@@ -190,7 +187,7 @@ class cntrRegDisplay(Test): #shows control register settings
         name = "cntrReg"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
-        allRegList = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)
+        allRegList = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
         #print "allRegList: ", allRegList
 
         # if bad read
@@ -236,7 +233,7 @@ class cntrRegDisplay(Test): #shows control register settings
         if self.read(desiredReg) !=False:
             readPass = True
 
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             rwrPass = True
 
         if (readPass and rwrPass):
@@ -266,14 +263,14 @@ class cntrRegChange(Test): # NOTE: this run() function is overloaded to require 
         print "settingStr: ", settingStr
 
         # Read1 = current register status
-        read1 = i.readFromRegister(b, i.iglooAdd, reg, size)
+        read1 = i.readFromRegister(self.bus, i.iglooAdd, reg, size)
         allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(read1))
         print "allRegStr: ", allRegStr
 
         # Write to 'all' ---------------------------------------------------
         if desiredReg == "all":
-            write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite)
-            read2 = i.readFromRegister(b, i.iglooAdd, reg, size) # gets new reg status
+            write1 = i.writeToRegister(self.bus, i.iglooAdd, reg, toWrite)
+            read2 = i.readFromRegister(self.bus, i.iglooAdd, reg, size) # gets new reg status
             print "cntrReg after 'all' WRITE: ", read2
 
             if not (write1 and read2): return False
@@ -313,8 +310,8 @@ class cntrRegChange(Test): # NOTE: this run() function is overloaded to require 
             #print "stringToBitList: ", i.stringToBitList(allRegStr)
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
             #print "toWrite: ", toWrite
-            write1 = i.writeToRegister(b, i.iglooAdd, reg, toWrite) #writes the change
-            read2 = i.readFromRegister(b, i.iglooAdd, reg, size) #displays new reg
+            write1 = i.writeToRegister(self.bus, i.iglooAdd, reg, toWrite) #writes the change
+            read2 = i.readFromRegister(self.bus, i.iglooAdd, reg, size) #displays new reg
             print "cntrReg after %s WRITE: " %desiredReg, read2
             if not (write1 and read2): return False
             else:
@@ -343,14 +340,14 @@ class cntrRegChange_Quiet(Test): # NOTE: this run() function is overloaded to re
         # print "settingStr: ", settingStr
 
         # Read1 = current register status
-        read1 = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)
+        read1 = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
         allRegStr = i.catBitsFromBytes(i.getBitsFromBytes(read1))
         # print "allRegStr: ", allRegStr
 
         # Write to 'all' ---------------------------------------------------
         if desiredReg == "all":
-            write1 = i.writeToRegister_Quiet(b, i.iglooAdd, reg, toWrite)
-            read2 = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size) # gets new reg status
+            write1 = i.writeToRegister_Quiet(self.bus, i.iglooAdd, reg, toWrite)
+            read2 = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size) # gets new reg status
             # print "cntrReg after 'all' WRITE: ", read2
 
             if not (write1 and read2): return False
@@ -390,8 +387,8 @@ class cntrRegChange_Quiet(Test): # NOTE: this run() function is overloaded to re
             #print "stringToBitList: ", i.stringToBitList(allRegStr)
             toWrite = i.getBytesFromBits(i.stringToBitList(allRegStr))
             #print "toWrite: ", toWrite
-            write1 = i.writeToRegister_Quiet(b, i.iglooAdd, reg, toWrite) #writes the change
-            read2 = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size) #displays new reg
+            write1 = i.writeToRegister_Quiet(self.bus, i.iglooAdd, reg, toWrite) #writes the change
+            read2 = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size) #displays new reg
             # print "cntrReg after %s WRITE: " %desiredReg, read2
             if not (write1 and read2): return False
             else:
@@ -412,7 +409,7 @@ class clk_count(Test): #clock count
 
         print "----------%s----------" %name
         # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: Read from RO~~"
             return True
         else:
@@ -426,7 +423,7 @@ class rst_QIE_count(Test): #reset qie count
 
         print "----------%s----------" %name
         # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: Read from RO~~"
             return True
         else:
@@ -440,7 +437,7 @@ class wte_count(Test): #warning-test-enable count
 
         print "----------%s----------" %name
         # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: Read from RO~~"
             return True
         else:
@@ -460,7 +457,7 @@ class capIDErr_count(Test): # changed: deleted obselete Link 3
         link = 0
         for n in reg:
             print '----Link',link+1,'----'
-            if (i.readFromRegister_Quiet(b, i.iglooAdd, n, size)):
+            if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, n, size)):
                 linkPass[link] = True
 
             link = link + 1
@@ -485,7 +482,7 @@ class fifo_data(Test): #NOTE: Unused register
         data = 0
         for n in reg:
             print '----Data',data+1,'----'
-            if (i.RWR_forRO_Quiet(b, i.iglooAdd, n, size)):
+            if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, n, size)):
                 dataPass[data] = True
 
             data = data + 1
@@ -522,7 +519,7 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
             capIdPass          = False
             adcPass            = False
 
-            buff = i.readFromRegister_Quiet(b, i.iglooAdd, reg, size)
+            buff = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
 
             # if good read
             if (buff) != False:
@@ -678,7 +675,7 @@ class inputSpyRWR(Test): #NOTE: confirms RO nature of reg... doesn't process Spy
 
         print "----------%s RWR----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
@@ -687,13 +684,13 @@ class inputSpyRWR(Test): #NOTE: confirms RO nature of reg... doesn't process Spy
 class inputSpy_512Reads(Test): #flips bits in cntrReg then calls inputSpy() 512x
     def testBody(self):
     # turn WrEn_InputSpy ON
-        myCntrRegChange = cntrRegChange_Quiet(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        myCntrRegChange = cntrRegChange_Quiet(self.bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print myCntrRegChange.run("WrEn_InputSpy", '1')
     # turn WrEn_InputSpy OFF
-        myCntrRegChange = cntrRegChange_Quiet(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        myCntrRegChange = cntrRegChange_Quiet(self.bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print myCntrRegChange.run("WrEn_InputSpy", '0')
     # Read out InputSpy 512x
-        myInputSpy = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+        myInputSpy = inputSpy(self.bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
         runReturn = myInputSpy.run(512)
         if runReturn == (1,0):
             return True
@@ -708,7 +705,7 @@ class spy96Bits(Test): #reads out orbit-histo data (diagnostic against same Brid
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
@@ -737,7 +734,7 @@ class qie_ck_ph(Test): #NOTE: Uninterested in register at this time
         count = 0
         for n in reg:
             print '----Qie',count+1,'----'
-            if (i.RWR_withRestore_Quiet(b, i.iglooAdd, n, size)):
+            if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, n, size)):
                 qiePass[count] = True
 
             count = count + 1
@@ -758,7 +755,7 @@ class link_test_mode(Test): #NOTE: Uninterested in register at this time
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:
@@ -772,7 +769,7 @@ class link_test_pattern(Test): #NOTE: Uninterested in register at this time
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:
@@ -786,7 +783,7 @@ class dataToSERDES(Test): #NOTE: Will not test at this time
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:
@@ -800,7 +797,7 @@ class addrToSERDES(Test): #NOTE: Will not test at this time
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:
@@ -814,7 +811,7 @@ class ctrlToSERDES(Test): #NOTE: Will not test at this time
 
         print "----------%s----------" %name
         # for RW register, read1 != read2 constitues a PASS
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:
@@ -828,7 +825,7 @@ class dataFromSERDES(Test): #NOTE: Will not test at this time
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
@@ -842,7 +839,7 @@ class statFromSERDES(Test): #NOTE: Will not test at this time
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_forRO_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RO not writable~~"
             return True
         else:
@@ -856,7 +853,7 @@ class scratchReg(Test): #
 
         print "----------%s----------" %name
         # for RO register, read1 == read2 constitutes a PASS
-        if (i.RWR_withRestore_Quiet(b, i.iglooAdd, reg, size)):
+        if (i.RWR_withRestore_Quiet(self.bus, i.iglooAdd, reg, size)):
             print "~~PASS: RW = Writable~~"
             return True
         else:
@@ -864,9 +861,9 @@ class scratchReg(Test): #
 # ------------------------------------------------------------------------
 class CI_Mode_On(Test): # turns on Charge Injection on card
     def testBody(self):
-        myCntrRegChange = cntrRegChange_Quiet(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        myCntrRegChange = cntrRegChange_Quiet(self.bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print myCntrRegChange.run("CI_mode", '1')
-        myDisplay = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        myDisplay = cntrRegDisplay(self.bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         if (myDisplay.read('CI_mode') == '1'):
             print "~~PASS: CI_mode set to ON~~"
             return True
@@ -875,9 +872,9 @@ class CI_Mode_On(Test): # turns on Charge Injection on card
 # ------------------------------------------------------------------------
 class CI_Mode_Off(Test): # turns off Charge Injection on card
     def testBody(self):
-        myCntrRegChange = cntrRegChange_Quiet(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        myCntrRegChange = cntrRegChange_Quiet(self.bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print myCntrRegChange.run("CI_mode", '0')
-        myDisplay = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        myDisplay = cntrRegDisplay(self.bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         if (myDisplay.read('CI_mode') == '0'):
             print "~~PASS: CI_mode set to OFF~~"
             return True
@@ -886,7 +883,7 @@ class CI_Mode_Off(Test): # turns off Charge Injection on card
 # ------------------------------------------------------------------------
 class CI_Mode_Display(Test): # turns off Charge Injection on card
     def testBody(self):
-        myDisplay = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        myDisplay = cntrRegDisplay(self.bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         if (myDisplay.read('CI_mode') == '1'):
             print "~~CI_mode is ON~~"
             return True
@@ -897,248 +894,182 @@ class CI_Mode_Display(Test): # turns off Charge Injection on card
             print "ERROR: Cannot read CI_mode"
 # ------------------------------------------------------------------------
 
-def runAll():
-    h.openChannel(slot,b)
-    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+def runAll(bus):
+    h.openChannel(slot,bus)
+    bus.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
 
-    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
+    m = fpgaMajVer(bus,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = fpgaMinVer(b,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 1)
+    m = fpgaMinVer(bus,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = ones(b,i.igloo["ones"]["register"],'iglooClass.txt', 1)
+    m = ones(bus,i.igloo["ones"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = zeroes(b,i.igloo["zeroes"]["register"],'iglooClass.txt', 1)
+    m = zeroes(bus,i.igloo["zeroes"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = fpgaTopOrBottom(b,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
+    m = fpgaTopOrBottom(bus,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = uniqueID(b,i.igloo["uniqueID"]["register"],'iglooClass.txt', 1)
+    m = uniqueID(bus,i.igloo["uniqueID"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = statusReg(b,i.igloo["statusReg"]["register"],'iglooClass.txt', 1)
+    m = statusReg(bus,i.igloo["statusReg"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    m = cntrRegDisplay(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    m = cntrRegChange(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run("all", "")
-    m = clk_count(b,i.igloo["clk_count"]["register"],'iglooClass.txt', 1)
+    m = clk_count(bus,i.igloo["clk_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = rst_QIE_count(b,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 1)
+    m = rst_QIE_count(bus,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = wte_count(b,i.igloo["wte_count"]["register"],'iglooClass.txt', 1)
+    m = wte_count(bus,i.igloo["wte_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = capIDErr_count(b,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
+    m = capIDErr_count(bus,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = fifo_data(b,i.igloo["fifo_data"]["register"],'iglooClass.txt', 1)
+    m = fifo_data(bus,i.igloo["fifo_data"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+    m = inputSpy(bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = spy96Bits(b,i.igloo["spy96Bits"]["register"],'iglooClass.txt', 1)
+    m = spy96Bits(bus,i.igloo["spy96Bits"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = qie_ck_ph(b,i.igloo["qie_ck_ph"]["register"],'iglooClass.txt', 1)
+    m = qie_ck_ph(bus,i.igloo["qie_ck_ph"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = link_test_mode(b,i.igloo["link_test_mode"]["register"],'iglooClass.txt', 1)
+    m = link_test_mode(bus,i.igloo["link_test_mode"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = link_test_pattern(b,i.igloo["link_test_pattern"]["register"],'iglooClass.txt', 1)
+    m = link_test_pattern(bus,i.igloo["link_test_pattern"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = dataToSERDES(b,i.igloo["dataToSERDES"]["register"],'iglooClass.txt', 1)
+    m = dataToSERDES(bus,i.igloo["dataToSERDES"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = addrToSERDES(b,i.igloo["addrToSERDES"]["register"],'iglooClass.txt', 1)
+    m = addrToSERDES(bus,i.igloo["addrToSERDES"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = ctrlToSERDES(b,i.igloo["ctrlToSERDES"]["register"],'iglooClass.txt', 1)
+    m = ctrlToSERDES(bus,i.igloo["ctrlToSERDES"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = dataFromSERDES(b,i.igloo["dataFromSERDES"]["register"],'iglooClass.txt', 1)
+    m = dataFromSERDES(bus,i.igloo["dataFromSERDES"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = statFromSERDES(b,i.igloo["statFromSERDES"]["register"],'iglooClass.txt', 1)
+    m = statFromSERDES(bus,i.igloo["statFromSERDES"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = scratchReg(b,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
+    m = scratchReg(bus,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
-def runSelect():
-    h.openChannel(slot,b)
-    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+def runSelect(bus):
+    h.openChannel(slot,bus)
+    bus.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
 
-    m = fpgaMajVer(b,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
+    m = fpgaMajVer(bus,i.igloo["fpgaMajVer"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = fpgaMinVer(b,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 1)
+    m = fpgaMinVer(bus,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = ones(b,i.igloo["ones"]["register"],'iglooClass.txt', 1)
+    m = ones(bus,i.igloo["ones"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = zeroes(b,i.igloo["zeroes"]["register"],'iglooClass.txt', 1)
+    m = zeroes(bus,i.igloo["zeroes"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = fpgaTopOrBottom(b,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
+    m = fpgaTopOrBottom(bus,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = uniqueID(b,i.igloo["uniqueID"]["register"],'iglooClass.txt', 1)
+    m = uniqueID(bus,i.igloo["uniqueID"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = statusReg(b,i.igloo["statusReg"]["register"],'iglooClass.txt', 1)
+    m = statusReg(bus,i.igloo["statusReg"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    m = cntrRegDisplay(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = clk_count(b,i.igloo["clk_count"]["register"],'iglooClass.txt', 1)
+    m = clk_count(bus,i.igloo["clk_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = rst_QIE_count(b,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 1)
+    m = rst_QIE_count(bus,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = wte_count(b,i.igloo["wte_count"]["register"],'iglooClass.txt', 1)
+    m = wte_count(bus,i.igloo["wte_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = capIDErr_count(b,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
+    m = capIDErr_count(bus,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
     print m.run()
-    # m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+    # m = inputSpy(bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
     # print m.run()
-    # m = inputSpy_512Reads(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+    # m = inputSpy_512Reads(bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
     # print m.run()
-    m = CI_Mode_On(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    m = CI_Mode_On(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = CI_Mode_Off(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    m = CI_Mode_Off(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
-    # m = spy96Bits(b,i.igloo["spy96Bits"]["register"],'iglooClass.txt', 1)
+    # m = spy96Bits(bus,i.igloo["spy96Bits"]["register"],'iglooClass.txt', 1)
     # print m.run()
-    # m = scratchReg(b,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
+    # m = scratchReg(bus,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
     # print m.run()
 
-def readOutInputSpy():
-    h.openChannel(slot,b)
-    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
-    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+def readOutInputSpy(bus):
+    h.openChannel(slot,bus)
+    bus.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+    m = cntrRegDisplay(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    m = cntrRegChange(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run("WrEn_InputSpy", "1")
 
-    m = inputSpy(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 512)
+    m = inputSpy(bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 512)
     print m.run()
 
-def processInputSpy():
-    h.openChannel(slot,b)
-    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
-    m = inputSpy_512Reads(b,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+def processInputSpy(bus):
+    h.openChannel(slot,bus)
+    bus.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+    m = inputSpy_512Reads(bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
     print m.run()
 
-def cntrRegShowAll():
-    h.openChannel(slot,b)
-    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
-    m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+def cntrRegShowAll(bus):
+    h.openChannel(slot,bus)
+    bus.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+    m = cntrRegDisplay(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
-def setCI_mode(onOffBit):
+def setCI_mode(bus, onOffBit):
     def openIgloo(slot):
         q.openChannel()
         #the igloo is value "3" in I2C_SELECT table
-        b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-        b.sendBatch()
+        bus.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
+        bus.sendBatch()
     openIgloo(0)
 
     if onOffBit == 1:
-        m = CI_Mode_On(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        m = CI_Mode_On(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print m.run()
 
     elif onOffBit == 0:
-        m = CI_Mode_Off(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        m = CI_Mode_Off(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
         print m.run()
 
     else: print "Invalid onOffBit"
 
-def readBridgeIglooReg():
-    h.openChannel(slot,b)
-    b.write(0x00,[0x06])
-    b.write(h.getCardAddress(slot),[0x22])
-    b.read(h.getCardAddress(slot),4)
-    read1 = b.sendBatch()[-1]
+def readBridgeIglooReg(bus):
+    h.openChannel(slot,bus)
+    bus.write(0x00,[0x06])
+    bus.write(h.getCardAddress(slot),[0x22])
+    bus.read(h.getCardAddress(slot),4)
+    read1 = bus.sendBatch()[-1]
     print "BRIDGE IGLOO REG Read: ", read1
 
-def writeBridgeIglooReg():
-    h.openChannel(slot,b)
-    b.write(0x00,[0x06])
-    b.write(h.getCardAddress(slot),[0x22,0xe7,0x07,0,0])
-    write2 = b.sendBatch()[0]
+def writeBridgeIglooReg(bus):
+    h.openChannel(slot,bus)
+    bus.write(0x00,[0x06])
+    bus.write(h.getCardAddress(slot),[0x22,0xe7,0x07,0,0])
+    write2 = bus.sendBatch()[0]
     print "BRIDGE IGLOO REG Write: ", write2
 
-def turnOnCI():
-    h.openChannel(slot,b)
-    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
-    m = CI_Mode_On(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+def turnOnCI(bus):
+    h.openChannel(slot,bus)
+    bus.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+    m = CI_Mode_On(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
-def displayCI(slot):
-    h.openChannel(slot,b)
-    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
-    m = CI_Mode_Display(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+def displayCI(bus,slot):
+    h.openChannel(slot,bus)
+    bus.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+    m = CI_Mode_Display(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     m.run()
 
 ###########################################
 # RUN FUNCTIONS
 ###########################################
 
-#runAll()
-# runSelect()
-#readOutInputSpy()
-processInputSpy()
-#setCI_MODE(1)
-# readBridgeIglooReg()
-# writeBridgeIglooReg()
-# readBridgeIglooReg()
-#turnOnCI()
-#displayCI(slot)
-
-{
-# RW functions to do cursory RW test:
-#   * uniqueID
-#   * qie_ck_ph
-#   * link_test_mode
-#   * link_test_pattern
-#   * dataToSERDES
-#   * addrToSERDES
-#   * ctrlToSERDES
-#   * scratchReg
-# RW functions to allow setting changes:
-#   * cntrReg
-}
-
-{
-# def SetQInjMode(onOffBit, slot, piAddress):
-# def SetQInjMode(onOffBit):
-#     #expects onOffBit of 0 or 1
-#     cntrRegShow()
-#     if onOffBit == 0 or onOffBit == 1:
-#         #b = webBus(piAddress, 0)
-#         b.write(0x1c,[0x11,0x03,0,0,0])
-#         b.write(0x09,[0x11,onOffBit,0,0,0])
-#         b.sendBatch()
-#     else:
-#         print "INVALID INPUT IN SetQInjMode... doing nothing"
-#
-#     cntrRegShow()
-
-# def changeCI_MODE():
-#     def openChannel():
-#       b.write(0x72,[0x02])
-#       b.write(0x74,[0x02])
-#       b.sendBatch()
-#     openChannel()
-#
-#     def openIgloo(slot):
-#         #the igloo is value "3" in I2C_SELECT table
-#         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-#         b.sendBatch()
-#     openIgloo(3)
-#
-#         b.write(0x09,[0x11,1,0,0,0])
-#         b.sendBatch()
-#
-#
-# def changeCI_MODE():
-#     def openChannel():
-#       b.write(0x72,[0x02])
-#       b.write(0x74,[0x02])
-#       b.sendBatch()
-#     openChannel()
-#
-#     def openIgloo(slot):
-#         #the igloo is value "3" in I2C_SELECT table
-#         b.write(q.QIEi2c[slot],[0x11,0x03,0,0,0])
-#         b.sendBatch()
-#     openIgloo(3)
-#
-#     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-#     print m.run()
-#     m = cntrRegChange(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-#     print m.run("CI_mode", "1")
-#     m = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-#     print m.run()
-}
+if __name__ == '__main__':
+    #runAll()
+    # runSelect()
+    #readOutInputSpy()
+    processInputSpy()
+    #setCI_MODE(1)
+    # readBridgeIglooReg()
+    # writeBridgeIglooReg()
+    # readBridgeIglooReg()
+    #turnOnCI()
+    #displayCI(slot)
