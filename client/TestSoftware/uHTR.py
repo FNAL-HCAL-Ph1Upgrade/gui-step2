@@ -20,9 +20,9 @@ if __name__ == "__main__":
 	from client import webBus
 	from uHTR import uHTR
 
-	qcard_slots = [2, 5]
-	b = webBus("pi6", 0)
-	uhtr = uHTR(6, qcard_slots, b)
+	qcard_slots = [18, 20, 23, 25]
+	b = webBus("pi5", 0)
+	uhtr = uHTR(1, qcard_slots, b)
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
