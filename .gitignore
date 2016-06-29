@@ -2,6 +2,8 @@
 **.pyc
 **.log
 **.json
+**.swp
+**.py~
 =======
 *.pyc
 >>>>>>> bb25b2520e37dafc0ec4c868462316fa88bba92e
