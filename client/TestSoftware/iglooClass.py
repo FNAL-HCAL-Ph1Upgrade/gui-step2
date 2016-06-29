@@ -710,11 +710,11 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
         capIdConcise = []
         for i in capId:
             capIdConcise.append(i & 0x03)
-
-        print "CapID: ", capIdConcise
-        print "ADC:   ", adc
-        print "RANGE: ", rangeQ
-        print "TDC:   ", tdc
+	
+	print "CapID: ", capIdConcise
+	print "ADC:   ", adc
+	print "RANGE: ", rangeQ
+	print "TDC:   ", tdc
         # print '\n'
 
         qieList = [capIdConcise, adc, rangeQ, tdc]

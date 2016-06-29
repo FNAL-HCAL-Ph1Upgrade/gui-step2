@@ -11,7 +11,10 @@ import Test
 import listOfTests
 import vttxLib
 import temp
+from checksumClass import Checksum
 
+# These dictionaries will be used to get information from
+# the card that isn't necessarily related to a "test" per se
 noCheckRegis = {
 	"Unique_ID" :{
 		"i2c_path" : [0x11, 0x04, 0,0,0],
@@ -47,11 +50,14 @@ class testSuite:
         self.a = address
 	i = iters
 
+	# Using the listOfTests.py file, initialize our test suites.
 	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
 	self.iglooRegs = listOfTests.initializeIglooList(self.b, self.a, i)
 	self.vttxRegs_1  = listOfTests.initializeVttxList_1(self.b, self.a, i)
 	self.vttxRegs_2  = listOfTests.initializeVttxList_2(self.b, self.a, i)
+	self.longRegs  = listOfTests.initializeLongTests(self.b, self.a, i)
 
+    # This function is used for getting stuff like temp., humid., and UID
     def readNoCheck(self, testName, iterations = 1):
 	self.outCard.cardGenInfo["DateRun"] = str(datetime.now())
 	i2c_pathway = noCheckRegis[testName]["i2c_path"]
@@ -77,11 +83,20 @@ class testSuite:
 			new_r.append(i)
 
 	self.outCard.cardGenInfo[testName] = new_r
+	
+	# Do things that depend on whether we're getting UID or Temp/Humid
 	if (testName == "Unique_ID"):
-		new_r[0] = helpers.reverseBytes(new_r[0])
-		new_r[0] = helpers.toHex(new_r[0])
-		self.outCard.cardGenInfo[testName]=new_r[0]
+		message = r[-1]
+		check = Checksum(message,0)
+		if (check.result != 0):
+			print "Unique ID checksum error! Continuing..."
+			self.outCard.cardGenInfo[testName] = "0xXXXXXXXXXXXXX"
+		else:
+			new_r[0] = helpers.reverseBytes(new_r[0])
+			new_r[0] = helpers.toHex(new_r[0])
+			self.outCard.cardGenInfo[testName]=new_r[0]
 	elif (testName == "Temperature" or testName == "Humidity"):
+								      #(address, iterations, "Temperature"/"Humidity","hold"/"nohold")
 		self.outCard.cardGenInfo[testName] = temp.readManyTemps(self.a,15,testName,"nohold")
 
     def openIgloo(self, slot):
@@ -98,7 +113,7 @@ class testSuite:
     # tests on ALL active cards.
     def runTests(self, suite):
 
-	if (suite == "main" or suite == "bridge"):
+	if (suite == "main" or suite == "bridge" or suite =="short"):
 		print "-------------------------"
 		print "Running register tests!"
 		print "-------------------------"
@@ -108,7 +123,7 @@ class testSuite:
 			self.outCard.resultList[r][1] += results[1]
 			print r+" tests completed."
 
-	if (suite == "main" or suite == "igloo"):
+	if (suite == "main" or suite == "igloo" or suite == "short"):
 		self.openIgloo(self.a)
 		print "\n-------------------------"
 		print "Running IGLOO tests!"
@@ -120,7 +135,7 @@ class testSuite:
 			self.outCard.iglooList[r][1] += results[1]
 			print r+" tests completed."
 
-	if (suite == "main" or suite == "vttx"):
+	if (suite == "main" or suite == "vttx" or suite == "short"):
 		self.openVTTX(self.a, 1)
 		print "\n-------------------------"
 		print "Running VTTX_1 tests!"
@@ -141,6 +156,18 @@ class testSuite:
 			self.outCard.vttxListTwo[r][1] += results[1]
 			print r+" tests completed."
 
+	if (suite == "main" or suite == "long"):
+		print "\n-------------------------"
+		print "Running long tests!"
+		print "-------------------------"
+		for r in self.longRegs.keys():
+			if (r == "inputSpy_512Reads"):
+				self.openIgloo(self.a)
+			results = self.longRegs[r].run()
+			self.outCard.longTestList[r][0] += results[0]
+			self.outCard.longTestList[r][1] += results[1]
+			print r+" tests completed."
+
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)
 
@@ -154,11 +181,3 @@ class testSuite:
 		yield self.readWithCheck(key, 100)
 	elif key in noCheckRegis:
 		yield self.readNoCheck(key, 1)
-
-
-
-
-
-
-
-

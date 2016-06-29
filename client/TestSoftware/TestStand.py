@@ -38,11 +38,14 @@ class TestStand:
             elif slot in [23,24,25,26]:
                 #RM1
                 RM1_active.append(slot)
+
         #initialize RMs
+	print "--- Determining which slots contain active cards ---\n"
         self.RMs.append(RM.RM(1, RM1_active, RM1_summaries, self.bus))
         self.RMs.append(RM.RM(2, RM2_active, RM2_summaries, self.bus))
         self.RMs.append(RM.RM(3, RM3_active, RM3_summaries, self.bus))
         self.RMs.append(RM.RM(4, RM4_active, RM4_summaries, self.bus))
+	print "\n--- Slot determination finished. Beginning tests ---\n\n"
 
     def runAll(self):
 	    for r in self.RMs:
