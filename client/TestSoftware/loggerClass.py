@@ -1,3 +1,8 @@
+# loggerClass.py
+# This file is necessary for proper writing of the human-readable
+# log files. It simply changes the standard output from JUST the
+# terminal to BOTH the terminal and an external file.
+
 import sys
 
 class logger():

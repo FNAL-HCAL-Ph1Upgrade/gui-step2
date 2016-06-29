@@ -264,14 +264,7 @@ class OrbHist_4(Test):
 class OrbHist_5(Test):
 	def testBody(self):
 		return co.calcOrbs(self.bus,self.address,0.5,0)
-#		self.criteria = "0 0 0 0 0"
-#		self.bus.write(self.address, [0x1d])
-#		self.bus.read(self.address, 3)
-#		r=self.bus.sendBatch()[-1]
-#		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-#			return True
-#		else: 
-#			return False
+
 class OrbHist_6(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"

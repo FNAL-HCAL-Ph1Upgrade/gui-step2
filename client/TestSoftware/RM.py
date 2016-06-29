@@ -38,9 +38,9 @@ class RM:
 	self.location = location
 	emptyCount = 0
         for i in activeSlots:
-            if self.checkCards(i):
-		print summaries[getSummaryIndex(i)].idNo
-                self.qCards.append(qCard(i,summaries[getSummaryIndex(i)]))
+            if self.checkCards(i):  # Only do stuff if the card is there
+		print summaries[getSummaryIndex(i)].idNo   # Write the summary file's number
+                self.qCards.append(qCard(i,summaries[getSummaryIndex(i)])) 
 
     def __repr__(self):
         '''Object representation'''
@@ -99,7 +99,7 @@ class RM:
     def runAll(self, suiteSelection, iters):
     	self.openChannel()
     	for q in range(len(self.qCards)):
-    		self.qCards[q].runAll(self.bus, suiteSelection,iters)
+    		self.qCards[q].runAll(self.bus, suiteSelection, iters)
 
     def runSingle(self, key):
 	self.openChannel()

@@ -19,7 +19,9 @@ class TestStand:
         RM3_active = []
         RM2_active = []
         RM1_active = []
-
+	
+	# Split the memory locations for summaries up based on what
+	# RM slot they correspond to.
 	RM4_summaries = summaryList[0:4]
 	RM3_summaries = summaryList[4:8]
 	RM2_summaries = summaryList[8:12]

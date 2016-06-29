@@ -1,4 +1,11 @@
-#This is a comment to test a git push
+# listOfTests.py
+
+# This files contains different functions that simply initialize tests to be ran
+# during the main QC phase. This file isn't 100% necessary to the functionality of
+# the GUI, but it really goes a long way to keep "tests.py" neat and orderly.
+
+# Each function creates instances of specific tests. The function names are
+# pretty self-explanatory.
 
 import client
 import bridgeTests as bt
