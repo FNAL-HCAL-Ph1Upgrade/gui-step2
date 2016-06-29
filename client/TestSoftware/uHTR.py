@@ -47,7 +47,6 @@ class uHTR():
 		### The name of each QIE is "(qcard_slot, chip)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
 		### List of keys: "slot" "link" "channel" "ped_test"	
-	
 		
 		# setup functions
 		clock_setup(self.crate, qcard_slots)
@@ -62,16 +61,32 @@ class uHTR():
 #############################################################
 
 	def ped_test(self):
+		ped_results = {}
 		for setting in list(i-31 for i in xrange(63)):
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
-				for i in xrange(12):
-					dc[i].PedastalDAC[setting]
+				for chip in xrange(12):
+					dc[chip].PedestalDAC[setting]
 				dc.write()
 				dc.read()
-			info=get_histo_results(self.crate, self.uhtr_slots)
-			
+			histo_results=get_histo_results(self.crate, self.uhtr_slots)
+			for uhtr_slot, uhtr_slot_results in map_results.iteritems():
+	                        for chip, chip_results in uhtr_slot_results.iteritems():
+					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					if setting == -31: ped_results[key]=[]
+					ped_results[key].append(chip_results["PedBinMax"])	
+		for qslot in self.qcards:
+			for chip in xrange(12):
+				ped_key=str(self.get_QIE_map(qslot, chip))
+				chip_arr=ped_results[ped_key]
+				pf = [0, 0]
+				for i in xrange(63):
+					if chip_arr[i] > ped_arr[i] + 2 or chip_arr[i] < ped_arr[i] - 2:
+						pf[1]+=1
+					else: pf[0]+=1
+				self.get_QIE(qslot, chip)["ped_test"]=(pf[0], pf[1])
+				
 
 #############################################################
 
@@ -106,7 +121,6 @@ class uHTR():
 		key="({0}, {1})".format(qcard_slot, chip)
 		self.master_dict[key]=QIE_info
 
-
 #############################################################
 
 
@@ -122,9 +136,9 @@ class uHTR():
 			dc.read()
 			for chip in [0,6]:
 				for num in xrange(12):
-					dc[num].PedastalDAC(-9)
+					dc[num].PedestalDAC(-9)
 					if num==chip:
-						dc[num].PedastalDAC(31)
+						dc[num].PedestalDAC(31)
 				dc.write()
 				dc.read()
 				info=self.get_mapping_histo()
@@ -135,7 +149,7 @@ class uHTR():
 						self.add_QIE(qslot, chip+i, uhtr_slot, link, 5-i)
 				else: print "mapping failed"
 			for num in xrange(12):
-				dc[num].PedastalDAC(-9)
+				dc[num].PedestalDAC(-9)
 				dc.write()
 				dc.read()
 
@@ -409,7 +423,6 @@ def check_link_status(linkInfo):
 			goodLinks += 1
 		elif linkInfo["ON Status"][l] == "ON" and not (linkInfo["BPR Status"][l] == "111" and linkInfo["AOD Status"][l] == "111"):
 			badLinks += 1
-
 	return onLinks, goodLinks, badLinks 
 
 
@@ -423,4 +436,8 @@ def get_link_info(crate, slot):
         linkInfo["ON Status"] = get_ON_links(statsPrintOut)
 	return linkInfo
 
+#############################################################
+# Test arrays
+#############################################################
 
+ped_arr=list(0 for i in xrange(63))
