@@ -9,11 +9,11 @@ serialShiftRegisterBits = OrderedDict(
     ("TGain", [4]),
     ("TimingThresholdDAC", [5,6,7,8,9,10,11,12]),
     ("TimingIref", [13,14,15]),
-    ("PedastalDAC", [16,17,18,19,20,21]),
-    ("CapID0pedastal", [22,23,24,25]),
-    ("CapID1pedastal", [26,27,28,29]),
-    ("CapID2pedastal", [30,31,32,33]),
-    ("CapID3pedastal", [34, 35, 36, 37]),
+    ("PedestalDAC", [16,17,18,19,20,21]),
+    ("CapID0pedestal", [22,23,24,25]),
+    ("CapID1pedestal", [26,27,28,29]),
+    ("CapID2pedestal", [30,31,32,33]),
+    ("CapID3pedestal", [34, 35, 36, 37]),
     ("FixRange", [38]),
     ("RangeSet", [39, 30]),
     ("ChargeInjectDAC", [41, 42, 43]),
@@ -128,8 +128,8 @@ class QIE:
             print "INVALID INPUT IN TimingIref... no change made"
 
     #Change bits 16-21
-    def PedastalDAC(self, magnitude):
-        #pedastal = magnitude * 2 fC
+    def PedestalDAC(self, magnitude):
+        #pedestal = magnitude * 2 fC
         #takes magnitudes -31 to 31
         if abs(magnitude) <= 31:
             self[16] = (1 if magnitude > 0 else 0)
@@ -139,11 +139,11 @@ class QIE:
             for i in xrange(5):
                 self[17 + i] = a[i]
         else:
-            print "INVALID INPUT IN PedastalDAC... no change made"
+            print "INVALID INPUT IN PedestalDAC... no change made"
 
 #Change bits 22-25
-    def CapID0pedastal(self, magnitude):
-        #pedastal = magnitude * ~1.9 fC
+    def CapID0pedestal(self, magnitude):
+        #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
             self[22] = (1 if magnitude > 0 else 0)
@@ -153,11 +153,11 @@ class QIE:
             for i in xrange(3):
                 self[23 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID0pedastal... no change made"
+            print "INVALID INPUT IN CapID0pedestal... no change made"
 
     #Change bits 26-29
-    def CapID1pedastal(self, magnitude):
-        #pedastal = magnitude * ~1.9 fC
+    def CapID1pedestal(self, magnitude):
+        #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
             self[26] = (1 if magnitude > 0 else 0)
@@ -167,11 +167,11 @@ class QIE:
             for i in xrange(3):
                 self[27 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID1pedastal... no change made"
+            print "INVALID INPUT IN CapID1pedestal... no change made"
 
     #Change bits 30-33
-    def CapID2pedastal(self, magnitude):
-        #pedastal = magnitude * ~1.9 fC
+    def CapID2pedestal(self, magnitude):
+        #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
             self[30] = (1 if magnitude > 0 else 0)
@@ -181,11 +181,11 @@ class QIE:
             for i in xrange(3):
                 self[31 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID2pedastal... no change made"
+            print "INVALID INPUT IN CapID2pedestal... no change made"
 
     #Change bits 34-37
-    def CapID3pedastal(self, magnitude):
-        #pedastal = magnitude * ~1.9 fC
+    def CapID3pedestal(self, magnitude):
+        #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
             self[34] = (1 if magnitude > 0 else 0)
@@ -195,7 +195,7 @@ class QIE:
             for i in xrange(3):
                 self[35 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID3pedastal... no change made"
+            print "INVALID INPUT IN CapID3pedestal... no change made"
 
     #Change bits 38
     def FixRange(self, b):
@@ -209,7 +209,7 @@ class QIE:
     def RangeSet(self, b):
         #takes 0, 1, 2, or 3
         if b >= 0 and b <= 3:
-            a = "%02i" % int(bin(abs(magnitude))[2:])
+            a = "%02i" % int(bin(abs(b))[2:]) #Adry (6/27/16 -> changed 'magnitude' to 'b')
             a = list(a)
             for i in xrange(2):
                 self[39 + i] = a[i]
@@ -294,7 +294,30 @@ class QIE:
             for i in xrange(7):
                 self[57 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID3pedastal... no change made"
+            print "INVALID INPUT IN CapID3pedestal... no change made"
+
+
+##############################################
+
+    #Change bits 41-43
+    def getChargeInjectDAC(self):
+        #in fC
+        d = {
+            90   : (0,0,0),
+            180  : (0,0,1),
+            360  : (0,1,0),
+            720  : (0,1,1),
+            1440 : (1,0,0),
+            2880 : (1,0,1),
+            5760 : (1,1,0),
+            8640 : (1,1,1)
+        }.get(charge, (-9,-9,-9))
+        if d != (-9,-9,-9):
+            for i in xrange(3):
+                self[41 + i] = d[i]
+        else:
+            print "INVALID INPUT IN ChargeInjectDAC... no change made"
+
 
 ############################################################################
 

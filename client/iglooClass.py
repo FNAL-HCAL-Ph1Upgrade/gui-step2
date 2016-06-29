@@ -883,7 +883,18 @@ class CI_Mode_Off(Test): # turns off Charge Injection on card
             return True
         else:
             print "ERROR: Cannot change CI to OFF"
-
+# ------------------------------------------------------------------------
+class CI_Mode_Display(Test): # turns off Charge Injection on card
+    def testBody(self):
+        myDisplay = cntrRegDisplay(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+        if (myDisplay.read('CI_mode') == '1'):
+            print "~~CI_mode is ON~~"
+            return True
+        elif (myDisplay.read('CI_mode') == '0'):
+            print "~~CI_mode is OFF~~"
+            return True
+        else:
+            print "ERROR: Cannot read CI_mode"
 # ------------------------------------------------------------------------
 
 def runAll():
@@ -1044,6 +1055,12 @@ def turnOnCI():
     m = CI_Mode_On(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
+def displayCI(slot):
+    h.openChannel(slot,b)
+    b.write(h.getCardAddress(slot),[0x11,0x03,0,0,0])
+    m = CI_Mode_Display(b,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
+    m.run()
+
 ###########################################
 # RUN FUNCTIONS
 ###########################################
@@ -1051,12 +1068,13 @@ def turnOnCI():
 #runAll()
 # runSelect()
 #readOutInputSpy()
-#processInputSpy()
+processInputSpy()
 #setCI_MODE(1)
 # readBridgeIglooReg()
 # writeBridgeIglooReg()
 # readBridgeIglooReg()
-turnOnCI()
+#turnOnCI()
+#displayCI(slot)
 
 {
 # RW functions to do cursory RW test:

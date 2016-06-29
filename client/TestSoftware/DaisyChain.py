@@ -29,4 +29,6 @@ class DaisyChain:
         for q in self.QIEs:
             a += q.flatten()
         return a
+    # def getCI(self):
+
 ################################################################################

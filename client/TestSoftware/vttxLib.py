@@ -1,5 +1,5 @@
 from client import webBus
-b = webBus("pi5",0)
+b = webBus("pi6",0)
 
 ######################################################
 # VTTX Dict
