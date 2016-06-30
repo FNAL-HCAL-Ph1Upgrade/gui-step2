@@ -604,8 +604,8 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
         prevCapId = []
 
         for iter in range(0, fifoIterations):
-            print '___________'
-            print "ITER: ", iter
+            #print '___________'
+            #print "ITER: ", iter
             capIdPass          = False
             adcPass            = False
 
@@ -621,8 +621,8 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
             # Check CapID
                 # print "prevCapId: ", prevCapId
                 if self.checkCapId(qieList[0], prevCapId, iter):
-                    print "~~CapIDs Rotate~~"
-                    capIdPass = True
+		    print "~~CapIDs Rotate~~"
+	 	    capIdPass = True
                 else:
                     print "CapId Rotation ERROR: ", prevCapId, ' -> ', qieList[0]
                     capIdPass = False
@@ -711,10 +711,10 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
         for i in capId:
             capIdConcise.append(i & 0x03)
 	
-	print "CapID: ", capIdConcise
-	print "ADC:   ", adc
-	print "RANGE: ", rangeQ
-	print "TDC:   ", tdc
+#	print "CapID: ", capIdConcise
+#	print "ADC:   ", adc
+#	print "RANGE: ", rangeQ
+#	print "TDC:   ", tdc			# Shaun removing these print statements for brevity
         # print '\n'
 
         qieList = [capIdConcise, adc, rangeQ, tdc]

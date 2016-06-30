@@ -46,7 +46,6 @@ def toHex(message):
     return '0x' + s.join(message_list)
 
 def getValue(message):
-    print message
     hex_message = toHex(message)[2:]
     return int(hex_message,16)
 

@@ -719,7 +719,6 @@ class makeGui:
 		for ngccm in [1,2]: #both ngccm
 			b.write(0x72,[ngccm])
 			b.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
-			# bus.write(0x70,[0x01,0x00]) # GPIO PwrEn is register 3
 			#power on and reset
 			#register 3 is control reg for i/o modes
 			b.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
@@ -768,7 +767,8 @@ class makeGui:
 				self.outSummaries.append(testSummary.testSummary((k+10), self.humanLogName))
 
 	def submitToDatabase(self):
-		subprocess.call("ssh cmshcal11 /home/hep/abaas/testing_database/uploader/upload.sh", shell=True)
+#		subprocess.call("ssh cmshcal11 /django/abaas/testing_database/uploader/upload.sh", shell=True)
+		subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/upload.sh", shell=True)
 		print "Files submitted to database!"
 
 
