@@ -53,7 +53,7 @@ class QIE:
         strs = []
         for k in serialShiftRegisterBits.keys():
             s = ""
-            b = serialShiftRegisterBits[k]
+            b = list(serialShiftRegisterBits[k])
             b.reverse()
             for i in b:
                 s += str(self.arr[i])
