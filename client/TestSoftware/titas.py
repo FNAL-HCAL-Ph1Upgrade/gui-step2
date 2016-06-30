@@ -1,29 +1,41 @@
 # All QIE register functions (i.e. TGain, CkOutEn, TDCmode, etc) can be found in QIE.py
 # Daisy chain objects must use .read() after declaration (otherwise not instantiated completely, index goes out of range)
 # Daisy chain objects must use .write() after changes are made in order to affect chips
-# NOTE: unfortunate legacy code: spelling in code is "pedAstal" (not pedEstal)
 
 
 ##### Imports #####
+import sys
+sys.path.append("../")
 from client import webBus
-import TestSoftware.Hardware as h
-# from TestSoftware.uHTR import uHTR
+import Hardware as h
+import iglooClass_adry as i
+# from uHTR import uHTR
 
 
 ##### Global Vars #####
-pi    = "pi6" # 'pi5' or 'pi6' etc
+pi    = "pi5" # 'pi5' or 'pi6' etc
 b     = webBus(pi,0) # webBus sets active pi; 0 = server verbosity off
-slots = [18,21] # list of active J slots
+slots = [2,5] # list of active J slots
 
 
 
 ##### Functions ######
 
+def chargeInjectOn(slots, bus):
+    for slot in slots:
+        h.SetQInjMode(1, slot, b)
+        i.displayCI(bus,slot)
+
+def chargeInjectOff(slots, bus):
+    for slot in slots:
+        h.SetQInjMode(0, slot, b)
+        i.displayCI(bus,slot)
+
 ''' display QIE registers of both daisy chains of a QIE card'''
-def printDaisyChain(slots):
+def printDaisyChain(slots, bus):
     for i_slot in slots: # all desired slots
         ''' makes instance of daisy chain class for each card '''
-        dcs = h.getDChains(i_slot, b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot, bus) # the 2 daisy chains from one QIE card
 
         dcs.read() # get real values for 2 daisy chains
 
@@ -38,13 +50,13 @@ def printDaisyChain(slots):
 
 
 ''' change pedestal values for all chips on all cards in 'slots' list '''
-def setPedestalDAC(slots, pedestal_val):
+def setPedestalDAC(slots, pedestal_val, bus):
     #pedestal = magnitude * 2 fC
     #takes magnitudes -31 to 31
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot,b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -54,13 +66,13 @@ def setPedestalDAC(slots, pedestal_val):
 
 
 ''' change pedestal for capID0 for all chips/slots '''
-def setCapID0pedestal(slots, pedestal_val):
+def setCapID0pedestal(slots, pedestal_val, bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot,b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -70,13 +82,13 @@ def setCapID0pedestal(slots, pedestal_val):
 
 
 ''' change pedestal for capID1 for all chips/slots'''
-def setCapID1pedestal(slots, pedestal_val):
+def setCapID1pedestal(slots, pedestal_val,bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot,b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -86,13 +98,13 @@ def setCapID1pedestal(slots, pedestal_val):
 
 
 ''' change pedestal for capID2 for all chips/slots'''
-def setCapID2pedestal(slots, pedestal_val):
+def setCapID2pedestal(slots, pedestal_val, bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot,b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -102,13 +114,13 @@ def setCapID2pedestal(slots, pedestal_val):
 
 
 ''' change pedestal for capID3 for all chips/slots'''
-def setCapID3pedestal(slots, pedestal_val):
+def setCapID3pedestal(slots, pedestal_val, bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot,b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -118,12 +130,12 @@ def setCapID3pedestal(slots, pedestal_val):
 
 
 ''' turn fixed range mode ON, select range mode '''
-def setFixRangeModeOn(slots, qieRange):
+def setFixRangeModeOn(slots, qieRange, bus):
     #fixed range mode = 1, autorange mode = 0
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot, b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -134,12 +146,12 @@ def setFixRangeModeOn(slots, qieRange):
 
 
 ''' turn fixed range mode OFF, use autorange '''
-def setFixRangeModeOff(slots):
+def setFixRangeModeOff(slots, bus):
     #fixed range mode = 1, autorange mode = 0
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot, b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot, bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -150,7 +162,7 @@ def setFixRangeModeOff(slots):
 
 ''' set internal charge injection level for all chips/slots '''
 # currently non-functional
-def setChargeInjectDAC(slots, charge_val):
+def setChargeInjectDAC(slots, charge_val, bus):
         # charge_val is decimal in fC:
         # 90   : (0,0,0),
         # 180  : (0,0,1),
@@ -163,7 +175,7 @@ def setChargeInjectDAC(slots, charge_val):
 
     for i_slot in slots: # all desired slots
 
-        dcs = h.getDChains(i_slot, b) # the 2 daisy chains from one QIE card
+        dcs = h.getDChains(i_slot, bus) # the 2 daisy chains from one QIE card
         dcs.read()
 
         for chip in xrange(12): # all 12 chips
@@ -172,13 +184,42 @@ def setChargeInjectDAC(slots, charge_val):
         dcs.write() # write the changes for both daisy chains
 
 
+''' backplane reset (should be sent between I2C device selection)'''
+def backplaneReset(bus):
+    bus.write(0x00,[0x06])
+    bus.sendBatch()
+
+
+''' GPIO power enable via PCA9538 (address 0x70) (magic reset) '''
+def powerEnable(bus):
+    for ngccm in [1,2]: #both ngccm
+        bus.write(0x72,[ngccm])
+        bus.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
+
+        #power on and toggle reset
+        bus.write(0x70,[0x03,0x00]) # Register 3 sets all GPIO pins to 'output' mode
+        bus.write(0x70,[0x01,0x08]) # GPIO PwrEn is 0x08
+        bus.write(0x70,[0x01,0x18]) # GPIO reset is 0x10
+        bus.write(0x70,[0x01,0x08])
+
+        #jtag selectors for slot 26
+        # bus.write(0x70,[0x01,0x4A])
+
+        bus.sendBatch()
+
+
 ##### Calling functions #####
-printDaisyChain(slots)
-setPedestalDAC(slots,31)
-setCapID0pedestal(slots,0)
-setCapID1pedestal(slots,1)
-setCapID2pedestal(slots,1)
-setCapID3pedestal(slots,1)
-setFixRangeModeOn(slots,3)
-print "\n\n\n\n AFTER CHANGES: \n"
-printDaisyChain(slots)
+
+powerEnable(b)
+chargeInjectOn(slots,b)
+#chargeInjectOff(slots,b)
+printDaisyChain(slots,b)
+setPedestalDAC(slots,6,b) #6bits->12fc is default
+#setCapID0pedestal(slots,0,b)
+# setCapID1pedestal(slots,1,b)
+# setCapID2pedestal(slots,1,b)
+# setCapID3pedestal(slots,1,b)
+# setFixRangeModeOn(slots,3,b)
+setChargeInjectDAC(slots,2880,b)
+print "\n\n\n\n\n AFTER CHANGES: \n"
+printDaisyChain(slots,b)
