@@ -18,17 +18,18 @@ gROOT.SetBatch()
 if __name__ == "__main__":
 
 	from client import webBus
-	from uHTR import uHTR
+	from uHTR import * 
 
-	qcard_slots = [18, 20, 23, 25]
+	qcard_slots = [2, 5]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(1, qcard_slots, b)
-	for slot in qcard_slots:
-		for chip in xrange(12):
-			info=uhtr.get_QIE_map(slot, chip)
-			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
+#	uhtr = uHTR(1, qcard_slots, b)
+#	for slot in qcard_slots:
+#		for chip in xrange(12):
+#			info=uhtr.get_QIE_map(slot, chip)
+#			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 
-
+	for i, ave in enumerate(ped_arr):
+		print i-31, ave
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
@@ -70,8 +71,8 @@ class uHTR():
 					dc[chip].PedestalDAC[setting]
 				dc.write()
 				dc.read()
-			histo_results=get_histo_results(self.crate, self.uhtr_slots)
-			for uhtr_slot, uhtr_slot_results in map_results.iteritems():
+			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
+			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == -31: ped_results[key]=[]
@@ -440,4 +441,4 @@ def get_link_info(crate, slot):
 # Test arrays
 #############################################################
 
-ped_arr=list(0 for i in xrange(63))
+ped_arr=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2.2, 2.2, 2.6, 3.2, 3.9, 4.7, 5.3, 6.0, 6.8, 7.4, 8.0, 8.7, 9.4, 10.0, 10.7, 11.4, 12.0, 13.0, 13.7, 14.4, 15.0, 12.8, 16.5, 16.9, 17.1, 17.5, 17.9, 18.1, 18.5, 18.9, 19.1, 19.6, 20.0]
