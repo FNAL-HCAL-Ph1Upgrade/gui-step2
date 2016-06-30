@@ -22,14 +22,13 @@ if __name__ == "__main__":
 
 	qcard_slots = [2, 5]
 	b = webBus("pi5", 0)
-#	uhtr = uHTR(1, qcard_slots, b)
-#	for slot in qcard_slots:
-#		for chip in xrange(12):
-#			info=uhtr.get_QIE_map(slot, chip)
-#			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
+	uhtr = uHTR(1, qcard_slots, b)
+	uhtr.ped_test()
+	for slot in qcard_slots:
+		for chip in xrange(12):
+			info=uhtr.get_QIE_map(slot, chip)
+			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 
-	for i, ave in enumerate(ped_arr):
-		print i-31, ave
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
