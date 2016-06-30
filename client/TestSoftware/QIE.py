@@ -53,7 +53,9 @@ class QIE:
         strs = []
         for k in serialShiftRegisterBits.keys():
             s = ""
-            for i in serialShiftRegisterBits[k]:
+            b = serialShiftRegisterBits[k]
+            b.reverse()
+            for i in b:
                 s += str(self.arr[i])
             strs.append(k + ":\n    " + s)
         return "\n".join(strs)
@@ -207,7 +209,6 @@ class QIE:
             a = getBinaryList(magnitude, 2)
             for i in xrange(2):
                 self[39 + i] = a[i]
-            else:
         else:
             print "INVALID INPUT IN RangeSet... no change made"
 
