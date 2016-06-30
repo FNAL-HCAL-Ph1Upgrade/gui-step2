@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from client import webBus
 import QIELib
 b = webBus("pi5")
