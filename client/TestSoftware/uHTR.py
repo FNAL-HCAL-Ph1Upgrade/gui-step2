@@ -340,18 +340,27 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	f.Close()
 	return slot_result
 
+#############################################################
+# Mapping functions
+#############################################################
 
-def init_links(crate, slot):
+def init_links(crate, slot, attempts=0):
+	if attempts == 10:
+		print "Skipping initialization of links for crate %d, slot %d after 10 failed attempts!"%(crate,slot)
+		return
+	attempts += 1
 	linkInfo = get_link_info(crate, slot)
 	onLinks, goodLinks, badLinks = check_link_status(linkInfo)
 	if onLinks == 0:
 		print "All crate %d, slot %d links are OFF! NOT initializing that slot!"%(crate,slot)
 		return
+	if badLinks == 0:
+		return
 	medianOrbitDelay = int(median_orbit_delay(linkInfo))
 	if badLinks > 0:
 		initCMDS = ["0","link","init","1","%d"%(medianOrbitDelay),"0","0","0","quit","exit"]
 		send_commands(crate=crate, slot=slot, cmds=initCMDS)
-		init_links(crate, slot)
+		init_links(crate, slot, attempts)
 
 
 def get_BCN_status(uHTRPrintOut):
