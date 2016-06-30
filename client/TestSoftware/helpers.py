@@ -12,6 +12,7 @@ def getBitsFromBytes(decimalBytes):
     return ret
 
 def getByteFromBits(bitList):
+    bitList.reverse()
     return int(''.join(str(i) for i in bitList), 2)
 
 def getBytesFromBits(bitList):
