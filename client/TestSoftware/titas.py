@@ -4,19 +4,32 @@
 
 
 ##### Imports #####
+import sys
+sys.path.append("../")
 from client import webBus
-import TestSoftware.Hardware as h
-# from TestSoftware.uHTR import uHTR
+import Hardware as h
+import iglooClass_adry as i
+# from uHTR import uHTR
 
 
 ##### Global Vars #####
 pi    = "pi5" # 'pi5' or 'pi6' etc
 b     = webBus(pi,0) # webBus sets active pi; 0 = server verbosity off
-slots = [18,21] # list of active J slots
+slots = [2,5] # list of active J slots
 
 
 
 ##### Functions ######
+
+def chargeInjectOn(slots, bus):
+    for slot in slots:
+        h.SetQInjMode(1, slot, b)
+        i.displayCI(bus,slot)
+
+def chargeInjectOff(slots, bus):
+    for slot in slots:
+        h.SetQInjMode(0, slot, b)
+        i.displayCI(bus,slot)
 
 ''' display QIE registers of both daisy chains of a QIE card'''
 def printDaisyChain(slots, bus):
@@ -37,7 +50,7 @@ def printDaisyChain(slots, bus):
 
 
 ''' change pedestal values for all chips on all cards in 'slots' list '''
-def setPedestalDAC(slots, pedestal_val):
+def setPedestalDAC(slots, pedestal_val, bus):
     #pedestal = magnitude * 2 fC
     #takes magnitudes -31 to 31
 
@@ -53,7 +66,7 @@ def setPedestalDAC(slots, pedestal_val):
 
 
 ''' change pedestal for capID0 for all chips/slots '''
-def setCapID0pedestal(slots, pedestal_val):
+def setCapID0pedestal(slots, pedestal_val, bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
@@ -69,7 +82,7 @@ def setCapID0pedestal(slots, pedestal_val):
 
 
 ''' change pedestal for capID1 for all chips/slots'''
-def setCapID1pedestal(slots, pedestal_val):
+def setCapID1pedestal(slots, pedestal_val,bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
@@ -85,7 +98,7 @@ def setCapID1pedestal(slots, pedestal_val):
 
 
 ''' change pedestal for capID2 for all chips/slots'''
-def setCapID2pedestal(slots, pedestal_val):
+def setCapID2pedestal(slots, pedestal_val, bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
@@ -101,7 +114,7 @@ def setCapID2pedestal(slots, pedestal_val):
 
 
 ''' change pedestal for capID3 for all chips/slots'''
-def setCapID3pedestal(slots, pedestal_val):
+def setCapID3pedestal(slots, pedestal_val, bus):
     #pedestal = magnitude * ~1.9 fC
     #takes magnitudes -12 to 12
 
@@ -179,25 +192,6 @@ def backplaneReset(bus):
 
 ''' GPIO power enable via PCA9538 (address 0x70) (magic reset) '''
 def powerEnable(bus):
-    #Reset for ngccm 1 (for RM 2,1)
-    for ngccm in [1,2]: #both ngccm
-        bus.write(0x72,[ngccm])
-        bus.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
-        bus.write(0x70,[0x03]) # GPIO PwrEn is register 3
-        bus.read(0x70,1)
-        batch = b.sendBatch()
-        # print 'initial = ', batch
-
-        message = batch[-1][2:]
-        value = int(message) | 0x08
-        bus.write(0x70,[0x03, value])
-        bus.write(0x70,[0x03])
-        bus.read(0x70,1)
-        batch = bus.sendBatch()
-        # print 'final = ', batch
-
-''' GPIO power enable via PCA9538 (address 0x70) (magic reset) '''
-def powerEnable(bus):
     for ngccm in [1,2]: #both ngccm
         bus.write(0x72,[ngccm])
         bus.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
@@ -211,18 +205,21 @@ def powerEnable(bus):
         #jtag selectors for slot 26
         # bus.write(0x70,[0x01,0x4A])
 
-        b.sendBatch()
+        bus.sendBatch()
 
 
 ##### Calling functions #####
 
 powerEnable(b)
-# printDaisyChain(slots,b)
-# setPedastalDAC(slots,31,b)
-# setCapID0pedastal(slots,0,b)
-# setCapID1pedastal(slots,1,b)
-# setCapID2pedastal(slots,1,b)
-# setCapID3pedastal(slots,1,b)
+chargeInjectOn(slots,b)
+#chargeInjectOff(slots,b)
+printDaisyChain(slots,b)
+setPedestalDAC(slots,6,b) #6bits->12fc is default
+#setCapID0pedestal(slots,0,b)
+# setCapID1pedestal(slots,1,b)
+# setCapID2pedestal(slots,1,b)
+# setCapID3pedestal(slots,1,b)
 # setFixRangeModeOn(slots,3,b)
-# print "\n\n\n\n AFTER CHANGES: \n"
-# printDaisyChain(slots,b)
+setChargeInjectDAC(slots,2880,b)
+print "\n\n\n\n\n AFTER CHANGES: \n"
+printDaisyChain(slots,b)

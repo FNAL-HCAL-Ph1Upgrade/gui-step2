@@ -1013,7 +1013,7 @@ def cntrRegShowAll(bus):
     m = cntrRegDisplay(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
     print m.run()
 
-def setCI_mode(bus, onOffBit):
+def setCI_mode(slot, bus, onOffBit):
     def openIgloo(slot):
         q.openChannel()
         #the igloo is value "3" in I2C_SELECT table
