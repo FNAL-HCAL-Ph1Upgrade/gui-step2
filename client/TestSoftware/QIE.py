@@ -15,7 +15,7 @@ serialShiftRegisterBits = OrderedDict(
     ("CapID2pedestal", [30,31,32,33]),
     ("CapID3pedestal", [34, 35, 36, 37]),
     ("FixRange", [38]),
-    ("RangeSet", [39, 30]),
+    ("RangeSet", [39, 40]),
     ("ChargeInjectDAC", [41, 42, 43]),
     ("Gsel", [44, 45, 46, 47, 48]),
     ("Idcset", [49, 50, 51, 52, 53]),
@@ -25,8 +25,20 @@ serialShiftRegisterBits = OrderedDict(
     ("PhaseDelay", [57, 58, 59, 60, 61, 62, 63])]
     )
 
-#QIE Class
+def getBinaryList(integer, length):
+    #returns a little endian
+    pad = [0]*length
+    a = list(bin(abs(integer))[2:])
+    a.reverse()
+    return a + pad[:length - len(a)]
+def getBinaryListWithPolarity(integer, length):
+    #returns a little endian representation with a polarity bit at the MSB
+    return getBinaryList(integer, length - 1) + [1 if integer > 0 else 0]
 
+
+
+
+#QIE Class
 class QIE:
     ############################################################################
     # Core and I/O Functions
@@ -41,7 +53,9 @@ class QIE:
         strs = []
         for k in serialShiftRegisterBits.keys():
             s = ""
-            for i in serialShiftRegisterBits[k]:
+            b = list(serialShiftRegisterBits[k])
+            b.reverse()
+            for i in b:
                 s += str(self.arr[i])
             strs.append(k + ":\n    " + s)
         return "\n".join(strs)
@@ -69,8 +83,8 @@ class QIE:
     def setLVDS_output_level_trim(self, v):
         d = {
             150 : (0,0),
-            250 : (0,1),
-            350 : (1,0),
+            250 : (1,0),
+            350 : (0,1),
             450 : (1,1)
         }.get(v, (-9,-9))
         if d == (-9, -9):
@@ -101,23 +115,21 @@ class QIE:
     def TimingThresholdDAC(self, magnitude):
         #accepts magnitudes -127 to 127
         if abs(magnitude) <= 127:
-            self[5] = (0 if magnitude < 0 else 1)
-            a = "%07i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
-            for i in xrange(7):
-                self[6 + i] = a[i]
+            a = getBinaryListWithPolarity(magnitude, 8)
+            for i in xrange(8):
+                self[5 + i] = a[i]
         else:
             print "INVALID INPUT IN TimingThresholdDAC... no change made"
     #Change bits 13-15
     def TimingIref(self, q):
         d = {
             0  : (0,0,0),
-            10 : (0,0,1),
+            10 : (1,0,0),
             20 : (0,1,0),
-            30 : (0,1,1),
-            40 : (1,0,0),
+            30 : (1,1,0),
+            40 : (0,0,1),
             50 : (1,0,1),
-            60 : (1,1,0),
+            60 : (0,1,1),
             70 : (1,1,1)
         }.get(q, (-9,-9,-9))
         if d != (-9,-9,-9):
@@ -132,12 +144,9 @@ class QIE:
         #pedestal = magnitude * 2 fC
         #takes magnitudes -31 to 31
         if abs(magnitude) <= 31:
-            self[16] = (1 if magnitude > 0 else 0)
-            #set magnitude
-            a = "%05i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
-            for i in xrange(5):
-                self[17 + i] = a[i]
+            a = getBinaryListWithPolarity(magnitude, 6)
+            for i in xrange(6):
+                self[16 + i] = a[i]
         else:
             print "INVALID INPUT IN PedestalDAC... no change made"
 
@@ -146,12 +155,9 @@ class QIE:
         #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
-            self[22] = (1 if magnitude > 0 else 0)
-            #set magnitude
-            a = "%03i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
-            for i in xrange(3):
-                self[23 + i] = a[i]
+            a = getBinaryListWithPolarity(magnitude, 4)
+            for i in xrange(4):
+                self[22 + i] = a[i]
         else:
             print "INVALID INPUT IN CapID0pedestal... no change made"
 
@@ -160,12 +166,9 @@ class QIE:
         #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
-            self[26] = (1 if magnitude > 0 else 0)
-            #set magnitude
-            a = "%03i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
-            for i in xrange(3):
-                self[27 + i] = a[i]
+            a = getBinaryListWithPolarity(magnitude, 4)
+            for i in xrange(4):
+                self[26 + i] = a[i]
         else:
             print "INVALID INPUT IN CapID1pedestal... no change made"
 
@@ -174,12 +177,9 @@ class QIE:
         #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
-            self[30] = (1 if magnitude > 0 else 0)
-            #set magnitude
-            a = "%03i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
-            for i in xrange(3):
-                self[31 + i] = a[i]
+            a = getBinaryListWithPolarity(magnitude, 4)
+            for i in xrange(4):
+                self[30 + i] = a[i]
         else:
             print "INVALID INPUT IN CapID2pedestal... no change made"
 
@@ -188,12 +188,9 @@ class QIE:
         #pedestal = magnitude * ~1.9 fC
         #takes magnitudes -12 to 12
         if abs(magnitude) <= 12:
-            self[34] = (1 if magnitude > 0 else 0)
-            #set magnitude
-            a = "%03i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
-            for i in xrange(3):
-                self[35 + i] = a[i]
+            a = getBinaryListWithPolarity(magnitude, 4)
+            for i in xrange(4):
+                self[34 + i] = a[i]
         else:
             print "INVALID INPUT IN CapID3pedestal... no change made"
 
@@ -209,8 +206,7 @@ class QIE:
     def RangeSet(self, b):
         #takes 0, 1, 2, or 3
         if b >= 0 and b <= 3:
-            a = "%02i" % int(bin(abs(b))[2:]) #Adry (6/27/16 -> changed 'magnitude' to 'b')
-            a = list(a)
+            a = getBinaryList(magnitude, 2)
             for i in xrange(2):
                 self[39 + i] = a[i]
         else:
@@ -221,12 +217,12 @@ class QIE:
         #in fC
         d = {
             90   : (0,0,0),
-            180  : (0,0,1),
+            180  : (1,0,0),
             360  : (0,1,0),
-            720  : (0,1,1),
-            1440 : (1,0,0),
+            720  : (1,1,0),
+            1440 : (0,0,1),
             2880 : (1,0,1),
-            5760 : (1,1,0),
+            5760 : (0,1,1),
             8640 : (1,1,1)
         }.get(charge, (-9,-9,-9))
         if d != (-9,-9,-9):
@@ -239,8 +235,7 @@ class QIE:
     def Gsel(self, b):
         #takes arguments 0 - 31
         if b >= 0 and b <= 31:
-            a = "%05i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
+            a = getBinaryList(magnitude, 5)
             for i in xrange(5):
                 self[44 + i] = a[i]
         else:
@@ -250,8 +245,7 @@ class QIE:
     def Idcset(self, b):
         #takes arguments 0 - 31
         if b >= 0 and b <= 31:
-            a = "%05i" % int(bin(abs(magnitude))[2:])
-            a = list(a)
+            a = getBinaryList(magnitude, 5)
             for i in xrange(5):
                 self[49 + i] = a[i]
         else:
@@ -289,8 +283,7 @@ class QIE:
     def PhaseDelay(self, b):
         #takes arguments 0 - 127
         if b <= 127 and b >= 0:
-            a = "%07i" % int(bin(abs(b))[2:])
-            a = list(a)
+            a = getBinaryList(magnitude, 7)
             for i in xrange(7):
                 self[57 + i] = a[i]
         else:
@@ -304,12 +297,12 @@ class QIE:
         #in fC
         d = {
             90   : (0,0,0),
-            180  : (0,0,1),
+            180  : (1,0,0),
             360  : (0,1,0),
-            720  : (0,1,1),
-            1440 : (1,0,0),
+            720  : (1,1,0),
+            1440 : (0,0,1),
             2880 : (1,0,1),
-            5760 : (1,1,0),
+            5760 : (0,1,1),
             8640 : (1,1,1)
         }.get(charge, (-9,-9,-9))
         if d != (-9,-9,-9):
