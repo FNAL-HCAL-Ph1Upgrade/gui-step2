@@ -56,7 +56,7 @@ class uHTR():
 
 
 #############################################################
-# Higher level uHTR test functions
+# uHTR tests
 # Results of each test recorded in master_dict
 #############################################################
 
@@ -70,25 +70,19 @@ class uHTR():
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
 				for chip in xrange(12):
-					dc[chip].PedestalDAC[setting]
+					dc[chip].PedestalDAC(setting)
 				dc.write()
 				dc.read()
 			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					ped_results[key].append(chip_results["PedBinMax"])
+					ped_results[key].append(chip_results["PedBinMax"])  #maybe need to initialize ped_results[key]=[] ?
 		for qslot in self.qcards:
 			for chip in xrange(12):
 				ped_key=str(self.get_QIE_map(qslot, chip))
 				chip_arr=ped_results[ped_key]
-				pf = [0, 0]
-				for i in xrange(63):
-					if chip_arr[i] > ped_arr[i] + 2 or chip_arr[i] < ped_arr[i] - 2:
-						pf[1]+=1
-					else: pf[0]+=1
-				self.get_QIE(qslot, chip)["ped_test"]=(pf[0], pf[1])
-
+				
 
 
 	def charge_inject_test(self):
@@ -101,7 +95,7 @@ class uHTR():
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
 				for chip in xrange(12):
-					dc[chip].ChargeInjectDAC[setting]
+					dc[chip].ChargeInjectDAC(setting)
 				dc.write()
 				dc.read()
 			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
@@ -113,12 +107,7 @@ class uHTR():
 			for chip in xrange(12):
 				ci_key=str(self.get_QIE_map(qslot, chip))
 				chip_arr=ci_results[ci_key]
-				pf = [0, 0]
-				for i in xrange(8):
-					if chip_arr[i] > ci_arr[i] + 2 or chip_arr[i] < ci_arr[i] - 2:
-						pf[1]+=1
-					else: pf[0]+=1
-				self.get_QIE(qslot, chip)["ci_test"]=(pf[0], pf[1])
+			
 
 #############################################################
 
@@ -199,21 +188,8 @@ class uHTR():
 
 
 #############################################################
-# Other non-testing funtions
-# Mainly used by higher level to make/read histos
+# Generate and read histos
 #############################################################
-
-
-	def uHTRtool_source_test():
-	        ### checks to see if the uHTRtool is sourced, and sources it if needed
-		uhtr_cmd="uHTRtool.exe"
-		error="sh: uHTRtool.exe: command not found"
-		check=getoutput(uhtr_cmd)
-		source_cmd=["source /home/daqowner/dist/etc/env.sh"]
-
-		if check==error:
-			print "WARNING, you need to run 'source ~daqowner/dist/etc/env.sh' before you can use uHTRtool.exe"
-
 
 	def get_histo_results(self, crate=None, slots=None, n_orbits=1000, sepCapID=0, signalOn=0, out_dir="histotest"):
 		# Runs uHTRtool.exe and returns layered ditctionary of results.
@@ -234,6 +210,11 @@ class uHTR():
 		return histo_results
 
 
+#############################################################
+
+
+#############################################################
+# uHTRtool functions
 #############################################################
 
 def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
@@ -298,19 +279,6 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
         return result
 
 
-def clock_setup(crate, slots):
-	cmds = [
-		'0'
-		'clock'
-		'setup'
-		'3'
-		'quit'
-		'exit'
-		]
-	for slot in slots:
-		send_commands(crate=crate, slot=slot, cmds=cmds)
-
-
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	slot_result = {}
 	f = TFile(file_in, "READ")
@@ -373,8 +341,32 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	return slot_result
 
 #############################################################
-# Mapping functions
+# Link Initialization functions
 #############################################################
+
+def uHTRtool_source_test():
+	        ### checks to see if the uHTRtool is sourced, and sources it if needed
+		uhtr_cmd="uHTRtool.exe"
+		error="sh: uHTRtool.exe: command not found"
+		check=getoutput(uhtr_cmd)
+		source_cmd=["source /home/daqowner/dist/etc/env.sh"]
+
+		if check==error:
+			print "WARNING, you need to run 'source ~daqowner/dist/etc/env.sh' before you can use uHTRtool.exe"
+
+
+def clock_setup(crate, slots):
+	cmds = [
+		'0'
+		'clock'
+		'setup'
+		'3'
+		'quit'
+		'exit'
+		]
+	for slot in slots:
+		send_commands(crate=crate, slot=slot, cmds=cmds)
+
 
 def init_links(crate, slot, attempts=0):
 	if attempts == 10:
@@ -478,7 +470,6 @@ def get_link_info(crate, slot):
 	return linkInfo
 
 #############################################################
-# Test arrays
+#  
 #############################################################
 
-ped_arr=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2.2, 2.2, 2.6, 3.2, 3.9, 4.7, 5.3, 6.0, 6.8, 7.4, 8.0, 8.7, 9.4, 10.0, 10.7, 11.4, 12.0, 13.0, 13.7, 14.4, 15.0, 12.8, 16.5, 16.9, 17.1, 17.5, 17.9, 18.1, 18.5, 18.9, 19.1, 19.6, 20.0]
