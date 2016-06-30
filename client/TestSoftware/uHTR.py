@@ -62,7 +62,10 @@ class uHTR():
 
 	def ped_test(self):
 		ped_results = {}
-		for setting in list(i-31 for i in xrange(63)):
+		ped_settings = list(i-31 for i in xrange(63))
+		ped_results={}
+		ped_results["settings"]=ped_settings
+		for setting in ped_settings:
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -74,7 +77,6 @@ class uHTR():
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					if setting == -31: ped_results[key]=[]
 					ped_results[key].append(chip_results["PedBinMax"])
 		for qslot in self.qcards:
 			for chip in xrange(12):
@@ -92,6 +94,8 @@ class uHTR():
 	def charge_inject_test(self):
 		ci_results = {} #ci=chargeinjection
 		ci_settings = [90, 180, 360, 720, 1440, 2880, 5760, 8640] #in fC
+		ci_results={}
+		ci_results["settings"]=ci_settings
 		for setting in ci_settings:
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
@@ -104,7 +108,6 @@ class uHTR():
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					if setting == 90: ci_results[key]=[] #was -31... what does it mean?
 					ci_results[key].append(chip_results["signalBinMax"])
 		for qslot in self.qcards:
 			for chip in xrange(12):
