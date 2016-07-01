@@ -206,7 +206,7 @@ class QIE:
     def RangeSet(self, b):
         #takes 0, 1, 2, or 3
         if b >= 0 and b <= 3:
-            a = getBinaryList(magnitude, 2)
+            a = getBinaryList(b, 2)
             for i in xrange(2):
                 self[39 + i] = a[i]
         else:
@@ -235,7 +235,7 @@ class QIE:
     def Gsel(self, b):
         #takes arguments 0 - 31
         if b >= 0 and b <= 31:
-            a = getBinaryList(magnitude, 5)
+            a = getBinaryList(b, 5)
             for i in xrange(5):
                 self[44 + i] = a[i]
         else:
@@ -245,7 +245,7 @@ class QIE:
     def Idcset(self, b):
         #takes arguments 0 - 31
         if b >= 0 and b <= 31:
-            a = getBinaryList(magnitude, 5)
+            a = getBinaryList(b, 5)
             for i in xrange(5):
                 self[49 + i] = a[i]
         else:
@@ -283,7 +283,7 @@ class QIE:
     def PhaseDelay(self, b):
         #takes arguments 0 - 127
         if b <= 127 and b >= 0:
-            a = getBinaryList(magnitude, 7)
+            a = getBinaryList(b, 7)
             for i in xrange(7):
                 self[57 + i] = a[i]
         else:
