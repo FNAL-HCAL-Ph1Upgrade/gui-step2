@@ -28,8 +28,11 @@ if __name__ == "__main__":
 #			info=uhtr.get_QIE_map(slot, chip)
 #			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 
-	for i, ave in enumerate(ped_arr):
-		print i-31, ave
+	# for i, ave in enumerate(ped_arr):
+	# 	print i-31, ave
+
+	u = uHTR([1],qcard_slots, b)
+	u.shunt_scan()
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
@@ -68,15 +71,15 @@ class uHTR():
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
 				for chip in xrange(12):
-					dc[chip].PedestalDAC[setting]
+					dc[chip].PedestalDAC(setting)
 				dc.write()
 				dc.read()
 			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
-	                        for chip, chip_results in uhtr_slot_results.iteritems():
+				for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					if setting == -31: ped_results[key]=[]
-					ped_results[key].append(chip_results["PedBinMax"])
+					ped_results[key] = chip_results["PedBinMax"]
+
 		for qslot in self.qcards:
 			for chip in xrange(12):
 				ped_key=str(self.get_QIE_map(qslot, chip))
@@ -98,15 +101,14 @@ class uHTR():
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
 				for chip in xrange(12):
-					dc[chip].ChargeInjectDAC[setting]
+					dc[chip].ChargeInjectDAC(setting)
 				dc.write()
 				dc.read()
 			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
-	                        for chip, chip_results in uhtr_slot_results.iteritems():
+				for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					if setting == 90: ci_results[key]=[] #was -31... what does it mean?
-					ci_results[key].append(chip_results["signalBinMax"])
+					ci_results[key] = chip_results["signalBinMax"]
 		for qslot in self.qcards:
 			for chip in xrange(12):
 				ci_key=str(self.get_QIE_map(qslot, chip))
@@ -117,6 +119,62 @@ class uHTR():
 						pf[1]+=1
 					else: pf[0]+=1
 				self.get_QIE(qslot, chip)["ci_test"]=(pf[0], pf[1])
+
+
+	''' set chargeinject to highest setting, adjust shunt with Gsel, assess gain ratio between peaks '''
+	def shunt_scan(self):
+		peak_results = {}
+		default_peaks = [] #holds the CI values for 3.1 fC/LSB setting for chips
+		ratio_pf = [0,0] #pass/fail for ratio within 10% of nominal
+		#GSel table gain values (in fC/LSB)
+		gain_settings = [3.1, 4.65, 6.2, 9.3, 12.4, 15.5, 18.6, 21.7, 24.8]
+		#ratio between default 3.1fC/LSB and itself/other GSel gains
+		nominalGainRatios = [1.0, .67, .5, .33, .25, .2, .17, .14, 0.02]
+		for setting in gain_settings:
+
+			for qslot in self.qcards:
+				dc=hw.getDChains(qslot, self.bus)
+				dc.read()
+				hw.SetQInjMode(1, qslot, self.bus) #turn on CI mode (igloo function)
+				for chip in xrange(12):
+					dc[chip].ChargeInjectDAC(8640) #set max CI value
+					dc[chip].Gsel(setting) #increase shunt/decrease gain
+				dc.write()
+				dc.read()
+
+			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
+
+			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
+				for chip, chip_results in uhtr_slot_results.iteritems():
+					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					peak_results[key] = chip_results["signalBinMax"]
+					if setting == 3.1:
+						default_peaks.append(chip_results['signalBinMax'])
+
+			count = 0
+			for peak in peak_results:
+				ratio = float(peak_results[peak]) / default_peaks[count] #ratio between shunt-adjusted peak & default peak
+				print "Setting: ", setting, "     ", peak_results[peak], '/', default_peaks[count], ' = ', ratio
+# JOE: How to reliably take ratio when LSB of ADC binning varies between ranges?
+				if (ratio < nominalGainRatios[count]*1.1 and ratio > nominalGainRatios[count]*0.9): #within 10% of nominal
+					ratio_pf[0]+=1
+				else: ratio_pf[1]+=1
+
+				count += 1
+
+		self.get_QIE(qslot, chip)["shunt_scan"]=(ratio_pf[0], ratio_pf[1])
+		return "Pass/Fail:  (", ratio_pf[0], ", ", ratio_pf[1], ")"
+
+		# for qslot in self.qcards:
+		# 	for chip in xrange(12):
+		# 		ci_key=str(self.get_QIE_map(qslot, chip))
+		# 		chip_arr=ci_results[ci_key]
+		# 		pf = [0, 0]
+		# 		for i in xrange(8):
+		# 			if chip_arr[i] > ci_arr[i] + 2 or chip_arr[i] < ci_arr[i] - 2:
+		# 				pf[1]+=1
+		# 			else: pf[0]+=1
+		# 		self.get_QIE(qslot, chip)["shunt_scan"]=(pf[0], pf[1])
 
 #############################################################
 
