@@ -644,17 +644,22 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
                 allSamePass = False
             count += 1
 
+
         if iter != 0: # if a legit prevCapId exists
-            if prevCapId[0]   == 0:   rotateList = [1]*12
-            elif prevCapId[0] == 1:   rotateList = [2]*12
-            elif prevCapId[0] == 2:   rotateList = [3]*12
-            elif prevCapId[0] == 3:   rotateList = [0]*12
+            for i in prevCapId:
+                if i != 3: rotateList.append(i+1)
+            elif i == 3: rotateList.append(0)
+            # if prevCapId[0]   == 0:   rotateList = [1]*12
+            # elif prevCapId[0] == 1:   rotateList = [2]*12
+            # elif prevCapId[0] == 2:   rotateList = [3]*12
+            # elif prevCapId[0] == 3:   rotateList = [0]*12
             else: print "PrevCapId out of Scope 0-3"
 
             if capId != rotateList:
                 rotatePass = False
 
-        return (allSamePass and rotatePass)
+        # return (allSamePass and rotatePass)
+        return rotatePass
 
     # -------------------------------------------
     def checkAdc(self, adc):

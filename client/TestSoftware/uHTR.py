@@ -19,20 +19,21 @@ if __name__ == "__main__":
 
 	from client import webBus
 	from uHTR import *
-
-	qcard_slots = [2, 5]
+	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
+	qcard_slots = [2,3]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(1, qcard_slots, b)
-#	uhtr.ped_test()
-	for slot in qcard_slots:
-		for chip in xrange(12):
-			info=uhtr.get_QIE_map(slot, chip)
-			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
+	uhtr_slots = [1,2]
+# 	uhtr = uHTR(1, qcard_slots, b)
+# #	uhtr.ped_test()
+# 	for slot in qcard_slots:
+# 		for chip in xrange(12):
+# 			info=uhtr.get_QIE_map(slot, chip)
+# 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 
 	# for i, ave in enumerate(ped_arr):
 	# 	print i-31, ave
 
-	u = uHTR([1],qcard_slots, b)
+	u = uHTR(uhtr_slots,qcard_slots, b)
 	u.shunt_scan()
 
 
@@ -83,7 +84,7 @@ class uHTR():
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 				for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					ped_results[key] = chip_results["PedBinMax"]
+					ped_results[key].append(chip_results["PedBinMax"])
 
 		for qslot in self.qcards:
 			for chip in xrange(12):
@@ -109,7 +110,7 @@ class uHTR():
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 				for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					ci_results[key] = chip_results["signalBinMax"]
+					ci_results[key].append(chip_results["signalBinMax"])
 
 		for qslot in self.qcards:
 			for chip in xrange(12):
@@ -124,7 +125,8 @@ class uHTR():
 		default_peaks = [] #holds the CI values for 3.1 fC/LSB setting for chips
 		ratio_pf = [0,0] #pass/fail for ratio within 10% of nominal
 		#GSel table gain values (in fC/LSB)
-		gain_settings = [3.1, 4.65, 6.2, 9.3, 12.4, 15.5, 18.6, 21.7, 24.8]
+		# gain_settings = [3.1, 4.65, 6.2, 9.3, 12.4, 15.5, 18.6, 21.7, 24.8]
+		gain_settings = [0,1,2,4,8,16,18,20,24]
 		#ratio between default 3.1fC/LSB and itself/other GSel gains
 		nominalGainRatios = [1.0, .67, .5, .33, .25, .2, .17, .14, 0.02]
 		for setting in gain_settings:
@@ -144,7 +146,7 @@ class uHTR():
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 				for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					peak_results[key] = chip_results["signalBinMax"]
+					peak_results[key].append(chip_results["signalBinMax"])
 					if setting == 3.1:
 						default_peaks.append(chip_results['signalBinMax'])
 
@@ -537,7 +539,7 @@ def get_link_info(crate, slot):
 # Analyze test results
 #############################################################
 
-def analyze_results(x, y)
+def analyze_results(x, y):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
