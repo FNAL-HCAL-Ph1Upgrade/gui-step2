@@ -257,7 +257,7 @@ class QIE:
         elif b == 1:
             self[54] = 1
         else:
-            print "INVALID INPUT IN discOn... no change made"
+            print "INVALID INPUT IN CkOutEn... no change made"
 
     #Change bit 55
     def TDCmode(self, b):
@@ -277,7 +277,7 @@ class QIE:
             #amount of hysteresis is doubled as compared to b = 0
             self[56] = 1
         else:
-            print "INVALID INPUT IN discOn... no change made"
+            print "INVALID INPUT IN Hsel... no change made"
 
     #Change bit 57-63
     def PhaseDelay(self, b):
@@ -287,7 +287,7 @@ class QIE:
             for i in xrange(7):
                 self[57 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID3pedestal... no change made"
+            print "INVALID INPUT IN PhaseDelay... no change made"
 
 
 ##############################################
