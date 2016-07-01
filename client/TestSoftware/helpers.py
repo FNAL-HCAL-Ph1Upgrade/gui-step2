@@ -1,7 +1,9 @@
 #helpers.py
 ##Helper functions for tests:
 def getBitsFromByte(decimal):
-    return list('%08d' % int(bin(decimal)[2:]))
+    a = list('%08d' % int(bin(decimal)[2:]))
+    a.reverse()
+    return a
 
 def getBitsFromBytes(decimalBytes):
     ret = []
@@ -10,6 +12,7 @@ def getBitsFromBytes(decimalBytes):
     return ret
 
 def getByteFromBits(bitList):
+    bitList.reverse()
     return int(''.join(str(i) for i in bitList), 2)
 
 def getBytesFromBits(bitList):

@@ -7,7 +7,7 @@ from Test import Test
 i = IglooLib
 h = Hardware
 
-slot = 2 # the J_# slot
+# slot = 2 # the J_# slot
 
 #class Test:
 #    def __init__(self, bus, address, iterations = 1):

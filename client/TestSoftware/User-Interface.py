@@ -35,6 +35,7 @@ class makeGui:
 				  "Bridge Register Suite"  : "bridge",
 				  "Igloo Register Suite"   : "igloo",
 				  "Vttx Register Suites"   : "vttx",
+				  "uHTR Test Suite"        : "uhtr",
 				  "Run Long Tests"         : "long",
 				  "Run Short Tests"        : "short"
 				 }
@@ -559,6 +560,7 @@ class makeGui:
 						"Bridge Register Suite",
 						"Igloo Register Suite",
 						"Vttx Register Suites",
+						"uHTR Test Suite",
 						"Run Long Tests",
 						"Run Short Tests"
 						)
