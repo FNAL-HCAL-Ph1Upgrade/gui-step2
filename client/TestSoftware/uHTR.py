@@ -23,7 +23,7 @@ if __name__ == "__main__":
 	qcard_slots = [2, 5]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(1, qcard_slots, b)
-	uhtr.ped_test()
+#	uhtr.ped_test()
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
@@ -341,7 +341,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	return slot_result
 
 #############################################################
-# Link Initialization functions
+#Initialization functions
 #############################################################
 
 def uHTRtool_source_test():
@@ -470,6 +470,13 @@ def get_link_info(crate, slot):
 	return linkInfo
 
 #############################################################
-#  
+# Analyze test results  
 #############################################################
+
+def analyze_results(x, y)
+	if len(x) != len(y):
+		print "Sets are of unequal length"
+		return None
+
+
 
