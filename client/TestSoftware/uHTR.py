@@ -7,7 +7,7 @@ from QIE import QIE
 import os
 import sys
 import time
-import numpy 
+import numpy
 import multiprocessing as mp
 from subprocess import Popen, PIPE
 from commands import getoutput
@@ -18,21 +18,22 @@ gROOT.SetBatch()
 if __name__ == "__main__":
 
 	from client import webBus
-	from uHTR import uHTR
+	from uHTR import *
 
-	qcard_slots = [18, 20, 23, 25]
+	qcard_slots = [2, 5]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(1, qcard_slots, b)
-	for slot in qcard_slots:
-		for chip in xrange(12):
-			info=uhtr.get_QIE_map(slot, chip)
-			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
+#	uhtr = uHTR(1, qcard_slots, b)
+#	for slot in qcard_slots:
+#		for chip in xrange(12):
+#			info=uhtr.get_QIE_map(slot, chip)
+#			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 
-
+	for i, ave in enumerate(ped_arr):
+		print i-31, ave
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
-	
+
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
@@ -46,50 +47,94 @@ class uHTR():
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, chip)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
-		### List of keys: "slot" "link" "channel" "ped_test"	
-	
-		
+		### List of keys: "slot" "link" "channel" "ped_test"
+
 		# setup functions
 		clock_setup(self.crate, qcard_slots)
 		for slot in self.uhtr_slots:
 			init_links(self.crate, slot)
 		self.QIE_mapping()
 
-		
+
 #############################################################
 # Higher level uHTR test functions
 # Results of each test recorded in master_dict
 #############################################################
 
 	def ped_test(self):
+		ped_results = {}
 		for setting in list(i-31 for i in xrange(63)):
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
-				for i in xrange(12):
-					dc[i].PedastalDAC[setting]
+				for chip in xrange(12):
+					dc[chip].PedestalDAC[setting]
 				dc.write()
 				dc.read()
-			info=get_histo_results(self.crate, self.uhtr_slots)
-			
+			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
+			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
+	                        for chip, chip_results in uhtr_slot_results.iteritems():
+					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					if setting == -31: ped_results[key]=[]
+					ped_results[key].append(chip_results["PedBinMax"])
+		for qslot in self.qcards:
+			for chip in xrange(12):
+				ped_key=str(self.get_QIE_map(qslot, chip))
+				chip_arr=ped_results[ped_key]
+				pf = [0, 0]
+				for i in xrange(63):
+					if chip_arr[i] > ped_arr[i] + 2 or chip_arr[i] < ped_arr[i] - 2:
+						pf[1]+=1
+					else: pf[0]+=1
+				self.get_QIE(qslot, chip)["ped_test"]=(pf[0], pf[1])
+
+
+
+	def charge_inject_test(self):
+		ci_results = {} #ci=chargeinjection
+		ci_settings = [90, 180, 360, 720, 1440, 2880, 5760, 8640] #in fC
+		for setting in ci_settings:
+			for qslot in self.qcards:
+				dc=hw.getDChains(qslot, self.bus)
+				dc.read()
+				for chip in xrange(12):
+					dc[chip].ChargeInjectDAC[setting]
+				dc.write()
+				dc.read()
+			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
+			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
+	                        for chip, chip_results in uhtr_slot_results.iteritems():
+					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					if setting == 90: ci_results[key]=[] #was -31... what does it mean?
+					ci_results[key].append(chip_results["signalBinMax"])
+		for qslot in self.qcards:
+			for chip in xrange(12):
+				ci_key=str(self.get_QIE_map(qslot, chip))
+				chip_arr=ci_results[ci_key]
+				pf = [0, 0]
+				for i in xrange(8):
+					if chip_arr[i] > ci_arr[i] + 2 or chip_arr[i] < ci_arr[i] - 2:
+						pf[1]+=1
+					else: pf[0]+=1
+				self.get_QIE(qslot, chip)["ci_test"]=(pf[0], pf[1])
 
 #############################################################
 
 
 #############################################################
 # Adding and extracting data from the master_dict
-#############################################################	
-	
+#############################################################
+
 	def get_QIE(self, qcard_slot, chip):
 		### Returns the dictionary storing the test results of the specified QIE chip
 		key="({0}, {1})".format(qcard_slot, chip)
 		return self.master_dict[key]
-	
+
 	def get_QIE_results(self, qcard_slot, chip, test_key=""):
 		### Returns the (pass, fail) tuple of specific test
 		QIE=self.get_QIE(qcard_slot, chip)
 		return QIE[test_key]
-	
+
 	def get_QIE_map(self, qcard_slot, chip):
 		key="({0}, {1})".format(qcard_slot, chip)
                 qie=self.master_dict[key]
@@ -106,7 +151,6 @@ class uHTR():
 		key="({0}, {1})".format(qcard_slot, chip)
 		self.master_dict[key]=QIE_info
 
-
 #############################################################
 
 
@@ -122,9 +166,9 @@ class uHTR():
 			dc.read()
 			for chip in [0,6]:
 				for num in xrange(12):
-					dc[num].PedastalDAC(-9)
+					dc[num].PedestalDAC(-9)
 					if num==chip:
-						dc[num].PedastalDAC(31)
+						dc[num].PedestalDAC(31)
 				dc.write()
 				dc.read()
 				info=self.get_mapping_histo()
@@ -135,7 +179,7 @@ class uHTR():
 						self.add_QIE(qslot, chip+i, uhtr_slot, link, 5-i)
 				else: print "mapping failed"
 			for num in xrange(12):
-				dc[num].PedastalDAC(-9)
+				dc[num].PedestalDAC(-9)
 				dc.write()
 				dc.read()
 
@@ -206,11 +250,11 @@ def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", o
 		p.start()
 
 	while mp.active_children():
-		time.sleep(0.1)	
-	
-	os.chdir(cwd)	
+		time.sleep(0.1)
+
+	os.chdir(cwd)
 	return dir_path
-		
+
 def send_commands(crate=None, slot=None, cmds=''):
 	# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
 	raw = ""
@@ -221,7 +265,7 @@ def send_commands(crate=None, slot=None, cmds=''):
 		cmds = [cmds]
 
 	uhtr_ip = "192.168.{0}.{1}".format(crate, slot*4)
-	uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)   
+	uhtr_cmd = "uHTRtool.exe {0}".format(uhtr_ip)
 	# This puts the output of the command into a list called "raw_output" the first element of the list is stdout, the second is stderr.
 	raw_output = Popen(['printf "{0}" | {1}'.format(' '.join(cmds), uhtr_cmd)], shell = True, stdout = PIPE, stderr = PIPE).communicate()
 	raw += raw_output[0] + raw_output[1]
@@ -263,7 +307,7 @@ def clock_setup(crate, slots):
 		]
 	for slot in slots:
 		send_commands(crate=crate, slot=slot, cmds=cmds)
-	
+
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	slot_result = {}
@@ -326,18 +370,27 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	f.Close()
 	return slot_result
 
+#############################################################
+# Mapping functions
+#############################################################
 
-def init_links(crate, slot):
+def init_links(crate, slot, attempts=0):
+	if attempts == 10:
+		print "Skipping initialization of links for crate %d, slot %d after 10 failed attempts!"%(crate,slot)
+		return
+	attempts += 1
 	linkInfo = get_link_info(crate, slot)
 	onLinks, goodLinks, badLinks = check_link_status(linkInfo)
 	if onLinks == 0:
 		print "All crate %d, slot %d links are OFF! NOT initializing that slot!"%(crate,slot)
 		return
+	if badLinks == 0:
+		return
 	medianOrbitDelay = int(median_orbit_delay(linkInfo))
 	if badLinks > 0:
 		initCMDS = ["0","link","init","1","%d"%(medianOrbitDelay),"0","0","0","quit","exit"]
 		send_commands(crate=crate, slot=slot, cmds=initCMDS)
-		init_links(crate, slot)
+		init_links(crate, slot, attempts)
 
 
 def get_BCN_status(uHTRPrintOut):
@@ -350,7 +403,7 @@ def get_BCN_status(uHTRPrintOut):
 				BCNList = filter(None, BCNLine[0].split(" "))
 				BCNList = map(int, BCNList)
 				BCNs = BCNs + BCNList
-	return BCNs 
+	return BCNs
 
 
 def get_ON_links(uHTRPrintOut):
@@ -393,11 +446,11 @@ def median_orbit_delay(linkInfo):
 	BCNList = []
 	for k in range(len(linkInfo["BCN Status"])):
 		if linkInfo["ON Status"][k] == "ON":
-			BCNList = BCNList + [linkInfo["BCN Status"][k]]	
+			BCNList = BCNList + [linkInfo["BCN Status"][k]]
 	BCNMedian = int(numpy.median(BCNList))
 	return BCNMedian
 
-		
+
 def check_link_status(linkInfo):
 	goodLinks = 0
 	badLinks = 0
@@ -409,8 +462,7 @@ def check_link_status(linkInfo):
 			goodLinks += 1
 		elif linkInfo["ON Status"][l] == "ON" and not (linkInfo["BPR Status"][l] == "111" and linkInfo["AOD Status"][l] == "111"):
 			badLinks += 1
-
-	return onLinks, goodLinks, badLinks 
+	return onLinks, goodLinks, badLinks
 
 
 def get_link_info(crate, slot):
@@ -423,4 +475,8 @@ def get_link_info(crate, slot):
         linkInfo["ON Status"] = get_ON_links(statsPrintOut)
 	return linkInfo
 
+#############################################################
+# Test arrays
+#############################################################
 
+ped_arr=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2.2, 2.2, 2.6, 3.2, 3.9, 4.7, 5.3, 6.0, 6.8, 7.4, 8.0, 8.7, 9.4, 10.0, 10.7, 11.4, 12.0, 13.0, 13.7, 14.4, 15.0, 12.8, 16.5, 16.9, 17.1, 17.5, 17.9, 18.1, 18.5, 18.9, 19.1, 19.6, 20.0]
