@@ -20,14 +20,17 @@ if __name__ == "__main__":
 	from client import webBus
 	from uHTR import *
 
-	qcard_slots = [2, 5]
+	uhtr_slots=[1, 2]
+	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
+	qcard_slots=[2,3,4,5]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(1, qcard_slots, b)
-#	uhtr.ped_test()
+	uhtr = uHTR(uhtr_slots, qcard_slots, b)
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
+	uhtr.ped_test()
+#	uhtr.ci_test()
 
 
 class uHTR():
@@ -66,6 +69,7 @@ class uHTR():
 		ped_results={}
 		ped_results["settings"]=ped_settings
 		for setting in ped_settings:
+			print "testing ped_test setting", setting
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -77,15 +81,17 @@ class uHTR():
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-					ped_results[key].append(chip_results["PedBinMax"])  #maybe need to initialize ped_results[key]=[] ?
+					if setting == -31: ped_results[key]=[]
+					ped_results[key].append(chip_results["pedBinMax"])
 		for qslot in self.qcards:
 			for chip in xrange(12):
-				ped_key=str(self.get_QIE_map(qslot, chip))
-				chip_arr=ped_results[ped_key]
-				
+				ped_key = str(self.get_QIE_map(qslot, chip))
+				chip_arr = ped_results[ped_key]
+				slope = analyze_results(ped_settings[29:], chip_arr[29:])
+				print qslot, chip, slope
 
 
-	def charge_inject_test(self):
+	def ci_test(self):
 		ci_results = {} #ci=chargeinjection
 		ci_settings = [90, 180, 360, 720, 1440, 2880, 5760, 8640] #in fC
 		ci_results={}
@@ -98,16 +104,19 @@ class uHTR():
 					dc[chip].ChargeInjectDAC(setting)
 				dc.write()
 				dc.read()
-			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
+			histo_results=self.get_histo_results(self.crate, self.uhtr_slots, signalOn=True)
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					if setting == 90: ci_results[key]=[]
 					ci_results[key].append(chip_results["signalBinMax"])
 		for qslot in self.qcards:
 			for chip in xrange(12):
 				ci_key=str(self.get_QIE_map(qslot, chip))
 				chip_arr=ci_results[ci_key]
-			
+				slope = analyze_results(ci_settings, chip_arr)
+				print qslot, chip, slope
+				
 
 #############################################################
 
@@ -152,6 +161,7 @@ class uHTR():
 	def QIE_mapping(self):
 		# Records the uHTR slot, link, and channel of each QIE in master_dict
 		for qslot in self.qcards:
+			print "mapping qslot", qslot
 			dc=hw.getDChains(qslot, self.bus)
 			hw.SetQInjMode(0, qslot, self.bus)
 			dc.read()
@@ -168,7 +178,9 @@ class uHTR():
 					link=info[1]
 					for i in xrange(6):
 						self.add_QIE(qslot, chip+i, uhtr_slot, link, 5-i)
-				else: print "mapping failed"
+				else:
+					print "mapping qcard {0} failed".format(qslot)
+					self.qcards.remove(qslot)
 			for num in xrange(12):
 				dc[num].PedestalDAC(-9)
 				dc.write()
@@ -315,11 +327,11 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 					cutoff = h.GetMinimum()
 					h.GetXaxis().SetRangeUser(0,cutoff)
 					binMax = h.GetMaximumBin()
-					chip_results["pedBinMax"] = h.GetBinContent(binMax)
+					chip_results["pedBinMax"] = h.GetMaximumBin()
 					chip_results["pedRMS"] = h.GetRMS()
 					h.GetXaxis().SetRangeUser(cutoff,lastBin)
 					binMax = h.GetMaximumBin()
-					chip_results["signalBinMax"] = h.GetBinContent(binMax)
+					chip_results["signalBinMax"] = h.GetMaximumBin()
 					chip_results["signalRMS"] = h.GetRMS()
 
 					slot_result[histNum] = chip_results
@@ -473,10 +485,13 @@ def get_link_info(crate, slot):
 # Analyze test results  
 #############################################################
 
-def analyze_results(x, y)
+def analyze_results(x, y):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
-
-
+	g = TGraph(len(x), x, y)
+#	g.Draw()
+	g.Fit("pol1")
+	slope = g.GetFunction("pol1").GetParameter(1)
+	return slope
 
