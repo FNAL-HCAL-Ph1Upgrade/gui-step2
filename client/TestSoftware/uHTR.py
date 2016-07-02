@@ -7,11 +7,12 @@ from QIE import QIE
 import os
 import sys
 import time
-import numpy
+import numpy as np
 import multiprocessing as mp
 from subprocess import Popen, PIPE
 from commands import getoutput
-from ROOT import *
+import ROOT
+from ROOT import gROOT
 gROOT.SetBatch()
 
 
@@ -29,7 +30,7 @@ if __name__ == "__main__":
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-	uhtr.ped_test()
+#	uhtr.ped_test()
 #	uhtr.ci_test()
 
 
@@ -52,7 +53,7 @@ class uHTR():
 		### List of keys: "slot" "link" "channel" "ped_test"
 
 		# setup functions
-		clock_setup(self.crate, qcard_slots)
+		clock_setup(self.crate, uhtr_slots)
 		for slot in self.uhtr_slots:
 			init_links(self.crate, slot)
 		self.QIE_mapping()
@@ -64,7 +65,6 @@ class uHTR():
 #############################################################
 
 	def ped_test(self):
-		ped_results = {}
 		ped_settings = list(i-31 for i in xrange(63))
 		ped_results={}
 		ped_results["settings"]=ped_settings
@@ -83,16 +83,18 @@ class uHTR():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == -31: ped_results[key]=[]
 					ped_results[key].append(chip_results["pedBinMax"])
+		cwd=os.getcwd()
+		os.makedirs("ped_plots")
+		os.chdir(cwd  + "/ped_plots")
 		for qslot in self.qcards:
 			for chip in xrange(12):
 				ped_key = str(self.get_QIE_map(qslot, chip))
 				chip_arr = ped_results[ped_key]
-				slope = analyze_results(ped_settings[29:], chip_arr[29:])
-				print qslot, chip, slope
-
+				slope = analyze_results(ped_settings, chip_arr, ped_key)
+				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+		os.chdir(cwd)
 
 	def ci_test(self):
-		ci_results = {} #ci=chargeinjection
 		ci_settings = [90, 180, 360, 720, 1440, 2880, 5760, 8640] #in fC
 		ci_results={}
 		ci_results["settings"]=ci_settings
@@ -293,7 +295,7 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	slot_result = {}
-	f = TFile(file_in, "READ")
+	f = ROOT.TFile(file_in, "READ")
 	if sepCapID:
 		rangeADCoffset = qieRange*64.
 		for i_link in range(24):
@@ -453,7 +455,7 @@ def median_orbit_delay(linkInfo):
 	for k in range(len(linkInfo["BCN Status"])):
 		if linkInfo["ON Status"][k] == "ON":
 			BCNList = BCNList + [linkInfo["BCN Status"][k]]
-	BCNMedian = int(numpy.median(BCNList))
+	BCNMedian = int(np.median(BCNList))
 	return BCNMedian
 
 
@@ -485,13 +487,24 @@ def get_link_info(crate, slot):
 # Analyze test results  
 #############################################################
 
-def analyze_results(x, y):
+def analyze_results(x, y, key):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
-	g = TGraph(len(x), x, y)
-#	g.Draw()
-	g.Fit("pol1")
-	slope = g.GetFunction("pol1").GetParameter(1)
-	return slope
+#	print "LENGTHS OF X AND Y:", len(x), len(y)
+#	print "this is x:", x
+#	print "this is y:", y
+	hDummy = ROOT.TH2D("dummy","dummy", 1000, - 40, 40, 1000, -5, 30)
+	g = ROOT.TGraph()
+	for i in xrange(len(x)):
+		g.SetPoint(i, x[i], y[i])
+#	g.Fit("pol1")
+#	slope = g.GetFunction("pol1").GetParameter(1)
+	c = ROOT.TCanvas("c1","c1",800,800)
+	c.cd()
+	hDummy.Draw()
+	g.SetMarkerStyle(22)
+	g.Draw("same P")
+	c.Print("ped_{0}.png".format(key))
+	return 2
 
