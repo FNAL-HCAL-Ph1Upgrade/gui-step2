@@ -4,6 +4,7 @@ import Hardware as hw
 from DChains import DChains
 from DaisyChain import DaisyChain
 from QIE import QIE
+import iglooClass_adry as i
 import os
 import sys
 import time
@@ -20,10 +21,10 @@ if __name__ == "__main__":
 	from client import webBus
 	from uHTR import *
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots = [2,3]
+	qcard_slots = all_slots
 	b = webBus("pi5", 0)
 	uhtr_slots = [1,2]
-# 	uhtr = uHTR(1, qcard_slots, b)
+#	uhtr = uHTR(1, qcard_slots, b)
 # #	uhtr.ped_test()
 # 	for slot in qcard_slots:
 # 		for chip in xrange(12):
@@ -124,56 +125,74 @@ class uHTR():
 		peak_results = {}
 		default_peaks = [] #holds the CI values for 3.1 fC/LSB setting for chips
 		ratio_pf = [0,0] #pass/fail for ratio within 10% of nominal
+		default_peaks_AVG = 0
 		#GSel table gain values (in fC/LSB)
 		# gain_settings = [3.1, 4.65, 6.2, 9.3, 12.4, 15.5, 18.6, 21.7, 24.8]
-		gain_settings = [0,1,2,4,8,16,18,20,24]
+		# gain_settings = [0,1,2,4,8,16,18,20,24]
+		gain_settings = [0]
 		#ratio between default 3.1fC/LSB and itself/other GSel gains
 		nominalGainRatios = [1.0, .67, .5, .33, .25, .2, .17, .14, 0.02]
 		for setting in gain_settings:
+			print "\n\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
+			print "&&&&&&&&&&&&&&&&&&&& S E T. = %d &&&&&&&&&&&&&&&&&&&&&&&&" %setting
+			print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
 
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
 				hw.SetQInjMode(1, qslot, self.bus) #turn on CI mode (igloo function)
+				i.displayCI(self.bus, qslot)
 				for chip in xrange(12):
+					dc[chip].PedestalDAC(31)
 					dc[chip].ChargeInjectDAC(8640) #set max CI value
 					dc[chip].Gsel(setting) #increase shunt/decrease gain
 				dc.write()
 				dc.read()
 
-			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
+			histo_results=self.get_histo_results(self.crate, self.uhtr_slots, signalOn=True)
 
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 				for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					if setting == 0: peak_results[key] = []
 					peak_results[key].append(chip_results["signalBinMax"])
-					if setting == 3.1:
+					if setting == 0 and chip_results['signalBinMax'] != 1:
 						default_peaks.append(chip_results['signalBinMax'])
 
-			count = 0
-			for peak in peak_results:
-				ratio = float(peak_results[peak]) / default_peaks[count] #ratio between shunt-adjusted peak & default peak
-				print "Setting: ", setting, "     ", peak_results[peak], '/', default_peaks[count], ' = ', ratio
-# JOE: How to reliably take ratio when LSB of ADC binning varies between ranges?
-				if (ratio < nominalGainRatios[count]*1.1 and ratio > nominalGainRatios[count]*0.9): #within 10% of nominal
-					ratio_pf[0]+=1
-				else: ratio_pf[1]+=1
+			print "\n\nPeak Results: ", peak_results,'\n\n\n\n\n'
+			print "\n\n\n##########################################"
+			print "##########################################\n"
+			print "Default peaks: ", default_peaks
 
-				count += 1
+		total = 0
+		for val in default_peaks:
+			default_peaks_AVG += val
+			total += 1
+		default_peaks_AVG /= total
 
-		self.get_QIE(qslot, chip)["shunt_scan"]=(ratio_pf[0], ratio_pf[1])
-		return "Pass/Fail:  (", ratio_pf[0], ", ", ratio_pf[1], ")"
 
+		# 	count = 0
+		# 	for peak in peak_results:
+		# 		ratio = float(peak_results[peak]) / default_peaks[count] #ratio between shunt-adjusted peak & default peak
+		# 		print "Setting: ", setting, "     ", peak_results[peak], '/', default_peaks[count], ' = ', ratio
+		# 		if (ratio < nominalGainRatios[count]*1.1 and ratio > nominalGainRatios[count]*0.9): #within 10% of nominal
+		# 			ratio_pf[0]+=1
+		# 		else: ratio_pf[1]+=1
+		#
+		# 		count += 1
+		#
 		# for qslot in self.qcards:
 		# 	for chip in xrange(12):
-		# 		ci_key=str(self.get_QIE_map(qslot, chip))
-		# 		chip_arr=ci_results[ci_key]
-		# 		pf = [0, 0]
-		# 		for i in xrange(8):
-		# 			if chip_arr[i] > ci_arr[i] + 2 or chip_arr[i] < ci_arr[i] - 2:
-		# 				pf[1]+=1
-		# 			else: pf[0]+=1
-		# 		self.get_QIE(qslot, chip)["shunt_scan"]=(pf[0], pf[1])
+		# 		peak_key=str(self.get_QIE_map(qslot, chip))
+		# 		chip_arr=peak_results[peak_key]
+		# 		ratio_pf = [0, 0]
+		# 		for i in xrange(9):
+		# 		if (ratio < nominalGainRatios[count]*1.1 and ratio > nominalGainRatios[count]*0.9): #within 10% of nominal
+		# 			ratio_pf[0]+=1
+		# 		else: ratio_pf[1]+=1
+		#
+		# self.get_QIE(qslot, chip)["shunt_scan"]=(ratio_pf[0], ratio_pf[1])
+		# return "Pass/Fail:  (", ratio_pf[0], ", ", ratio_pf[1], ")"
 
 #############################################################
 
@@ -366,28 +385,34 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 
 				slot_result[histNum] = chip_results
 
-	else:
-                if signal:
+	else: #Josh
+		if signal:
 			for i_link in range(24):
 				for i_ch in range(6):
 					histNum = 6*i_link + i_ch
 					h = f.Get("h%d"%(histNum))
-					lastBin = h.GetSize() - 3
+					lastBin = h.GetSize() - 5
 					chip_results = {}
 					chip_results["link"] = i_link
 					chip_results["channel"] = i_ch
-                                        #Transition from pedestal to signal is consistently around 10
-					h.GetXaxis().SetRangeUser(7,13)
-					cutoff = h.GetMinimum()
-					h.GetXaxis().SetRangeUser(0,cutoff)
+					#Transition from pedestal to signal is consistently around 10
+					h.GetXaxis().SetRangeUser(0,35)
 					binMax = h.GetMaximumBin()
-					chip_results["pedBinMax"] = h.GetBinContent(binMax)
+					chip_results["pedBinMax"] = h.GetMaximumBin()
 					chip_results["pedRMS"] = h.GetRMS()
-					h.GetXaxis().SetRangeUser(cutoff,lastBin)
-					binMax = h.GetMaximumBin()
-					chip_results["signalBinMax"] = h.GetBinContent(binMax)
+					h.GetXaxis().SetRangeUser(40,lastBin)
+					binValue = 0
+					binNum = 0
+					for Bin in range(40, lastBin):
+						if binValue <= h.GetBinContent(Bin):
+							binValue = h.GetBinContent(Bin)
+							binNum = Bin
+						elif Bin > binNum + 10 and h.GetBinContent(Bin) != 0:
+							binValue = h.GetBinContent(Bin)
+							binNum = Bin
+							h.GetXaxis().SetRangeUser(binNum-10,binNum+10)
+					chip_results["signalBinMax"] = binNum
 					chip_results["signalRMS"] = h.GetRMS()
-
 					slot_result[histNum] = chip_results
 
 		else:
