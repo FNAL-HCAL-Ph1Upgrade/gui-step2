@@ -279,16 +279,15 @@ class QIE:
         else:
             print "INVALID INPUT IN discOn... no change made"
 
-    #Change bit 57-63
+   #Change bit 57-63
     def PhaseDelay(self, b):
         #takes arguments 0 - 127
         if b <= 127 and b >= 0:
-            a = getBinaryList(magnitude, 7)
+            a = getBinaryList(b, 7)
             for i in xrange(7):
                 self[57 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID3pedestal... no change made"
-
+            print "INVALID INPUT IN PhaseDelay... no change made"
 
 ##############################################
 

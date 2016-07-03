@@ -625,14 +625,11 @@ def analyze_results(x, y, key):
 		print "Sets are of unequal length"
 		return None
 
-#	hDummy = ROOT.TH2D(key, key, 1000, - 40, 40, 1000, -5, 30)
 	g = ROOT.TGraph()
 	for i in xrange(len(x)):
 		g.SetPoint(i, x[i], y[i])
 	c = ROOT.TCanvas("c1","c1",800,800)
 	c.cd()
-#	hDummy.Draw()
-#	g.Draw("same P")
 	g.Draw("AP")
 	g.SetMarkerStyle(22)
 	g.GetXaxis().SetTitle("setting")
@@ -641,7 +638,6 @@ def analyze_results(x, y, key):
 	g.GetYaxis().CenterTitle()
 #	g.Fit("pol1")
 #	slope = g.GetFunction("pol1").GetParameter(1)
-	g.Draw("same P")
 	g.Draw("AP")
 	c.Print("{0}.png".format(key))
 	return 2
