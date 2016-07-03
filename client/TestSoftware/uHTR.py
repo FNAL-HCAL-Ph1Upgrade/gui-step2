@@ -131,7 +131,7 @@ class uHTR():
 				print qslot, chip, slope
 				
 	def phase_test(self):
-		phase_settings = list(range(0,128))
+		phase_settings = xrange(128)
 		phase_results={}
 		phase_results["settings"]=phase_settings
 		for setting in phase_settings:
