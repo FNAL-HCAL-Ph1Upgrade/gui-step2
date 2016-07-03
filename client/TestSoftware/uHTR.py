@@ -101,7 +101,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
-				slope = analyze_results(ped_settings, chip_arr, "ped_{0}_{1}".format(qslot, chip))
+				slope = analyze_results(ped_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ped")
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 		os.chdir(cwd)
 
@@ -620,10 +620,21 @@ def get_link_info(crate, slot):
 # Analyze test results  
 #############################################################
 
-def analyze_results(x, y, key):
+def analyze_results(x, y, key, test):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
+	
+	if test == "ped":
+		title="Pedastal Test Results {0}".format(key)
+		ytitle="Pedistal Bin Max (ADC counts)"
+		plot_base="ped_{0}".format(key)
+
+	if test == "ci":
+		title="Charge Injection Test Results {0}".format(key)
+		ytitle="Pedistal Bin Max (ADC counts)"
+		plot_base="ci_{0}".format(key)
+
 
 	g = ROOT.TGraph()
 	for i in xrange(len(x)):
@@ -631,14 +642,16 @@ def analyze_results(x, y, key):
 	c = ROOT.TCanvas("c1","c1",800,800)
 	c.cd()
 	g.Draw("AP")
+
 	g.SetMarkerStyle(22)
-	g.GetXaxis().SetTitle("setting")
+	g.SetTitle(title)
+	g.GetXaxis().SetTitle("Setting")
 	g.GetXaxis().CenterTitle()
-	g.GetYaxis().SetTitle("Pedistal Bin Max (ADC counts)")
+	g.GetYaxis().SetTitle(ytitle)
 	g.GetYaxis().CenterTitle()
-#	g.Fit("pol1")
-#	slope = g.GetFunction("pol1").GetParameter(1)
+	g.Fit("pol1", xmin=-2, xmax=31)
+	slope = g.GetFunction("pol1").GetParameter(1)
 	g.Draw("AP")
-	c.Print("{0}.png".format(key))
+	c.Print("{0}.png".format(plot_base))
 	return 2
 
