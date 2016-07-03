@@ -320,20 +320,26 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 				for i_ch in range(6):
 					histNum = 6*i_link + i_ch
 					h = f.Get("h%d"%(histNum))
-					lastBin = h.GetSize() - 3
+					lastBin = h.GetSize() - 5
 					chip_results = {}
 					chip_results["link"] = i_link
 					chip_results["channel"] = i_ch
                                         #Transition from pedestal to signal is consistently around 10
-					h.GetXaxis().SetRangeUser(7,13)
-					cutoff = h.GetMinimum()
-					h.GetXaxis().SetRangeUser(0,cutoff)
+					h.GetXaxis().SetRangeUser(0,35)
 					binMax = h.GetMaximumBin()
 					chip_results["pedBinMax"] = h.GetMaximumBin()
 					chip_results["pedRMS"] = h.GetRMS()
-					h.GetXaxis().SetRangeUser(cutoff,lastBin)
-					binMax = h.GetMaximumBin()
-					chip_results["signalBinMax"] = h.GetMaximumBin()
+					binValue = 0
+					binNum = 0
+					peakCount = 0
+					for Bin in range(40, lastBin):
+						if h.GetBinContent(Bin) >= binValue:
+							binValue = h.GetBinContent(Bin)
+							binNum = Bin
+						elif binValue != 0 and h.GetBinContent(Bin) == 0:
+							peakCount += 1
+							chip_results["signalBinMax_%d"%(peakCount)] = binNum
+							binValue = 0	
 					chip_results["signalRMS"] = h.GetRMS()
 
 					slot_result[histNum] = chip_results
