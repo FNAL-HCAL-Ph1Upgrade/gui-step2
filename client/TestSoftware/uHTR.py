@@ -119,6 +119,42 @@ class uHTR():
 				slope = analyze_results(ci_settings, chip_arr)
 				print qslot, chip, slope
 				
+	def phase_test(self):
+		phase_settings = list(range(0,128))
+		phase_results={}
+		phase_results["settings"]=phase_settings
+		for setting in phase_settings:
+			print "testing phase_test setting", setting
+			for qslot in self.qcards:
+				dc=hw.getDChains(qslot, self.bus)
+				dc.read()
+				for chip in xrange(12):
+					dc[chip].PhaseDelay(setting)
+				dc.write()
+				dc.read()
+
+			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
+			for uhtr_slot, uhtr_slot_results in tdc_results.iteritems():
+				for link, links in uhtr_slot_results.iteritems():
+					for chip, chip_results in links.iteritems:
+						for k in range(len(chip_results)):
+							if chip_results[k] != (63 and 62 and 0):
+
+								key="({0}, {1}, {2})".format(uhtr_slot, link, channel)
+								if setting == 0: phase_results[key]=[]
+								phase_results[key].append(chip_results[k])
+								break
+			cwd=os.getcwd()
+			os.makedirs("phase_plots")
+			os.chdir(cwd  + "/phase_plots")
+			for qslot in self.qcards:
+				for chip in xrange(12):
+					phase_key = str(self.get_QIE_map(qslot, chip))
+					chip_arr = phase_results[phase_key]
+					slope = analyze_results(phase_settings, chip_arr, phase_key)
+					print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+			os.chdir(cwd)
+
 
 #############################################################
 
@@ -215,16 +251,14 @@ class uHTR():
 		path_to_root = generate_histos(crate, slots, n_orbits, sepCapID, out_dir=out_dir)
 		for file in os.listdir(path_to_root):
 			# Extract slot number from file name
-			temp = file.split('_')
-			temp = temp[-1].split('.root')
-			slot_num = str(temp[0])
+			slot_num = str(file.split('_')[-1].split('.root')[0])
 
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
 #		os.removedirs(path_to_root)
 		return histo_results
 
 
-#############################################################
+############################################################
 
 
 #############################################################
@@ -320,7 +354,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 				for i_ch in range(6):
 					histNum = 6*i_link + i_ch
 					h = f.Get("h%d"%(histNum))
-					lastBin = h.GetSize() - 5
+					lastBin = h.GetSize() - 3 
 					chip_results = {}
 					chip_results["link"] = i_link
 					chip_results["channel"] = i_ch
@@ -332,7 +366,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 					binValue = 0
 					binNum = 0
 					peakCount = 0
-					for Bin in range(40, lastBin):
+					for Bin in range(50, lastBin):
 						if h.GetBinContent(Bin) >= binValue:
 							binValue = h.GetBinContent(Bin)
 							binNum = Bin
@@ -359,6 +393,87 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 
 	f.Close()
 	return slot_result
+
+#############################################################
+
+
+#############################################################
+# uHTR spy functions
+#############################################################
+
+def get_tdc_results(self, crate=None, slots=None, outDir="tdctests"):
+
+	if slots is None:
+		slots=self.uhtr_slots
+	if crate is None:
+		crate=self.crate
+	TDCInfo = {}
+	path_to_txt = generate_tdcs(crate, slots, outDir=outDir)
+	for file in os.listdir(path_to_txt):
+		# Extract slot number from file name
+		slotNum = str(file.split("_")[-1].split(".txt")[0])
+
+		TDCInfo[slotNum] = getTDCInfo(inFile=path_to_txt+"/"+file)
+
+	return TDCInfo
+
+def generate_tdcs(crate, slots, outFileBase="", outDir="tdctests")
+	if not outFileBase:
+		outFileBase = "uHTR_tdctest"
+	cwd = os.getcwd()
+	if not os.path.exists(outDir):
+		os.makedirs(outDir)
+	dirPath = "{0}/{1}".format(cwd, outDir)
+	os.chdir(dirPath)
+
+	for slot in slots:
+		outFile = outFileBase + "_{0}_{1}.root".format(crate, slot)
+		process = mp.Process(target=get_tdc, args=(crate, slot, outFile))
+		process.start()
+
+	while mp.active_children():
+		time.sleep(0.1)
+
+	os.chdir(cwd)
+	return dirPath
+
+def getTDCInfo(inFile=""):
+	
+	linesList = [line.rstrip("\n") for line in open(inFile)]
+	slotResult = {}
+	for j in range(len(linesList)):
+		if len(linesList[j].split(" Fiber ")) == 2:
+			linkInfo = linesList[j].split(" Fiber ")[1].split(" ")
+			Link = int(linkInfo[0])
+			Channel = int(linkInfo[2])
+			if "%d"%(Channel) not in slotResult.get("%d"%(Link),{}):
+				slotResult["%d"%(Link)]["%d"%(Channel)] = []
+		if len(linesList[j].split(" TDC ")) == 2:
+			TDCVal = linesList[j].split(" TDC ")[1].split(" SOI")[0]
+			slotResult["%d"%(Link)]["%d"%(Link)].append(int(TDCVal))
+
+def get_tdc(crate, slot, outFile=""):
+
+	if not outFile:
+		outFile = "tdc_uhtr{0}.txt".format(slot)
+
+	spyCMDS = [
+		   "0",
+	           "DAQ",
+		   "CTL",
+ 	  	   "21",
+		   "3",
+		   "10",
+		   "-1",
+		   "MULTISPY",
+		   "10",
+		   "{0}".format(outFile),
+                   "QUIT",
+		   "EXIT"
+	]
+	send_commands(crate=crate, slot=slot, cmds=spyCMDS)
+
+#############################################################
 
 #############################################################
 #Initialization functions
