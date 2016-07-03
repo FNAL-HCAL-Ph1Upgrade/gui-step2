@@ -160,7 +160,7 @@ class uHTR():
 							if k == len(chip_results)-1:
 								key="({0}, {1}, {2})".format(uhtr_slot, link, channel)
 								if setting == 0: phase_results[key]=[]
-								phase_results[key].append(chip_results[k])								
+								phase_results[key].append(chip_results[k])	
 		#reset pedastals to default
 		for qslot in self.qcards:
 			dc=hw.getDChains(qslot, self.bus)
