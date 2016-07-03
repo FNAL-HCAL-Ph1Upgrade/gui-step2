@@ -24,14 +24,14 @@ if __name__ == "__main__":
 
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[7,8,9,10]
+	qcard_slots=[2, 3, 4, 5]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, qcard_slots, b)
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-	uhtr.phase_test()
+	uhtr.ped_test()
 #	uhtr.ci_test()
 
 
@@ -70,7 +70,7 @@ class uHTR():
 		ped_results={}
 		ped_results["settings"]=ped_settings
 		for setting in ped_settings:
-			print "testing ped_test setting", setting
+			print "testing pedastal setting", setting
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -635,13 +635,25 @@ def analyze_results(x, y, key, test):
 	
 	if test == "ped":
 		title="Pedastal Test Results {0}".format(key)
-		ytitle="Pedistal Bin Max (ADC counts)"
+		ytitle="Pedistal Bin Max (fC)"
 		plot_base="ped_{0}".format(key)
+		adc=hw.ADCConverter()
+		for i, yi in enumerate(y):
+			y[i]=adc.linearize(yi)
+		fit=ROOT.TF1("fit", "lin1", -2, 31)
 
 	if test == "ci":
 		title="Charge Injection Test Results {0}".format(key)
 		ytitle="Pedistal Bin Max (ADC counts)"
 		plot_base="ci_{0}".format(key)
+		adc=hw.ADCConverter()
+		for i, yi in enumerate(y):
+			y[i]=adc.linearize(yi)
+		fit=ROOT.TF1("fit", "lin1")
+			
+
+	if test == "phase":
+		print "hi"
 
 
 	g = ROOT.TGraph()
@@ -657,9 +669,9 @@ def analyze_results(x, y, key, test):
 	g.GetXaxis().CenterTitle()
 	g.GetYaxis().SetTitle(ytitle)
 	g.GetYaxis().CenterTitle()
-	g.Fit("pol1", xmin=-2, xmax=31)
-	slope = g.GetFunction("pol1").GetParameter(1)
+	g.Fit("fit", "Q")
+	slope = g.GetFunction("fit").GetParameter(1)
 	g.Draw("AP")
 	c.Print("{0}.png".format(plot_base))
-	return 2
+	return slope
 
