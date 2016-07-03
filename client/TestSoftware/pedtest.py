@@ -1,37 +1,30 @@
 from uHTR import *
-from client import webBus
-import Hardware as hw 
-from DChains import DChains
 import os
 
-bus=webBus("pi5",0)
-slots=[2, 5]
-ped_arr=[]
 
-for num in list(i-31 for i in xrange(63)):
-	file_out="ped_{0}".format(num)
-	for slot in slots:
-		dc=hw.getDChains(slot, bus)
-		dc.read()
-		for i in xrange(12):
-			dc[i].PedestalDAC(num)
-		dc.write()
-		dc.read()
-	generate_histos(41, [1], file_out_base=file_out, out_dir="ped_test")
+histo_results = {}
+path_to_root = 
+for file in os.listdir(path_to_root):
+	# Extract slot number from file name
+        temp = file.split('_')
+        temp = temp[-1].split('.root')
+        slot_num = str(temp[0])
+        histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
+#       os.removedirs(path_to_root)
+        
+for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
+	for chip, chip_results in uhtr_slot_results.iteritems():
+        	key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+                if setting == -31: ped_results[key]=[]
+                ped_results[key].append(chip_results["pedBinMax"])
+cwd=os.getcwd()
+os.makedirs("ped_plots")
+os.chdir(cwd  + "/ped_plots")
+for qslot in self.qcards:
+	for chip in xrange(12):
+        	ped_key = str(self.get_QIE_map(qslot, chip))
+                chip_arr = ped_results[ped_key]
+                slope = analyze_results(ped_settings, chip_arr, ped_key)
+                print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+ os.chdir(cwd)
 
-	cwd=os.getcwd()
-	os.chdir(cwd+"/ped_test")
-	info=getHistoInfo(file_in=file_out+"_41_1.root")
-	setting_arr=[]
-	for chip, chip_results in info.iteritems():
-		if chip_results["pedBinMax"] != 1:
-			setting_arr.append(chip_results["pedBinMax"])
-	print "setting {0}".format(num)
-	print setting_arr
-	if len(setting_arr) != 0:
-		ped_arr.append(float(sum(setting_arr))/float(len(setting_arr)))
-	else: ped_arr.append(0)
-	os.chdir(cwd)
-print "all the setting averages"
-for j, i in enumerate(ped_arr):
-	print "ped {0} average:".format(j-31), i

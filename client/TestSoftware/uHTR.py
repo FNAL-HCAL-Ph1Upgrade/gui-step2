@@ -13,7 +13,7 @@ from subprocess import Popen, PIPE
 from commands import getoutput
 import ROOT
 from ROOT import gROOT
-gROOT.SetBatch()
+
 
 
 if __name__ == "__main__":
@@ -30,7 +30,7 @@ if __name__ == "__main__":
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-#	uhtr.ped_test()
+	uhtr.ped_test()
 #	uhtr.ci_test()
 
 
@@ -80,17 +80,28 @@ class uHTR():
 			histo_results=self.get_histo_results(self.crate, self.uhtr_slots)
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
-					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == -31: ped_results[key]=[]
 					ped_results[key].append(chip_results["pedBinMax"])
+		#reset pedastals to default
+		for qslot in self.qcards:
+			dc=hw.getDChains(qslot, self.bus)
+			dc.read()
+			for chip in xrange(12):
+				dc[chip].PedestalDAC(-9)
+			dc.write()
+			dc.read()
+		#analyze results and make graphs
 		cwd=os.getcwd()
-		os.makedirs("ped_plots")
+		if not os.path.exists("ped_plots"):
+			os.makedirs("ped_plots")
 		os.chdir(cwd  + "/ped_plots")
 		for qslot in self.qcards:
 			for chip in xrange(12):
-				ped_key = str(self.get_QIE_map(qslot, chip))
+				chip_map=self.get_QIE_map(qslot, chip)
+				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
-				slope = analyze_results(ped_settings, chip_arr, ped_key)
+				slope = analyze_results(ped_settings, chip_arr, "ped_{0}_{1}".format(qslot, chip))
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 		os.chdir(cwd)
 
@@ -294,6 +305,7 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
 
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
+	gROOT.SetBatch()
 	slot_result = {}
 	f = ROOT.TFile(file_in, "READ")
 	if sepCapID:
@@ -491,20 +503,25 @@ def analyze_results(x, y, key):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
-#	print "LENGTHS OF X AND Y:", len(x), len(y)
-#	print "this is x:", x
-#	print "this is y:", y
-	hDummy = ROOT.TH2D("dummy","dummy", 1000, - 40, 40, 1000, -5, 30)
+
+#	hDummy = ROOT.TH2D(key, key, 1000, - 40, 40, 1000, -5, 30)
 	g = ROOT.TGraph()
 	for i in xrange(len(x)):
 		g.SetPoint(i, x[i], y[i])
-#	g.Fit("pol1")
-#	slope = g.GetFunction("pol1").GetParameter(1)
 	c = ROOT.TCanvas("c1","c1",800,800)
 	c.cd()
-	hDummy.Draw()
+#	hDummy.Draw()
+#	g.Draw("same P")
+	g.Draw("AP")
 	g.SetMarkerStyle(22)
+	g.GetXaxis().SetTitle("setting")
+	g.GetXaxis().CenterTitle()
+	g.GetYaxis().SetTitle("Pedistal Bin Max (ADC counts)")
+	g.GetYaxis().CenterTitle()
+#	g.Fit("pol1")
+#	slope = g.GetFunction("pol1").GetParameter(1)
 	g.Draw("same P")
-	c.Print("ped_{0}.png".format(key))
+	g.Draw("AP")
+	c.Print("{0}.png".format(key))
 	return 2
 
