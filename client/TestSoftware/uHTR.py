@@ -24,9 +24,10 @@ if __name__ == "__main__":
 
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[2, 3, 4, 5]
+	qcard_slots=[1,2,3,4]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, qcard_slots, b)
+
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
@@ -70,7 +71,7 @@ class uHTR():
 		ped_results={}
 		ped_results["settings"]=ped_settings
 		for setting in ped_settings:
-			print "testing pedastal setting", setting
+			print "testing ped_test setting", setting
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -102,7 +103,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
-				slope = analyze_results(ped_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ped")
+				slope = analyze_results(ped_settings, chip_arr, "ped_{0}_{1}".format(qslot, chip))
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 		os.chdir(cwd)
 
@@ -150,14 +151,27 @@ class uHTR():
 				for link, links in uhtr_slot_results.iteritems():
 					for channel, chip_results in links.iteritems():
 						for k in range(len(chip_results)):
-							if chip_results[k] != (63 and 62 and 0):
+							if chip_results[k] != 63 and chip_results[k] != 62 and chip_results[k] != 0:
 
 								key="({0}, {1}, {2})".format(uhtr_slot, link, channel)
 								if setting == 0: phase_results[key]=[]
 								phase_results[key].append(chip_results[k])
 								break
+							if k == len(chip_results)-1:
+								key="({0}, {1}, {2})".format(uhtr_slot, link, channel)
+								if setting == 0: phase_results[key]=[]
+								phase_results[key].append(chip_results[k])								
+		#reset pedastals to default
+		for qslot in self.qcards:
+			dc=hw.getDChains(qslot, self.bus)
+			dc.read()
+			for chip in xrange(12):
+				dc[chip].PhaseDelay(0)
+			dc.write()
+			dc.read()
 		cwd=os.getcwd()
-		os.makedirs("phase_plots")
+	        if not os.path.exists("phase_plots"):	
+			os.makedirs("phase_plots")
 		os.chdir(cwd  + "/phase_plots")
 		for qslot in self.qcards:
 			for chip in xrange(12):
@@ -460,14 +474,16 @@ def getTDCInfo(inFile=""):
 	
 	linesList = [line.rstrip("\n") for line in open(inFile)]
 	slotResult = defaultdict(dict)
+	foundLink = 0
 	for j in range(len(linesList)):
 		if len(linesList[j].split(" Fiber ")) == 2:
 			linkInfo = linesList[j].split(" Fiber ")[1].split(" ")
 			Link = int(linkInfo[0])
 			Channel = int(linkInfo[2])
+			foundLink = 1
 			if "%d"%(Channel) not in slotResult.get("%d"%(Link),{}):
 				slotResult["%d"%(Link)]["%d"%(Channel)] = []
-		if len(linesList[j].split(" TDC ")) == 2:
+		elif len(linesList[j].split(" TDC ")) == 2 and foundLink != 0:
 			TDCVal = linesList[j].split(" TDC ")[1].split(" SOI")[0]
 			slotResult["%d"%(Link)]["%d"%(Channel)].append(int(TDCVal))
 	return slotResult
@@ -621,40 +637,17 @@ def get_link_info(crate, slot):
         linkInfo["BCN Status"] = get_BCN_status(statsPrintOut)
         linkInfo["BPR Status"] = get_BPR_status(statsPrintOut)
         linkInfo["AOD Status"] = get_AOD_status(statsPrintOut)
-        linkInfo["ON Status"] = get_ON_links(statsPrintOut)
+        linkInfo["ON Status"] = get_ON_links(statsPrintOuta)
 	return linkInfo
 
 #############################################################
 # Analyze test results  
 #############################################################
 
-def analyze_results(x, y, key, test):
+def analyze_results(x, y, key):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
-	
-	if test == "ped":
-		title="Pedastal Test Results {0}".format(key)
-		ytitle="Pedistal Bin Max (fC)"
-		plot_base="ped_{0}".format(key)
-		adc=hw.ADCConverter()
-		for i, yi in enumerate(y):
-			y[i]=adc.linearize(yi)
-		fit=ROOT.TF1("fit", "lin1", -2, 31)
-
-	if test == "ci":
-		title="Charge Injection Test Results {0}".format(key)
-		ytitle="Pedistal Bin Max (ADC counts)"
-		plot_base="ci_{0}".format(key)
-		adc=hw.ADCConverter()
-		for i, yi in enumerate(y):
-			y[i]=adc.linearize(yi)
-		fit=ROOT.TF1("fit", "lin1")
-			
-
-	if test == "phase":
-		print "hi"
-
 
 	g = ROOT.TGraph()
 	for i in xrange(len(x)):
@@ -662,17 +655,15 @@ def analyze_results(x, y, key, test):
 	c = ROOT.TCanvas("c1","c1",800,800)
 	c.cd()
 	g.Draw("AP")
-
 	g.SetMarkerStyle(22)
-	g.SetTitle(title)
-	g.GetXaxis().SetTitle("Setting")
+	g.GetXaxis().SetTitle("setting")
 	g.GetXaxis().CenterTitle()
-	g.GetYaxis().SetTitle(ytitle)
+	g.GetYaxis().SetTitle("Pedistal Bin Max (ADC counts)")
 	g.GetYaxis().CenterTitle()
-	g.Fit("fit", "Q")
-	slope = g.GetFunction("fit").GetParameter(1)
+#	g.Fit("pol1")
+#	slope = g.GetFunction("pol1").GetParameter(1)
 	g.Draw("AP")
-	c.Print("{0}.png".format(plot_base))
-	return slope
+	c.Print("{0}.png".format(key))
+	return 2
 
 
