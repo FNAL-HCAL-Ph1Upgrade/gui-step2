@@ -637,7 +637,7 @@ def get_link_info(crate, slot):
         linkInfo["BCN Status"] = get_BCN_status(statsPrintOut)
         linkInfo["BPR Status"] = get_BPR_status(statsPrintOut)
         linkInfo["AOD Status"] = get_AOD_status(statsPrintOut)
-        linkInfo["ON Status"] = get_ON_links(statsPrintOuta)
+        linkInfo["ON Status"] = get_ON_links(statsPrintOut)
 	return linkInfo
 
 #############################################################
