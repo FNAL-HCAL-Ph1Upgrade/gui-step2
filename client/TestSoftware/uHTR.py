@@ -692,4 +692,3 @@ def analyze_results(x, y, key, test):
 	return slope
 
 
-
