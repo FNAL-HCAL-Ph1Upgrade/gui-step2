@@ -11,6 +11,7 @@ import numpy as np
 import multiprocessing as mp
 from subprocess import Popen, PIPE
 from commands import getoutput
+from collections import defaultdict
 import ROOT
 from ROOT import gROOT
 
@@ -23,14 +24,14 @@ if __name__ == "__main__":
 
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[2,3,4,5]
+	qcard_slots=[7,8,9,10]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, qcard_slots, b)
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-	uhtr.ped_test()
+	uhtr.phase_test()
 #	uhtr.ci_test()
 
 
@@ -147,7 +148,7 @@ class uHTR():
 			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
 			for uhtr_slot, uhtr_slot_results in tdc_results.iteritems():
 				for link, links in uhtr_slot_results.iteritems():
-					for chip, chip_results in links.iteritems:
+					for channel, chip_results in links.iteritems():
 						for k in range(len(chip_results)):
 							if chip_results[k] != (63 and 62 and 0):
 
@@ -155,16 +156,16 @@ class uHTR():
 								if setting == 0: phase_results[key]=[]
 								phase_results[key].append(chip_results[k])
 								break
-			cwd=os.getcwd()
-			os.makedirs("phase_plots")
-			os.chdir(cwd  + "/phase_plots")
-			for qslot in self.qcards:
-				for chip in xrange(12):
-					phase_key = str(self.get_QIE_map(qslot, chip))
-					chip_arr = phase_results[phase_key]
-					slope = analyze_results(phase_settings, chip_arr, phase_key)
-					print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
-			os.chdir(cwd)
+		cwd=os.getcwd()
+		os.makedirs("phase_plots")
+		os.chdir(cwd  + "/phase_plots")
+		for qslot in self.qcards:
+			for chip in xrange(12):
+				phase_key = str(self.get_QIE_map(qslot, chip))
+				chip_arr = phase_results[phase_key]
+				slope = analyze_results(phase_settings, chip_arr, phase_key)
+				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+		os.chdir(cwd)
 
 
 #############################################################
@@ -268,6 +269,28 @@ class uHTR():
 #		os.removedirs(path_to_root)
 		return histo_results
 
+#############################################################
+
+
+#############################################################
+# Generate and read TDC txt 
+#############################################################
+
+	def get_tdc_results(self, crate=None, slots=None, outDir="tdctests"):
+
+		if slots is None:
+			slots=self.uhtr_slots
+		if crate is None:
+			crate=self.crate
+		TDCInfo = {}
+		path_to_txt = generate_tdcs(crate, slots, outDir=outDir)
+		for file in os.listdir(path_to_txt):
+			# Extract slot number from file name
+			slotNum = str(file.split("_")[-1].split(".txt")[0])
+
+			TDCInfo[slotNum] = getTDCInfo(inFile=path_to_txt+"/"+file)
+
+		return TDCInfo
 
 ############################################################
 
@@ -413,23 +436,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 # uHTR spy functions
 #############################################################
 
-def get_tdc_results(self, crate=None, slots=None, outDir="tdctests"):
-
-	if slots is None:
-		slots=self.uhtr_slots
-	if crate is None:
-		crate=self.crate
-	TDCInfo = {}
-	path_to_txt = generate_tdcs(crate, slots, outDir=outDir)
-	for file in os.listdir(path_to_txt):
-		# Extract slot number from file name
-		slotNum = str(file.split("_")[-1].split(".txt")[0])
-
-		TDCInfo[slotNum] = getTDCInfo(inFile=path_to_txt+"/"+file)
-
-	return TDCInfo
-
-def generate_tdcs(crate, slots, outFileBase="", outDir="tdctests")
+def generate_tdcs(crate, slots, outFileBase="", outDir="tdctests"):
 	if not outFileBase:
 		outFileBase = "uHTR_tdctest"
 	cwd = os.getcwd()
@@ -439,7 +446,7 @@ def generate_tdcs(crate, slots, outFileBase="", outDir="tdctests")
 	os.chdir(dirPath)
 
 	for slot in slots:
-		outFile = outFileBase + "_{0}_{1}.root".format(crate, slot)
+		outFile = outFileBase + "_{0}_{1}.txt".format(crate, slot)
 		process = mp.Process(target=get_tdc, args=(crate, slot, outFile))
 		process.start()
 
@@ -452,7 +459,7 @@ def generate_tdcs(crate, slots, outFileBase="", outDir="tdctests")
 def getTDCInfo(inFile=""):
 	
 	linesList = [line.rstrip("\n") for line in open(inFile)]
-	slotResult = {}
+	slotResult = defaultdict(dict)
 	for j in range(len(linesList)):
 		if len(linesList[j].split(" Fiber ")) == 2:
 			linkInfo = linesList[j].split(" Fiber ")[1].split(" ")
@@ -462,7 +469,8 @@ def getTDCInfo(inFile=""):
 				slotResult["%d"%(Link)]["%d"%(Channel)] = []
 		if len(linesList[j].split(" TDC ")) == 2:
 			TDCVal = linesList[j].split(" TDC ")[1].split(" SOI")[0]
-			slotResult["%d"%(Link)]["%d"%(Link)].append(int(TDCVal))
+			slotResult["%d"%(Link)]["%d"%(Channel)].append(int(TDCVal))
+	return slotResult
 
 def get_tdc(crate, slot, outFile=""):
 
