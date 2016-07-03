@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[1,2,3,4]
+	qcard_slots=[2, 3, 4, 5]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, qcard_slots, b)
 
@@ -71,7 +71,7 @@ class uHTR():
 		ped_results={}
 		ped_results["settings"]=ped_settings
 		for setting in ped_settings:
-			print "testing ped_test setting", setting
+			print "testing pedestal setting", setting
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -644,10 +644,33 @@ def get_link_info(crate, slot):
 # Analyze test results  
 #############################################################
 
-def analyze_results(x, y, key):
+def analyze_results(x, y, key, test):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
+	
+	if test == "ped":
+		title="Pedastal Test Results {0}".format(key)
+		ytitle="Pedistal Bin Max (fC)"
+		plot_base="ped_{0}".format(key)
+		adc=hw.ADCConverter()
+		for i, yi in enumerate(y):
+			y[i]=adc.linearize(yi)
+		fit=ROOT.TF1("fit", "lin1", -2, 31)
+
+	if test == "ci":
+		title="Charge Injection Test Results {0}".format(key)
+		ytitle="Pedistal Bin Max (ADC counts)"
+		plot_base="ci_{0}".format(key)
+		adc=hw.ADCConverter()
+		for i, yi in enumerate(y):
+			y[i]=adc.linearize(yi)
+		fit=ROOT.TF1("fit", "lin1")
+			
+
+	if test == "phase":
+		print "hi"
+
 
 	g = ROOT.TGraph()
 	for i in xrange(len(x)):
@@ -655,14 +678,17 @@ def analyze_results(x, y, key):
 	c = ROOT.TCanvas("c1","c1",800,800)
 	c.cd()
 	g.Draw("AP")
+
 	g.SetMarkerStyle(22)
-	g.GetXaxis().SetTitle("setting")
+	g.SetTitle(title)
+	g.GetXaxis().SetTitle("Setting")
 	g.GetXaxis().CenterTitle()
-	g.GetYaxis().SetTitle("Pedistal Bin Max (ADC counts)")
+	g.GetYaxis().SetTitle(ytitle)
 	g.GetYaxis().CenterTitle()
-#	g.Fit("pol1")
-#	slope = g.GetFunction("pol1").GetParameter(1)
+	g.Fit("fit", "Q")
+	slope = g.GetFunction("fit").GetParameter(1)
 	g.Draw("AP")
-	c.Print("{0}.png".format(key))
-	return 2
+	c.Print("{0}.png".format(plot_base))
+	return slope
+
 
