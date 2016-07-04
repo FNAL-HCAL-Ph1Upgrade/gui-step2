@@ -14,7 +14,7 @@ from subprocess import Popen, PIPE
 from commands import getoutput
 from collections import defaultdict
 import ROOT
-from ROOT import gROOT
+#from ROOT import gROOT
 
 
 
@@ -104,11 +104,11 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
-				slope = analyze_results(ped_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ped")
 				#check if settings -31 to -3 are flat
 				flat_test = True
 				for num in xrange(28):
 					if chip_arr[num] != 1: flat_test=False
+				slope = analyze_results(ped_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ped")
 				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}".format(qslot, chip, slope, flat_test)
 		os.chdir(cwd)
 
@@ -395,7 +395,7 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
 
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
-	gROOT.SetBatch()
+	ROOT.gROOT.SetBatch()
 	slot_result = {}
 	f = ROOT.TFile(file_in, "READ")
 	if sepCapID:
@@ -669,22 +669,22 @@ def analyze_results(x, y, key, test):
 		return None
 	
 	if test == "ped":
-		title="Pedastal Test Results {0}".format(key)
-		ytitle="Pedistal Bin Max (fC)"
+		title="Pedestal Test Results {0}".format(key)
+		ytitle="Pedestal Bin Max (fC)"
 		plot_base="ped_{0}".format(key)
 		adc=hw.ADCConverter()
 		for i, yi in enumerate(y):
 			y[i]=adc.linearize(yi)
-#		fit=ROOT.TF1("fit", "lin1", -2, 31)
+		fit=ROOT.TF1("fit", "[0] + [1]*x", -2, 31)
 
 	if test == "ci":
 		title="Charge Injection Test Results {0}".format(key)
-		ytitle="Pedistal Bin Max (ADC counts)"
+		ytitle="Charge Injection Bin Max (fC)"
 		plot_base="ci_{0}".format(key)
 		adc=hw.ADCConverter()
 		for i, yi in enumerate(y):
 			y[i]=adc.linearize(yi)
-#		fit=ROOT.TF1("fit", "lin1")
+		fit=ROOT.TF1("fit", "[0] + [1]*x")
 			
 
 	if test == "phase":
@@ -704,10 +704,10 @@ def analyze_results(x, y, key, test):
 	g.GetXaxis().CenterTitle()
 	g.GetYaxis().SetTitle(ytitle)
 	g.GetYaxis().CenterTitle()
-#	g.Fit("lin1", "Q", "", -2, 31)
-#	slope = g.GetFunction("lin1").GetParameter(1)
+	g.Fit("fit","QR")
+	slope = g.GetFunction("fit").GetParameter(1)
 	g.Draw("AP")
 	c.Print("{0}.png".format(plot_base))
-	return 2
+	return slope
 
 
