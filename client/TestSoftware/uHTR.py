@@ -33,8 +33,8 @@ if __name__ == "__main__":
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-	uhtr.ped_test()
-#	uhtr.ci_test()
+#	uhtr.ped_test()
+	uhtr.ci_test()
 
 
 class uHTR():
@@ -86,6 +86,7 @@ class uHTR():
 					key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == -31: ped_results[key]=[]
 					ped_results[key].append(chip_results["pedBinMax"])
+
 		#reset pedastals to default
 		for qslot in self.qcards:
 			dc=hw.getDChains(qslot, self.bus)
@@ -94,6 +95,7 @@ class uHTR():
 				dc[chip].PedestalDAC(-9)
 			dc.write()
 			dc.read()
+
 		#analyze results and make graphs
 		cwd=os.getcwd()
 		if not os.path.exists("ped_plots"):
@@ -104,12 +106,20 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
-				#check if settings -31 to -3 are flat
+				
+				#check if settings -31 to -3 are flat and -2 to 31 are linear
 				flat_test = True
+				slope_test = False
+				results = False
 				for num in xrange(28):
 					if chip_arr[num] != 1: flat_test=False
 				slope = analyze_results(ped_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ped")
-				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}".format(qslot, chip, slope, flat_test)
+				if slope <= 2.4 and slope >=2.15: slope_test = True
+				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}".format(qslot, chip, slope, flat_test, slope_test)
+				
+				# update master_dict with test results
+				if flat_test and slope_test: results=True
+				self.update_QIE_results(qslot, chip, "ped", results)
 		os.chdir(cwd)
 
 	def ci_test(self):
@@ -131,10 +141,12 @@ class uHTR():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == 90: ci_results[key]=[]
-					ci_results[key].append(chip_results["signalBinMax_2"])
+					ci_results[key].append(chip_results["signalBinMax_1"])
+
 		#Turn off charge injection
 		for qslot in self.qcards:
 			hw.SetQInjMode(0, qslot, self.bus)
+
 		#analyze results and make graphs
 		cwd=os.getcwd()
 		if not os.path.exists("ci_plots"):
@@ -208,29 +220,40 @@ class uHTR():
 # Adding and extracting data from the master_dict
 #############################################################
 
-	def get_QIE(self, qcard_slot, chip):
+	def get_QIE(self, qslot, chip):
 		### Returns the dictionary storing the test results of the specified QIE chip
-		key="({0}, {1})".format(qcard_slot, chip)
+		key="({0}, {1})".format(qslot, chip)
 		return self.master_dict[key]
 
-	def get_QIE_results(self, qcard_slot, chip, test_key=""):
+	def get_QIE_results(self, qslot, chip, test_key=""):
 		### Returns the (pass, fail) tuple of specific test
-		QIE=self.get_QIE(qcard_slot, chip)
-		return QIE[test_key]
+		qie_results=self.get_QIE(qslot, chip)[test_key]
+		return (qie_results[0], qie_results[1])
 
-	def get_QIE_map(self, qcard_slot, chip):
-		key="({0}, {1})".format(qcard_slot, chip)
+	def update_QIE_test(self, qslot, chip, test_key="", results):
+		#results so that True = pass and False = fail
+		qie_results=self.get_QIE(qslot, chip)[test_key]
+		if results: qie_results[0]+=1
+		else: qie_results[1]+=1
+
+	def get_QIE_map(self, qslot, chip):
+		key="({0}, {1})".format(qslot, chip)
                 qie=self.master_dict[key]
-		slot=qie["uhtr_slot"]
+		uhtr_slot=qie["uhtr_slot"]
 		link=qie["link"]
 		channel=qie["channel"]
-		return (slot, link, channel)
+		return (uhtr_slot, link, channel)
 
 	def add_QIE(self, qcard_slot, chip, uhtr_slot, link, channel):
 		QIE_info={}
 		QIE_info["uhtr_slot"]=uhtr_slot
 		QIE_info["link"]=link
 		QIE_info["channel"]=channel
+		# test results stored in a pass fail list
+		QIE_info["ped"]=[0,0]
+		QIE_info["ci"]=[0,0]
+		QIE_info["phase"]=[0,0]
+		QIE_info["shunt"]=[0,0]
 		key="({0}, {1})".format(qcard_slot, chip)
 		self.master_dict[key]=QIE_info
 
@@ -689,7 +712,6 @@ def analyze_results(x, y, key, test):
 
 	if test == "phase":
 		print "hi"
-
 
 	g = ROOT.TGraph()
 	for i in xrange(len(x)):
