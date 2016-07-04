@@ -7,6 +7,7 @@ from QIE import QIE
 import os
 import sys
 import time
+import shutil
 import numpy as np
 import multiprocessing as mp
 from subprocess import Popen, PIPE
@@ -103,8 +104,12 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
-				slope = analyze_results(ped_settings, chip_arr, "ped_{0}_{1}".format(qslot, chip))
-				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+				slope = analyze_results(ped_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ped")
+				#check if settings -31 to -3 are flat
+				flat_test = True
+				for num in xrange(28):
+					if chip_arr[num] != 1: flat_test=False
+				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}".format(qslot, chip, slope, flat_test)
 		os.chdir(cwd)
 
 	def ci_test(self):
@@ -112,7 +117,9 @@ class uHTR():
 		ci_results={}
 		ci_results["settings"]=ci_settings
 		for setting in ci_settings:
+			print "testing charge injection setting {0} fC".format(setting)
 			for qslot in self.qcards:
+				hw.SetQInjMode(1, qslot, self.bus)
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
 				for chip in xrange(12):
@@ -124,13 +131,25 @@ class uHTR():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == 90: ci_results[key]=[]
-					ci_results[key].append(chip_results["signalBinMax"])
+					ci_results[key].append(chip_results["signalBinMax_2"])
+		#Turn off charge injection
+		for qslot in self.qcards:
+			hw.SetQInjMode(0, qslot, self.bus)
+		#analyze results and make graphs
+		cwd=os.getcwd()
+		if not os.path.exists("ci_plots"):
+			os.makedirs("ci_plots")
+		os.chdir(cwd  + "/ci_plots")
 		for qslot in self.qcards:
 			for chip in xrange(12):
-				ci_key=str(self.get_QIE_map(qslot, chip))
-				chip_arr=ci_results[ci_key]
-				slope = analyze_results(ci_settings, chip_arr)
-				print qslot, chip, slope
+				chip_map=self.get_QIE_map(qslot, chip)
+				ci_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
+				chip_arr = ped_results[ci_key]
+				slope = analyze_results(ci_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ci")
+				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+		os.chdir(cwd)
+
+
 				
 	def phase_test(self):
 		phase_settings = xrange(128)
@@ -161,7 +180,7 @@ class uHTR():
 								key="({0}, {1}, {2})".format(uhtr_slot, link, channel)
 								if setting == 0: phase_results[key]=[]
 								phase_results[key].append(chip_results[k])	
-		#reset pedastals to default
+		#reset phases to default
 		for qslot in self.qcards:
 			dc=hw.getDChains(qslot, self.bus)
 			dc.read()
@@ -280,7 +299,7 @@ class uHTR():
 			slot_num = str(file.split('_')[-1].split('.root')[0])
 
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-#		os.removedirs(path_to_root)
+		shutil.rmtree(out_dir)
 		return histo_results
 
 #############################################################
@@ -310,7 +329,7 @@ class uHTR():
 
 
 #############################################################
-# uHTRtool functions
+# uHTRtool histo functions
 #############################################################
 
 def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", out_dir="histotests"):
@@ -424,7 +443,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 							chip_results["signalBinMax_%d"%(peakCount)] = binNum
 							binValue = 0	
 					chip_results["signalRMS"] = h.GetRMS()
-
+					
 					slot_result[histNum] = chip_results
 
 		else:
@@ -447,7 +466,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 
 
 #############################################################
-# uHTR spy functions
+# uHTRtool spy functions
 #############################################################
 
 def generate_tdcs(crate, slots, outFileBase="", outDir="tdctests"):
@@ -656,7 +675,7 @@ def analyze_results(x, y, key, test):
 		adc=hw.ADCConverter()
 		for i, yi in enumerate(y):
 			y[i]=adc.linearize(yi)
-		fit=ROOT.TF1("fit", "lin1", -2, 31)
+#		fit=ROOT.TF1("fit", "lin1", -2, 31)
 
 	if test == "ci":
 		title="Charge Injection Test Results {0}".format(key)
@@ -665,7 +684,7 @@ def analyze_results(x, y, key, test):
 		adc=hw.ADCConverter()
 		for i, yi in enumerate(y):
 			y[i]=adc.linearize(yi)
-		fit=ROOT.TF1("fit", "lin1")
+#		fit=ROOT.TF1("fit", "lin1")
 			
 
 	if test == "phase":
@@ -685,10 +704,10 @@ def analyze_results(x, y, key, test):
 	g.GetXaxis().CenterTitle()
 	g.GetYaxis().SetTitle(ytitle)
 	g.GetYaxis().CenterTitle()
-	g.Fit("fit", "QR")
-	slope = g.GetFunction("fit").GetParameter(1)
+#	g.Fit("lin1", "Q", "", -2, 31)
+#	slope = g.GetFunction("lin1").GetParameter(1)
 	g.Draw("AP")
 	c.Print("{0}.png".format(plot_base))
-	return slope
+	return 2
 
 
