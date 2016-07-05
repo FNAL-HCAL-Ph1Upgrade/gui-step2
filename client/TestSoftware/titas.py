@@ -15,8 +15,7 @@ import iglooClass_adry as i
 ##### Global Vars #####
 pi    = "pi5" # 'pi5' or 'pi6' etc
 b     = webBus(pi,0) # webBus sets active pi; 0 = server verbosity off
-all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-slots = all_slots # list of active J slots
+slots = [2,5] # list of active J slots
 
 
 
@@ -47,20 +46,6 @@ def printDaisyChain(slots, bus):
             print dcs[chip]
 
         print "############################"
-
-
-''' change tdc threshold '''
-def setTimingThresholdDAC(slots, threshold_val, bus):
-
-    for i_slot in slots: # all desired slots
-
-        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
-        dcs.read()
-
-        for chip in xrange(12): # all 12 chips
-            dcs[chip].TimingThresholdDAC(threshold_val) # change threshold
-
-        dcs.write() # write the changes for both daisy chains
 
 
 
@@ -199,21 +184,6 @@ def setChargeInjectDAC(slots, charge_val, bus):
         dcs.write() # write the changes for both daisy chains
 
 
-''' change Gsel value '''
-def setGsel(slots, gsel_val, bus):
-    # valid gsel_val: 0,1,2,4,8,16,18,20,24
-    # corresponds to 3.1, 4.65, 6.2, 9.3, 12.4, 15.5, 18.6, 21.7, 24.8 fC/LSB gain
-    for i_slot in slots: # all desired slots
-
-        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
-        dcs.read()
-
-        for chip in xrange(12): # all 12 chips
-            dcs[chip].Gsel(gsel_val) # change gain
-
-        dcs.write() # write the changes for both daisy chains
-
-
 ''' backplane reset (should be sent between I2C device selection)'''
 def backplaneReset(bus):
     bus.write(0x00,[0x06])
@@ -244,13 +214,12 @@ powerEnable(b)
 chargeInjectOn(slots,b)
 #chargeInjectOff(slots,b)
 printDaisyChain(slots,b)
-# setTimingThresholdDAC(slots, -127, b)
-# setPedestalDAC(slots,6,b) #6bits->12fc is default
-# setCapID0pedestal(slots,0,b)
+setPedestalDAC(slots,6,b) #6bits->12fc is default
+#setCapID0pedestal(slots,0,b)
 # setCapID1pedestal(slots,1,b)
 # setCapID2pedestal(slots,1,b)
 # setCapID3pedestal(slots,1,b)
 # setFixRangeModeOn(slots,3,b)
-setChargeInjectDAC(slots,8640,b)
+setChargeInjectDAC(slots,2880,b)
 print "\n\n\n\n\n AFTER CHANGES: \n"
 printDaisyChain(slots,b)
