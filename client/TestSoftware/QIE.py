@@ -37,7 +37,6 @@ def getBinaryListWithPolarity(integer, length):
 
 
 
-<<<<<<< HEAD
 ################################################################################
 # qCard Class
 ################################################################################
@@ -121,9 +120,6 @@ class QIEshiftRegister:
 ################################################################################
 # QIE Class
 ################################################################################
-=======
-=======
->>>>>>> 2c9cb6e81a2318840860f4a8699d67561597f442
 
 #QIE Class
 class QIE:
@@ -366,7 +362,7 @@ class QIE:
         else:
             print "INVALID INPUT IN Hsel... no change made"
 
-    #Change bit 57-63
+   #Change bit 57-63
     def PhaseDelay(self, b):
         #takes arguments 0 - 127
         if b <= 127 and b >= 0:
