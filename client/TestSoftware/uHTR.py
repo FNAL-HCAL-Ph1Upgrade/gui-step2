@@ -32,9 +32,9 @@ if __name__ == "__main__":
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 #	uhtr.ped_test()
-	uhtr.ci_test()
+#	uhtr.ci_test()
 #	uhtr.phase_test()
-#	uhtr.shunt_test()
+	uhtr.shunt_test()
 
 
 class uHTR():
@@ -133,7 +133,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo("ped", histo_slopes, 0, 2)
+#		make_histo("ped", histo_slopes, 0, 2)
 		os.chdir(cwd)
 
 
@@ -191,7 +191,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo("ci", slopes, 0, 2)
+#		make_histo("ci", slopes, 0, 2)
 		os.chdir(cwd)
 
 
@@ -259,6 +259,11 @@ class uHTR():
 		
 		#ratio between default 3.1fC/LSB and itself/other GSel gains
 		nominalGainRatios = [1.0, .667, .5, .333, .25, .2, .167, .143, 0.125]
+
+		histo_ratios=[]
+		for x in xrange(9):
+			histo_ratios.append(x)
+			histo_ratios[x] = []
 		
 		for setting in gain_settings:
 			print "testing shunt setting", setting
@@ -266,7 +271,6 @@ class uHTR():
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
 				hw.SetQInjMode(1, qslot, self.bus)    #turn on CI mode (igloo function)
-				i.displayCI(self.bus, qslot)
 				for chip in xrange(12):
 					dc[chip].PedestalDAC(6)
 					dc[chip].ChargeInjectDAC(8640)    #set max CI value
@@ -278,7 +282,7 @@ class uHTR():
 
 			for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
 				for chip, chip_results in uhtr_slot_results.iteritems():
-					key="({0}, {1}, {2})".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+					key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == 0: peak_results[key] = []
 					if 'signalBinMax_1' in chip_results:
 						totalSignal = adc.linearize(chip_results['signalBinMax_1'])
@@ -302,10 +306,13 @@ class uHTR():
 
 		for qslot in self.qcards:
 			for chip in xrange(12):
-				peak_key=str(self.get_QIE_map(qslot, chip))
+				chip_map=self.get_QIE_map(qslot, chip)
+				peak_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr=peak_results[peak_key]
+
 				for setting in xrange(len(peak_results[peak_key])):
 					ratio = float(peak_results[peak_key][setting]) / default_peaks_avg     #ratio between shunt-adjusted peak & default peak
+					histo_ratios[setting].append(ratio)
 					if (ratio < nominalGainRatios[setting]*1.1 and ratio > nominalGainRatios[setting]*0.9):     #within 10% of nominal
 						setting_result = True
 						grand_ratio_pf[0]+=1
@@ -325,7 +332,7 @@ class uHTR():
 		os.chdir(cwd + "/histo_statistics")
 		
 		for i, setting in enumerate(setting_list):
-			make_histo("shunt", shuntRatio[i], nominalGainRatios[1]*0.85, nominalGainRatios[1]*1.15, setting)
+			make_histo("shunt", histo_ratios[i], nominalGainRatios[1]*0.85, nominalGainRatios[1]*1.15, setting)
 		
 		os.chdir(cwd)
 
@@ -847,16 +854,16 @@ def graph_results(x, y, key, test):
 
 def make_histo(test, data, xmin, xmax, shunt_setting=0):
 
-	if test = "ped":
+	if test == "ped":
 		print "hi"
 
-	if test = "ci":
+	if test == "ci":
 		print "dere"
 
-	if test = "phase":
+	if test == "phase":
 		print "Hola pronouncing the h like some gringo"
 
-	if test = "shunt":
+	if test == "shunt":
 		title = 'Shunt Setting: {0} fC/LSB'.format(shunt_setting)
 		lengend_title = 'All Chips'
 		xtitle = "Ratio (Shunted/Default)"
