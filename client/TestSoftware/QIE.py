@@ -235,7 +235,7 @@ class QIE:
     def Gsel(self, b):
         #takes arguments 0 - 31
         if b >= 0 and b <= 31:
-            a = getBinaryList(magnitude, 5)
+            a = getBinaryList(b, 5)
             for i in xrange(5):
                 self[44 + i] = a[i]
         else:
@@ -245,7 +245,7 @@ class QIE:
     def Idcset(self, b):
         #takes arguments 0 - 31
         if b >= 0 and b <= 31:
-            a = getBinaryList(magnitude, 5)
+            a = getBinaryList(b, 5)
             for i in xrange(5):
                 self[49 + i] = a[i]
         else:
