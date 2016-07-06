@@ -967,4 +967,3 @@ def get_link_info(crate, slot):
         linkInfo["AOD Status"] = get_AOD_status(statsPrintOut)
         linkInfo["ON Status"] = get_ON_links(statsPrintOut)
 	return linkInfo
-
