@@ -21,26 +21,26 @@ import ROOT
 if __name__ == "__main__":
 
 	from client import webBus
-	from uHTR import *
+	from uHTR import uHTR
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
 	qcard_slots=[2,3,4,5]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(uhtr_slots, qcard_slots, b)
+	uhtr = uHTR(all_slots, qcard_slots, b)
 
 	for slot in qcard_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-	uhtr.ped_test()
+#	uhtr.ped_test()
 	uhtr.ci_test()
-	uhtr.shunt_test()
-	uhtr.phase_test()
+#	uhtr.shunt_test()
+#	uhtr.phase_test()
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
 
-		self.uHTR_log = "{:%b%d%Y_%H%M%S}".format(datetime.now())
+		self.uhtr_log = "{:%b%d%Y_%H%M%S}".format(datetime.now())
 
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
@@ -51,6 +51,8 @@ class uHTR():
 
 		self.qcards=qcard_slots
 
+		self.canvas = ROOT.TCanvas("c1", "c1", 800, 800)
+		
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, chip)"
@@ -62,6 +64,13 @@ class uHTR():
 		for slot in self.uhtr_slots:
 			init_links(self.crate, slot)
 		self.QIE_mapping()
+
+		#Go to uhtrResutls for dumping .pngs
+		self.cwd = os.getcwd()
+		if not os.path.exists("~/uhtrResults"):
+			os.makedirs("~/uhtrResults")
+		os.chdir("~/uhtrResults")
+
 
 		#make directory to put results histograms in
 		if not os.path.exists("histo_statistics"):
@@ -121,7 +130,7 @@ class uHTR():
 				results = False
 				for num in xrange(28):
 					if chip_arr[num] != 1: flat_test=False
-				slope = graph_results(self.uHTR_log, "ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+				slope = self.graph_results("ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				if slope <= 2.4 and slope >=2.15: slope_test = True
 				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}".format(qslot, chip, slope, flat_test, slope_test)
 				
@@ -135,7 +144,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo(self.uHTR_log, "ped", histo_slopes, 0, 5)
+		self.make_histo("ped", histo_slopes, 0, 5)
 		os.chdir(cwd)
 
 
@@ -163,6 +172,7 @@ class uHTR():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == 90: ci_results[key]=[]
+					totalSignal = 0
 				       	if 'signalBinMax_1' in chip_results:
 						totalSignal = adc.linearize(chip_results['signalBinMax_1'])
 						if 'signalBinMax_2' in chip_results:	# get 2nd peak if needed
@@ -183,7 +193,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ci_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ci_results[ci_key]
-				slope = graph_results(self.uHTR_log, "ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+				slope = self.graph_results("ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 
 				#update slopes for final histogram
@@ -192,75 +202,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo(self.uHTR_log, "ci", histo_slopes, 0, 2)
-		os.chdir(cwd)
-
-
-	def phase_test(self):
-		#Valid settings for phase are in two distinct ranges offset by 1 BX
-		phase_settings = range(0,50) + range(64,114)
-		phase_results={}
-		phase_results["settings"]=phase_settings
-		for setting in phase_settings:
-			print "testing phase setting", setting
-			for qslot in self.qcards:
-				hw.SetQInjMode(1, qslot, self.bus)
-				dc=hw.getDChains(qslot, self.bus)
-				dc.read()
-				for chip in xrange(12):
-					dc[chip].PhaseDelay(setting)
-					dc[chip].ChargeInjectDAC(8640)
-					dc[chip].TimingThresholdDAC(0)
-				dc.write()
-				dc.read()
-
-			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
-			for uhtr_slot, uhtr_slot_results in tdc_results.iteritems():
-				for link, links in uhtr_slot_results.iteritems():
-					for channel, chip_results in links.iteritems():
-						for k in range(len(chip_results)):
-							if chip_results[k] < 63:
-								key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
-								if setting == 0: phase_results[key]=[]
-								phase_results[key].append(chip_results[k])
-								break
-							if k == len(chip_results)-1:
-								key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
-								if setting == 0: phase_results[key]=[]
-								phase_results[key].append(chip_results[k])	
-		#Reset phases and internal charge injection to default
-		for qslot in self.qcards:
-			dc=hw.getDChains(qslot, self.bus)
-			hw.SetQInjMode(0, qslot, self.bus)
-			dc.read()
-			for chip in xrange(12):
-				dc[chip].PhaseDelay(0)
-			dc.write()
-			dc.read()
-		#Analyze phase results
-		cwd=os.getcwd()
-	       
-		#analyze results and make graphs
-		if not os.path.exists("phase_plots"):	
-			os.makedirs("phase_plots")
-		os.chdir(cwd  + "/phase_plots")
-		
-		for qslot in self.qcards:
-			for chip in xrange(12):
-				chip_map=self.get_QIE_map(qslot, chip)
-				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
-				chip_arr = phase_results[phase_key]
-				
-				#slopeTest = False
-				#results = False
-				slope = graph_results(self.uHTR_log, "phase", phase_settings, chip_arr, "{0}_{1}".format(qslot, chip))
-
-				#if slope <= 3 and slope >= 2: slopeTest=True
-				# Fill master_dict with phase test results
-				#if slopeTest == True: results=True
-				#self.update_QIE_results(qslot, chip, "phase", results)
-
-				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+		self.make_histo("ci", histo_slopes, 0, 2)
 		os.chdir(cwd)
 
  
@@ -349,9 +291,77 @@ class uHTR():
 		os.chdir(cwd + "/histo_statistics")
 		
 		for i, setting in enumerate(setting_list):
-			make_histo(self.uHTR_log, "shunt", histo_ratios[i], nominalGainRatios[i]*0.85, nominalGainRatios[i]*1.15, setting)
-		
+			self.make_histo("shunt", histo_ratios[i], nominalGainRatios[i]*0.85, nominalGainRatios[i]*1.15, setting)	
 		os.chdir(cwd)
+
+
+	def phase_test(self):
+		#Valid settings for phase are in two distinct ranges offset by 1 BX
+		phase_settings = range(0,50) + range(64,114)
+		phase_results={}
+		phase_results["settings"]=phase_settings
+		for setting in phase_settings:
+			print "testing phase setting", setting
+			for qslot in self.qcards:
+				hw.SetQInjMode(1, qslot, self.bus)
+				dc=hw.getDChains(qslot, self.bus)
+				dc.read()
+				for chip in xrange(12):
+					dc[chip].PhaseDelay(setting)
+					dc[chip].ChargeInjectDAC(8640)
+					dc[chip].TimingThresholdDAC(0)
+				dc.write()
+				dc.read()
+
+			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
+			for uhtr_slot, uhtr_slot_results in tdc_results.iteritems():
+				for link, links in uhtr_slot_results.iteritems():
+					for channel, chip_results in links.iteritems():
+						for k in range(len(chip_results)):
+							if chip_results[k] < 63:
+								key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
+								if setting == 0: phase_results[key]=[]
+								phase_results[key].append(chip_results[k])
+								break
+							if k == len(chip_results)-1:
+								key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
+								if setting == 0: phase_results[key]=[]
+								phase_results[key].append(chip_results[k])	
+		#Reset phases and internal charge injection to default
+		for qslot in self.qcards:
+			dc=hw.getDChains(qslot, self.bus)
+			hw.SetQInjMode(0, qslot, self.bus)
+			dc.read()
+			for chip in xrange(12):
+				dc[chip].PhaseDelay(0)
+			dc.write()
+			dc.read()
+		#Analyze phase results
+		cwd=os.getcwd()
+	       
+		#analyze results and make graphs
+		if not os.path.exists("phase_plots"):	
+			os.makedirs("phase_plots")
+		os.chdir(cwd  + "/phase_plots")
+		
+		for qslot in self.qcards:
+			for chip in xrange(12):
+				chip_map=self.get_QIE_map(qslot, chip)
+				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
+				chip_arr = phase_results[phase_key]
+				
+				#slopeTest = False
+				#results = False
+				slope = self.graph_results("phase", phase_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+
+				#if slope <= 3 and slope >= 2: slopeTest=True
+				# Fill master_dict with phase test results
+				#if slopeTest == True: results=True
+				#self.update_QIE_results(qslot, chip, "phase", results)
+
+				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+		os.chdir(cwd)
+
 
 #############################################################
 
@@ -497,6 +507,93 @@ class uHTR():
 		return TDCInfo 
 
 ############################################################
+
+#############################################################
+# Make ROOT things
+#############################################################
+
+	def graph_results(self, test, x, y, key):
+		if len(x) != len(y):
+			print "Sets are of unequal length"
+			return None
+		
+		if test == "ped":
+			title="Pedestal Test Results {0}".format(key)
+			ytitle="Pedestal Bin Max (fC)"
+			plot_base="ped_{0}".format(key)
+			adc=hw.ADCConverter()
+			for i, yi in enumerate(y):
+				y[i]=adc.linearize(yi)
+			fit=ROOT.TF1("fit", "[0] + [1]*x", -2, 31)
+
+		if test == "ci":
+			title="Charge Injection Test Results {0}".format(key)
+			ytitle="Charge Injection Bin Max (fC)"
+			plot_base="ci_{0}".format(key)
+			fit=ROOT.TF1("fit", "[0] + [1]*x", 0, 0)			
+
+		if test == "phase":
+			title="Phase Sweep Test Results {0}".format(key)
+			ytitle="TDC Value (ns)"
+			plot_base="phase_{0}".format(key)
+			fit=ROOT.TF1("fit", "[0] + [1]*x")
+
+		c = self.canvas
+		c.cd()
+
+		g = ROOT.TGraph()
+		for i in xrange(len(x)):
+			g.SetPoint(i, x[i], y[i])
+		g.Draw("AP")
+		g.SetMarkerStyle(22)
+		ROOT.gROOT.SetStyle("Plain")
+		g.SetTitle(title)
+		g.GetXaxis().SetTitle("Setting")
+		g.GetXaxis().CenterTitle()
+		g.GetYaxis().SetTitle(ytitle)
+		g.GetYaxis().CenterTitle()
+		g.Fit("fit","QR")
+		g.Draw("AP")
+
+		slope = g.GetFunction("fit").GetParameter(1)
+		c.Print("{0}.png".format(plot_base))
+		return slope
+
+	def make_histo(self, test, data, xmin, xmax, shunt_setting=0):
+
+		if test == "ped":
+			title = 'Pedestal Bin Max Slope Distribution'
+			legend_title = 'All Chips'
+			xtitle = "Slope"
+			ytitle = "Number of Chips"
+			plot_base="ped_{0}".format(self.uhtr_log)
+			bin_num=50
+
+		if test == "ci":
+			title = 'Charge Injection Bin Max Slope Distribution'
+			legend_title = 'All Chips'
+			xtitle = "Slope"
+			ytitle = "Number of Chips"
+			plot_base="ci_{0}".format(self.uhtr.log)
+			bin_num = 50
+
+		if test == "shunt":
+			title = 'Shunt Setting: {0} fC/LSB'.format(shunt_setting)
+			legend_title = 'All Chips'
+			xtitle = "Ratio (Shunted/Default)"
+			ytitle = "Number of Chips"
+			plot_base="shunt_{0}_{1}".format(shunt_setting, self.uhtr_log)
+			bin_num = 20
+
+		c = self.canvas
+		c.cd()
+		hist = ROOT.TH1D(legend_title, title, bin_num, xmin, xmax)
+		hist.GetXaxis().SetTitle(xtitle)
+		hist.GetYaxis().SetTitle(ytitle)
+		for datum in data:
+			if datam is not None:  hist.Fill(datum)
+		hist.Draw()
+		c.Print("{0}.png".format(plot_base))
 
 
 #############################################################
@@ -727,8 +824,7 @@ def init_links(crate, slot, attempts=0):
 		print "All crate %d, slot %d links are OFF! NOT initializing that slot!"%(crate,slot)
 		return
 	elif attempts == 1:
-		medianOrbitDelay = 22
-		initCMDS = ["0","LINK","INIT","1","%d"%(medianOrbitDelay),"0","1","1","QUIT","EXIT"]
+		initCMDS = ["0","LINK","INIT","1","22","0","1","1","QUIT","EXIT"]
 		send_commands(crate=crate, slot=slot, cmds=initCMDS)
 		init_links(crate, slot, attempts)
 	elif badLinks == 0:
@@ -820,91 +916,4 @@ def get_link_info(crate, slot):
         linkInfo["AOD Status"] = get_AOD_status(statsPrintOut)
         linkInfo["ON Status"] = get_ON_links(statsPrintOut)
 	return linkInfo
-
-#############################################################
-# Analyze test results
-#############################################################
-
-def graph_results(log, test, x, y, key):
-	if len(x) != len(y):
-		print "Sets are of unequal length"
-		return None
-	
-	if test == "ped":
-		title="Pedestal Test Results {0}".format(key)
-		ytitle="Pedestal Bin Max (fC)"
-		plot_base="ped_{0}".format(key)
-		adc=hw.ADCConverter()
-		for i, yi in enumerate(y):
-			y[i]=adc.linearize(yi)
-		fit=ROOT.TF1("fit", "[0] + [1]*x", -2, 31)
-
-	if test == "ci":
-		title="Charge Injection Test Results {0}".format(key)
-		ytitle="Charge Injection Bin Max (fC)"
-		plot_base="ci_{0}".format(key)
-		fit=ROOT.TF1("fit", "[0] + [1]*x", 0, 0)			
-
-	if test == "phase":
-		title="Phase Sweep Test Results {0}".format(key)
-		ytitle="TDC Value (ns)"
-		plot_base="phase_{0}".format(key)
-		fit=ROOT.TF1("fit", "[0] + [1]*x")
-
-	g = ROOT.TGraph()
-	for i in xrange(len(x)):
-		g.SetPoint(i, x[i], y[i])
-	c = ROOT.TCanvas("c","c",800,800)
-	c.cd()
-	g.Draw("AP")
-
-	g.SetMarkerStyle(22)
-	ROOT.gROOT.SetStyle("Plain")
-	g.SetTitle(title)
-	g.GetXaxis().SetTitle("Setting")
-	g.GetXaxis().CenterTitle()
-	g.GetYaxis().SetTitle(ytitle)
-	g.GetYaxis().CenterTitle()
-	g.Fit("fit","QR")
-	slope = g.GetFunction("fit").GetParameter(1)
-	g.Draw("AP")
-	c.Print("{0}.png".format(plot_base))
-	return slope
-
-def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
-
-	if test == "ped":
-		title = 'Pedestal Bin Max Slope Distribution'
-		legend_title = 'All Chips'
-		xtitle = "Slope"
-		ytitle = "Number of Chips"
-		plot_base="ped_{0}".format(log)
-
-	if test == "ci":
-		title = 'Charge Injection Bin Max Slope Distribution'
-		legend_title = 'All Chips'
-		xtitle = "Slope"
-		ytitle = "Number of Chips"
-		plot_base="ci_{0}".format(log)
-
-
-	if test == "phase":
-		print "hi"
-
-	if test == "shunt":
-		title = 'Shunt Setting: {0} fC/LSB'.format(shunt_setting)
-		legend_title = 'All Chips'
-		xtitle = "Ratio (Shunted/Default)"
-		ytitle = "Number of Chips"
-		plot_base="shunt_{0}_{1}".format(shunt_setting, log)
-
-	c = ROOT.TCanvas('c','c', 800,800)
-	c.cd()
-	hist = ROOT.TH1D(legend_title, title, 20, xmin, xmax)
-	hist.GetXaxis().SetTitle(xtitle)
-	hist.GetYaxis().SetTitle(ytitle)
-	for datum in data:
-	   if datam is not None:  hist.Fill(datum)
-	hist.Draw()
-	c.Print("{0}.png".format(plot_base))
 
