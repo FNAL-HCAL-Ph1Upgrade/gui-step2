@@ -24,7 +24,7 @@ if __name__ == "__main__":
 	from uHTR import *
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
+	qcard_slots=[2,3,4,5]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, qcard_slots, b)
 
@@ -32,7 +32,9 @@ if __name__ == "__main__":
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-#	uhtr.ped_test()
+	uhtr.ped_test()
+	uhtr.ci_test()
+	uhtr.shunt_test()
 	uhtr.phase_test()
 
 class uHTR():
@@ -610,8 +612,6 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 							peakCount += 1
 							chip_results["signalBinMax_%d"%(peakCount)] = binNum
 							binValue = 0	
-					if peakCount == 0:
-						chip_results["signalBinMax_1"] = None
 					chip_results["signalRMS"] = h.GetRMS()
 					
 					slot_result[histNum] = chip_results
