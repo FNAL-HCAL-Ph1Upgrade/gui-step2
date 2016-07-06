@@ -26,7 +26,7 @@ if __name__ == "__main__":
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
 	qcard_slots=[2,3,4,5]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(all_slots, qcard_slots, b)
+	uhtr = uHTR(uhtr_slots, all_slots, b)
 
 	for slot in qcard_slots:
 		for chip in xrange(12):
@@ -51,6 +51,7 @@ class uHTR():
 
 		self.qcards=qcard_slots
 
+		###ROOT.gROOT.SetBatch("kTRUE")
 		self.canvas = ROOT.TCanvas("c1", "c1", 800, 800)
 		
 		self.master_dict={}
@@ -662,7 +663,6 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
 
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
-	ROOT.gROOT.SetBatch()
 	slot_result = {}
 	f = ROOT.TFile(file_in, "READ")
 	if sepCapID:
