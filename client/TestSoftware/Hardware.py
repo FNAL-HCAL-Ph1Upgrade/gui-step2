@@ -56,13 +56,43 @@ def SetQInjMode(onOffBit, slot, bus):
     else:
         print "INVALID INPUT IN SetQInjMode... doing nothing"
 
-# Cryptic 0x70 Reset
-def reset(ngccm): #RM4,3->ngccm2 -- RM2,1->ngccm1
+# Cryptic Magic Reset on 0x70
+def magicReset(ngccm): #RM4,3->ngccm=2 -- RM2,1->ngccm=1
     b.write(0x72,[ngccm])
     b.write(0x74,[0x08])
-    b.write(0x70,[0x3,0])
-    b.write(0x70,[0x1,0])
-    b.sendBatch()
+    b.write(0x70,[0x3,0x0]) # Set to Output
+
+    # The proper way... only change the bit you want to change!
+    # b.write(0x70,[0x1])
+    # b.read(0x70,1)
+    # message = b.sendBatch()[-1]
+    # value = int(message[2:])
+    # value = value | 0x10
+
+    b.write(0x70,[0x1,0x8])
+    b.write(0x70,[0x1,0x18])
+    b.write(0x70,[0x1,0x8])
+
+    return b.sendBatch()
+
+# Power Enable on 0x70
+def powerEnable(ngccm):
+    b.write(0x72,[ngccm])
+    b.write(0x74,[0x0])
+    b.write(0x74,[0x08])
+    b.write(0x74,[0x18])
+    b.write(0x74,[0x08])
+    b.read(0x70,1)
+    batch = b.sendBatch()
+    print 'initial = ', batch
+
+    message = batch[-1][2:]
+    value = int(message) | 0x8
+    b.write(0x70,[0x1,value])
+    b.write(0x70,[0x1])
+    b.read(0x70,1)
+    batch = b.sendBatch()
+    return 'final = ', batch
 
 
 # Converts ADC to fC (Nate Chaverin's class)

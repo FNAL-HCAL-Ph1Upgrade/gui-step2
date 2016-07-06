@@ -36,6 +36,8 @@ def getBinaryListWithPolarity(integer, length):
     return getBinaryList(integer, length - 1) + [1 if integer > 0 else 0]
 
 
+
+
 #QIE Class
 class QIE:
     ############################################################################
