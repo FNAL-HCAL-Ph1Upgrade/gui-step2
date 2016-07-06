@@ -1,14 +1,16 @@
 # uHTR.py
 
 import Hardware as hw
-from DChains import DChains
-from DaisyChain import DaisyChain
-from QIE import QIE
+# from uniqueID import ID
+# from DChains import DChains
+# from DaisyChain import DaisyChain
+# from QIE import QIE
 import iglooClass_adry as i
 import os
 import sys
 import time
 import shutil
+import json
 import numpy as np
 import multiprocessing as mp
 from subprocess import Popen, PIPE
@@ -28,7 +30,7 @@ if __name__ == "__main__":
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, all_slots, b)
 
-	for slot in qcard_slots:
+	for slot in all_slots:
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
@@ -68,10 +70,13 @@ class uHTR():
 
 		#Go to uhtrResutls for dumping .pngs
 		self.cwd = os.getcwd()
-		if not os.path.exists("~/uhtrResults"):
-			os.makedirs("~/uhtrResults")
-		os.chdir("~/uhtrResults")
-
+		print os.getcwd()
+		home = os.environ['HOME']
+		os.chdir(home)
+		if not os.path.exists("uhtrResults"):
+			os.makedirs("uhtrResults")
+		os.chdir("uhtrResults")
+		print os.getcwd()
 
 		#make directory to put results histograms in
 		if not os.path.exists("histo_statistics"):
@@ -363,6 +368,47 @@ class uHTR():
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 		os.chdir(cwd)
 
+	
+	def make_jsons(self):
+		os.chdir("~/jsonResults")
+		for qslot in self.qslots:
+			#uID = ID(self.bus, qslot)
+			#qID = uID.reallyfull
+			qID = "hi"
+			name = qID + "_test_uhtr.json"
+			jd = {}
+			jd["Unique_ID"] = qID
+			jd["Jslot"] = qslot
+			jd["mapping"] = {}
+			jd["mapping"]["uHTR slot"] = self.get_qcard_map(qslot)[0]
+			jd["mapping"]["links"] = self.get_qcard_map(qslot)[1:]
+
+			jd["overall pedestal"] = self.get_qcard_results(qcard, "ped")
+			jd["overall charge injection"] = self.get_qcard_results(qcard, "ci")
+			jd["overall shunt scan"] = self.get_qcard_results(qcard, "shunt")
+			jd["overall phase scan"] = self.get_qcard_results(qcard, "phase")
+
+			jd["individual pedestal"] = {}
+			for chip in xrange(12):
+				jd["individual pedestal"][chip] = self.get_QIE_results(qcard, chip, "ped")
+			
+			jd["individual charge injection"] = {}
+			for chip in xrange(12):
+				jd["individual charge injection"][chip] = self.get_QIE_results(qcard, chip, "ci")
+
+			jd["individual shunt scan"] = {}
+			for chip in xrange(12):
+				jd["individual shunt scan"][chip] = self.get_QIE_results(qcard, chip, "shunt")
+
+			jd["individual phase scan"] = {}
+			for chip in xrange(12):
+				jd["individual phase scan"][chip] = self.get_QIE_results(qcard, chip, "phase")
+
+			with open(name, 'w') as fp:
+				json.dump(jd, fp)
+
+		os.chdir(self.cwd)
+	
 
 #############################################################
 
@@ -396,6 +442,12 @@ class uHTR():
 		link=qie["link"]
 		channel=qie["channel"]
 		return (uhtr_slot, link, channel)
+
+	def get_qcard_map(self, qslot):
+		uhtr_slot = self.get_QIE_map(qslot, 0)[0]
+		link_1 = self.get_QIE_map(qslot, 0)[1]
+		link_2 = self.get_QIE_map(qslot, 6)[1]
+		return [uhtr_slot, link_1, link_2]
 
 	def update_QIE_results(self, qslot, chip, test_key, results):
 		#results so that True = pass and False = fail
@@ -843,8 +895,7 @@ def get_BCN_status(uHTRPrintOut):
 			if len(linesList[j].split("Align BCN")) == 2:
 				BCNLine = filter(None, linesList[j].split("Align BCN"))
 				BCNList = filter(None, BCNLine[0].split(" "))
-				BCNList = map(int, BCNList)
-				BCNs = BCNs + BCNList
+				BCNs = map(int, BCNList)
 	return BCNs
 
 
