@@ -26,7 +26,7 @@ registers = {
         "address" : 0x08,
         "size" : 32,
         "RW" : 0,
-        "expected" : "0 255 255 255 255"
+        "expected" : "0 255 255 255 255" #0xFFFFFFFF in hex
         },
     "Zeroes" :{
         "address" : 0x09,
@@ -38,7 +38,7 @@ registers = {
         "address" : 0x0A,
         "size" : 32,
         "RW" : 0,
-        "expected" : "0 170 170 170 170"
+        "expected" : "0 170 170 170 170" #0xAAAAAAAA in hex
         },
     "Firmware_Ver" :{
 	"address" : 0x04,
@@ -56,7 +56,7 @@ noCheckRegis = {
 		"sleep" : 0,
 		"size" : 64,
 		"RW" : 0,
-#		"spaces" : 3 
+#		"spaces" : 3
 	},
 	"Temperature" : {
 		"i2c_path" : [0x11, 0x05, 0,0,0],
@@ -64,7 +64,7 @@ noCheckRegis = {
 		"command" : [0xf3],
 		"sleep" : 300,
 		"size" : 16,
-		"RW" : 0	
+		"RW" : 0
 	},
 	"Humidity" : {
 		"i2c_path" : [0x11, 0x05, 0,0,0],
@@ -72,7 +72,7 @@ noCheckRegis = {
 		"command" : [0xf5],
 		"sleep" : 300,
 		"size" : 16,
-		"RW" : 0	
+		"RW" : 0
 	}
 }
 
@@ -105,7 +105,7 @@ class testSuite:
 	size = noCheckRegis[testName]["size"]/8
 	command = noCheckRegis[testName]["command"]
 	napTime = noCheckRegis[testName]["sleep"]
-	
+
 	for i in xrange(iterations):
 		# Clear the backplane
 		self.bus.write(0x00,[0x06])
@@ -138,7 +138,7 @@ class testSuite:
 #	self.outCard.resultList["Barcode"]=barcode
 	self.outCard.printResults()
 	print "\n\n"
-	self.outCard.writeHumanLog()	
+	self.outCard.writeHumanLog()
 	self.outCard.writeMachineJson()
 
     def runSingleTest(self,key):
@@ -146,4 +146,3 @@ class testSuite:
 		yield self.readWithCheck(key, 100)
 	elif key in noCheckRegis:
 		yield self.readNoCheck(key, 1)
-

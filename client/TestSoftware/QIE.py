@@ -37,6 +37,89 @@ def getBinaryListWithPolarity(integer, length):
 
 
 
+################################################################################
+# qCard Class
+################################################################################
+class qCard:
+    def __init__(self, bus, address):
+        self.address = address
+        self.shiftRegisters = []
+        self.readIn(bus)
+    def __repr__(self):
+        return "qCard()"
+
+    def __str__(self):
+        s = ""
+        for i in self.shiftRegisters:
+            s += str(i)
+        return s
+    def readIn(self, bus):
+        for r in shiftRegisterAddresses:
+            b = readFromRegister(bus, self.address, r, 48)
+            self.shiftRegisters.append(QIEshiftRegister(getBitsFromBytes(b)))
+    def writeOut(self, bus):
+        for i in range(2):
+            writeToRegister(bus, self.address, shiftRegisterAddresses[i],\
+            getBytesFromBits(self.shiftRegisters[i].flatten()))
+################################################################################
+
+def readFromRegister(bus, address, register, numBytes):
+    bus.write(address, [register])
+    bus.read(address, numBytes)
+    ret = []
+    for i in bus.sendBatch()[1].split():
+        ret.append(int(i))
+    return ret
+def writeToRegister(bus, address, register, bytesToWrite):
+    bus.write(address, [register] + list(bytesToWrite))
+    return None
+
+################################################################################
+# BridgeRegister Class
+################################################################################
+class bridgeRegisters:
+    def __init__(self, name, correctVal, address, bits, write):
+        self.name = name
+        self.correctVal = correctVal
+        self.address = address
+        self.bits = bits
+        self.write = write
+
+################################################################################
+# QIEshiftRegister Class
+################################################################################
+class QIEshiftRegister:
+    def __init__(self, arr = list(0 for i in xrange(64 * 6))):
+        '''creates a shift register object with 6 QIEs, default 0s'''
+        self.QIEs = []
+        for i in xrange(6):
+            self.QIEs.append(QIE(arr[i * 64:(i + 1) * 64]))
+
+
+    def __repr__(self):
+        return "shiftRegister()"
+
+    def __str__(self):
+        r = ""
+        for q in self.QIEs:
+            r += "-------\n"
+            r += str(q)
+            r += "\n"
+            r += "-------\n"
+        return r
+    #returns a flattened array of all QIE register bits to be written as a block
+    def flatten(self):
+        '''flatten all of the bits in the register's QIEs to one list'''
+        a = []
+        for q in self.QIEs:
+            a += q.flatten()
+        return a
+################################################################################
+
+
+################################################################################
+# QIE Class
+################################################################################
 
 #QIE Class
 class QIE:
@@ -206,7 +289,7 @@ class QIE:
     def RangeSet(self, b):
         #takes 0, 1, 2, or 3
         if b >= 0 and b <= 3:
-            a = getBinaryList(magnitude, 2)
+            a = getBinaryList(b, 2)
             for i in xrange(2):
                 self[39 + i] = a[i]
         else:
@@ -257,7 +340,7 @@ class QIE:
         elif b == 1:
             self[54] = 1
         else:
-            print "INVALID INPUT IN discOn... no change made"
+            print "INVALID INPUT IN CkOutEn... no change made"
 
     #Change bit 55
     def TDCmode(self, b):
@@ -277,7 +360,7 @@ class QIE:
             #amount of hysteresis is doubled as compared to b = 0
             self[56] = 1
         else:
-            print "INVALID INPUT IN discOn... no change made"
+            print "INVALID INPUT IN Hsel... no change made"
 
    #Change bit 57-63
     def PhaseDelay(self, b):
@@ -288,6 +371,7 @@ class QIE:
                 self[57 + i] = a[i]
         else:
             print "INVALID INPUT IN PhaseDelay... no change made"
+
 
 ##############################################
 

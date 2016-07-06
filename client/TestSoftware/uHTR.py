@@ -4,6 +4,7 @@ import Hardware as hw
 from DChains import DChains
 from DaisyChain import DaisyChain
 from QIE import QIE
+import iglooClass_adry as i
 import os
 import sys
 import time
@@ -21,7 +22,6 @@ if __name__ == "__main__":
 
 	from client import webBus
 	from uHTR import *
-
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
 	qcard_slots=[2, 3, 4, 5]
@@ -565,8 +565,8 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 
 				slot_result[histNum] = chip_results
 
-	else:
-                if signal:
+	else: #Josh
+		if signal:
 			for i_link in range(24):
 				for i_ch in range(6):
 					histNum = 6*i_link + i_ch
@@ -809,7 +809,7 @@ def get_link_info(crate, slot):
 	return linkInfo
 
 #############################################################
-# Analyze test results  
+# Analyze test results
 #############################################################
 
 def graph_results(log, test, x, y, key):
@@ -891,4 +891,4 @@ def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
 	    hist.Fill(datum)
 	hist.Draw()
 	c.Print("{0}.png".format(plot_base))
-	
+	c.Delete()
