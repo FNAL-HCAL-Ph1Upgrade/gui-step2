@@ -345,31 +345,7 @@ class uHTR():
 # Adding and extracting data from the master_dict
 #############################################################
 
-	def get_QIE(self, qslot, chip):
-		### Returns the dictionary storing the test results of the specified QIE chip
-		key="({0}, {1})".format(qslot, chip)
-		return self.master_dict[key]
-
-	def get_QIE_results(self, qslot, chip, test_key):
-		### Returns the (pass, fail) tuple of specific test
-		qie_results=self.get_QIE(qslot, chip)[test_key]
-		return (qie_results[0], qie_results[1])
-
-	def update_QIE_results(self, qslot, chip, test_key, results):
-		#results so that True = pass and False = fail
-		qie_results=self.get_QIE(qslot, chip)[test_key]
-		if results: qie_results[0]+=1
-		else: qie_results[1]+=1
-
-	def get_QIE_map(self, qslot, chip):
-		key="({0}, {1})".format(qslot, chip)
-                qie=self.master_dict[key]
-		uhtr_slot=qie["uhtr_slot"]
-		link=qie["link"]
-		channel=qie["channel"]
-		return (uhtr_slot, link, channel)
-
-	def add_QIE(self, qcard_slot, chip, uhtr_slot, link, channel):
+	def add_QIE(self, qslot, chip, uhtr_slot, link, channel):
 		QIE_info={}
 		QIE_info["uhtr_slot"]=uhtr_slot
 		QIE_info["link"]=link
@@ -379,8 +355,40 @@ class uHTR():
 		QIE_info["ci"]=[0,0]
 		QIE_info["phase"]=[0,0]
 		QIE_info["shunt"]=[0,0]
-		key="({0}, {1})".format(qcard_slot, chip)
+		key="({0}, {1})".format(qslot, chip)
 		self.master_dict[key]=QIE_info
+
+	def get_QIE(self, qslot, chip):
+		### Returns the dictionary storing the test results of the specified QIE chip
+		key="({0}, {1})".format(qslot, chip)
+		return self.master_dict[key]
+
+	def get_QIE_map(self, qslot, chip):
+		key="({0}, {1})".format(qslot, chip)
+                qie=self.master_dict[key]
+		uhtr_slot=qie["uhtr_slot"]
+		link=qie["link"]
+		channel=qie["channel"]
+		return (uhtr_slot, link, channel)
+
+	def update_QIE_results(self, qslot, chip, test_key, results):
+		#results so that True = pass and False = fail
+		qie_results=self.get_QIE(qslot, chip)[test_key]
+		if results: qie_results[0]+=1
+		else: qie_results[1]+=1
+
+	def get_QIE_results(self, qslot, chip, test_key):
+		### Returns the (pass, fail) tuple of specific test
+		qie_results=self.get_QIE(qslot, chip)[test_key]
+		return (qie_results[0], qie_results[1])
+	
+	def get_qcard_results(self, qslot, test_key):
+		p = 0
+		f = 0
+		for chip in xrange(12):
+			p += self.get_QIE_results(qslot, chip, test_key)[0]
+			f += self.get_QIE_results(qslot, chip, test_key)[1]
+		return (p, f)
 
 #############################################################
 
@@ -891,7 +899,7 @@ def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
 	hist.GetXaxis().SetTitle(xtitle)
 	hist.GetYaxis().SetTitle(ytitle)
 	for datum in data:
-	    hist.Fill(datum)
+	   if datam is not None:  hist.Fill(datum)
 	hist.Draw()
 	c.Print("{0}.png".format(plot_base))
 
