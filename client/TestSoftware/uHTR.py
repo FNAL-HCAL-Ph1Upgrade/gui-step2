@@ -26,7 +26,7 @@ if __name__ == "__main__":
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
 	qcard_slots=[2,3,4,5]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(all_slots, qcard_slots, b)
+	uhtr = uHTR(uhtr_slots, qcard_slots, b)
 
 	for slot in qcard_slots:
 		for chip in xrange(12):
@@ -843,8 +843,7 @@ def get_BCN_status(uHTRPrintOut):
 			if len(linesList[j].split("Align BCN")) == 2:
 				BCNLine = filter(None, linesList[j].split("Align BCN"))
 				BCNList = filter(None, BCNLine[0].split(" "))
-				BCNList = map(int, BCNList)
-				BCNs = BCNs + BCNList
+				BCNs = map(int, BCNList)
 	return BCNs
 
 
@@ -857,6 +856,7 @@ def get_ON_links(uHTRPrintOut):
 				ONLine = filter(None, linesList[j].split("BadCounter"))
 				ONList = filter(None, ONLine[0].split(" "))
 				ONLinks = ONLinks + ONList
+				print ONLinks
 	return ONLinks
 
 
@@ -889,6 +889,9 @@ def median_orbit_delay(linkInfo):
 	for k in range(len(linkInfo["BCN Status"])):
 		if linkInfo["ON Status"][k] == "ON":
 			BCNList = BCNList + [linkInfo["BCN Status"][k]]
+
+	if len(BCNList) == 0:
+		BCNList = [22]
 	BCNMedian = int(np.median(BCNList))
 	return BCNMedian
 
