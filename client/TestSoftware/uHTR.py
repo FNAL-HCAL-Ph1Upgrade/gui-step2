@@ -14,6 +14,7 @@ import multiprocessing as mp
 from subprocess import Popen, PIPE
 from commands import getoutput
 from collections import defaultdict
+from datetime import datetime
 import ROOT
 
 
@@ -31,14 +32,16 @@ if __name__ == "__main__":
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-#	uhtr.ped_test()
-#	uhtr.ci_test()
+	uhtr.ped_test()
+	uhtr.ci_test()
 #	uhtr.phase_test()
 	uhtr.shunt_test()
 
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
+
+		self.uHTR_log = "{:%b%d%Y_%H%M%S}".format(datetime.now())
 
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
@@ -119,7 +122,7 @@ class uHTR():
 				results = False
 				for num in xrange(28):
 					if chip_arr[num] != 1: flat_test=False
-				slope = graph_results(ped_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ped")
+				slope = graph_results(self.uHTR_log, "ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				if slope <= 2.4 and slope >=2.15: slope_test = True
 				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}".format(qslot, chip, slope, flat_test, slope_test)
 				
@@ -133,7 +136,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-#		make_histo("ped", histo_slopes, 0, 2)
+		make_histo(self.uHTR_log, "ped", histo_slopes, 0, 2)
 		os.chdir(cwd)
 
 
@@ -182,7 +185,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ci_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ci_results[ci_key]
-				slope = graph_results(ci_settings, chip_arr, "{0}_{1}".format(qslot, chip), "ci")
+				slope = graph_results(self.uHTR_plot, "ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 
 				#update slopes for final histogram
@@ -191,7 +194,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-#		make_histo("ci", slopes, 0, 2)
+		make_histo("ci", slopes, 0, 2)
 		os.chdir(cwd)
 
 
@@ -254,14 +257,14 @@ class uHTR():
 		default_peaks_avg = 0
 		adc = hw.ADCConverter()
 		
-		setting_list = [3.1, 4.65, 6.2, 9.3, 12.4, 15.5, 18.6, 21.7, 24.8] # fC/LSB gains in GSel table
-		gain_settings = [0,1,2,4,8,16,18,20,24]
+		setting_list = [3.1, 4.65, 6.2, 9.3, 12.4, 15.5, 18.6, 21.7, 24.8, 27.9, 31, 34.1, 35.65] # fC/LSB gains in GSel table
+		gain_settings = [0, 1, 2, 4, 8, 16, 18, 20, 24, 26, 28, 30, 31]
 		
 		#ratio between default 3.1fC/LSB and itself/other GSel gains
-		nominalGainRatios = [1.0, .667, .5, .333, .25, .2, .167, .143, 0.125]
+		nominalGainRatios = [1.0, 0.667, 0.5, 0.333, 0.25, 0.2, 0.167, 0.143, 0.125, 0.111, 0.1, 0.091, 0.087]
 
 		histo_ratios=[]
-		for x in xrange(9):
+		for x in xrange(len(gain_settings)):
 			histo_ratios.append(x)
 			histo_ratios[x] = []
 		
@@ -313,7 +316,7 @@ class uHTR():
 				for setting in xrange(len(peak_results[peak_key])):
 					ratio = float(peak_results[peak_key][setting]) / default_peaks_avg     #ratio between shunt-adjusted peak & default peak
 					histo_ratios[setting].append(ratio)
-					if (ratio < nominalGainRatios[setting]*1.1 and ratio > nominalGainRatios[setting]*0.9):     #within 10% of nominal
+					if (ratio < nominalGainRatios[setting]*1.15 and ratio > nominalGainRatios[setting]*0.85):     #within 15% of nominal
 						setting_result = True
 						grand_ratio_pf[0]+=1
 					else:
@@ -332,7 +335,7 @@ class uHTR():
 		os.chdir(cwd + "/histo_statistics")
 		
 		for i, setting in enumerate(setting_list):
-			make_histo("shunt", histo_ratios[i], nominalGainRatios[1]*0.85, nominalGainRatios[1]*1.15, setting)
+			make_histo(self.uHTR_log, "shunt", histo_ratios[i], nominalGainRatios[i]*0.85, nominalGainRatios[i]*1.15, setting)
 		
 		os.chdir(cwd)
 
@@ -445,7 +448,7 @@ class uHTR():
 			slot_num = str(file.split('_')[-1].split('.root')[0])
 
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-		#shutil.rmtree(out_dir)
+		shutil.rmtree(out_dir)
 		return histo_results
 
 #############################################################
@@ -809,7 +812,7 @@ def get_link_info(crate, slot):
 # Analyze test results
 #############################################################
 
-def graph_results(x, y, key, test):
+def graph_results(log, test, x, y, key):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
@@ -852,23 +855,32 @@ def graph_results(x, y, key, test):
 	c.Print("{0}.png".format(plot_base))
 	return slope
 
-def make_histo(test, data, xmin, xmax, shunt_setting=0):
+def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
 
 	if test == "ped":
-		print "hi"
+		title = 'Pedestal Bin Max Slope Distribution'
+		legend_title = 'All Chips'
+		xtitle = "Slope"
+		ytitle = "Number of Chips"
+		plot_base="ped_{0}".format(log)
 
 	if test == "ci":
-		print "dere"
+		title = 'Charge Injection Bin Max Slope Distribution'
+		legend_title = 'All Chips'
+		xtitle = "Slope"
+		ytitle = "Number of Chips"
+		plot_base="ci_{0}".format(log)
+
 
 	if test == "phase":
-		print "Hola pronouncing the h like some gringo"
+		print "hi"
 
 	if test == "shunt":
 		title = 'Shunt Setting: {0} fC/LSB'.format(shunt_setting)
-		lengend_title = 'All Chips'
+		legend_title = 'All Chips'
 		xtitle = "Ratio (Shunted/Default)"
 		ytitle = "Number of Chips"
-		plot_base="shunt_{0}".format(shunt_setting)
+		plot_base="shunt_{0}_{1}".format(shunt_setting, log)
 
 	c = ROOT.TCanvas('c','c', 800,800)
 	c.cd()
