@@ -32,8 +32,8 @@ if __name__ == "__main__":
 		for chip in xrange(12):
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
-	uhtr.ped_test()
-	uhtr.ci_test()
+#	uhtr.ped_test()
+#	uhtr.ci_test()
 #	uhtr.phase_test()
 	uhtr.shunt_test()
 
@@ -136,7 +136,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo(self.uHTR_log, "ped", histo_slopes, 0, 2)
+		make_histo(self.uHTR_log, "ped", histo_slopes, 0, 5)
 		os.chdir(cwd)
 
 
@@ -164,12 +164,11 @@ class uHTR():
 	                        for chip, chip_results in uhtr_slot_results.iteritems():
 					key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
 					if setting == 90: ci_results[key]=[]
-
 				       	if 'signalBinMax_1' in chip_results:
 						totalSignal = adc.linearize(chip_results['signalBinMax_1'])
 						if 'signalBinMax_2' in chip_results:	# get 2nd peak if needed
 							totalSignal += adc.linearize(chip_results['signalBinMax_2'])
-					ci_results[key].append(totalSignal)
+						ci_results[key].append(totalSignal)
 
 		#Turn off charge injection
 		for qslot in self.qcards:
@@ -185,7 +184,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ci_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ci_results[ci_key]
-				slope = graph_results(self.uHTR_plot, "ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+				slope = graph_results(self.uHTR_log, "ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 
 				#update slopes for final histogram
@@ -194,7 +193,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo("ci", slopes, 0, 2)
+		make_histo(self.uHTR_log, "ci", histo_slopes, 0, 2)
 		os.chdir(cwd)
 
 
@@ -291,9 +290,9 @@ class uHTR():
 						totalSignal = adc.linearize(chip_results['signalBinMax_1'])
 						if 'signalBinMax_2' in chip_results:	# get 2nd peak if needed
 							totalSignal += adc.linearize(chip_results['signalBinMax_2'])
-					peak_results[key].append(totalSignal)
-					if setting == 0:
-						default_peaks.append(totalSignal)
+						peak_results[key].append(totalSignal)
+						if setting == 0:
+							default_peaks.append(totalSignal)
 
 		# reset Gsel to zero
 		for qslot in self.qcards:
@@ -392,6 +391,7 @@ class uHTR():
 
 	def QIE_mapping(self):
 		# Records the uHTR slot, link, and channel of each QIE in master_dict
+		failures=[]
 		for qslot in self.qcards:
 			print "mapping qslot", qslot
 			dc=hw.getDChains(qslot, self.bus)
@@ -413,15 +413,18 @@ class uHTR():
 				else:
 					print "mapping qcard {0} failed".format(qslot)
 					self.qcards.remove(qslot)
+					failures.append(qslot)
 			for num in xrange(12):
-				dc[num].PedestalDAC(-9)
+				dc[num].PedestalDAC(6)
 				dc.write()
 				dc.read()
-
+		
+		for failure in failures:
+			self.qcards.remove(failure)
 
 	def get_mapping_histo(self):
 		# matches histo to QIE chip for mapping
-		map_results=self.get_histo_results(out_dir="map_test")
+		map_results=self.get_histo_results(out_dir="map_histos")
 		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
 			for chip, chip_results in uhtr_slot_results.iteritems():
 				if chip_results["pedBinMax"] > 15:
@@ -565,7 +568,7 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 
 				slot_result[histNum] = chip_results
 
-	else: #Josh
+	else:
 		if signal:
 			for i_link in range(24):
 				for i_ch in range(6):
@@ -891,4 +894,4 @@ def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
 	    hist.Fill(datum)
 	hist.Draw()
 	c.Print("{0}.png".format(plot_base))
-	c.Delete()
+
