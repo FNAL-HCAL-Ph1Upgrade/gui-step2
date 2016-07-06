@@ -14,8 +14,7 @@ class testSummary:
 			"Zeroes" : [0,0], "OnesZeroes" : [0,0], "Firmware_Ver" : [0,0],
 			"Status" : [0,0], "TempPass" : [0,0], "HumiPass" : [0,0],
 			"Scratch" : [0,0], "ClockCnt" : [0,0], "QIECount" : [0,0],
-			"WTECount" : [0,0], "BkPln_1" : [0,0], "BkPln_2" : [0,0], "BkPln_3" :[0,0],
-			"zeroOrbits" : [0,0]
+			"WTECount" : [0,0], "zeroOrbits" : [0,0]
 		}
 		self.iglooList = {"fpgaMajVer" : [0,0], "fpgaMinVer" : [0,0], "iglooOnes" : [0,0],
 			"iglooZeros" : [0,0],"fpgaTopOrBot" : [0,0], "iglooUID" : [0,0],

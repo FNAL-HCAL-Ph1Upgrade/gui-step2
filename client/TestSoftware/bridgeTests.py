@@ -69,7 +69,7 @@ class OnesZeroes(Test):
 
 class Firmware_Ver(Test):
 	def testBody(self):
-		self.criteria = "0 0 0 11 01"
+		self.criteria = "0 64 17 14 1"
 		self.bus.write(self.address, [0x04])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -174,38 +174,6 @@ class WTE_Counter(Test):
 		else: 
 			return False
 
-class BkPln_Spare_1(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x15])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO, first char can't be 1
-			return True
-		else: 
-			return False
-
-class BkPln_Spare_2(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x16])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO, but first char can't be 1
-			return True
-		else: 
-			return False
-
-class BkPln_Spare_3(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x17])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO, but first char can't be 1
-			return True
-		else: 
-			return False
 class ControlReg(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"

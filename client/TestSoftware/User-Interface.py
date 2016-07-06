@@ -57,6 +57,8 @@ class makeGui:
 		# the TestSummary instances that get sent out
 		self.outSummaries = []
 
+		# Make a flag for fan power
+		self.fanPowerFlag = False
 
 		# Name the parent. This is mostly for bookkeeping purposes
 		# and doesn't really get used too much.
@@ -520,6 +522,17 @@ class makeGui:
 			)
 		self.qie_resetButton.pack(side=TOP)
 
+		# Make a button to cycle fan power
+		self.qie_fanButton = Button(self.qie_subTopMid_frame, command=self.powerFanPress)
+		self.qie_fanButton.configure(text="Toggle Fans On/Off", bg="#F30033")
+		self.qie_fanButton.configure(
+			width=button_width*4,
+			padx=button_padx,
+			pady=button_pady
+			)
+		self.qie_fanButton.pack(side=TOP)
+
+
 		# Make a button to reset the backplane
 		self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.powerResetPress)
 		self.qie_resetButton.configure(text="Reset/Cycle Power", bg="#E60066")
@@ -699,13 +712,15 @@ class makeGui:
 
 	def runTestSuite(self):
 		print str(datetime.now())
+		uHTR_outList = self.uHTR_tester_bttnPress()
 		self.magicResetPress()
 		self.qie_resetPress()
 		for k in self.outSummaries:
 			k.cardGenInfo["User"] = self.nameChoiceVar.get()
 		self.prepareOutSlots()
 		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
-		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection, self.piChoiceVar.get(), int(self.iterationVar.get()))
+		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection,
+					     self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList)
 		self.myTestStand.runAll()
 		print str(datetime.now())
 
@@ -714,7 +729,7 @@ class makeGui:
 		for i in range(len(self.uHTR_slotNumber)):
 			if (self.uHTR_slotNumber[i].get() == 1):
 				outSlotList.append(i)
-		histgen.histo_tests(41, outSlotList, 1000, 0, "","shauntest")
+		return outSlotList
 
 	def magicResetPress(self):
 		b = webBus(self.piChoiceVar.get(),0)
@@ -742,7 +757,17 @@ class makeGui:
 			b.write(0x74,[0x08])
 			b.write(0x70,[0x08,0])
 			b.sendBatch()
-		print "\n\nPower reset completed!\n\n"
+		print "\n\nPower Reset Completed!\n\n"
+
+	def powerFanPress(self):
+		if (self.fanPowerFlag == False):
+			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
+			self.fanPowerFlag = True
+			print "\nFans enabled!\n"
+		elif (self.fanPowerFlag == True):
+			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python stopfans.py", shell=True)
+			self.fanPowerFlag = False
+			print "\nFans disabled!\n"
 	
 	def prepareOutSlots(self):
 		self.outSlotNumbers = []

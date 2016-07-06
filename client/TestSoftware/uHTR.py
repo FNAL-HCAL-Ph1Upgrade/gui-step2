@@ -473,7 +473,7 @@ def get_link_info(crate, slot):
 # Analyze test results  
 #############################################################
 
-def analyze_results(x, y)
+def analyze_results(x, y):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None

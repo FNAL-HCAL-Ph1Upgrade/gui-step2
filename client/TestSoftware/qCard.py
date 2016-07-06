@@ -31,7 +31,7 @@ class qCard:
         return s
 
 #   def runAll(self,barcode):
-    def runAll(self,inBus,suiteSelection,iters):
+    def runAll(self, inBus, suiteSelection, iters):
         '''Run all tests'''
         t = tests.testSuite(inBus, self.address, self.outCard, iters)
 	t.runTests(suiteSelection)

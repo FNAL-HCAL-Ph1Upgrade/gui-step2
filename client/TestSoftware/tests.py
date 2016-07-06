@@ -9,6 +9,7 @@ import client
 import helpers
 import Test
 import listOfTests
+import uHTR
 import vttxLib
 import temp
 from checksumClass import Checksum
@@ -61,6 +62,8 @@ class testSuite:
 	self.vttxRegs_2  = listOfTests.initializeVttxList_2(self.b, self.a, i)
 	self.longRegs  = listOfTests.initializeLongTests(self.b, self.a, i)
 
+#######################################################################################
+
     # This function is used for getting stuff like temp., humid., and UID
     def readNoCheck(self, testName, iterations = 1):
 	# Assign some names for read/write parameters
@@ -105,8 +108,11 @@ class testSuite:
 			new_r[0] = helpers.reverseBytes(new_r[0])
 			new_r[0] = helpers.toHex(new_r[0])
 			self.outCard.cardGenInfo[testName]=new_r[0]
+
 	elif (testName == "Temperature" or testName == "Humidity"):
 		self.outCard.cardGenInfo[testName] = temp.readManyTemps(self.a,15,testName,"nohold")
+
+################################################################################################
 
     def openIgloo(self, slot):
 	#the igloo is value "3" in I2C_SELECT table
@@ -117,6 +123,7 @@ class testSuite:
     	self.b.write(slot,[0x11] + vttxLib.vttx["i2c_select"][vttxNum])
     	self.b.sendBatch()
 
+##################################################################################################
 
     # The following function is for when we want to run ALL
     # tests on ALL active cards.
@@ -182,7 +189,8 @@ class testSuite:
 			print r+" tests completed."
 
 	if (suite == "main" or suite == "long"):
-		if (temp.readManyTemps(self.a,5,"Temperature","nohold") >= 55):
+		# Immediately quit tests if the card gets too hot
+		if (temp.readManyTemps(self.a,5,"Temperature","nohold") >= tempThreshold):
 			return None
 		print "\n-------------------------"
 		print "Running long tests!"
@@ -203,6 +211,8 @@ class testSuite:
 	self.outCard.printResults()
 	print "\n\n"
 	self.outCard.writeMachineJson()
+
+#############################################################################################################
 
     def runSingleTest(self,key):
 	if key in registers:

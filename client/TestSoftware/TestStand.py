@@ -2,15 +2,17 @@
 
 import RM
 import sys
+import uHTR
 sys.path.append('../')
 from client import webBus
 
 class TestStand:
-    def __init__(self, activeSlots, summaryList, suiteSelection, piAddress, iterations):
+    def __init__(self, activeSlots, summaryList, suiteSelection, piAddress, iterations, uHTR_slots):
         '''Create a test stand object filled with necessary RMs, cards'''
 	self.bus = webBus(piAddress, 0)
 	self.suiteSelection = suiteSelection	
 	self.iters = iterations
+	self.uHTR_slots = uHTR_slots
 
         self.activeSlots = activeSlots
         self.RMs = []
@@ -51,8 +53,17 @@ class TestStand:
 
     def runAll(self):
 	    for r in self.RMs:
-		r.runAll(self.suiteSelection,self.iters)
-
+		r.runAll(self.suiteSelection, self.iters)
+	    # uHTR tests need to be ran here, instead of being ran further down the line.
+#	    if (self.suiteSelection in ["main","uhtr"]):
+#		print "\n-------------------------"
+#		print "Running uHTR tests!"
+#		print "-------------------------"
+#		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus)
+#		self.uHTR_instance.ped_test()
+#		self.uHTR_instance.charge_inject_test()
+		
+		
     def runSingle(self, key):
         for r in self.RMs:
             r.runSingle(key)
@@ -60,6 +71,7 @@ class TestStand:
     def __repr__(self):
         '''Object representation'''
         return "TestStand()"
+
     def __str__(self):
         '''Return string representation of object data'''
         s = ""
