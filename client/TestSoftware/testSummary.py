@@ -57,31 +57,7 @@ class testSummary:
 		for i in self.longTestList:
 			print i+ ": ", self.longTestList[i]
 
-	def writeHumanLog(self):
-		if (self.cardGenInfo["Unique_ID"] != ""):
-			with open("humanTest.log", "a") as w:
-				w.write("\nGENERAL INFO: \n")
-				for i in self.cardGenInfo:
-					w.write(i+": "+str(self.cardGenInfo[i])+"\n")
 
-				w.write("\n\nBRIDGE TESTS: \n")
-				for i in self.resultList:
-					w.write(i+": "+str(self.resultList[i])+"\n")
-				w.write("\n")
-
-				w.write("\n\nIGLOO TESTS: \n")
-				for i in self.iglooList:
-					w.write(i+": "+str(self.iglooList[i])+"\n")
-
-				w.write("\n\n\nVTTX-1 TESTS: \n")
-				for i in self.vttxListOne:
-					w.write(i+": "+str(self.vttxListOne[i])+"\n")
-
-				w.write("\n\n\nVTTX_2 TESTS: \n")
-				for i in self.vttxListTwo:
-					w.write(i+": "+str(self.vttxListTwo[i])+"\n")
-				w.write("------------------------------------")
-	
 	def writeMachineJson(self):
 		if (self.cardGenInfo["Unique_ID"] != ""):
 			fileName = str(self.cardGenInfo["Unique_ID"].replace(" ","")+"_test_raw.json")

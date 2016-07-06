@@ -276,7 +276,7 @@ class QIE:
         else:
             print "INVALID INPUT IN Hsel... no change made"
 
-    #Change bit 57-63
+   #Change bit 57-63
     def PhaseDelay(self, b):
         #takes arguments 0 - 127
         if b <= 127 and b >= 0:

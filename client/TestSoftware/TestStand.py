@@ -55,13 +55,15 @@ class TestStand:
 	    for r in self.RMs:
 		r.runAll(self.suiteSelection, self.iters)
 	    # uHTR tests need to be ran here, instead of being ran further down the line.
-#	    if (self.suiteSelection in ["main","uhtr"]):
-#		print "\n-------------------------"
-#		print "Running uHTR tests!"
-#		print "-------------------------"
-#		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus)
-#		self.uHTR_instance.ped_test()
-#		self.uHTR_instance.charge_inject_test()
+	    if (self.suiteSelection in ["main","uhtr"]):
+		print "\n-------------------------"
+		print "Running uHTR tests!"
+		print "-------------------------"
+		print "DEBUG... Active Slots: ", self.activeSlots
+		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus)
+		#self.uHTR_instance.ped_test()
+		#self.uHTR_instance.ci_test()
+		self.uHTR_instance.shunt_test()
 		
 		
     def runSingle(self, key):
