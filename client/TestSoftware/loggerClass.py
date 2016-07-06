@@ -9,7 +9,7 @@ class logger():
 
 	def __init__(self, fileName):
 		self.terminal = sys.stdout
-		self.log = open(fileName, "a")
+		self.log = open("/home/hep/logResults/"+fileName, "a")
 
 	def write(self, message):
 		self.terminal.write(message)
