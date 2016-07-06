@@ -26,7 +26,7 @@ if __name__ == "__main__":
 	from uHTR import uHTR
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[2,3,4,5]
+	qcard_slots=[5]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, all_slots, b)
 
@@ -35,9 +35,9 @@ if __name__ == "__main__":
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 #	uhtr.ped_test()
-	uhtr.ci_test()
+#	uhtr.ci_test()
 #	uhtr.shunt_test()
-#	uhtr.phase_test()
+	uhtr.phase_test()
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus):
@@ -53,8 +53,8 @@ class uHTR():
 
 		self.qcards=qcard_slots
 
-		###ROOT.gROOT.SetBatch("kTRUE")
-		self.canvas = ROOT.TCanvas("c1", "c1", 800, 800)
+		ROOT.gROOT.SetBatch(0)
+		self.canvas = ROOT.TCanvas("c", "c", 800, 800)
 		
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
@@ -318,7 +318,11 @@ class uHTR():
 					dc[chip].TimingThresholdDAC(0)
 				dc.write()
 				dc.read()
-
+			"""
+			for slot in self.uhtr_slots:
+                                 init_links(self.crate, slot)
+                                 print "Reinitialized links"
+			"""
 			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
 			for uhtr_slot, uhtr_slot_results in tdc_results.iteritems():
 				for link, links in uhtr_slot_results.iteritems():
@@ -591,7 +595,7 @@ class uHTR():
 			plot_base="phase_{0}".format(key)
 			fit=ROOT.TF1("fit", "[0] + [1]*x")
 
-		c = self.canvas
+		c = ROOT.TCanvas("c","c",800,800) 
 		c.cd()
 
 		g = ROOT.TGraph()
@@ -830,6 +834,7 @@ def get_tdcs(crate, slots):
 		
 		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
+		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
 
 	return rawDictionary
@@ -880,6 +885,7 @@ def init_links(crate, slot, attempts=0):
 		send_commands(crate=crate, slot=slot, cmds=initCMDS)
 		init_links(crate, slot, attempts)
 	elif badLinks == 0:
+		time.sleep(2)
 		return
 	else:
 		initCMDS = ["0","LINK","INIT","1","%d"%(medianOrbitDelay),"0","1","1","QUIT","EXIT"]
@@ -940,6 +946,9 @@ def median_orbit_delay(linkInfo):
 	for k in range(len(linkInfo["BCN Status"])):
 		if linkInfo["ON Status"][k] == "ON":
 			BCNList = BCNList + [linkInfo["BCN Status"][k]]
+
+	if len(BCNList) == 0:
+		BCNList = [22]
 	BCNMedian = int(np.median(BCNList))
 	return BCNMedian
 
