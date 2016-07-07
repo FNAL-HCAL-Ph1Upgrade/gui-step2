@@ -7,12 +7,14 @@ sys.path.append('../')
 from client import webBus
 
 class TestStand:
-    def __init__(self, activeSlots, summaryList, suiteSelection, piAddress, iterations, uHTR_slots):
+    def __init__(self, activeSlots, summaryList, suiteSelection, piAddress, iterations, uHTR_slots, user, overwrite):
         '''Create a test stand object filled with necessary RMs, cards'''
 	self.bus = webBus(piAddress, 0)
 	self.suiteSelection = suiteSelection	
 	self.iters = iterations
 	self.uHTR_slots = uHTR_slots
+	self.user = user
+	self.overwrite = overwrite
 
         self.activeSlots = activeSlots
         self.RMs = []
@@ -60,9 +62,9 @@ class TestStand:
 		print "Running uHTR tests!"
 		print "-------------------------"
 		print "DEBUG... Active Slots: ", self.activeSlots
-		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus)
-		#self.uHTR_instance.ped_test()
-		#self.uHTR_instance.ci_test()
+		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus, self.user, self.overwrite)
+		self.uHTR_instance.ped_test()
+		self.uHTR_instance.ci_test()
 		self.uHTR_instance.shunt_test()
 		
 		

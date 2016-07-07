@@ -54,6 +54,7 @@ class testSuite:
 	self.outCard = inSummary
         self.a = address
 	i = iters
+	print "DEBUG... Iterations: " , i
 
 	# Using the listOfTests.py file, initialize our test suites.
 	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
@@ -116,11 +117,16 @@ class testSuite:
 
     def openIgloo(self, slot):
 	#the igloo is value "3" in I2C_SELECT table
+	self.b.write(0x00,[0x06])
 	self.b.write(slot,[0x11,0x03,0,0,0])
 	self.b.sendBatch()
 
     def openVTTX(self, slot, vttxNum):
-    	self.b.write(slot,[0x11] + vttxLib.vttx["i2c_select"][vttxNum])
+	self.b.write(0x00,[0x06])
+	if (vttxNum == 1):
+    		self.b.write(slot,[0x11, 0x01, 0, 0, 0])
+	elif (vttxNum == 2):
+		self.b.write(slot,[0x11, 0x02, 0, 0, 0])
     	self.b.sendBatch()
 
 ##################################################################################################
@@ -128,7 +134,6 @@ class testSuite:
     # The following function is for when we want to run ALL
     # tests on ALL active cards.
     def runTests(self, suite):
-
 	if (suite == "main" or suite == "bridge" or suite =="short"):
 		# Immediately quit tests if the card gets too hot
 		if (temp.readManyTemps(self.a,5,"Temperature","nohold") >= tempThreshold):

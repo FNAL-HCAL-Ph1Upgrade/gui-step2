@@ -16,7 +16,6 @@ from client import webBus
 from TestStand import TestStand
 from datetime import datetime
 import subprocess
-import htrProcesses.histo_generator as histgen
 
 
 class makeGui:
@@ -75,6 +74,7 @@ class makeGui:
 		self.piChoiceVar    =  StringVar()
 		self.iterationVar   =  StringVar()
 		self.allCardSelection = IntVar()
+		self.overwriteVar     = IntVar()
 	
 		# Place an all-encompassing frame in the parent window. All of the following
 		# frames will be placed here (topMost_frame) and not in the parent window.
@@ -580,10 +580,18 @@ class makeGui:
 		self.qie_suiteMenu.pack(side=LEFT)
 		self.suiteChoiceVar.set("Main Suite : All Tests")
 
+		# Make a checkbox to overwrite/not overwrite pre-existing data
+		self.overwriteBox = Checkbutton(self.qie_subBot_frame, text="Overwrite existing QIE Card data (if applicable)?", variable=self.overwriteVar)
+		self.overwriteBox.configure(bg="turquoise")
+		self.overwriteBox.pack(side=TOP,
+				       padx = button_padx,
+				       pady = button_pady,
+				       ipady = button_pady*2,
+				       ipadx = button_padx*2)
 
 		#Make a button to run the main test suite
 		self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
-		self.qie_testSuite_button.configure(text="Run Selected Test Suite", background="turquoise")
+		self.qie_testSuite_button.configure(text="Run Selected Test Suite", background="#33ffcc")
 		self.qie_testSuite_button.configure(
 			width=button_width*4,
 			padx=button_padx,
@@ -720,7 +728,8 @@ class makeGui:
 		self.prepareOutSlots()
 		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
 		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection,
-					     self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList)
+					     self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList,
+					     self.nameChoiceVar.get(), self.overwrite)
 		self.myTestStand.runAll()
 		print str(datetime.now())
 
@@ -783,15 +792,17 @@ class makeGui:
 					self.outSlotNumbers.append(k+10)
 
 	def prepareOutCards(self):
+		self.overwrite = False
+		if (self.overwriteVar.get() == 1): overwrite = True
 		for k in range(len(self.cardVarList)):
 			if k in [1,2,3,4]:
-				self.outSummaries.append(testSummary.testSummary((k+1), self.humanLogName))
+				self.outSummaries.append(testSummary.testSummary((k+1), self.humanLogName, self.overwrite))
 			elif k in [5,6,7,8]:
-				self.outSummaries.append(testSummary.testSummary((k+2), self.humanLogName))
+				self.outSummaries.append(testSummary.testSummary((k+2), self.humanLogName, self.overwrite))
 			elif k in [9,10,11,12]:
-				self.outSummaries.append(testSummary.testSummary((k+9), self.humanLogName))
+				self.outSummaries.append(testSummary.testSummary((k+9), self.humanLogName, self.overwrite))
 			elif k in [13,14,15,16]:
-				self.outSummaries.append(testSummary.testSummary((k+10), self.humanLogName))
+				self.outSummaries.append(testSummary.testSummary((k+10), self.humanLogName, self.overwrite))
 
 	def submitToDatabase(self):
 #		subprocess.call("ssh cmshcal11 /django/abaas/testing_database/uploader/upload.sh", shell=True)

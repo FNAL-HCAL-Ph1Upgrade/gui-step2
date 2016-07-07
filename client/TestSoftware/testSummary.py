@@ -2,11 +2,11 @@
 # between Jordan's code and the log files.
 
 class testSummary:
-	def __init__(self, summaryNo, logFile):
+	def __init__(self, summaryNo, logFile, overwrite):
 		self.idNo = summaryNo
 
 		self.cardGenInfo = {"Unique_ID" : "", "DateRun" : [], "User" : "", "JSlot" : -99,
-				    "HumanLogFile" : ""
+				    "HumanLogFile" : "", "Overwrite" : False
 		}
 
 		self.resultList = {
@@ -24,7 +24,7 @@ class testSummary:
 			"link_test_mode" : [0,0], "link_test_pattern" : [0,0], 
 			"dataToSERDES" : [0,0], "addrToSERDES" : [0,0], "ctrlToSERDES" : [0,0],
 			"statFromSERDES" : [0,0], "iglooScratch" : [0,0], "dataFromSERDES" : [0,0],
-			"iglooZeros" : [0,0], "igloo_UID" : [0,0], 
+			"iglooZeros" : [0,0], "igloo_UID" : [0,0], "Igloo2_FPGA_Control" : [0,0],
 			"CI_Mode_On" : [0,0] , "CI_Mode_Off" : [0,0]
 		}
 
@@ -35,6 +35,7 @@ class testSummary:
 
 		self.cardGenInfo["JSlot"] = self.idNo
 		self.cardGenInfo["HumanLogFile"] = logFile
+		self.cardGenInfo["Overwrite"] = overwrite
 			
 	def printResults(self):
 		print ("\nGENERAL INFO: \n")

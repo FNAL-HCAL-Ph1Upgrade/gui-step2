@@ -52,6 +52,8 @@ class uHTR():
 
 		self.qcards=qcard_slots
 
+		self.canvas =  ROOT.TCanvas("c1","c1",800,800)
+
 		self.master_dict={}
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, chip)"
@@ -122,7 +124,7 @@ class uHTR():
 				results = False
 				for num in xrange(28):
 					if chip_arr[num] != 1: flat_test=False
-				slope = graph_results(self.uHTR_log, "ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+				slope = graph_results(self.canvas, self.uHTR_log, "ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				if slope <= 2.4 and slope >=2.15: slope_test = True
 				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}".format(qslot, chip, slope, flat_test, slope_test)
 				
@@ -136,7 +138,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo(self.uHTR_log, "ped", histo_slopes, 0, 5)
+		make_histo(self.canvas, self.uHTR_log, "ped", histo_slopes, 0, 5)
 		os.chdir(cwd)
 
 
@@ -184,7 +186,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ci_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ci_results[ci_key]
-				slope = graph_results(self.uHTR_log, "ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+				slope = graph_results(self.canvas, self.uHTR_log, "ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 
 				#update slopes for final histogram
@@ -193,7 +195,7 @@ class uHTR():
 
 		#make histogram of all slope results
 		os.chdir(cwd + "/histo_statistics")	
-		make_histo(self.uHTR_log, "ci", histo_slopes, 0, 2)
+		make_histo(self.canvas, self.uHTR_log, "ci", histo_slopes, 0, 2)
 		os.chdir(cwd)
 
 
@@ -244,7 +246,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = phase_results[phase_key]
-				slope = graph_results(phase_settings, chip_arr, "{0}_{1}".format(qslot, chip), "phase")
+				slope = graph_results(self.canvas, phase_settings, chip_arr, "{0}_{1}".format(qslot, chip), "phase")
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 		os.chdir(cwd)
 
@@ -334,7 +336,7 @@ class uHTR():
 		os.chdir(cwd + "/histo_statistics")
 		
 		for i, setting in enumerate(setting_list):
-			make_histo(self.uHTR_log, "shunt", histo_ratios[i], nominalGainRatios[i]*0.85, nominalGainRatios[i]*1.15, setting)
+			make_histo(self.canvas, self.uHTR_log, "shunt", histo_ratios[i], nominalGainRatios[i]*0.85, nominalGainRatios[i]*1.15, setting)
 		
 		os.chdir(cwd)
 
@@ -451,7 +453,7 @@ class uHTR():
 			slot_num = str(file.split('_')[-1].split('.root')[0])
 
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-#		shutil.rmtree(out_dir)
+		shutil.rmtree(out_dir)
 		return histo_results
 
 #############################################################
@@ -815,7 +817,7 @@ def get_link_info(crate, slot):
 # Analyze test results
 #############################################################
 
-def graph_results(log, test, x, y, key):
+def graph_results(c, log, test, x, y, key):
 	if len(x) != len(y):
 		print "Sets are of unequal length"
 		return None
@@ -841,7 +843,7 @@ def graph_results(log, test, x, y, key):
 	g = ROOT.TGraph()
 	for i in xrange(len(x)):
 		g.SetPoint(i, x[i], y[i])
-	c = ROOT.TCanvas("c1","c1",800,800)
+#	c = ROOT.TCanvas("c1","c1",800,800)
 	c.cd()
 	g.Draw("AP")
 
@@ -858,7 +860,7 @@ def graph_results(log, test, x, y, key):
 	c.Print("{0}.png".format(plot_base))
 	return slope
 
-def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
+def make_histo(c, log, test, data, xmin, xmax, shunt_setting=0):
 
 	if test == "ped":
 		title = 'Pedestal Bin Max Slope Distribution'
@@ -866,6 +868,7 @@ def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
 		xtitle = "Slope"
 		ytitle = "Number of Chips"
 		plot_base="ped_{0}".format(log)
+		num_bin=50
 
 	if test == "ci":
 		title = 'Charge Injection Bin Max Slope Distribution'
@@ -873,7 +876,7 @@ def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
 		xtitle = "Slope"
 		ytitle = "Number of Chips"
 		plot_base="ci_{0}".format(log)
-
+		num_bin = 50
 
 	if test == "phase":
 		print "hi"
@@ -884,14 +887,15 @@ def make_histo(log, test, data, xmin, xmax, shunt_setting=0):
 		xtitle = "Ratio (Shunted/Default)"
 		ytitle = "Number of Chips"
 		plot_base="shunt_{0}_{1}".format(shunt_setting, log)
+		num_bin = 20
 
-	c = ROOT.TCanvas('c','c', 800,800)
+#	c = ROOT.TCanvas('c','c', 800,800)
 	c.cd()
-	hist = ROOT.TH1D(legend_title, title, 20, xmin, xmax)
+	hist = ROOT.TH1D(legend_title, title, num_bin, xmin, xmax)
 	hist.GetXaxis().SetTitle(xtitle)
 	hist.GetYaxis().SetTitle(ytitle)
 	for datum in data:
-	    hist.Fill(datum)
+	    if datum is not None: hist.Fill(datum)
 	hist.Draw()
 	c.Print("{0}.png".format(plot_base))
 
