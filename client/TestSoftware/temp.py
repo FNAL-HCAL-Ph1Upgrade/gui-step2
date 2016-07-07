@@ -1,6 +1,6 @@
 from client import webBus
 import collections
-from checksumClass import Checksum
+from Checksum import Check
 bus = webBus("pi5",0)
 #bus = webBus("pi6",0)
 
@@ -78,7 +78,7 @@ def readTempHumi(slot, num_bytes, key, hold, verbosity=0):
     message = bus.sendBatch()[-1]
 
 #    crc = cc.checkCRC(message,2)
-    check = Checksum(message,1)
+    check = Check(message,1)
     crc = check.result
 
     value = getValue(message)

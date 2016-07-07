@@ -170,6 +170,7 @@ class statusReg(Test): #shows status register settings
 # ------------------------------------------------------------------------
 class Igloo2_FPGA_Control(Test):
 	def testBody(self):
+		print "DEBUG... Card Slot: " , self.address
 		control_address = 0x22
 		message = self.readBridge(control_address,4)
 		print 'Igloo Control = ', message
@@ -177,29 +178,32 @@ class Igloo2_FPGA_Control(Test):
 		ones_address = 0x02
 		all_ones = '255 255 255 255'
 		i2c_error = '0 0 0 0'
+
+                retval = False
+
+		self.bus.write(0x00,[0x06])
+		self.bus.sendBatch()
 		
-		print "DEBUG STATEMENT 1"
 		register = self.readIgloo(ones_address, 4)
 		if register != all_ones:
-			return False
+			retval = False
 		print 'Igloo Ones = ', register
 
 		# Turn Igloo Off
-		print "DEBUG STATEMENT 2"
 		print 'Igloo Control = ', self.toggleIgloo()
-		register = self.readIgloo(ones_address, 4)
-		if register != i2c_error:
-			return False
+		register = self.detectIglooError(ones_address, 4)
+		if register != "0":
+			retval = True
 		print 'Igloo Ones = ', register
 
 		# Turn Igloo On
 		print 'Igloo Control = ', self.toggleIgloo()
 		register = self.readIgloo(ones_address, 4)
 		if register != all_ones:
-			return False
+			retval = False
 		print 'Igloo Ones = ', register
 
-		return True
+		return retval
 
 	def toggleIgloo(self):
 		iglooControl = 0x22
@@ -207,7 +211,9 @@ class Igloo2_FPGA_Control(Test):
 		value = t.getValue(message)
 		value = value ^ 0x400 # toggle igloo power!
 		messageList = t.getMessageList(value,4)
+		print "\nDEBUG... Message sent to self.writeBridge: ", messageList
 		self.writeBridge(iglooControl,messageList)
+#		self.bus.write(0x09, [iglooControl, value])
 		return self.readBridge(iglooControl,4)
 
 	def writeBridge(self, regAddress,messageList):
@@ -221,7 +227,7 @@ class Igloo2_FPGA_Control(Test):
 		self.bus.read(self.address, num_bytes)
 		message = self.bus.sendBatch()[-1]
 		if message[0] != '0':
-		    print 'Bridge i2c error, mein freund'
+		    print 'Bridge i2c error detected'
 		return t.reverseBytes(message[2:])
 
 	def readIgloo(self, regAddress, num_bytes):
@@ -231,8 +237,20 @@ class Igloo2_FPGA_Control(Test):
 		self.bus.read(0x09, num_bytes)
 		message = self.bus.sendBatch()[-1]
 		if message[0] != '0':
-			print 'Igloo i2c error, mein freund'
+			print 'Igloo i2c error detected in readIgloo'
 		return t.reverseBytes(message[2:])
+
+	def detectIglooError(self, regAddress, num_bytes):
+		self.bus.write(0x00,[0x06])
+		self.bus.write(self.address,[0x11,0x03,0,0,0])
+		self.bus.write(0x09,[regAddress])
+		self.bus.read(0x09, num_bytes)
+		message = self.bus.sendBatch()[-1]
+		if message[0] != '0':
+			print 'Igloo i2c error detected in detectIglooError'
+		print "Message[0] is: ", message[0]
+		return message[0]
+
 # ------------------------------------------------------------------------
 
 class cntrRegDisplay(Test): #shows control register settings

@@ -12,7 +12,7 @@ import listOfTests
 import uHTR
 import vttxLib
 import temp
-from checksumClass import Checksum
+from Checksum import Check
 
 # Cutoff for card overheating. Hopefully they never get this hot...
 # Degrees Celsius
@@ -100,7 +100,7 @@ class testSuite:
 	# Do things that depend on whether we're getting UID or Temp/Humid
 	if (testName == "Unique_ID"):
 		message = r[-1]
-		check = Checksum(message,0)
+		check = Check(message,0)
 		# Using checksum, ask: is the message "good"?
 		if (check.result != 0):  # Message bad: print error, assign error UID.
 			print "Unique ID checksum error! Continuing..."
@@ -179,10 +179,10 @@ class testSuite:
 			self.outCard.vttxListOne[r][1] += results[1]
 			print r+" tests completed."
 
-		self.openVTTX(self.a, 2)
 		# Immediately quit tests if the card gets too hot
 		if (temp.readManyTemps(self.a,5,"Temperature","nohold") >= tempThreshold):
 			return None
+		self.openVTTX(self.a, 2)
 		print "\n-------------------------"
 		print "Running VTTX_2 tests!"
 		print "-------------------------"

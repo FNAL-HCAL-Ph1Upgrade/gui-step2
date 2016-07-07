@@ -35,6 +35,8 @@ def getBinaryListWithPolarity(integer, length):
     #returns a little endian representation with a polarity bit at the MSB
     return getBinaryList(integer, length - 1) + [1 if integer > 0 else 0]
 
+
+
 #QIE Class
 class QIE:
     ############################################################################

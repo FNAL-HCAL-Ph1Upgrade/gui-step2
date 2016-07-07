@@ -654,6 +654,8 @@ class makeGui:
 					pady=button_pady,
 					)
 				self.uHTR_radio.pack(side=LEFT)
+		self.uHTR_slotNumber[1].set(1)
+		self.uHTR_slotNumber[2].set(1)
 
 		# Make top subframe 4
 		self.uHTR_sub4 = Frame(self.uHTR_frame, bg="white")
@@ -806,7 +808,7 @@ class makeGui:
 
 	def submitToDatabase(self):
 #		subprocess.call("ssh cmshcal11 /django/abaas/testing_database/uploader/upload.sh", shell=True)
-		subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/upload.sh", shell=True)
+		subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/remote.sh", shell=True)
 		print "Files submitted to database!"
 
 

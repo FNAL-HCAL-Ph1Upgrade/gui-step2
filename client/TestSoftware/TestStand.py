@@ -3,6 +3,8 @@
 import RM
 import sys
 import uHTR
+import timeStamp
+from datetime import datetime
 sys.path.append('../')
 from client import webBus
 
@@ -15,6 +17,7 @@ class TestStand:
 	self.uHTR_slots = uHTR_slots
 	self.user = user
 	self.overwrite = overwrite
+	self.timeString = "{:%b%d%Y_%H%M%S}".format(datetime.now())
 
         self.activeSlots = activeSlots
         self.RMs = []
@@ -66,7 +69,8 @@ class TestStand:
 		self.uHTR_instance.ped_test()
 		self.uHTR_instance.ci_test()
 		self.uHTR_instance.shunt_test()
-		
+		self.uHTR_instance.make_jsons()
+		timeStamp.timestamp_results(self.timeString)
 		
     def runSingle(self, key):
         for r in self.RMs:
