@@ -341,15 +341,14 @@ class uHTR():
 				for link, links in uhtr_slot_results.iteritems():
 					for channel, chip_results in links.iteritems():
 						sigTDC = 0
+						if key not in phase_results: phase_results[key]=[]
 						for k in range(len(chip_results)):
 							if chip_results[k] < 63:
 								key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
-								if key not in phase_results: phase_results[key]=[]
 								phase_results[key].append(chip_results[k])
 								sigTDC = 1
 								break
 						if sigTDC == 0:
-							phase_results[key]=[]
 							phase_results[key].append(63)
 		#Reset phases and internal charge injection to default
 		for qslot in self.qcards:
