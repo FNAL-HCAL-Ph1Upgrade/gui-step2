@@ -25,7 +25,7 @@ def toIntList(message):
         intlist.append(int(mlist[i]))
     return intlist
 
-class Checksum:
+class Check:
     def __init__(self, message, temp):
         self.message = message
         if temp: # 1 = True for temp
@@ -65,8 +65,11 @@ class Checksum:
         mlist = toIntList(self.message)
         error = mlist.pop(0)
         if int(error) != 0:
+            print 'I2C_ERROR'
             return 2 # i2c bus error
         for x in mlist:
             val = crctab[val ^ x]
-	return val
-
+        if val != 0:
+            print 'CHECKSUM_ERROR'
+            return 1 # checksum error
+        return 0 # checksum ok... crc = 0
