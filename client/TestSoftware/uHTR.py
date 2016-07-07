@@ -369,6 +369,12 @@ class uHTR():
 		
 		for qslot in self.qcards:
 			for chip in xrange(12):
+
+				cwd2=os.getcwd()
+				if not os.path.exists(str(chip)):
+					os.makedirs(str(chip))
+				os.chdir(cwd2  + "/" + str(chip))
+
 				chip_map=self.get_QIE_map(qslot, chip)
 				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = phase_results[phase_key]
@@ -383,6 +389,7 @@ class uHTR():
 				#self.update_QIE_results(qslot, chip, "phase", results)
 
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+				os.chdir(cwd2)
 		os.chdir(cwd)
 
 	
