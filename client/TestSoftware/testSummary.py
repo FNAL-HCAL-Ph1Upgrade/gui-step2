@@ -1,12 +1,12 @@
-#This is a test class that will be the bridge
+# This is a test class that will be the bridge
 # between Jordan's code and the log files.
 
 class testSummary:
-	def __init__(self, summaryNo, logFile):
+	def __init__(self, summaryNo, logFile, overwrite):
 		self.idNo = summaryNo
 
 		self.cardGenInfo = {"Unique_ID" : "", "DateRun" : [], "User" : "", "JSlot" : -99,
-				    "HumanLogFile" : ""
+				    "HumanLogFile" : "", "Overwrite" : False
 		}
 
 		self.resultList = {
@@ -14,7 +14,7 @@ class testSummary:
 			"Zeroes" : [0,0], "OnesZeroes" : [0,0], "Firmware_Ver" : [0,0],
 			"Status" : [0,0], "TempPass" : [0,0], "HumiPass" : [0,0],
 			"Scratch" : [0,0], "ClockCnt" : [0,0], "QIECount" : [0,0],
-			"WTECount" : [0,0], "BkPln_1" : [0,0], "BkPln_2" : [0,0], "BkPln_3" :[0,0],
+			"WTECount" : [0,0], "zeroOrbits" : [0,0]
 		}
 		self.iglooList = {"fpgaMajVer" : [0,0], "fpgaMinVer" : [0,0], "iglooOnes" : [0,0],
 			"iglooZeros" : [0,0],"fpgaTopOrBot" : [0,0], "iglooUID" : [0,0],
@@ -24,7 +24,7 @@ class testSummary:
 			"link_test_mode" : [0,0], "link_test_pattern" : [0,0], 
 			"dataToSERDES" : [0,0], "addrToSERDES" : [0,0], "ctrlToSERDES" : [0,0],
 			"statFromSERDES" : [0,0], "iglooScratch" : [0,0], "dataFromSERDES" : [0,0],
-			"iglooZeros" : [0,0], "igloo_UID" : [0,0], 
+			"iglooZeros" : [0,0], "igloo_UID" : [0,0], "Igloo2_FPGA_Control" : [0,0],
 			"CI_Mode_On" : [0,0] , "CI_Mode_Off" : [0,0]
 		}
 
@@ -35,6 +35,7 @@ class testSummary:
 
 		self.cardGenInfo["JSlot"] = self.idNo
 		self.cardGenInfo["HumanLogFile"] = logFile
+		self.cardGenInfo["Overwrite"] = overwrite
 			
 	def printResults(self):
 		print ("\nGENERAL INFO: \n")
@@ -57,31 +58,7 @@ class testSummary:
 		for i in self.longTestList:
 			print i+ ": ", self.longTestList[i]
 
-	def writeHumanLog(self):
-		if (self.cardGenInfo["Unique_ID"] != ""):
-			with open("humanTest.log", "a") as w:
-				w.write("\nGENERAL INFO: \n")
-				for i in self.cardGenInfo:
-					w.write(i+": "+str(self.cardGenInfo[i])+"\n")
 
-				w.write("\n\nBRIDGE TESTS: \n")
-				for i in self.resultList:
-					w.write(i+": "+str(self.resultList[i])+"\n")
-				w.write("\n")
-
-				w.write("\n\nIGLOO TESTS: \n")
-				for i in self.iglooList:
-					w.write(i+": "+str(self.iglooList[i])+"\n")
-
-				w.write("\n\n\nVTTX-1 TESTS: \n")
-				for i in self.vttxListOne:
-					w.write(i+": "+str(self.vttxListOne[i])+"\n")
-
-				w.write("\n\n\nVTTX_2 TESTS: \n")
-				for i in self.vttxListTwo:
-					w.write(i+": "+str(self.vttxListTwo[i])+"\n")
-				w.write("------------------------------------")
-	
 	def writeMachineJson(self):
 		if (self.cardGenInfo["Unique_ID"] != ""):
 			fileName = str(self.cardGenInfo["Unique_ID"].replace(" ","")+"_test_raw.json")

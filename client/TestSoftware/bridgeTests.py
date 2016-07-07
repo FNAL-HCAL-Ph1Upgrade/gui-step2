@@ -3,6 +3,7 @@
 
 from Test import Test
 import calculateOrbits as co
+import helpers as h
 
 # NOTE: some tests not included here are
 # -I2C_SELECT (Address 0x11)
@@ -68,7 +69,7 @@ class OnesZeroes(Test):
 
 class Firmware_Ver(Test):
 	def testBody(self):
-		self.criteria = "0 0 0 11 01"
+		self.criteria = "0 64 17 14 1"
 		self.bus.write(self.address, [0x04])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
@@ -173,38 +174,6 @@ class WTE_Counter(Test):
 		else: 
 			return False
 
-class BkPln_Spare_1(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x15])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO, first char can't be 1
-			return True
-		else: 
-			return False
-
-class BkPln_Spare_2(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x16])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO, but first char can't be 1
-			return True
-		else: 
-			return False
-
-class BkPln_Spare_3(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x17])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO, but first char can't be 1
-			return True
-		else: 
-			return False
 class ControlReg(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"
@@ -216,81 +185,23 @@ class ControlReg(Test):
 		else: 
 			return False
 
-
-class OrbHist_1(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x19])
-		self.bus.read(self.address, 3)
-		r=self.bus.sendBatch()[-1]
-		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-			return True
-		else: 
-			return False
-
-class OrbHist_2(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x1a])
-		self.bus.read(self.address, 3)
-		r=self.bus.sendBatch()[-1]
-		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-			return True
-		else: 
-			return False
-
-class OrbHist_3(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x1b])
-		self.bus.read(self.address, 3)
-		r=self.bus.sendBatch()[-1]
-		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-			return True
-		else: 
-			return False
-
-class OrbHist_4(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x1c])
-		self.bus.read(self.address, 3)
-		r=self.bus.sendBatch()[-1]
-		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-			return True
-		else: 
-			return False
-
 class OrbHist_5(Test):
 	def testBody(self):
 		return co.calcOrbs(self.bus,self.address,0.5,0)
-#		self.criteria = "0 0 0 0 0"
-#		self.bus.write(self.address, [0x1d])
-#		self.bus.read(self.address, 3)
-#		r=self.bus.sendBatch()[-1]
-#		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-#			return True
-#		else: 
-#			return False
-class OrbHist_6(Test):
-	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x1e])
-		self.bus.read(self.address, 3)
-		r=self.bus.sendBatch()[-1]
-		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-			return True
-		else: 
-			return False
 
-class OrbHist_7(Test):
+class zeroOrbits(Test):
 	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x1f])
-		self.bus.read(self.address, 3)
-		r=self.bus.sendBatch()[-1]
-		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
-			return True
-		else: 
-			return False
+		# Check for zeros for all oribts but [71:48] (bin 3 of 7)
+		# This nonzero bin is address 0x1D
+		zeroOrbitRegisters = [0x19,0x1A,0x1B,0x1C,0x1E,0x1F]
+		for orbitReg in zeroOrbitRegisters:
+			self.bus.write(self.address, [orbitReg])
+			self.bus.read(self.address, 3)
+			raw_data = self.bus.sendBatch()[-1]
+			cooked_data = h.reverseBytes(raw_data)
+			cooked_data = h.getValue(cooked_data)
+			if (cooked_data != 0):
+				print 'Nonzero orbit error!'
+				return False
+		return True
 

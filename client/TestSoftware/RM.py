@@ -5,12 +5,14 @@ from client import *
 
 cardAddresses = [0x19, 0x1A, 0x1B, 0x1C]
 
+# Given a specific card number, what hex code does it correspond to?
 def getCardAddress(slot):
     if slot in [2,7,18,23] : return cardAddresses[0]
     if slot in [3,8,19,24] : return cardAddresses[1]
     if slot in [4,9,20,25] : return cardAddresses[2]
     if slot in [5,10,21,26]: return cardAddresses[3]
 
+# Given a specific card number, what RM slot is it in?
 def getReadoutSlot(slot):
     if slot in [2,3,4,5] : return     1
     if slot in [7,8,9,10] : return    2
@@ -38,9 +40,10 @@ class RM:
 	self.location = location
 	emptyCount = 0
         for i in activeSlots:
+	    # Only do stuff if the card is there
             if self.checkCards(i):
-		print summaries[getSummaryIndex(i)].idNo
-                self.qCards.append(qCard(i,summaries[getSummaryIndex(i)]))
+		print summaries[getSummaryIndex(i)].idNo   # Write the summary file's number
+                self.qCards.append(qCard(i,summaries[getSummaryIndex(i)])) 
 
     def __repr__(self):
         '''Object representation'''
@@ -99,7 +102,7 @@ class RM:
     def runAll(self, suiteSelection, iters):
     	self.openChannel()
     	for q in range(len(self.qCards)):
-    		self.qCards[q].runAll(self.bus, suiteSelection,iters)
+    		self.qCards[q].runAll(self.bus, suiteSelection, iters)
 
     def runSingle(self, key):
 	self.openChannel()

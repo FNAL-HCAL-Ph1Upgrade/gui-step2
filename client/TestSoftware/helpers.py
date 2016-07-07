@@ -55,9 +55,18 @@ def toHex(message,option=0):
     return '0x' + s.join(message_list)
 
 def getValue(message):
-    print message
     hex_message = toHex(message)[2:]
     return int(hex_message,16)
+
+def getMessageList(value,num_bytes):
+    hex_message = hex(value)[2:]
+    length = len(hex_message)
+    zeros = "".join(list('0' for i in xrange(8-length)))
+    hex_message = zeros + hex_message
+    print 'hex message = ', hex_message
+    mList = list(int(hex_message[a:a+2],16) for a in xrange(0,2*num_bytes,2))
+    mList.reverse()
+    return mList
 
 def reverseBytes(message):
     message_list = message.split()
