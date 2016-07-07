@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# No pyc for you or me!
-*.pyc
-=======
 
 **.pyc
 **.log
@@ -9,5 +5,3 @@
 **.swp
 **.py~
 *.pyc
-
->>>>>>> 2c9cb6e81a2318840860f4a8699d67561597f442
