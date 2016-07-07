@@ -38,13 +38,19 @@ def writeToRegister(bus, address, register, bytesToWrite):
     bus.write(address, [register] + list(bytesToWrite))
     return None
 
-def toHex(message):
+def toHex(message,option=0):
     message_list = message.split()
     for byte in xrange(len(message_list)):
         message_list[byte] = hex(int(message_list[byte]))
         message_list[byte] = message_list[byte][2:]
         if len(message_list[byte]) == 1:
             message_list[byte] = '0' + message_list[byte]
+    if option == 2:
+        s = ":"
+        return s.join(message_list)
+    if option == 1:
+        s = " "
+        return s.join(message_list)
     s = ""
     return '0x' + s.join(message_list)
 
@@ -65,6 +71,13 @@ def getMessageList(value,num_bytes):
 def reverseBytes(message):
     message_list = message.split()
     message_list.reverse()
+    s = " "
+    return s.join(message_list)
+
+# Parse Serial Number (6 bytes) from 8 byte Registration Number.
+def serialNum(message):
+    message_list = message.split()
+    message_list = message_list[2:-1]
     s = " "
     return s.join(message_list)
 

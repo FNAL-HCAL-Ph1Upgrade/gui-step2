@@ -9,6 +9,7 @@ sys.path.append("../")
 from client import webBus
 import Hardware as h
 import iglooClass_adry as i
+from uniqueID import ID
 # from uHTR import uHTR
 
 
@@ -17,8 +18,6 @@ pi    = "pi5" # 'pi5' or 'pi6' etc
 b     = webBus(pi,0) # webBus sets active pi; 0 = server verbosity off
 all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
 slots = all_slots # list of active J slots
-
-
 
 ##### Functions ######
 
@@ -237,20 +236,36 @@ def powerEnable(bus):
 
         bus.sendBatch()
 
+##### Unique ID #####
+# Initial with a buss and slot
+def printID(bus, slots):
+    for slot in slots:
+        uID = ID(bus, slot)
+        print '\nSlot J' + str(slot)
+        print 'raw id = ', uID.raw
+        print 'serial id = ', uID.serial
+        print 'full id = ', uID.full
+        print 'really full id = ', uID.reallyfull
+        print 'split id = ', uID.split
+
 
 ##### Calling functions #####
 
-powerEnable(b)
-chargeInjectOn(slots,b)
-#chargeInjectOff(slots,b)
-printDaisyChain(slots,b)
-# setTimingThresholdDAC(slots, -127, b)
+# powerEnable(b)
+# chargeInjectOn(slots,b)
+# #chargeInjectOff(slots,b)
+# printDaisyChain(slots,b)
 # setPedestalDAC(slots,6,b) #6bits->12fc is default
-# setCapID0pedestal(slots,0,b)
-# setCapID1pedestal(slots,1,b)
-# setCapID2pedestal(slots,1,b)
-# setCapID3pedestal(slots,1,b)
-# setFixRangeModeOn(slots,3,b)
-setChargeInjectDAC(slots,8640,b)
-print "\n\n\n\n\n AFTER CHANGES: \n"
-printDaisyChain(slots,b)
+# #setCapID0pedestal(slots,0,b)
+# # setCapID1pedestal(slots,1,b)
+# # setCapID2pedestal(slots,1,b)
+# # setCapID3pedestal(slots,1,b)
+# # setFixRangeModeOn(slots,3,b)
+# setChargeInjectDAC(slots,2880,b)
+# print "\n\n\n\n\n AFTER CHANGES: \n"
+# printDaisyChain(slots,b)
+
+# Print ID given bus and slots
+# printID(bus, slots)
+mySlots = [2,5,7,8,10]
+printID(b,slots)
