@@ -861,10 +861,7 @@ def get_tdcs(crate, slots):
 		
 		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
-		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
-		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
-
 
 	return rawDictionary
 
