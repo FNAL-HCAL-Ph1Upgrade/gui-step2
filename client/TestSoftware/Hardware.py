@@ -34,7 +34,7 @@ def openChannel(slot, bus):
         return 'closed channel'
   # Open channel to i2c group
     bus.write(0x74, [ngccmGroup(rmLoc)])
-    bus.read(0x74, 2)
+    bus.read(0x74, 1)
 
   # Reset the backplane
     bus.write(0x00,[0x06])
@@ -57,42 +57,39 @@ def SetQInjMode(onOffBit, slot, bus):
         print "INVALID INPUT IN SetQInjMode... doing nothing"
 
 # Cryptic Magic Reset on 0x70
-def magicReset(ngccm): #RM4,3->ngccm=2 -- RM2,1->ngccm=1
-    b.write(0x72,[ngccm])
-    b.write(0x74,[0x08])
-    b.write(0x70,[0x3,0x0]) # Set to Output
+def magicReset(ngccm,bus): #RM4,3->ngccm=2 -- RM2,1->ngccm=1
+    bus.write(0x72,[ngccm])
+    bus.write(0x74,[0x08])
+    bus.write(0x70,[0x3,0x0]) # Set to Output
 
     # The proper way... only change the bit you want to change!
-    # b.write(0x70,[0x1])
-    # b.read(0x70,1)
-    # message = b.sendBatch()[-1]
-    # value = int(message[2:])
-    # value = value | 0x10
+    bus.write(0x70,[0x1])
+    bus.read(0x70,1)
+    message = bus.sendBatch()[-1]
+    value1 = int(message[2:])
+    value2 = value1 | 0x10
 
-    b.write(0x70,[0x1,0x8])
-    b.write(0x70,[0x1,0x18])
-    b.write(0x70,[0x1,0x8])
+    bus.write(0x70,[0x1,value2])
+    bus.write(0x70,[0x1,value1])
 
-    return b.sendBatch()
+    return bus.sendBatch()
 
 # Power Enable on 0x70
-def powerEnable(ngccm):
-    b.write(0x72,[ngccm])
-    b.write(0x74,[0x0])
-    b.write(0x74,[0x08])
-    b.write(0x74,[0x18])
-    b.write(0x74,[0x08])
-    b.read(0x70,1)
-    batch = b.sendBatch()
-    print 'initial = ', batch
+def powerEnable(ngccm,bus):
+    bus.write(0x72,[ngccm]) #RM4,3->ngccm=2 -- RM2,1->ngccm=1
+    bus.write(0x74,[0x08])
+    bus.write(0x70,[0x3,0x0]) # Set to Output
 
-    message = batch[-1][2:]
-    value = int(message) | 0x8
-    b.write(0x70,[0x1,value])
-    b.write(0x70,[0x1])
-    b.read(0x70,1)
-    batch = b.sendBatch()
-    return 'final = ', batch
+    # The proper way... only change the bit you want to change!
+    bus.write(0x70,[0x1])
+    bus.read(0x70,1)
+    message = bus.sendBatch()[-1]
+    value1 = int(message[2:])
+    value2 = value1 | 0x8
+
+    bus.write(0x70,[0x1,value2])
+
+    return bus.sendBatch()
 
 
 # Converts ADC to fC (Nate Chaverin's class)
