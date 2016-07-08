@@ -18,7 +18,7 @@ def initializeBridgeList(b,a,i):
     	"Firmware_Ver" : bt.Firmware_Ver(b,a,i), "Status" : bt.statusCheck(b,a,i),
 	"Scratch" : bt.ScratchCheck(b,a,i), "ClockCnt" : bt.brdg_ClockCounter(b,a,i),
 	"QIECount" : bt.RES_QIE_Counter(b,a,i), "WTECount" : bt.WTE_Counter(b,a,i),
-	"zeroOrbits" : bt.zeroOrbits(b,a,i)
+	"zeroOrbits" : bt.zeroOrbits(b,a,i), "TempPass" : bt.TempPass(b,a,i), "HumiPass" : bt.HumiPass(b,a,i)
 	}
 	
 	return registers

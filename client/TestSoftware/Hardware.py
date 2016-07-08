@@ -89,6 +89,7 @@ def powerEnable(ngccm,bus):
 
     bus.write(0x70,[0x1,value2])
 
+    return b.sendBatch()
     return bus.sendBatch()
 
 

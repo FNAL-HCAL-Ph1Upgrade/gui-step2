@@ -4,6 +4,7 @@
 from Test import Test
 import calculateOrbits as co
 import helpers as h
+import temp 
 
 # NOTE: some tests not included here are
 # -I2C_SELECT (Address 0x11)
@@ -108,6 +109,33 @@ class Temperature(Test):
 			return (True, temp)
 		else:
 			return (False, temp)
+
+class TempPass(Test):
+	def testBody(self):
+		print "\n"
+		self.tempThreshold = 45
+		self.tempResult = temp.readManyTemps(self.address,5,"Temperature","nohold")
+
+		if (self.tempResult >= self.tempThreshold):
+			print "Temperature ", self.tempResult," exceeds ", self.tempThreshold, "! TempPass test failed!"
+			return False
+		else:
+			print "Temperature: ", self.tempResult, " in safe range!"
+			return True
+
+class HumiPass(Test):
+	def testBody(self):
+		print "\n"
+		self.humiThreshold = 55
+		self.humiResult = temp.readManyTemps(self.address,5,"Humidity","nohold")
+
+		if (self.humiResult >= self.humiThreshold):
+			print "Humidity ", self.humiResult," exceeds ", self.humiThreshold, "! HumiPass test failed!"
+			return False
+		else:
+			print "Humidity: ", self.humiResult, " in safe range!"
+			return True
+
 
 class Humidity(Test):
 	def testBody(self):

@@ -32,10 +32,10 @@ if __name__ == "__main__":
 			info=uhtr.get_QIE_map(slot, chip)
 			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 #	uhtr.ped_test()
-	uhtr.ci_test()
+#	uhtr.ci_test()
 #	uhtr.shunt_test()
-#	uhtr.phase_test()
-	uhtr.make_jsons()
+	uhtr.phase_test()
+#	uhtr.make_jsons()
 
 class uHTR():
 	def __init__(self, uhtr_slots, qcard_slots, bus, user, overwrite):
@@ -235,7 +235,6 @@ class uHTR():
 		os.chdir(cwd + "/histo_statistics")	
 		self.make_histo("ci", histo_slopes, 0, 2)
 		os.chdir(cwd)
-
  
 	def shunt_test(self):
 		peak_results = {}
@@ -381,6 +380,12 @@ class uHTR():
 			os.chdir(cwd2  + "/" + str(qslot))
 
 			for chip in xrange(12):
+
+				cwd2=os.getcwd()
+				if not os.path.exists(str(chip)):
+					os.makedirs(str(chip))
+				os.chdir(cwd2  + "/" + str(chip))
+
 				chip_map=self.get_QIE_map(qslot, chip)
 				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = phase_results[phase_key]
@@ -624,8 +629,9 @@ class uHTR():
 			ytitle="TDC Value"
 			plot_base="phase_{0}".format(key)
 			fit=ROOT.TF1("fit", "[0] + [1]*x")
-
-		c = self.canvas 
+		ROOT.gROOT.SetBatch(1)
+		c = ROOT.TCanvas("c_{0}".format(key),"c_{0}".format(key),800,800) 
+		c.SetBatch(1)
 		c.cd()
 
 		g = ROOT.TGraph()
@@ -866,6 +872,8 @@ def get_tdcs(crate, slots):
 		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
+#		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
+
 
 	return rawDictionary
 
