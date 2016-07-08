@@ -16,8 +16,9 @@ class logger():
 		ms = message.split('/n')
 		t = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 		for m in ms:
-			if t != '':
-				o = t + "\t" + str(message) + '\n'
+			if m == '':
+				m = ' '.join(m.split())
+				o = t + "\t" + str(m) + '\n'
 				self.terminal.write(o)
 				self.log.write(o)
 
