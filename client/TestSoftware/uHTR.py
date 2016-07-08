@@ -5,6 +5,7 @@ import sys
 import time
 import shutil
 import json
+import random
 import numpy as np
 import multiprocessing as mp
 import Hardware as hw
@@ -22,7 +23,7 @@ if __name__ == "__main__":
 	from uHTR import uHTR
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[5]
+	qcard_slots=[24]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, all_slots, b, "Mason Dorseth", False)
 
@@ -51,7 +52,6 @@ class uHTR():
 		self.bus=bus
 
 		self.qcards=qcard_slots
-
 		ROOT.gROOT.SetBatch(1)
 		self.canvas = ROOT.TCanvas("c1", "c1", 800, 800)
 		
@@ -129,6 +129,12 @@ class uHTR():
        			os.chdir(cwd2  + "/" + str(qslot))
 
 			for chip in xrange(12):
+
+				cwd2=os.getcwd()
+				if not os.path.exists(str(chip)):
+					os.makedirs(str(chip))
+				os.chdir(cwd2  + "/" + str(chip))
+
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
@@ -321,8 +327,8 @@ class uHTR():
 
 
 	def phase_test(self):
-		#Valid settings for phase are in two distinct ranges offset by 1 BX
-		phase_settings = range(0,50) + range(64,114)
+		#Valid (GOOD!!!) settings for phase
+		phase_settings = range(0,11) + range(36,50) + range(64,75) + range(104,115)
 		phase_results={}
 		phase_results["settings"]=phase_settings
 		for setting in phase_settings:
@@ -334,28 +340,23 @@ class uHTR():
 				for chip in xrange(12):
 					dc[chip].PhaseDelay(setting)
 					dc[chip].ChargeInjectDAC(8640)
-					dc[chip].TimingThresholdDAC(0)
+					dc[chip].TimingThresholdDAC(80)
 				dc.write()
 				dc.read()
-			"""
-			for slot in self.uhtr_slots:
-                                 init_links(self.crate, slot)
-                                 print "Reinitialized links"
-			"""
 			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
 			for uhtr_slot, uhtr_slot_results in tdc_results.iteritems():
 				for link, links in uhtr_slot_results.iteritems():
 					for channel, chip_results in links.iteritems():
+						sigTDC = 0
+						key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
+						if key not in phase_results: phase_results[key]=[]
 						for k in range(len(chip_results)):
 							if chip_results[k] < 63:
-								key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
-								if setting == 0: phase_results[key]=[]
 								phase_results[key].append(chip_results[k])
+								sigTDC = 1
 								break
-							if k == len(chip_results)-1:
-								key="{0}_{1}_{2}".format(uhtr_slot, link, channel)
-								if setting == 0: phase_results[key]=[]
-								phase_results[key].append(chip_results[k])	
+						if sigTDC == 0:
+							phase_results[key].append(63)
 		#Reset phases and internal charge injection to default
 		for qslot in self.qcards:
 			dc=hw.getDChains(qslot, self.bus)
@@ -374,6 +375,11 @@ class uHTR():
 		os.chdir(cwd  + "/phase_plots")
 		
 		for qslot in self.qcards:
+			cwd2=os.getcwd()
+			if not os.path.exists(str(qslot)):
+				os.makedirs(str(qslot))
+			os.chdir(cwd2  + "/" + str(qslot))
+
 			for chip in xrange(12):
 				chip_map=self.get_QIE_map(qslot, chip)
 				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
@@ -389,6 +395,7 @@ class uHTR():
 				#self.update_QIE_results(qslot, chip, "phase", results)
 
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+			os.chdir(cwd2)
 		os.chdir(cwd)
 
 	
@@ -614,7 +621,7 @@ class uHTR():
 
 		if test == "phase":
 			title="Phase Sweep Test Results {0}".format(key)
-			ytitle="TDC Value (ns)"
+			ytitle="TDC Value"
 			plot_base="phase_{0}".format(key)
 			fit=ROOT.TF1("fit", "[0] + [1]*x")
 
@@ -665,7 +672,7 @@ class uHTR():
 			plot_base="shunt_{0}_{1}".format(shunt_setting, self.uhtr_log)
 			bin_num = 20
 
-		c = self.canvas
+		c = self.canvas 
 		c.cd()
 		hist = ROOT.TH1D(legend_title, title, bin_num, xmin, xmax)
 		hist.GetXaxis().SetTitle(xtitle)
@@ -675,6 +682,7 @@ class uHTR():
 		hist.Draw()
 		c.Print("{0}.png".format(plot_base))
 
+############################################################
 
 #############################################################
 # uHTRtool histo functions
@@ -857,12 +865,12 @@ def get_tdcs(crate, slots):
 		
 		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
-		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
 
 	return rawDictionary
 
 #############################################################
+
 
 #############################################################
 #Initialization functions
