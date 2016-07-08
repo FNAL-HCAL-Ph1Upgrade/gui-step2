@@ -5,7 +5,6 @@ import sys
 import time
 import shutil
 import json
-import random
 import numpy as np
 import multiprocessing as mp
 import Hardware as hw
@@ -23,14 +22,10 @@ if __name__ == "__main__":
 	from uHTR import uHTR
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[24]
+	qcard_slots=[1, 2, 3, 4]
 	b = webBus("pi5", 0)
-	uhtr = uHTR(uhtr_slots, all_slots, b, "Mason Dorseth", False)
+	uhtr = uHTR(uhtr_slots, qcard_slots, b, "Mason Dorseth", False)
 
-	for slot in all_slots:
-		for chip in xrange(12):
-			info=uhtr.get_QIE_map(slot, chip)
-			print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0],info[1],info[2],chip,slot)
 #	uhtr.ped_test()
 #	uhtr.ci_test()
 #	uhtr.shunt_test()
@@ -38,7 +33,9 @@ if __name__ == "__main__":
 #	uhtr.make_jsons()
 
 class uHTR():
-	def __init__(self, uhtr_slots, qcard_slots, bus, user, overwrite):
+	def __init__(self, uhtr_slots, qcard_slots, bus, user, overwrite, verbosity=True):
+
+		self.V = verbosity
 
 		self.uhtr_log = "{:%b%d%Y_%H%M%S}".format(datetime.now())
 		self.user = user
@@ -91,7 +88,7 @@ class uHTR():
 		ped_results["settings"]=ped_settings
 		histo_slopes = [] #stores slopes for overall histogram
 		for setting in ped_settings:
-			print "testing pedestal setting", setting
+			if self.V: print "testing pedestal setting", setting
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -130,11 +127,6 @@ class uHTR():
 
 			for chip in xrange(12):
 
-				cwd2=os.getcwd()
-				if not os.path.exists(str(chip)):
-					os.makedirs(str(chip))
-				os.chdir(cwd2  + "/" + str(chip))
-
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
@@ -147,7 +139,7 @@ class uHTR():
 					if chip_arr[num] != 1: flat_test=False
 				slope = self.graph_results("ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				if slope <= 2.4 and slope >=2.15: slope_test = True
-				print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}".format(qslot, chip, slope, flat_test, slope_test)
+				if self.V: print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}".format(qslot, chip, slope, flat_test, slope_test)
 				
 				# update master_dict with test results
 				if flat_test and slope_test: test_pass=True
@@ -174,7 +166,7 @@ class uHTR():
 		adc = hw.ADCConverter()
 
 		for setting in ci_settings:
-			print "testing charge injection setting {0} fC".format(setting)
+			if self.V: print "testing charge injection setting {0} fC".format(setting)
 			for qslot in self.qcards:
 				hw.SetQInjMode(1, qslot, self.bus)
 				dc=hw.getDChains(qslot, self.bus)
@@ -223,7 +215,7 @@ class uHTR():
 				if slope <= 1.15 and slope >=0.95: test_pass = True
 				self.update_QIE_results(qslot, chip, "ci", test_pass)
 
-				print "qslot: {0}, chip: {1}, slope: {2}, pass: {3}".format(qslot, chip, slope, test_pass)
+				if self.V: print "qslot: {0}, chip: {1}, slope: {2}, pass: {3}".format(qslot, chip, slope, test_pass)
 
 				#update slopes for final histogram
 				histo_slopes.append(slope)
@@ -254,8 +246,8 @@ class uHTR():
 			histo_ratios.append(x)
 			histo_ratios[x] = []
 		
-		for setting in gain_settings:
-			print "testing shunt setting", setting
+		for i, setting in enumerate(gain_settings):
+			if self.V: print "testing shunt setting ratio", nominalGainRatios[i]
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -311,10 +303,10 @@ class uHTR():
 
 					self.update_QIE_results(qslot, chip, "shunt", setting_result)
 
-					print "qslot: {0}, chip: {1}, setting: {2}, ratio: {3}".format(qslot, chip, setting, ratio)
+					if self.V: print "qslot: {0}, chip: {1}, setting: {2}, ratio: {3}, pass: {4}".format(qslot, chip, setting, ratio, setting_result)
 		
 		# for trouble shooting, shouldn't be in final test
-		print "Total Pass/Fail for Shunt Test:  ({0}, {1})".format(grand_ratio_pf[0], grand_ratio_pf[1])
+		if self.V: print "Total Pass/Fail for Shunt Test:  ({0}, {1})".format(grand_ratio_pf[0], grand_ratio_pf[1])
 		
 		#make histogram of all results for each setting
 		cwd = os.getcwd()
@@ -331,7 +323,7 @@ class uHTR():
 		phase_results={}
 		phase_results["settings"]=phase_settings
 		for setting in phase_settings:
-			print "testing phase setting", setting
+			if self.V: print "testing phase setting", setting
 			for qslot in self.qcards:
 				hw.SetQInjMode(1, qslot, self.bus)
 				dc=hw.getDChains(qslot, self.bus)
@@ -399,7 +391,7 @@ class uHTR():
 				#if slopeTest == True: results=True
 				#self.update_QIE_results(qslot, chip, "phase", results)
 
-				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+				if self.V: print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
 			os.chdir(cwd2)
 		os.chdir(cwd)
 
@@ -518,7 +510,7 @@ class uHTR():
 		# Records the uHTR slot, link, and channel of each QIE in master_dict
 		failures=[]
 		for qslot in self.qcards:
-			print "mapping qslot", qslot
+			if self.V: print "mapping qslot", qslot
 			dc=hw.getDChains(qslot, self.bus)
 			hw.SetQInjMode(0, qslot, self.bus)
 			dc.read()
@@ -539,13 +531,20 @@ class uHTR():
 					print "mapping qcard {0} failed".format(qslot)
 					self.qcards.remove(qslot)
 					failures.append(qslot)
-			for num in xrange(12):
-				dc[num].PedestalDAC(6)
+			for chip in xrange(12):
+				dc[chip].PedestalDAC(6)
 				dc.write()
 				dc.read()
 		
 		for failure in failures:
 			self.qcards.remove(failure)
+
+		if self.V:
+			for qslot in self.qcards:
+				for chip in xrange(12):
+					info=self.get_QIE_map(qslot, chip)
+					print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0], info[1], info[2], chip, qslot)
+
 
 	def get_mapping_histo(self):
 		# matches histo to QIE chip for mapping
