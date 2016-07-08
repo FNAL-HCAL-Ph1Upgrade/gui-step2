@@ -129,6 +129,12 @@ class uHTR():
        			os.chdir(cwd2  + "/" + str(qslot))
 
 			for chip in xrange(12):
+
+				cwd2=os.getcwd()
+				if not os.path.exists(str(chip)):
+					os.makedirs(str(chip))
+				os.chdir(cwd2  + "/" + str(chip))
+
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
@@ -333,7 +339,7 @@ class uHTR():
 				for chip in xrange(12):
 					dc[chip].PhaseDelay(setting)
 					dc[chip].ChargeInjectDAC(8640)
-					dc[chip].TimingThresholdDAC(6)
+					dc[chip].TimingThresholdDAC(80)
 				dc.write()
 				dc.read()
 			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
@@ -368,6 +374,11 @@ class uHTR():
 		os.chdir(cwd  + "/phase_plots")
 		
 		for qslot in self.qcards:
+			cwd2=os.getcwd()
+			if not os.path.exists(str(qslot)):
+				os.makedirs(str(qslot))
+			os.chdir(cwd2  + "/" + str(qslot))
+
 			for chip in xrange(12):
 
 				cwd2=os.getcwd()
@@ -389,7 +400,7 @@ class uHTR():
 				#self.update_QIE_results(qslot, chip, "phase", results)
 
 				print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
-				os.chdir(cwd2)
+			os.chdir(cwd2)
 		os.chdir(cwd)
 
 	
@@ -667,11 +678,7 @@ class uHTR():
 			plot_base="shunt_{0}_{1}".format(shunt_setting, self.uhtr_log)
 			bin_num = 20
 
-		uniqueStr = random.randint(1,99999)
-
-		ROOT.gROOT.SetBatch(1)
-		c = ROOT.TCanvas("c_{0}".format(uniqueStr),"c_{0}".format(uniqueStr),800,800) 
-		c.SetBatch(1)
+		c = self.canvas 
 		c.cd()
 		hist = ROOT.TH1D(legend_title, title, bin_num, xmin, xmax)
 		hist.GetXaxis().SetTitle(xtitle)
@@ -681,6 +688,7 @@ class uHTR():
 		hist.Draw()
 		c.Print("{0}.png".format(plot_base))
 
+############################################################
 
 #############################################################
 # uHTRtool histo functions
@@ -863,7 +871,6 @@ def get_tdcs(crate, slots):
 		
 		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
-#		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
 #		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
 
@@ -871,6 +878,7 @@ def get_tdcs(crate, slots):
 	return rawDictionary
 
 #############################################################
+
 
 #############################################################
 #Initialization functions
