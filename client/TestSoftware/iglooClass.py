@@ -216,15 +216,15 @@ class Igloo2_FPGA_Control(Test):
 #		self.bus.write(0x09, [iglooControl, value])
 		return self.readBridge(iglooControl,4)
 
-	def writeBridge(self, regAddress,messageList):
-		self.bus.write(self.address, [regAddress]+messageList)
+	def writeBridge(self, regAddress, messageList):
+		self.bus.write(0x19, [regAddress]+messageList)
 		return self.bus.sendBatch()
 
 	def readBridge(self, regAddress, num_bytes):
 		self.bus.write(0x00,[0x06])
 		self.bus.sendBatch()
-		self.bus.write(self.address,[regAddress])
-		self.bus.read(self.address, num_bytes)
+		self.bus.write(0x19,[regAddress])
+		self.bus.read(0x19, num_bytes)
 		message = self.bus.sendBatch()[-1]
 		if message[0] != '0':
 		    print 'Bridge i2c error detected'

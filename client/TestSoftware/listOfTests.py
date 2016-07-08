@@ -18,7 +18,7 @@ def initializeBridgeList(b,a,i):
     	"Firmware_Ver" : bt.Firmware_Ver(b,a,i), "Status" : bt.statusCheck(b,a,i),
 	"Scratch" : bt.ScratchCheck(b,a,i), "ClockCnt" : bt.brdg_ClockCounter(b,a,i),
 	"QIECount" : bt.RES_QIE_Counter(b,a,i), "WTECount" : bt.WTE_Counter(b,a,i),
-	"zeroOrbits" : bt.zeroOrbits(b,a,i)
+	"zeroOrbits" : bt.zeroOrbits(b,a,i), "TempPass" : bt.TempPass(b,a,i), "HumiPass" : bt.HumiPass(b,a,i)
 	}
 	
 	return registers
@@ -29,7 +29,7 @@ def initializeIglooList(b,a,i):
 	"statusReg" : ic.statusReg(b,a,i), "cntrRegDisplay" : ic.cntrRegDisplay(b,a,i),
 	"clk_count" : ic.clk_count(b,a,i), "rst_QIE_count" : ic.rst_QIE_count(b,a,i),
 	"igloo_wte_count" : ic.wte_count(b,a,i), "capIDErr_count" : ic.capIDErr_count(b,a,i),
-	"igloo_UID" : ic.uniqueID(b,a,i),
+	"igloo_UID" : ic.uniqueID(b,a,i), "Igloo2_FPGA_Control" : ic.Igloo2_FPGA_Control(b,a,i),
 	"CI_Mode_On" : ic.CI_Mode_On(b,a,i), "CI_Mode_Off" : ic.CI_Mode_Off(b,a,i),
 	}
 	
