@@ -4,6 +4,7 @@
 # terminal to BOTH the terminal and an external file.
 
 import sys
+from time import gmtime, strftime
 
 class logger():
 
@@ -12,9 +13,12 @@ class logger():
 		self.log = open("/home/hep/logResults/"+fileName, "a")
 
 	def write(self, message):
-		self.terminal.write(message)
-		self.log.write(message)
-
+		ms = message.split('/n')
+		t = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+		for m in ms:
+			o = t + "\t" + str(message)
+			self.terminal.write(o)
+			self.log.write(o)
+			
 	def flush(self):
 		pass
-		
