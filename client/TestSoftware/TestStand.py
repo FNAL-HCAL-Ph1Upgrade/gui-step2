@@ -69,6 +69,7 @@ class TestStand:
 		self.uHTR_instance.ped_test()
 		self.uHTR_instance.ci_test()
 		self.uHTR_instance.shunt_test()
+		self.uHTR_instance.phase_test()
 		self.uHTR_instance.make_jsons()
 		timeStamp.timestamp_results(self.timeString)
 		

@@ -24,7 +24,7 @@ class testSummary:
 			"link_test_mode" : [0,0], "link_test_pattern" : [0,0], 
 			"dataToSERDES" : [0,0], "addrToSERDES" : [0,0], "ctrlToSERDES" : [0,0],
 			"statFromSERDES" : [0,0], "iglooScratch" : [0,0], "dataFromSERDES" : [0,0],
-			"iglooZeros" : [0,0], "igloo_UID" : [0,0], "Igloo2_FPGA_Control" : [0,0],
+			"iglooZeros" : [0,0], "igloo_UID" : [0,0],
 			"CI_Mode_On" : [0,0] , "CI_Mode_Off" : [0,0]
 		}
 
@@ -76,6 +76,8 @@ class testSummary:
 					w.write(", "+'"'+i+'"'+" : "+str(self.vttxListOne[i]))
 				for i in self.vttxListTwo.keys():
 					w.write(", "+'"'+i+'"'+" : "+str(self.vttxListTwo[i]))
+				for i in self.longTestList.keys():
+					w.write(", "+'"'+i+'"'+" : "+str(self.longTestList[i]))
 				w.write("\n}")
 				w.write("\n}")
 		else:

@@ -29,7 +29,7 @@ def initializeIglooList(b,a,i):
 	"statusReg" : ic.statusReg(b,a,i), "cntrRegDisplay" : ic.cntrRegDisplay(b,a,i),
 	"clk_count" : ic.clk_count(b,a,i), "rst_QIE_count" : ic.rst_QIE_count(b,a,i),
 	"igloo_wte_count" : ic.wte_count(b,a,i), "capIDErr_count" : ic.capIDErr_count(b,a,i),
-	"igloo_UID" : ic.uniqueID(b,a,i), "Igloo2_FPGA_Control" : ic.Igloo2_FPGA_Control(b,a,i),
+	"igloo_UID" : ic.uniqueID(b,a,i),
 	"CI_Mode_On" : ic.CI_Mode_On(b,a,i), "CI_Mode_Off" : ic.CI_Mode_Off(b,a,i),
 	}
 	
