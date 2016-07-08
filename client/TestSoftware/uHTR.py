@@ -229,7 +229,6 @@ class uHTR():
 		os.chdir(cwd + "/histo_statistics")	
 		self.make_histo("ci", histo_slopes, 0, 2)
 		os.chdir(cwd)
-
  
 	def shunt_test(self):
 		peak_results = {}

@@ -34,7 +34,7 @@ def openChannel(slot, bus):
         return 'closed channel'
   # Open channel to i2c group
     bus.write(0x74, [ngccmGroup(rmLoc)])
-    bus.read(0x74, 2)
+    bus.read(0x74, 1)
 
   # Reset the backplane
     bus.write(0x00,[0x06])
@@ -75,21 +75,22 @@ def magicReset(ngccm,bus): #RM4,3->ngccm=2 -- RM2,1->ngccm=1
     return bus.sendBatch()
 
 # Power Enable on 0x70
-def powerEnable(ngccm):
-    bus.write(0x72,[ngccm])
+def powerEnable(ngccm,bus):
+    bus.write(0x72,[ngccm]) #RM4,3->ngccm=2 -- RM2,1->ngccm=1
     bus.write(0x74,[0x08])
     bus.write(0x70,[0x3,0x0]) # Set to Output
 
     # The proper way... only change the bit you want to change!
-    b.write(0x70,[0x1])
-    b.read(0x70,1)
-    message = b.sendBatch()[-1]
+    bus.write(0x70,[0x1])
+    bus.read(0x70,1)
+    message = bus.sendBatch()[-1]
     value1 = int(message[2:])
     value2 = value1 | 0x8
 
     bus.write(0x70,[0x1,value2])
 
     return b.sendBatch()
+    return bus.sendBatch()
 
 
 # Converts ADC to fC (Nate Chaverin's class)
