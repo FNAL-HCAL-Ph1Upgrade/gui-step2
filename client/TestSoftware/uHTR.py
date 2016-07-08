@@ -5,6 +5,7 @@ import sys
 import time
 import shutil
 import json
+import random
 import numpy as np
 import multiprocessing as mp
 import Hardware as hw
@@ -333,7 +334,7 @@ class uHTR():
 				for chip in xrange(12):
 					dc[chip].PhaseDelay(setting)
 					dc[chip].ChargeInjectDAC(8640)
-					dc[chip].TimingThresholdDAC(6)
+					dc[chip].TimingThresholdDAC(80)
 				dc.write()
 				dc.read()
 			tdc_results=self.get_tdc_results(self.crate, self.uhtr_slots)
@@ -619,7 +620,7 @@ class uHTR():
 			plot_base="phase_{0}".format(key)
 			fit=ROOT.TF1("fit", "[0] + [1]*x")
 		ROOT.gROOT.SetBatch(1)
-		c = ROOT.TCanvas("c","c",800,800) 
+		c = ROOT.TCanvas("c_{0}".format(key),"c_{0}".format(key),800,800) 
 		c.SetBatch(1)
 		c.cd()
 
@@ -667,8 +668,10 @@ class uHTR():
 			plot_base="shunt_{0}_{1}".format(shunt_setting, self.uhtr_log)
 			bin_num = 20
 
+		uniqueStr = random.randint(1,99999)
+
 		ROOT.gROOT.SetBatch(1)
-		c = ROOT.TCanvas("c","c",800,800) 
+		c = ROOT.TCanvas("c_{0}".format(uniqueStr),"c_{0}".format(uniqueStr),800,800) 
 		c.SetBatch(1)
 		c.cd()
 		hist = ROOT.TH1D(legend_title, title, bin_num, xmin, xmax)
