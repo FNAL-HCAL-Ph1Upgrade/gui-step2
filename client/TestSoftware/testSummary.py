@@ -16,6 +16,7 @@ class testSummary:
 			"Scratch" : [0,0], "ClockCnt" : [0,0], "QIECount" : [0,0],
 			"WTECount" : [0,0], "zeroOrbits" : [0,0]
 		}
+
 		self.iglooList = {"fpgaMajVer" : [0,0], "fpgaMinVer" : [0,0], "iglooOnes" : [0,0],
 			"iglooZeros" : [0,0],"fpgaTopOrBot" : [0,0], "iglooUID" : [0,0],
 			"statusReg" : [0,0], "cntrRegDisplay" : [0,0], "rst_QIE_count" : [0,0], "clk_count" : [0,0],
