@@ -16,9 +16,10 @@ class logger():
 		ms = message.split('/n')
 		t = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 		for m in ms:
-			o = t + "\t" + str(message) + '\n'
-			self.terminal.write(o)
-			self.log.write(o)
+			if t != '':
+				o = t + "\t" + str(message) + '\n'
+				self.terminal.write(o)
+				self.log.write(o)
 
 	def flush(self):
 		pass
