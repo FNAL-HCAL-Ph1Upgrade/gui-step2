@@ -13,6 +13,7 @@ import uHTR
 import vttxLib
 import temp
 from Checksum import Check
+import loggerClass as logClass
 
 # Cutoff for card overheating. Hopefully they never get this hot...
 # Degrees Celsius
@@ -55,6 +56,10 @@ class testSuite:
         self.a = address
 	i = iters
 	print "DEBUG... Iterations: " , i
+
+	# Info for logfiles
+	self.fileName = sys.stdout.name
+	self.backupStdout = sys.stdout
 
 	# Using the listOfTests.py file, initialize our test suites.
 	self.registers = listOfTests.initializeBridgeList(self.b, self.a, i)
@@ -143,10 +148,16 @@ class testSuite:
 		print "-------------------------"
 		# Loop over all basic register tests. Add the passes to the [0] index. Add the fails to the [1] index
 		for r in self.registers.keys():
+			sys.stdout = logClass.loggerSingleTest(self.fileName, r+"_"+str(self.outCard.cardGenInfo["JSlot"]))
 			results = self.registers[r].run()
 			self.outCard.resultList[r][0] += results[0]
 			self.outCard.resultList[r][1] += results[1]
 			print r+" tests completed."
+			strReturn = sys.stdout.strReturn
+			strReturn = strReturn.replace("\n","\\n")
+			self.outCard.bridgeResults[r]='"'+strReturn+'"'
+
+		sys.stdout = self.backupStdout
 
 	if (suite == "main" or suite == "igloo" or suite == "short"):
 		# Immediately quit tests if the card gets too hot
@@ -158,11 +169,17 @@ class testSuite:
 		print "-------------------------"
 		# Loop over all igloo tests. Add the passes to the [0] index. Add the fails to the [1] index
 		for r in self.iglooRegs.keys():
+			sys.stdout = logClass.loggerSingleTest(self.fileName, r+"_"+str(self.outCard.cardGenInfo["JSlot"]))
 			print r
 			results = self.iglooRegs[r].run()
 			self.outCard.iglooList[r][0] += results[0]
 			self.outCard.iglooList[r][1] += results[1]
 			print r+" tests completed."
+			strReturn = sys.stdout.strReturn
+			strReturn = strReturn.replace("\n","\\n")
+			self.outCard.iglooResults[r]='"'+strReturn+'"'
+
+		self.stdout = self.backupStdout
 
 	if (suite == "main" or suite == "vttx" or suite == "short"):
 		# Immediately quit tests if the card gets too hot
@@ -174,10 +191,16 @@ class testSuite:
 		print "-------------------------"
 		# Loop over all vttx tests. Add the passes to the [0] index. Add the fails to the [1] index
 		for r in self.vttxRegs_1.keys():
+			sys.stdout = logClass.loggerSingleTest(self.fileName, r+"_"+str(self.outCard.cardGenInfo["JSlot"]))
 			results = self.vttxRegs_1[r].run()
 			self.outCard.vttxListOne[r][0] += results[0]
 			self.outCard.vttxListOne[r][1] += results[1]
 			print r+" tests completed."
+			strReturn = strReturn
+			strReturn = strReturn.replace("\n","\\n")
+			self.outCard.vttxOneResults[r]='"'+strReturn+'"'
+
+		self.stdout = self.backupStdout
 
 		# Immediately quit tests if the card gets too hot
 		if (temp.readManyTemps(self.a,5,"Temperature","nohold") >= tempThreshold):
@@ -188,10 +211,16 @@ class testSuite:
 		print "-------------------------"
 		# Loop over all vttx tests. Add the passes to the [0] index. Add the fails to the [1] index
 		for r in self.vttxRegs_2.keys():
+			sys.stdout = logClass.loggerSingleTest(self.fileName, r+"_"+str(self.outCard.cardGenInfo["JSlot"]))
 			results = self.vttxRegs_2[r].run()
 			self.outCard.vttxListTwo[r][0] += results[0]
 			self.outCard.vttxListTwo[r][1] += results[1]
 			print r+" tests completed."
+			strReturn = sys.stdout.strReturn
+			strReturn = strReturn.replace("\n","\\n")
+			self.outCard.vttxTwoResults[r]='"'+strReturn+'"'
+
+		self.stdout = self.backupStdout
 
 	if (suite == "main" or suite == "long"):
 		# Immediately quit tests if the card gets too hot
@@ -203,12 +232,20 @@ class testSuite:
 		# Loop over all long, involved tests. Add the passes to the [0] index. Add the fails to the [1] index
 		for r in self.longRegs.keys():
 			# If we're doing the inputspy test, we need to open the igloo ahead of time
-			if (r == "inputSpy_512Reads"):
+			if (r == "OrbitHistograms"):
+				sys.stdout = logClass.loggerSingleTest(self.fileName, r+"_"+str(self.outCard.cardGenInfo["JSlot"]))
+			elif (r == "inputSpy_512Reads"):
 				self.openIgloo(self.a)
 			results = self.longRegs[r].run()
 			self.outCard.longTestList[r][0] += results[0]
 			self.outCard.longTestList[r][1] += results[1]
 			print r+" tests completed."
+			if (r == "OrbitHistograms"):
+				strReturn = sys.stdout.strReturn
+				strReturn = strReturn.replace("\n","\\n")
+				self.outCard.longTestResults[r]='"'+strReturn+'"'
+
+		self.stdout = self.backupStdout
 
 	for r in noCheckRegis.keys():
 	    self.readNoCheck(r, 1)

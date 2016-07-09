@@ -130,7 +130,7 @@ class HumiPass(Test):
 		self.humiResult = temp.readManyTemps(self.address,5,"Humidity","nohold")
 
 		if (self.humiResult >= self.humiThreshold):
-			print "Humidity ", self.humiResult," exceeds ", self.humiThreshold, "! HumiPass test failed!"
+			print "Humidity ", self.humiResult," exceeds ", self.humiThreshold, "! HumiPass test failed!",
 			return False
 		else:
 			print "Humidity: ", self.humiResult, " in safe range!"

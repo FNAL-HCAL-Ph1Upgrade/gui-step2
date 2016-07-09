@@ -404,7 +404,7 @@ class uHTR():
 		os.chdir(cwd)
 
 	
-	def make_jsons(self):
+	def make_jsons(self, mapString, pedString, citString, shuntString, phsString):
 		
 		os.chdir(self.home + "/jsonResults")
 		for qslot in self.qcards:
@@ -441,6 +441,13 @@ class uHTR():
 			jd["individual phase scan"] = {}
 			for chip in xrange(12):
 				jd["individual phase scan"][chip] = self.get_QIE_results(qslot, chip, "phase")
+
+			jd["TestOutputs"] = {}
+			jd["TestOutputs"]["mappingResults"] = mapString
+			jd["TestOutputs"]["pedestalResults"] = pedString
+			jd["TestOutputs"]["citResults"] = citString
+			jd["TestOutputs"]["shuntResults"] = shuntString
+			jd["TestOutputs"]["phaseResults"] = phsString
 
 			with open(name, 'w') as fp:
 				json.dump(jd, fp)

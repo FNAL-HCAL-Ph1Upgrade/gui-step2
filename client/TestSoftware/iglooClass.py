@@ -277,12 +277,7 @@ class cntrRegDisplay(Test): #shows control register settings
         "CI_mode"           :   allRegStr[31:32], # Charge Injection mode of the QIE10
             }
 
-        allReg = "31bx: " + cntrReg["31bX"] + '\n'\
-             + "orbitHisto_clear: " + cntrReg["orbitHisto_clear"] + '\n'\
-             + "orbitHisto_run: " + cntrReg["orbitHisto_run"] + '\n'\
-             + "2_bit_0: " + cntrReg["2_bit_0"] + '\n'\
-             + "WrEn_InputSpy: " + cntrReg["WrEn_InputSpy"] + '\n'\
-             + "CI_mode: " + cntrReg["CI_mode"]
+        allReg = "31bx: " + cntrReg["31bX"] + '\n' + "orbitHisto_clear: " + cntrReg["orbitHisto_clear"] + '\n'+ "orbitHisto_run: " + cntrReg["orbitHisto_run"] + '\n'+ "2_bit_0: " + cntrReg["2_bit_0"] + '\n'+ "WrEn_InputSpy: " + cntrReg["WrEn_InputSpy"] + '\n'+ "CI_mode: " + cntrReg["CI_mode"]
 
         # another option for readout instead of allReg is simply cntrReg (prints list)
         if desiredReg == "all":

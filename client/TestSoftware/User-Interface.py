@@ -46,7 +46,7 @@ class makeGui:
 		self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
 
 		# Create a string that uniquely defines a human log file
-		self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())+"_tests.log"
+		self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
 
 		# Make an empty list that will eventually contain all of
 		# the active card slots

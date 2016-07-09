@@ -4,6 +4,7 @@ import RM
 import sys
 import uHTR
 import timeStamp
+import loggerClass as logClass
 from datetime import datetime
 sys.path.append('../')
 from client import webBus
@@ -16,6 +17,8 @@ class TestStand:
 	self.iters = iterations
 	self.uHTR_slots = uHTR_slots
 	self.user = user
+	self.filename = sys.stdout.name  # For loggerclass use
+	self.backupStdout = sys.stdout
 	self.overwrite = overwrite
 	self.timeString = "{:%b%d%Y_%H%M%S}".format(datetime.now())
 
@@ -64,13 +67,39 @@ class TestStand:
 		print "\n-------------------------"
 		print "Running uHTR tests!"
 		print "-------------------------"
-		print "DEBUG... Active Slots: ", self.activeSlots
+
+		sys.stdout = logClass.loggerSingleTest(self.filename, "mappingHTRs")
 		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus, self.user, self.overwrite)
+		mapReturn = sys.stdout.strReturn
+		mapReturn = mapReturn.replace("\\n","\n")
+		sys.stdout = self.backupStdout		
+		
+		sys.stdout = logClass.loggerSingleTest(self.filename, "pedTests")
 		self.uHTR_instance.ped_test()
+		pedReturn = sys.stdout.strReturn
+		pedReturn = pedReturn.replace("\\n","\n")
+		sys.stdout = self.backupStdout
+
+		sys.stdout = logClass.loggerSingleTest(self.filename, "citTests")
 		self.uHTR_instance.ci_test()
+		citReturn = sys.stdout.strReturn
+		citReturn = citReturn.replace("\\n","\n")
+		sys.stdout = self.backupStdout
+
+		sys.stdout = logClass.loggerSingleTest(self.filename, "shtTests")
 		self.uHTR_instance.shunt_test()
+		shtReturn = sys.stdout.strReturn
+		shtReturn = shtReturn.replace("\\n","\n")
+		sys.stdout = self.backupStdout
+
+		sys.stdout = logClass.loggerSingleTest(self.filename, "phsTests")
 		self.uHTR_instance.phase_test()
-		self.uHTR_instance.make_jsons()
+		phsReturn = sys.stdout.strReturn
+		phsReturn = phsReturn.replace("\\n","\n")
+		sys.stdout = self.backupStdout
+
+
+		self.uHTR_instance.make_jsons(mapReturn, pedReturn, citReturn, shtReturn, phsReturn)
 		timeStamp.timestamp_results(self.timeString)
 		
     def runSingle(self, key):
