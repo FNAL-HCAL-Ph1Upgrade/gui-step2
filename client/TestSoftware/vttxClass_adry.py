@@ -4,7 +4,7 @@ import TestSoftware.Hardware as Hardware
 
 h = Hardware
 
-b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
+b = webBus('pi5',0) #can add 'pi5,0' so won't print send/receive messages
 v = vttxLib
 
 slot = 18 # the J_# slot
@@ -28,22 +28,22 @@ class Test:
 # ------------------------------------------------------------------------
 class VTTX_Display(Test):
     def testBody(self):
-        print "----------VTTX_Display----------"
+        print '----------VTTX_Display----------'
         read1 = v.readFromVTTX(b, v.vttx["address"], v.vttx['size'])
 
         if read1 == False: return False
         else:
-            print "~~ PASS: VTTX Register: ", read1
+            print '~~ PASS: VTTX Register: '+str(read1)
             return True
 # ------------------------------------------------------------------------
 class VTTX_Change(Test): # NOTE: the run() function is overloaded & takes list parameter toWrite
     def testBody(self, toWrite):
-        print "----------VTTX_Change----------"
+        print '----------VTTX_Change----------'
         w = v.writeToVTTX(b, v.vttx['address'], v.vttx['size'], toWrite)
 
         if w == False: return False
         else:
-            print "~~ PASS: VTTX Register: ", read1
+            print '~~ PASS: VTTX Register: '+str(read1)
             return True
 
     def run(self, toWrite):
@@ -54,10 +54,10 @@ class VTTX_Change(Test): # NOTE: the run() function is overloaded & takes list p
 
 class VTTX_RWR_withRestore(Test):
     def testBody(self):
-        print "----------VTTX_RWR_withRestore----------"
+        print '----------VTTX_RWR_withRestore----------'
         ret = v.RWR_withRestore(b, v.vttx['address'], v.vttx['size'])
         if ret == True:
-            print "~~ PASS: RWR Success ~~"
+            print '~~ PASS: RWR Success ~~'
             return True
         else:
             return False
@@ -65,7 +65,7 @@ class VTTX_RWR_withRestore(Test):
 # ---------RUN FUNCTIONS--------------------------------------------------
 def runAll():
     # -------VTTX 1----------
-    print "----------------------VTTX 1-------------------------"
+    print '----------------------VTTX 1-------------------------'
     v.openVTTX(slot,1) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)
@@ -78,7 +78,7 @@ def runAll():
 
     # -------VTTX 2----------
     #print '\n'
-    print "----------------------VTTX 2-------------------------"
+    print '----------------------VTTX 2-------------------------'
     v.openVTTX(slot,2) #USE openVTTX 2nd parameter to select VTTX NUMBER!
 
     m = VTTX_Display(b, v.vttx['address'], 'vttx.txt', 2)

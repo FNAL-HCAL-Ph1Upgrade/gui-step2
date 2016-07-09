@@ -53,8 +53,8 @@ class Check:
                 else: # crc < 128
                     crc = (crc << 1)
         if verbose:
-            print 'CRC = ',crc
-            print 'checksum = ',checksum
+            print 'CRC = '+str(crc)
+            print 'checksum = '+str(checksum)
         if crc != checksum:
             return 1 # 'CHECKSUM_ERROR'
         return 0 # 'CHECKSUM_OK'

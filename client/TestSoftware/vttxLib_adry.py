@@ -55,10 +55,10 @@ def readFromVTTX(bus, address, numBytes):
         ret.append(int(i))
 
     if isError(ret):
-        print "Read ERROR: ", ret
+        print 'Read ERROR: '+str(ret)
         return False
     else:
-        print "Read Success: ", ret
+        print 'Read Success: '+str(ret)
         return ret[1:] #ignore the leading error code
 
 def writeToVTTX(bus, address, numBytes, toWrite):
@@ -69,10 +69,10 @@ def writeToVTTX(bus, address, numBytes, toWrite):
         ret.append(int(i))
 
     if not isError(ret):
-        print "Write Success: ", ret
+        print 'Write Success: '+str(ret)
         return True # write successful
     else:
-        print "Write ERROR: ", ret
+        print 'Write ERROR: '+str(ret)
         return False # write failed
 
 # Read from Vttx1, write something else, read again to confirm
@@ -102,11 +102,11 @@ def RWR_withRestore(bus, address, numBytes):
         read3 = readFromVTTX(bus, address, numBytes)
         # if restored to original (aka read1 = read3)
         if read1 == read3:
-            print "Read1 = Read3 --> Reg changed, now restored to original"
+            print 'Read1 = Read3 --> Reg changed, now restored to original'
             return True
         else:
-            print "Read1 != Read3"
+            print 'Read1 != Read3'
             return False
     elif (read1 == read2):
-        print "Read1 = Read2 --> Write to RW Failed"
+        print 'Read1 = Read2 --> Write to RW Failed'
         return False

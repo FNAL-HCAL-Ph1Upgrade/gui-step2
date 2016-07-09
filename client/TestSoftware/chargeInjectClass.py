@@ -44,10 +44,10 @@ for slot in qcard_slots:
 
         info = uhtr.get_mapping_histo()
         if info is not None:
-            print "Q_slot: {4} Qie: {3}, uhtr_slot: {0}, link {1}: channel: {2}".format(info[0],info[1],info[2],chip,slot)
+            print 'Q_slot: {4} Qie: {3}, uhtr_slot: {0}, link {1}: channel: {2}'.format(info[0],info[1],info[2],chip,slot)
 
     for chip in xrange(12):
-        print "########################## CHIP %d ############" %chip
+        print '########################## CHIP %d ############' %chip
         print myDC[chip]
 
     i.displayCI(slot)

@@ -11,7 +11,7 @@ import sys
 sys.path.append('../')
 from client import webBus
 import QIELib
-b = webBus("pi5",0) #can add "pi5,0" so won't print send/receive messages
+b = webBus('pi5',0) #can add 'pi5,0' so won't print send/receive messages
 q = QIELib
 
 ##############################
@@ -355,26 +355,26 @@ def scratchReg(): # "Scratch register"
 def readAllIgloo():
     openIgloo(0,0)
 
-    print "FPGA Major Version: " + fpgaMajVer()
-    print "FPGA Minor Version: " + fpgaMinVer()
-    print "Ones: " + ones()
-    print "Zeros: " + zeros()
-    print "FPGATopOrBottom: " + FPGATopOrBottom()
-    print "Unique ID: " + uniqueID()
-    print "StatusReg: " + statusReg()
-    print "CntrReg: " + cntrReg()
-    print "Clock Counter: " + clk_count()
-    print "QIE Reset Counter: " + rst_QIE_count()
-    print "WTE Counter: " + wte_count()
-    print "CapID Error Counter: " + capIDErr_count()
-    print "FIFO Data: " + fifo_data()
-    print "InputSpy: " + inputSpy()
-    print "Spy96bits: " + spy96bits()
-    print "QIE Clock Phase: " + qie_ck_ph()
-    print "Link Test Mode: " + link_test_mode()
-    print "Link Test Pattern: " + link_test_pattern()
-    print "SERDES: " + SERDES()
-    print "ScratchReg: " + scratchReg()
+    print 'FPGA Major Version: ' + fpgaMajVer()
+    print 'FPGA Minor Version: ' + fpgaMinVer()
+    print 'Ones: ' + ones()
+    print 'Zeros: ' + zeros()
+    print 'FPGATopOrBottom: ' + FPGATopOrBottom()
+    print 'Unique ID: ' + uniqueID()
+    print 'StatusReg: ' + statusReg()
+    print 'CntrReg: ' + cntrReg()
+    print 'Clock Counter: ' + clk_count()
+    print 'QIE Reset Counter: ' + rst_QIE_count()
+    print 'WTE Counter: ' + wte_count()
+    print 'CapID Error Counter: ' + capIDErr_count()
+    print 'FIFO Data: ' + fifo_data()
+    print 'InputSpy: ' + inputSpy()
+    print 'Spy96bits: ' + spy96bits()
+    print 'QIE Clock Phase: ' + qie_ck_ph()
+    print 'Link Test Mode: ' + link_test_mode()
+    print 'Link Test Pattern: ' + link_test_pattern()
+    print 'SERDES: ' + SERDES()
+    print 'ScratchReg: ' + scratchReg()
 
 readAllIgloo()
 

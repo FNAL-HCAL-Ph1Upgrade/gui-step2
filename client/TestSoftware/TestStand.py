@@ -49,22 +49,22 @@ class TestStand:
                 RM1_active.append(slot)
 
         #initialize RMs
-	print "--- Determining which slots contain active cards ---\n"
+	print '--- Determining which slots contain active cards ---\n'
         self.RMs.append(RM.RM(1, RM1_active, RM1_summaries, self.bus))
         self.RMs.append(RM.RM(2, RM2_active, RM2_summaries, self.bus))
         self.RMs.append(RM.RM(3, RM3_active, RM3_summaries, self.bus))
         self.RMs.append(RM.RM(4, RM4_active, RM4_summaries, self.bus))
-	print "\n--- Slot determination finished. Beginning tests ---\n\n"
+	print '\n--- Slot determination finished. Beginning tests ---\n\n'
 
     def runAll(self):
 	    for r in self.RMs:
 		r.runAll(self.suiteSelection, self.iters)
 	    # uHTR tests need to be ran here, instead of being ran further down the line.
 	    if (self.suiteSelection in ["main","uhtr"]):
-		print "\n-------------------------"
-		print "Running uHTR tests!"
-		print "-------------------------"
-		print "DEBUG... Active Slots: ", self.activeSlots
+		print '\n-------------------------'
+		print 'Running uHTR tests!'
+		print '-------------------------'
+		print 'DEBUG... Active Slots: '+str(self.activeSlots)
 		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus, self.user, self.overwrite)
 		self.uHTR_instance.ped_test()
 		self.uHTR_instance.ci_test()

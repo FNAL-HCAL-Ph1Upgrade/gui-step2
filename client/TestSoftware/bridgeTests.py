@@ -112,28 +112,28 @@ class Temperature(Test):
 
 class TempPass(Test):
 	def testBody(self):
-		print "\n"
+		print '\n'
 		self.tempThreshold = 45
 		self.tempResult = temp.readManyTemps(self.address,5,"Temperature","nohold")
 
 		if (self.tempResult >= self.tempThreshold):
-			print "Temperature ", self.tempResult," exceeds ", self.tempThreshold, "! TempPass test failed!"
+			print 'Temperature '+str(self.tempResult)+' exceeds '+str(self.tempThreshold)+'! TempPass test failed!'
 			return False
 		else:
-			print "Temperature: ", self.tempResult, " in safe range!"
+			print 'Temperature: '+str(self.tempResult)+' in safe range!'
 			return True
 
 class HumiPass(Test):
 	def testBody(self):
-		print "\n"
+		print '\n'
 		self.humiThreshold = 55
 		self.humiResult = temp.readManyTemps(self.address,5,"Humidity","nohold")
 
 		if (self.humiResult >= self.humiThreshold):
-			print "Humidity ", self.humiResult," exceeds ", self.humiThreshold, "! HumiPass test failed!"
+			print 'Humidity '+str(self.humiResult)+' exceeds '+str(self.humiThreshold)+'! HumiPass test failed!'
 			return False
 		else:
-			print "Humidity: ", self.humiResult, " in safe range!"
+			print 'Humidity: '+str(self.humiResult)+' in safe range!'
 			return True
 
 
