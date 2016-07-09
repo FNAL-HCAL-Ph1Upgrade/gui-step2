@@ -102,7 +102,7 @@ class testSuite:
 		message = r[-1]
 		check = Check(message,0)
 		# Using checksum, ask: is the message "good"?
-		if (check.result != 0):  # Message bad: print error+str(assign error UID.)
+		if (check.result != 0):  # Message bad: print error, assign error UID.
 			print 'Unique ID checksum error! Continuing...'
 			self.outCard.cardGenInfo[testName] = "0xXXXXXXXXXXXXX"
 		else:   # Message good: assign the card its UID.
