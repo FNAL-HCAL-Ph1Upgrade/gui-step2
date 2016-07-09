@@ -18,7 +18,7 @@ def sensorTemp(slot):
 
     data = ((b.sendBatch()[2]).split())[1:]
     checksum = data[2] # 3rd byte of data is the checksum
-    print "Checksum: " + hex(int(checksum))[2:]
+    print 'Checksum: ' + hex(int(checksum))[2:]
 
 
 # def checkCRC(data, checksum):
@@ -53,14 +53,14 @@ def sensorTemp(slot):
 
     # Splitting the incoming data & concatenating strings of binary bytes
     data = format(int(data[0]),'08b') + format(int(data[1]),'08b')
-    print "2 data bytes: " + data
+    print '2 data bytes: ' + data
     # zero-ing out the 2 status bits, converting to int for calculations
     data = int(data[0:14] + "00", 2)
     # Converting temp using equation
     temp = (-46.85) +175.72*(data)/(2**16)
     return temp
 
-print "%.2f" %(sensorTemp(5))
+print '%.2f' %(sensorTemp(5))
 
 
 #returns the relative humidity of the QIE card
@@ -80,9 +80,9 @@ def sensorHumid(slot):
     # zero-ing out the 2 status bits, converting to int for calculations
     data = int(data[0:14] + "00", 2)
     # Converting humidity using equation
-    print "data: ", data
+    print 'data: '+str(data)
     humid = (-6.0) + 125.0 * (data)/(2**16)
 
     return humid
 
-print "%.2f" %(sensorHumid(5))
+print '%.2f' %(sensorHumid(5))

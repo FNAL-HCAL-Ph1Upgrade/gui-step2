@@ -120,8 +120,8 @@ def vttx2RWR(rm, slot):
         return "Fail"
 
 
-print "From RWR of vttx1: " + vttx1RWR(0,0)
-print "From RWR of vttx2: " + vttx2RWR(0,0)
+print 'From RWR of vttx1: ' + vttx1RWR(0,0)
+print 'From RWR of vttx2: ' + vttx2RWR(0,0)
 
 
 # output of successful execution of the code!

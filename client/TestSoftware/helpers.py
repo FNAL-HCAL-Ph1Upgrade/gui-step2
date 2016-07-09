@@ -63,7 +63,7 @@ def getMessageList(value,num_bytes):
     length = len(hex_message)
     zeros = "".join(list('0' for i in xrange(8-length)))
     hex_message = zeros + hex_message
-    print 'hex message = ', hex_message
+    print 'hex message = '+str(hex_message)
     mList = list(int(hex_message[a:a+2],16) for a in xrange(0,2*num_bytes,2))
     mList.reverse()
     return mList
@@ -91,11 +91,11 @@ def sensorTemp(slot,b):
 
     data = ((b.sendBatch()[2]).split())[1:]
     checksum = data[2] # 3rd byte of data is the checksum
-    print "Checksum: " + hex(int(checksum))[2:]
+    print 'Checksum: ' + hex(int(checksum))[2:]
 
     # Splitting the incoming data & concatenating strings of binary bytes
     data = format(int(data[0]),'08b') + format(int(data[1]),'08b')
-    print "2 data bytes: " + data
+    print '2 data bytes: ' + data
     # zero-ing out the 2 status bits, converting to int for calculations
     data = int(data[0:14] + "00", 2)
     # Converting temp using equation

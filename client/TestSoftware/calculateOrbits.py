@@ -37,7 +37,7 @@ def calcOrbs(bus,slot,seconds,verbose=0):
     orbits = float(b - a)
     orbitsPerSec = orbits/seconds
     if (int(orbitsPerSec) == 0):
-	print "ERROR: Division by zero. Continuing..."
+	print 'ERROR: Division by zero. Continuing...'
         return False  # this avoids a div by zero error
     else:
     	secondsPerOribt = 1/orbitsPerSec # seconds per orbit
@@ -46,21 +46,21 @@ def calcOrbs(bus,slot,seconds,verbose=0):
     percErr = 100 * abs(orbitTimeMeasured-orbitTime1)/orbitTime1
 
     if verbose:
-        print 'num orbits a        = ', a
-        print 'num orbits b        = ', b
-        print 'orbits diff = b - a = ', orbits
-        print 'time delay (s)      = ', seconds
-        print 'orbits per second   = ', orbitsPerSec
-        print 'seconds per orbit   = ', secondsPerOribt
+        print 'num orbits a        = '+str(a)
+        print 'num orbits b        = '+str(b)
+        print 'orbits diff = b - a = '+str(orbits)
+        print 'time delay (s)      = '+str(seconds)
+        print 'orbits per second   = '+str(orbitsPerSec)
+        print 'seconds per orbit   = '+str(secondsPerOribt)
     
-    print 'theoretical orbit time (microseconds) = ', orbitTime1
+    print 'theoretical orbit time (microseconds) = '+str(orbitTime1)
     # print orbitTime2
-    print 'measured orbit time (microseconds) = ', orbitTimeMeasured
-    print 'percent error           =  ', percErr, ' % error'
+    print 'measured orbit time (microseconds) = '+str(orbitTimeMeasured)
+    print 'percent error           =  '+str(percErr)+' % error'
 
     if percErr < 0.5:
-	print "Passes!\n"
+	print 'Passes!\n'
         return True
     else:
-	print "Fails...\n"
+	print 'Fails...\n'
         return False

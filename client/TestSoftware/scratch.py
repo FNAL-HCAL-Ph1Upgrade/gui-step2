@@ -31,7 +31,7 @@ class ADCConverter:
                         subrange = i
 
                 if subrange == -1:
-                    print "Something has gone horribly wrong!"
+                    print 'Something has gone horribly wrong!'
 
                 # Sensitivity = 3.1 * 8^exp * 2^subrange
                 sensitivity = self.baseSensitivity * 8.0**float(exp) * 2.0**subrange
@@ -45,4 +45,4 @@ class ADCConverter:
 
 myadc = ADCConverter()
 for i in xrange(255):
-    print "%d ADC: " %i, myadc.linearize(i)
+    print '%d ADC: ' %i+str(myadc.linearize(i))

@@ -35,8 +35,8 @@ def getBytesFromBits(bitList):
 	return ret
 
 #newList = convert(data)
-#print "newList: ", newList
-#print "final result: ", getBytesFromBits(newList)
+#print 'newList: '+str(newList)
+#print 'final result: '+str(getBytesFromBits(newList))
 
 var = raw_input("Please enter a list: ")
-print "You entered", var	
+print 'You entered'+str(var)

@@ -88,7 +88,7 @@ class uHTR():
 		ped_results["settings"]=ped_settings
 		histo_slopes = [] #stores slopes for overall histogram
 		for setting in ped_settings:
-			if self.V: print "testing pedestal setting", setting
+			if self.V: print 'testing pedestal setting'+str(setting)
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -139,7 +139,7 @@ class uHTR():
 					if chip_arr[num] != 1: flat_test=False
 				slope = self.graph_results("ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 				if slope <= 2.4 and slope >=2.15: slope_test = True
-				if self.V: print "qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}".format(qslot, chip, slope, flat_test, slope_test)
+				if self.V: print 'qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}'.format(qslot, chip, slope, flat_test, slope_test)
 				
 				# update master_dict with test results
 				if flat_test and slope_test: test_pass=True
@@ -166,7 +166,7 @@ class uHTR():
 		adc = hw.ADCConverter()
 
 		for setting in ci_settings:
-			if self.V: print "testing charge injection setting {0} fC".format(setting)
+			if self.V: print 'testing charge injection setting {0} fC'.format(setting)
 			for qslot in self.qcards:
 				hw.SetQInjMode(1, qslot, self.bus)
 				dc=hw.getDChains(qslot, self.bus)
@@ -215,7 +215,7 @@ class uHTR():
 				if slope <= 1.15 and slope >=0.95: test_pass = True
 				self.update_QIE_results(qslot, chip, "ci", test_pass)
 
-				if self.V: print "qslot: {0}, chip: {1}, slope: {2}, pass: {3}".format(qslot, chip, slope, test_pass)
+				if self.V: print 'qslot: {0}, chip: {1}, slope: {2}, pass: {3}'.format(qslot, chip, slope, test_pass)
 
 				#update slopes for final histogram
 				histo_slopes.append(slope)
@@ -247,7 +247,7 @@ class uHTR():
 			histo_ratios[x] = []
 		
 		for i, setting in enumerate(gain_settings):
-			if self.V: print "testing shunt setting ratio", nominalGainRatios[i]
+			if self.V: print 'testing shunt setting ratio'+str(nominalGainRatios[i])
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -303,10 +303,10 @@ class uHTR():
 
 					self.update_QIE_results(qslot, chip, "shunt", setting_result)
 
-					if self.V: print "qslot: {0}, chip: {1}, setting: {2}, ratio: {3}, pass: {4}".format(qslot, chip, setting, ratio, setting_result)
+					if self.V: print 'qslot: {0}, chip: {1}, setting: {2}, ratio: {3}, pass: {4}'.format(qslot, chip, setting, ratio, setting_result)
 		
 		# for trouble shooting, shouldn't be in final test
-		if self.V: print "Total Pass/Fail for Shunt Test:  ({0}, {1})".format(grand_ratio_pf[0], grand_ratio_pf[1])
+		if self.V: print 'Total Pass/Fail for Shunt Test:  ({0}, {1})'.format(grand_ratio_pf[0], grand_ratio_pf[1])
 		
 		#make histogram of all results for each setting
 		cwd = os.getcwd()
@@ -323,7 +323,7 @@ class uHTR():
 		phase_results={}
 		phase_results["settings"]=phase_settings
 		for setting in phase_settings:
-			if self.V: print "testing phase setting", setting
+			if self.V: print 'testing phase setting'+str(setting)
 			for qslot in self.qcards:
 				hw.SetQInjMode(1, qslot, self.bus)
 				dc=hw.getDChains(qslot, self.bus)
@@ -391,12 +391,12 @@ class uHTR():
 				#if slopeTest == True: results=True
 				#self.update_QIE_results(qslot, chip, "phase", results)
 
-				if self.V: print "qslot: {0}, chip: {1}, slope: {2}".format(qslot, chip, slope)
+				if self.V: print 'qslot: {0}, chip: {1}, slope: {2}'.format(qslot, chip, slope)
 			os.chdir(cwd2)
 		os.chdir(cwd)
 
 	
-	def make_jsons(self):
+	def make_jsons(self, mapString, pedString, citString, shuntString, phsString):
 		
 		os.chdir(self.home + "/jsonResults")
 		for qslot in self.qcards:
@@ -433,6 +433,13 @@ class uHTR():
 			jd["individual phase scan"] = {}
 			for chip in xrange(12):
 				jd["individual phase scan"][chip] = self.get_QIE_results(qslot, chip, "phase")
+
+			jd["TestOutputs"] = {}
+			jd["TestOutputs"]["mappingResults"] = mapString
+			jd["TestOutputs"]["pedestalResults"] = pedString
+			jd["TestOutputs"]["citResults"] = citString
+			jd["TestOutputs"]["shuntResults"] = shuntString
+			jd["TestOutputs"]["phaseResults"] = phsString
 
 			with open(name, 'w') as fp:
 				json.dump(jd, fp)
@@ -510,7 +517,7 @@ class uHTR():
 		# Records the uHTR slot, link, and channel of each QIE in master_dict
 		failures=[]
 		for qslot in self.qcards:
-			if self.V: print "mapping qslot", qslot
+			if self.V: print 'mapping qslot'+str(qslot)
 			dc=hw.getDChains(qslot, self.bus)
 			hw.SetQInjMode(0, qslot, self.bus)
 			dc.read()
@@ -528,7 +535,7 @@ class uHTR():
 					for i in xrange(6):
 						self.add_QIE(qslot, chip+i, uhtr_slot, link, 5-i)
 				else:
-					print "mapping qcard {0} failed".format(qslot)
+					print 'mapping qcard {0} failed'.format(qslot)
 					self.qcards.remove(qslot)
 					failures.append(qslot)
 			for chip in xrange(12):
@@ -543,7 +550,7 @@ class uHTR():
 			for qslot in self.qcards:
 				for chip in xrange(12):
 					info=self.get_QIE_map(qslot, chip)
-					print "Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}".format(info[0], info[1], info[2], chip, qslot)
+					print 'Q_slot: {4}, Qie: {3}, uhtr_slot: {0}, link: {1}, channel: {2}'.format(info[0], info[1], info[2], chip, qslot)
 
 
 	def get_mapping_histo(self):
@@ -605,7 +612,7 @@ class uHTR():
 
 	def graph_results(self, test, x, y, key):
 		if len(x) != len(y):
-			print "Sets are of unequal length"
+			print 'Sets are of unequal length'
 			return None
 		
 		if test == "ped":
@@ -720,7 +727,7 @@ def send_commands(crate=None, slot=None, cmds=''):
 	results = {}
 
 	if isinstance(cmds, str):
-		print 'WARNING (uhtr.send_commands): You probably didn\'t intend to run "uHTRtool.exe" with only one command: {0}'.format(cmds)
+		print "WARNING (uhtr.send_commands): You probably didn\'t intend to run 'uHTRtool.exe' with only one command: {0}".format(cmds)
 		cmds = [cmds]
 
 	uhtr_ip = "192.168.{0}.{1}".format(crate, slot*4)
@@ -871,7 +878,6 @@ def get_tdcs(crate, slots):
 		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
-#		print rawOutput["192.168.%d.%d"%(crate,slot*4)]
 
 
 	return rawDictionary
@@ -910,13 +916,13 @@ def clock_setup(crate, slots):
 def init_links(crate, slot, attempts=0):
 	attempts += 1
 	if attempts == 10:
-		print "Skipping initialization of links for crate %d, slot %d after 10 failed attempts!"%(crate,slot)
+		print 'Skipping initialization of links for crate %d, slot %d after 10 failed attempts!'%(crate,str(slot))
 		return
 	linkInfo = get_link_info(crate, slot)
 	onLinks, goodLinks, badLinks = get_link_status(linkInfo)
 	medianOrbitDelay = int(median_orbit_delay(linkInfo))
 	if onLinks == 0:
-		print "All crate %d, slot %d links are OFF! NOT initializing that slot!"%(crate,slot)
+		print 'All crate %d, slot %d links are OFF! NOT initializing that slot!'%(crate,str(slot))
 		return
 	elif attempts == 1:
 		initCMDS = ["0","LINK","INIT","1","22","0","1","1","QUIT","EXIT"]

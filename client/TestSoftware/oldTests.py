@@ -137,7 +137,7 @@ class testSuite:
 	    self.readNoCheck(r, 1)
 #	self.outCard.resultList["Barcode"]=barcode
 	self.outCard.printResults()
-	print "\n\n"
+	print '\n\n'
 	self.outCard.writeHumanLog()
 	self.outCard.writeMachineJson()
 
