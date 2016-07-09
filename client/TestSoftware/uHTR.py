@@ -910,13 +910,13 @@ def clock_setup(crate, slots):
 def init_links(crate, slot, attempts=0):
 	attempts += 1
 	if attempts == 10:
-		print 'Skipping initialization of links for crate %d, slot %d after 10 failed attempts!'%(crate+str(slot))
+		print 'Skipping initialization of links for crate %d, slot %d after 10 failed attempts!'%(crate,str(slot))
 		return
 	linkInfo = get_link_info(crate, slot)
 	onLinks, goodLinks, badLinks = get_link_status(linkInfo)
 	medianOrbitDelay = int(median_orbit_delay(linkInfo))
 	if onLinks == 0:
-		print 'All crate %d, slot %d links are OFF! NOT initializing that slot!'%(crate+str(slot))
+		print 'All crate %d, slot %d links are OFF! NOT initializing that slot!'%(crate,str(slot))
 		return
 	elif attempts == 1:
 		initCMDS = ["0","LINK","INIT","1","22","0","1","1","QUIT","EXIT"]
