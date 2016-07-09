@@ -24,41 +24,41 @@ def runBridgeTests(RMList, num_slots, num_tests, verbosity=0):
     total_test_list = [total_passed, total_failed, total_neither]
     for rm in RMList:
         t.openRM(rm)
-        print '\n-------------------- Test RM: ', rm, ' --------------------'
+        print '\n-------------------- Test RM: '+str(rm)+' --------------------'
         for slot in xrange(num_slots):
             b.write(0x00,[0x06])
-            print '\n-------------------- Test Slot: ', slot, ' --------------------'
+            print '\n-------------------- Test Slot: '+str(slot)+' --------------------'
             test_list = bridgeTests(slot,num_tests)
             total_test_list = map(add, total_test_list, test_list)
             daisyChain = q.qCard(webBus("pi5",0), q.QIEi2c[slot])
             print '\n~~~~~~~~~~ QIE Daisy Chain ~~~~~~~~~~'
             print str(daisyChain)
             if verbosity:
-                print '\nNumber passed = ', test_list[0]
-                print 'Number failed = ', test_list[1]
-                print 'Number neither pass nor fail = ', test_list[2], '\n'
+                print '\nNumber passed = '+str(test_list[0])
+                print 'Number failed = '+str(test_list[1])
+                print 'Number neither pass nor fail = '+str(test_list[2])+'\n'
 
     # Print Final Test Results for Bridge FPGA
     print '\n\n########   Final Test Results  ########\n'
-    print 'Total Number of Tests = ', total_number_tests
-    print 'Number passed = ', total_test_list[0]
-    print 'Number failed = ', total_test_list[1]
-    print 'Number neither pass nor fail = ', total_test_list[2]
-    print 'Check total number of tests: ', total_number_tests == sum(total_test_list), '\n'
+    print 'Total Number of Tests = '+str(total_number_tests)
+    print 'Number passed = '+str(total_test_list[0])
+    print 'Number failed = '+str(total_test_list[1])
+    print 'Number neither pass nor fail = '+str(total_test_list[2])
+    print 'Check total number of tests: '+str(total_number_tests == sum(total_test_list))+'\n'
 
 def bridgeTests(slot, num_tests, verbosity=0):
     passed = 0
     failed = 0
     neither = 0
-    print '## Number of Tests: ', num_tests
+    print '## Number of Tests: '+str(num_tests)
     for test in xrange(num_tests):
-        print '\n### Bridge Test: ', test, ' ###'
-        print '\n### Test Name: ', bridgeDict[test]['name']
+        print '\n### Bridge Test: '+str(test)+' ###'
+        print '\n### Test Name: '+str(bridgeDict[test]['name'])
         function = bridgeDict[test]['function']
         address = bridgeDict[test]['address']
         num_bytes = bridgeDict[test]['bits']/8
         message = t.readRegisterBridge(slot, address, num_bytes)
-        print '\n*********** RAW MESSAGE :', t.reverseBytes(message),'\n'
+        print '\n*********** RAW MESSAGE :'+str(t.reverseBytes(message))+'\n'
         result = function(message)
         if result == 'PASS':
             passed += 1
@@ -68,9 +68,9 @@ def bridgeTests(slot, num_tests, verbosity=0):
             print 'Neither PASS Nor FAIL'
             neither += 1
         if verbosity:
-            print 'Register Name: ', bridgeDict[test]['name']
-            print 'Register Value: ', message
-            print 'Test Result: ', result
+            print 'Register Name: '+str(bridgeDict[test]['name'])
+            print 'Register Value: '+str(message)
+            print 'Test Result: '+str(result)
 
     test_list = [passed, failed, neither]
     return test_list
@@ -86,72 +86,72 @@ def passFail(result):
 def idString(message):
     correct_value = "HERM"
     message = t.toASCII(message)
-    print 'correct value: ', correct_value
-    print 'ASCII message: ', message
+    print 'correct value: '+str(correct_value)
+    print 'ASCII message: '+str(message)
     return passFail(message==correct_value)
 
 def idStringCont(message):
     correct_value = "Brdg"
     message = t.toASCII(message)
-    print 'correct value: ', correct_value
-    print 'ASCII message: ', message
+    print 'correct value: '+str(correct_value)
+    print 'ASCII message: '+str(message)
     return passFail(message==correct_value)
 
 def fwVersion(message):
     # correct_value = "N/A" # We need to find Firmware Version
     message = t.toHex(message)
-    # print 'correct value: ', correct_value
-    print 'hex message: ', message
+    # print 'correct value: '+str(correct_value)
+    print 'hex message: '+str(message)
     return message
 
 def ones(message):
     correct_value = '0xffffffff'
     hex_message = t.toHex(message,0)
-    print 'correct value: ', correct_value
-    print 'int message: ', message
-    print 'hex message: ', hex_message
+    print 'correct value: '+str(correct_value)
+    print 'int message: '+str(message)
+    print 'hex message: '+str(hex_message)
     return passFail(hex_message==correct_value)
 
 def zeroes(message):
     correct_value = '0x00000000'
     hex_message = t.toHex(message,0)
-    print 'correct value: ', correct_value
-    print 'int message: ', message
-    print 'hex message: ', hex_message
+    print 'correct value: '+str(correct_value)
+    print 'int message: '+str(message)
+    print 'hex message: '+str(hex_message)
     return passFail(hex_message==correct_value)
 
 def onesZeroes(message):
     correct_value = '0xaaaaaaaa'
     hex_message = t.toHex(message,0)
-    print 'correct value: ', correct_value
-    print 'int message: ', message
-    print 'hex message: ', hex_message
+    print 'correct value: '+str(correct_value)
+    print 'int message: '+str(message)
+    print 'hex message: '+str(hex_message)
     return passFail(hex_message==correct_value)
 
 def qieDaisyChain0(message):
     hex_message = t.toHex(message,1)
-    print 'int message: ', message
-    print 'hex message:', hex_message
+    print 'int message: '+str(message)
+    print 'hex message:'+str(hex_message)
     split_message = t.splitMessage(hex_message,6)
     for i in xrange(len(split_message)):
-        print 'QIE ',i+1,': ',split_message[i]
+        print 'QIE '+str(i+1)+': '+str(split_message[i])
     return hex_message
 
 def qieDaisyChain1(message):
     hex_message = t.toHex(message,1)
-    print 'int message: ', message
-    print 'hex message:', hex_message
+    print 'int message: '+str(message)
+    print 'hex message:'+str(hex_message)
     split_message = t.splitMessage(hex_message,6)
     for i in xrange(len(split_message)):
-        print 'QIE ',i+7,': ',split_message[i]
+        print 'QIE '+str(i+7)+': '+str(split_message[i])
     return hex_message
 
     return hex_message
 
 def simplePrint(message):
     hex_message = t.toHex(message,1)
-    print 'int message: ', message
-    print 'hex message:', hex_message
+    print 'int message: '+str(message)
+    print 'hex message:'+str(hex_message)
     return hex_message
 
 # Input and compare all correct values in same format...

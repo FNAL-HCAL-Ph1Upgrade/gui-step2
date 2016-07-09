@@ -718,7 +718,7 @@ class makeGui:
 		b = webBus(self.piChoiceVar.get(),0)
 		b.write(0x00,[0x06])
 		b.sendBatch()
-		print "\n\nBackplane for "+self.piChoiceVar.get()+" reset!\n\n"
+		print '\n\nBackplane for '+self.piChoiceVar.get()+' reset!\n\n'
 
 	def runTestSuite(self):
 		print str(datetime.now())
@@ -755,9 +755,9 @@ class makeGui:
 			b.write(0x70,[0x01,0x18]) # GPIO reset is 10
 			b.write(0x70,[0x01,0x08])
 			batch = b.sendBatch()
-			print 'initial = ', batch
+			print 'initial = '+str(batch)
 
-		print "\n\nMagic reset completed!\n\n"
+		print '\n\nMagic reset completed!\n\n'
 		for j in range(2):
 			self.qie_magicButton.flash()
 
@@ -768,17 +768,17 @@ class makeGui:
 			b.write(0x74,[0x08])
 			b.write(0x70,[0x08,0])
 			b.sendBatch()
-		print "\n\nPower Reset Completed!\n\n"
+		print '\n\nPower Reset Completed!\n\n'
 
 	def powerFanPress(self):
 		if (self.fanPowerFlag == False):
 			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
 			self.fanPowerFlag = True
-			print "\nFans enabled!\n"
+			print '\nFans enabled!\n'
 		elif (self.fanPowerFlag == True):
 			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python stopfans.py", shell=True)
 			self.fanPowerFlag = False
-			print "\nFans disabled!\n"
+			print '\nFans disabled!\n'
 	
 	def prepareOutSlots(self):
 		self.outSlotNumbers = []
@@ -795,7 +795,7 @@ class makeGui:
 
 	def prepareOutCards(self):
 		self.overwrite = False
-		if (self.overwriteVar.get() == 1): overwrite = True
+		if (self.overwriteVar.get() == 1): self.overwrite = True
 		for k in range(len(self.cardVarList)):
 			if k in [1,2,3,4]:
 				self.outSummaries.append(testSummary.testSummary((k+1), self.humanLogName, self.overwrite))
@@ -809,7 +809,7 @@ class makeGui:
 	def submitToDatabase(self):
 #		subprocess.call("ssh cmshcal11 /django/abaas/testing_database/uploader/upload.sh", shell=True)
 		subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/remote.sh", shell=True)
-		print "Files submitted to database!"
+		print 'Files submitted to database!'
 
 
 root = Tk()

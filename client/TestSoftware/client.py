@@ -34,12 +34,12 @@ class webBus:
         ret = self.ws.recv().split('|')
         if self.VERBOSITY >= 1:
             for e in xrange(len(self.messages)):
-                print "SENT: %s" % self.messages[e]
-                print "RECEIVED: %s" % ret[e]
+                print 'SENT: %s' % self.messages[e]
+                print 'RECEIVED: %s' % ret[e]
         self.messages = []
         return ret
 
 ################################################################################
 if __name__ == "__main__":
-    print "What you just ran is a library. Correct usage is to import this file\
-    and use its class(es) and functions."
+    print 'What you just ran is a library. Correct usage is to import this file\
+    and use its class(es) and functions.'

@@ -29,7 +29,7 @@ def openChannel(slot, bus):
       # Open channel to ngCCM for RM 1,2: J17 - J26
         bus.write(0x72,[0x01])
     else:
-        print 'Invalid RM = ', rmLoc
+        print 'Invalid RM = '+str(rmLoc)
         print 'Please choose RM = {1,2,3,4}'
         return 'closed channel'
   # Open channel to i2c group
@@ -54,7 +54,7 @@ def SetQInjMode(onOffBit, slot, bus):
         bus.write(0x09,[0x11,onOffBit,0,0,0])
         bus.sendBatch()
     else:
-        print "INVALID INPUT IN SetQInjMode... doing nothing"
+        print 'INVALID INPUT IN SetQInjMode... doing nothing'
 
 # Cryptic Magic Reset on 0x70
 def magicReset(ngccm,bus): #RM4,3->ngccm=2 -- RM2,1->ngccm=1
@@ -127,7 +127,7 @@ class ADCConverter:
                         subrange = i
 
                 if subrange == -1:
-                    print "Something has gone horribly wrong!"
+                    print 'Something has gone horribly wrong!'
 
                 # Sensitivity = 3.1 * 8^exp * 2^subrange
                 sensitivity = self.baseSensitivity * 8.0**float(exp) * 2.0**subrange

@@ -90,7 +90,7 @@ class RM:
              # Open channel to ngCCM for RM 1,2: J17 - J26
              bus.write(0x72,[0x01])
         else:
-             print 'Invalid RM = ', self.location
+             print 'Invalid RM = '+str(self.location)
              print 'Please choose RM = {1,2,3,4}'
              return 'closed channel'
          # Open channel to i2c group

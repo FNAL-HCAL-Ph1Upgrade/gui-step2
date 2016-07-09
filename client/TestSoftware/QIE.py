@@ -87,7 +87,7 @@ class QIE:
             450 : (1,1)
         }.get(v, (-9,-9))
         if d == (-9, -9):
-            print "INVALID INPUT IN setLVDS_output_level_trim... no change made"
+            print 'INVALID INPUT IN setLVDS_output_level_trim... no change made'
         else:
             self[1] = d[0]
             self[2] = d[1]
@@ -99,7 +99,7 @@ class QIE:
         elif b == 1:
             self[3] = 1
         else:
-            print "INVALID INPUT IN discOn... no change made"
+            print 'INVALID INPUT IN discOn... no change made'
 
     #Change bit 4
     def TGain(self, b):
@@ -108,7 +108,7 @@ class QIE:
         elif b == 1:
             self[4] = 1
         else:
-            print "INVALID INPUT IN TGain... no change made"
+            print 'INVALID INPUT IN TGain... no change made'
 
     #Change bits 5-12
     def TimingThresholdDAC(self, magnitude):
@@ -118,7 +118,7 @@ class QIE:
             for i in xrange(8):
                 self[5 + i] = a[i]
         else:
-            print "INVALID INPUT IN TimingThresholdDAC... no change made"
+            print 'INVALID INPUT IN TimingThresholdDAC... no change made'
     #Change bits 13-15
     def TimingIref(self, q):
         d = {
@@ -136,7 +136,7 @@ class QIE:
             self[14] = d[1]
             self[15] = d[2]
         else:
-            print "INVALID INPUT IN TimingIref... no change made"
+            print 'INVALID INPUT IN TimingIref... no change made'
 
     #Change bits 16-21
     def PedestalDAC(self, magnitude):
@@ -147,7 +147,7 @@ class QIE:
             for i in xrange(6):
                 self[16 + i] = a[i]
         else:
-            print "INVALID INPUT IN PedestalDAC... no change made"
+            print 'INVALID INPUT IN PedestalDAC... no change made'
 
 #Change bits 22-25
     def CapID0pedestal(self, magnitude):
@@ -158,7 +158,7 @@ class QIE:
             for i in xrange(4):
                 self[22 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID0pedestal... no change made"
+            print 'INVALID INPUT IN CapID0pedestal... no change made'
 
     #Change bits 26-29
     def CapID1pedestal(self, magnitude):
@@ -169,7 +169,7 @@ class QIE:
             for i in xrange(4):
                 self[26 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID1pedestal... no change made"
+            print 'INVALID INPUT IN CapID1pedestal... no change made'
 
     #Change bits 30-33
     def CapID2pedestal(self, magnitude):
@@ -180,7 +180,7 @@ class QIE:
             for i in xrange(4):
                 self[30 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID2pedestal... no change made"
+            print 'INVALID INPUT IN CapID2pedestal... no change made'
 
     #Change bits 34-37
     def CapID3pedestal(self, magnitude):
@@ -191,7 +191,7 @@ class QIE:
             for i in xrange(4):
                 self[34 + i] = a[i]
         else:
-            print "INVALID INPUT IN CapID3pedestal... no change made"
+            print 'INVALID INPUT IN CapID3pedestal... no change made'
 
     #Change bits 38
     def FixRange(self, b):
@@ -199,7 +199,7 @@ class QIE:
             #fixed range mode = 1, autorange mode = 0
             self[38] = b
         else:
-            print "INVALID INPUT IN FixRange... no change made"
+            print 'INVALID INPUT IN FixRange... no change made'
 
     #Change bits 39-40
     def RangeSet(self, b):
@@ -209,7 +209,7 @@ class QIE:
             for i in xrange(2):
                 self[39 + i] = a[i]
         else:
-            print "INVALID INPUT IN RangeSet... no change made"
+            print 'INVALID INPUT IN RangeSet... no change made'
 
     #Change bits 41-43
     def ChargeInjectDAC(self, charge):
@@ -228,7 +228,7 @@ class QIE:
             for i in xrange(3):
                 self[41 + i] = d[i]
         else:
-            print "INVALID INPUT IN ChargeInjectDAC... no change made"
+            print 'INVALID INPUT IN ChargeInjectDAC... no change made'
 
     #Change bits 44-48
     def Gsel(self, b):
@@ -238,7 +238,7 @@ class QIE:
             for i in xrange(5):
                 self[44 + i] = a[i]
         else:
-            print "INVALID INPUT IN Gsel... no change made"
+            print 'INVALID INPUT IN Gsel... no change made'
 
     #Change bits 49-53
     def Idcset(self, b):
@@ -248,7 +248,7 @@ class QIE:
             for i in xrange(5):
                 self[49 + i] = a[i]
         else:
-            print "INVALID INPUT IN Idcset... no change made"
+            print 'INVALID INPUT IN Idcset... no change made'
     #Change bit 54
     def CkOutEn(self, b):
         if b == 0:
@@ -256,7 +256,7 @@ class QIE:
         elif b == 1:
             self[54] = 1
         else:
-            print "INVALID INPUT IN CkOutEn... no change made"
+            print 'INVALID INPUT IN CkOutEn... no change made'
 
     #Change bit 55
     def TDCmode(self, b):
@@ -265,7 +265,7 @@ class QIE:
         elif b == 1:
             self[55] = 1
         else:
-            print "INVALID INPUT IN TDCmode... no change made"
+            print 'INVALID INPUT IN TDCmode... no change made'
 
     #Change bit 56
     def Hsel(self, b):
@@ -276,7 +276,7 @@ class QIE:
             #amount of hysteresis is doubled as compared to b = 0
             self[56] = 1
         else:
-            print "INVALID INPUT IN Hsel... no change made"
+            print 'INVALID INPUT IN Hsel... no change made'
 
    #Change bit 57-63
     def PhaseDelay(self, b):
@@ -286,7 +286,7 @@ class QIE:
             for i in xrange(7):
                 self[57 + i] = a[i]
         else:
-            print "INVALID INPUT IN PhaseDelay... no change made"
+            print 'INVALID INPUT IN PhaseDelay... no change made'
 
 
 ##############################################
@@ -308,7 +308,7 @@ class QIE:
             for i in xrange(3):
                 self[41 + i] = d[i]
         else:
-            print "INVALID INPUT IN ChargeInjectDAC... no change made"
+            print 'INVALID INPUT IN ChargeInjectDAC... no change made'
 
 
 ############################################################################

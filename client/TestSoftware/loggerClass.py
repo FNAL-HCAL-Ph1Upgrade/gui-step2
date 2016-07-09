@@ -4,7 +4,7 @@
 # terminal to BOTH the terminal and an external file.
 
 import sys
-from time import gmtime, strftime
+from datetime import datetime
 
 class logger():
 	def __init__(self, fileName):
@@ -14,7 +14,7 @@ class logger():
 
 	def write(self, message):
 		ms = message.split('/n')
-		t = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+		t = "{:%Y/%m/%d %X}".format(datetime.now())
 		for m in ms:
 			m = ' '.join(m.split())
 			if m != '':
@@ -26,9 +26,9 @@ class logger():
 		pass
 
 class loggerSingleTest():
-	def __init__(self, fileName, testName):
+	def __init__(self, fileName, JSlot):
 		self.name = fileName
-		self.testName = testName
+		self.JSlot = JSlot
 		self.terminal = sys.__stdout__
 		self.strReturn = ""
 		self.log = open("/home/hep/logResults/"+self.name+"_tests.log", "a")
@@ -36,11 +36,11 @@ class loggerSingleTest():
 
 	def write(self, message):
 		ms = message.split('/n')
-		t = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+		t = "{:%Y/%m/%d %X}".format(datetime.now())
 		for m in ms:
 			m = ' '.join(m.split())
 			if m != '':
-				o = t + "\t" + str(m) + '\n'
+				o = t + " J=" + self.JSlot.zfill(2) + "\t" + str(m) + '\n'
 				self.terminal.write(o)
 				self.log.write(o)
 				self.strReturn += (message+"\\n")

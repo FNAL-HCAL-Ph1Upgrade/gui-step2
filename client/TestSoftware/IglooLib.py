@@ -87,10 +87,10 @@ def readFromRegister(bus, address, register, numBytes):
     ret.reverse()
 
     if isError(ret):
-        print "Read ERROR: ", ret
+        print 'Read ERROR: '+str(ret)
         return False
     else:
-        print "Read Success: ", ret
+        print 'Read Success: '+str(ret)
         return ret[:-1] #ignore the leading error code
 # ------------------------------------------------------------------------
 # quiet function, on successful read, returns without printing
@@ -105,7 +105,7 @@ def readFromRegister_Quiet(bus, address, register, numBytes):
     ret.reverse()
 
     if isError(ret):
-        print "Read ERROR: ", ret
+        print 'Read ERROR: '+str(ret)
         return False
     else:
         return ret[:-1] #ignore the leading error code
@@ -123,10 +123,10 @@ def writeToRegister(bus, address, register, toWrite):
     #ret.reverse()
 
     if not isError(ret):
-        print "Write Success: ", ret
+        print 'Write Success: '+str(ret)
         return True # write successful
     else:
-        print "Write ERROR: ", ret
+        print 'Write ERROR: '+str(ret)
         return False # write failed
 
 # ------------------------------------------------------------------------
@@ -143,10 +143,10 @@ def writeToRegister_Quiet(bus, address, register, toWrite):
     #ret.reverse()
 
     if not isError(ret):
-        # print "Write Success: ", ret
+        # print 'Write Success: '+str(ret)
         return True # write successful
     else:
-        print "Write ERROR: ", ret
+        print 'Write ERROR: '+str(ret)
         return False # write failed
 
 # ------------------------------------------------------------------------
@@ -185,13 +185,13 @@ def RWR_withRestore(bus, address, register, numBytes):
 
         # if restored to original (aka read1 = read3)
         if read1 == read3:
-            print "Read1 = Read3 --> Reg changed, now restored to original"
+            print 'Read1 = Read3 --> Reg changed, now restored to original'
             return True
         else:
-            print "Read1 != Read3"
+            print 'Read1 != Read3'
             return False
     elif (read1 == read2):
-        print "Read1 = Read2 --> Write to RW Failed"
+        print 'Read1 = Read2 --> Write to RW Failed'
         return False
 
 
@@ -225,13 +225,13 @@ def RWR_withRestore_Quiet(bus, address, register, numBytes):
         read3 = readFromRegister_Quiet(bus, address, register, numBytes)
         # if restored to original (aka read1 = read3)
         if read1 == read3:
-            # print "Read1 = Read3 --> Reg changed, now restored to original"
+            # print 'Read1 = Read3 --> Reg changed, now restored to original'
             return True
         else:
-            # print "Read1 != Read3"
+            # print 'Read1 != Read3'
             return False
     elif (read1 == read2):
-        # print "Read1 = Read2 --> Write to RW Failed"
+        # print 'Read1 = Read2 --> Write to RW Failed'
         return False
 
 
@@ -252,14 +252,14 @@ def RWR_forRO(bus, address, register, numBytes):
     if (writeToRegister(bus,address, register, augRead1)):
         read2 = readFromRegister(bus, address, register, numBytes)
         if (read1 == read2):
-            print "Read1 = Read2"
+            print 'Read1 = Read2'
             return True # R/W/R cycle gives identical reads, so PASS
         if (read1 != read2):
-            print "READ1 != READ2"
+            print 'READ1 != READ2'
             return False # R/W/R cycle changed somehow, so FAIL
     #if write failed
     else:
-        print "WRITE FAILED IN R/W/R CYCLE"
+        print 'WRITE FAILED IN R/W/R CYCLE'
         return False
 # ------------------------------------------------------------------------
 
@@ -278,14 +278,14 @@ def RWR_forRO_Quiet(bus, address, register, numBytes):
     if (writeToRegister_Quiet(bus,address, register, augRead1)):
         read2 = readFromRegister_Quiet(bus, address, register, numBytes)
         if (read1 == read2):
-            # print "Read1 = Read2"
+            # print 'Read1 = Read2'
             return True # R/W/R cycle gives identical reads, so PASS
         if (read1 != read2):
-            # print "READ1 != READ2"
+            # print 'READ1 != READ2'
             return False # R/W/R cycle changed somehow, so FAIL
     #if write failed
     else:
-        # print "WRITE FAILED IN R/W/R CYCLE"
+        # print 'WRITE FAILED IN R/W/R CYCLE'
         return False
 
 

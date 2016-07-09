@@ -59,25 +59,25 @@ class testSummary:
 		self.cardGenInfo["Overwrite"] = overwrite
 			
 	def printResults(self):
-		print ("\nGENERAL INFO: \n")
+		print ('\nGENERAL INFO: \n')
 		for i in self.cardGenInfo:
-			print i+ ": ", self.cardGenInfo[i]
-		print ("BRIDGE TESTS: \n")
+			print i+ ': '+str(self.cardGenInfo[i])
+		print ('BRIDGE TESTS: \n')
 		for i in self.resultList:
 			if (i != []):
-				print i + ": ", self.resultList[i]
-		print ("\n\nIGLOO TESTS: \n")
+				print i + ': '+str(self.resultList[i])
+		print ('\n\nIGLOO TESTS: \n')
 		for i in self.iglooList:
-			print i+ ": ", self.iglooList[i]
-		print ("\n\nVTTX_1 TESTS: \n")
+			print i+ ': '+str(self.iglooList[i])
+		print ('\n\nVTTX_1 TESTS: \n')
 		for i in self.vttxListOne:
-			print i+ ": ", self.vttxListOne[i]
-		print ("\n\nVTTX_2 TESTS: \n")
+			print i+ ': '+str(self.vttxListOne[i])
+		print ('\n\nVTTX_2 TESTS: \n')
 		for i in self.vttxListTwo:
-			print i+ ": ", self.vttxListTwo[i]
-		print ("\n\nLONG TESTS: \n")
+			print i+ ': '+str(self.vttxListTwo[i])
+		print ('\n\nLONG TESTS: \n')
 		for i in self.longTestList:
-			print i+ ": ", self.longTestList[i]
+			print i+ ': '+str(self.longTestList[i])
 
 
 	def writeMachineJson(self):
@@ -114,4 +114,4 @@ class testSummary:
 				w.write("\n}")
 				w.write("\n}")
 		else:
-			print "Card has no attributes! Skipping log generation."
+			print 'Card has no attributes! Skipping log generation.'
