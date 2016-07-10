@@ -22,13 +22,13 @@ if __name__ == "__main__":
 	from uHTR import uHTR
 	uhtr_slots=[1, 2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
-	qcard_slots=[1, 2, 3, 4]
+	qcard_slots=[2, 3, 4, 5]
 	b = webBus("pi5", 0)
 	uhtr = uHTR(uhtr_slots, qcard_slots, b, "Mason Dorseth", False)
 
 #	uhtr.ped_test()
 #	uhtr.ci_test()
-#	uhtr.shunt_test()
+	uhtr.shunt_test()
 	uhtr.phase_test()
 #	uhtr.make_jsons()
 
@@ -88,7 +88,7 @@ class uHTR():
 		ped_results["settings"]=ped_settings
 		histo_slopes = [] #stores slopes for overall histogram
 		for setting in ped_settings:
-			if self.V: print 'testing pedestal setting'+str(setting)
+			if self.V: print 'testing pedestal setting '+str(setting)
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -247,7 +247,7 @@ class uHTR():
 			histo_ratios[x] = []
 		
 		for i, setting in enumerate(gain_settings):
-			if self.V: print 'testing shunt setting ratio'+str(nominalGainRatios[i])
+			if self.V: print 'testing shunt setting ratio '+str(nominalGainRatios[i])
 			for qslot in self.qcards:
 				dc=hw.getDChains(qslot, self.bus)
 				dc.read()
@@ -285,14 +285,28 @@ class uHTR():
 		# calculate average default CI peak of default shunt
 		default_peaks_avg = sum(default_peaks)/len(default_peaks)
 
+	       	#analyze results and make graphs
+		cwd = os.getcwd()
+		if not os.path.exists("shunt_plots"):	
+       			os.makedirs("shunt_plots")
+	       	os.chdir(cwd  + "/shunt_plots")
+
 		for qslot in self.qcards:
+		
+			cwd2=os.getcwd()
+			if not os.path.exists(str(qslot)):
+				os.makedirs(str(qslot))
+			os.chdir(cwd2  + "/" + str(qslot))
+		
 			for chip in xrange(12):
 				chip_map=self.get_QIE_map(qslot, chip)
 				peak_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr=peak_results[peak_key]
-
+				ratio_arr = []    #used for making graphs
+				
 				for setting in xrange(len(peak_results[peak_key])):
-					ratio = float(peak_results[peak_key][setting]) / default_peaks_avg     #ratio between shunt-adjusted peak & default peak
+					ratio = float(chip_arr[setting]) / default_peaks_avg     #ratio between shunt-adjusted peak & default peak
+					ratio_arr.append(ratio)
 					histo_ratios[setting].append(ratio)
 					setting_result = False
 					if (ratio < nominalGainRatios[setting]*1.15 and ratio > nominalGainRatios[setting]*0.85):     #within 15% of nominal
@@ -305,7 +319,10 @@ class uHTR():
 
 					if self.V: print 'qslot: {0}, chip: {1}, setting: {2}, ratio: {3}, pass: {4}'.format(qslot, chip, setting, ratio, setting_result)
 		
-		# for trouble shooting, shouldn't be in final test
+				slope = self.graph_results("shunt", nominalGainRatios, ratio_arr, "{0}_{1}".format(qslot, chip))
+			os.chdir(cwd2)
+		os.chdir(cwd)
+
 		if self.V: print 'Total Pass/Fail for Shunt Test:  ({0}, {1})'.format(grand_ratio_pf[0], grand_ratio_pf[1])
 		
 		#make histogram of all results for each setting
@@ -323,7 +340,7 @@ class uHTR():
 		phase_results={}
 		phase_results["settings"]=phase_settings
 		for setting in phase_settings:
-			if self.V: print 'testing phase setting'+str(setting)
+			if self.V: print 'testing phase setting '+str(setting)
 			for qslot in self.qcards:
 				hw.SetQInjMode(1, qslot, self.bus)
 				dc=hw.getDChains(qslot, self.bus)
@@ -348,6 +365,7 @@ class uHTR():
 								break
 						if sigTDC == 0:
 							phase_results[key].append(63)
+
 		#Reset phases and internal charge injection to default
 		for qslot in self.qcards:
 			dc=hw.getDChains(qslot, self.bus)
@@ -357,10 +375,10 @@ class uHTR():
 				dc[chip].PhaseDelay(0)
 			dc.write()
 			dc.read()
-		#Analyze phase results
-		cwd=os.getcwd()
-	       
+
+
 		#analyze results and make graphs
+		cwd=os.getcwd()
 		if not os.path.exists("phase_plots"):	
 			os.makedirs("phase_plots")
 		os.chdir(cwd  + "/phase_plots")
@@ -372,11 +390,6 @@ class uHTR():
 			os.chdir(cwd2  + "/" + str(qslot))
 
 			for chip in xrange(12):
-
-				cwd2=os.getcwd()
-				if not os.path.exists(str(chip)):
-					os.makedirs(str(chip))
-				os.chdir(cwd2  + "/" + str(chip))
 
 				chip_map=self.get_QIE_map(qslot, chip)
 				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
@@ -517,7 +530,7 @@ class uHTR():
 		# Records the uHTR slot, link, and channel of each QIE in master_dict
 		failures=[]
 		for qslot in self.qcards:
-			if self.V: print 'mapping qslot'+str(qslot)
+			if self.V: print 'mapping qslot '+str(qslot)
 			dc=hw.getDChains(qslot, self.bus)
 			hw.SetQInjMode(0, qslot, self.bus)
 			dc.read()
@@ -618,6 +631,7 @@ class uHTR():
 		if test == "ped":
 			title="Pedestal Test Results {0}".format(key)
 			ytitle="Pedestal Bin Max (fC)"
+			xtitle="bit setting"
 			plot_base="ped_{0}".format(key)
 			adc=hw.ADCConverter()
 			for i, yi in enumerate(y):
@@ -627,16 +641,27 @@ class uHTR():
 		if test == "ci":
 			title="Charge Injection Test Results {0}".format(key)
 			ytitle="Charge Injection Bin Max (fC)"
+			xtitle="setting (fC)"
 			plot_base="ci_{0}".format(key)
 			fit=ROOT.TF1("fit", "[0] + [1]*x", 0, 0)			
+
+		if test == "shunt":
+			title="Shunt Scan Results"
+			ytitle="Measured ratio "
+			xtitle="ratio setting"
+			plot_base="shunt_{0}".format(key)
+			fit=ROOT.TF1("fit", "[0] + [1]*x", 0, 0)
 
 		if test == "phase":
 			title="Phase Sweep Test Results {0}".format(key)
 			ytitle="TDC Value"
+			xtitle="bit setting"
 			plot_base="phase_{0}".format(key)
 			fit=ROOT.TF1("fit", "[0] + [1]*x")
+	
 		ROOT.gROOT.SetBatch(1)
-		c = ROOT.TCanvas("c_{0}".format(key),"c_{0}".format(key),800,800) 
+		c=self.canvas
+#		c = ROOT.TCanvas("c_{0}".format(key),"c_{0}".format(key),800,800) 
 		c.SetBatch(1)
 		c.cd()
 
@@ -647,7 +672,7 @@ class uHTR():
 		g.SetMarkerStyle(22)
 		ROOT.gROOT.SetStyle("Plain")
 		g.SetTitle(title)
-		g.GetXaxis().SetTitle("Setting")
+		g.GetXaxis().SetTitle(xtitle)
 		g.GetXaxis().CenterTitle()
 		g.GetYaxis().SetTitle(ytitle)
 		g.GetYaxis().CenterTitle()
@@ -721,6 +746,7 @@ def generate_histos(crate, slots, n_orbits=5000, sepCapID=0, file_out_base="", o
 	os.chdir(cwd)
 	return dir_path
 
+
 def send_commands(crate=None, slot=None, cmds=''):
 	# Sends commands to "uHTRtool.exe" and returns the raw output and a log. The input is the crate number, slot number, and a list of commands.
 	raw = ""
@@ -737,6 +763,8 @@ def send_commands(crate=None, slot=None, cmds=''):
 	raw += raw_output[0] + raw_output[1]
 	results[uhtr_ip] = raw
 	return results
+
+
 def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
         # Set up some variables:
         log = ""
@@ -853,6 +881,7 @@ def getTDCInfo(rawOutput):
 			slotResult["%d"%(Link)]["%d"%(Channel)].append(int(TDCVal))
 	return slotResult
 
+
 def get_tdcs(crate, slots):
 
 	rawDictionary = {}
@@ -878,7 +907,6 @@ def get_tdcs(crate, slots):
 		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
-
 
 	return rawDictionary
 
