@@ -136,4 +136,5 @@ class ADCConverter:
                 self.fc[exp * 64 + man] = self.inputCharge[exp * 5 + subrange] + ((man - self.adcBase[subrange]) + .5) * sensitivity
 
     def linearize(self, adc):
+	if adc > 255: adc = 255
         return self.fc[adc]
