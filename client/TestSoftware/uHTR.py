@@ -37,6 +37,19 @@ class uHTR():
 
 		self.V = verbosity
 
+		#Go to uhtrResults for dumping .pngs
+        	self.cwd = os.getcwd()
+                self.home = os.environ['HOME']
+                os.chdir(self.home)
+                if not os.path.exists("uhtrResults"):
+                        os.makedirs("uhtrResults")
+                os.chdir("uhtrResults")
+
+		#make directory to put results histograms in
+	        if not os.path.exists("histo_statistics"):
+        		os.makedirs("histo_statistics")
+
+
 		self.uhtr_log = "{:%b%d%Y_%H%M%S}".format(datetime.now())
 		self.user = user
 		self.overwrite = overwrite
@@ -63,18 +76,6 @@ class uHTR():
 		for slot in self.uhtr_slots:
 			init_links(self.crate, slot)
 		self.QIE_mapping()
-
-		#Go to uhtrResutls for dumping .pngs
-		self.cwd = os.getcwd()
-		self.home = os.environ['HOME']
-		os.chdir(self.home)
-		if not os.path.exists("uhtrResults"):
-			os.makedirs("uhtrResults")
-		os.chdir("uhtrResults")
-
-		#make directory to put results histograms in
-		if not os.path.exists("histo_statistics"):
-			os.makedirs("histo_statistics")
 
 
 #############################################################
@@ -130,6 +131,7 @@ class uHTR():
 				chip_map=self.get_QIE_map(qslot, chip)
 				ped_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
 				chip_arr = ped_results[ped_key]
+				print "Chip Array is: "+str(chip_arr) #DEBUG
 				
 				#check if settings -31 to -3 are flat and -2 to 31 are linear
 				flat_test = True
@@ -549,15 +551,14 @@ class uHTR():
 						self.add_QIE(qslot, chip+i, uhtr_slot, link, 5-i)
 				else:
 					print 'mapping qcard {0} failed'.format(qslot)
-					self.qcards.remove(qslot)
 					failures.append(qslot)
 			for chip in xrange(12):
 				dc[chip].PedestalDAC(6)
 				dc.write()
 				dc.read()
 		
-		for failure in failures:
-			self.qcards.remove(failure)
+#		for failure in failures:
+#			self.qcards.remove(failure)
 
 		if self.V:
 			for qslot in self.qcards:
@@ -571,7 +572,7 @@ class uHTR():
 		map_results=self.get_histo_results(out_dir="map_histos")
 		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
 			for chip, chip_results in uhtr_slot_results.iteritems():
-				if chip_results["pedBinMax"] > 15:
+				if chip_results["pedBinMax"] > 15 and chip_results["pedBinMax"] < 25:
 					return (int(uhtr_slot), chip_results["link"], chip_results["channel"])
 		return None
 
@@ -595,7 +596,7 @@ class uHTR():
 			slot_num = str(file.split('_')[-1].split('.root')[0])
 
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-		shutil.rmtree(out_dir)
+#		shutil.rmtree(out_dir)
 		return histo_results
 
 #############################################################
@@ -930,12 +931,13 @@ def uHTRtool_source_test():
 
 def clock_setup(crate, slots):
 	cmds = [
-		'0'
-		'clock'
-		'setup'
-		'3'
-		'quit'
-		'exit'
+		'0',
+		'clock',
+		'setup',
+		'3',
+		'quit',
+		'exit',
+		'-1'
 		]
 	for slot in slots:
 		send_commands(crate=crate, slot=slot, cmds=cmds)
@@ -944,13 +946,13 @@ def clock_setup(crate, slots):
 def init_links(crate, slot, attempts=0):
 	attempts += 1
 	if attempts == 10:
-		print 'Skipping initialization of links for crate %d, slot %d after 10 failed attempts!'%(crate,str(slot))
+		print 'Skipping initialization of links for crate {0}, slot {1} after 10 failed attempts!'.format(crate, slot)
 		return
 	linkInfo = get_link_info(crate, slot)
 	onLinks, goodLinks, badLinks = get_link_status(linkInfo)
 	medianOrbitDelay = int(median_orbit_delay(linkInfo))
 	if onLinks == 0:
-		print 'All crate %d, slot %d links are OFF! NOT initializing that slot!'%(crate,str(slot))
+		print 'All crate {0}, slot {1} links are OFF! NOT initializing that slot!'.format(crate, slot)
 		return
 	elif attempts == 1:
 		initCMDS = ["0","LINK","INIT","1","22","0","1","1","QUIT","EXIT"]

@@ -505,7 +505,7 @@ class makeGui:
 		# Make a field for number of iterations
 		self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar)
 		self.iter_entry.pack(side=RIGHT)
-		self.iterationVar.set("15")
+		self.iterationVar.set("20")
 
 		# Make a separation line
 		self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
@@ -588,6 +588,7 @@ class makeGui:
 				       pady = button_pady,
 				       ipady = button_pady*2,
 				       ipadx = button_padx*2)
+		self.overwriteVar.set(1)
 
 		#Make a button to run the main test suite
 		self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
@@ -722,7 +723,7 @@ class makeGui:
 
 	def runTestSuite(self):
 		print str(datetime.now())
-		uHTR_outList = self.uHTR_tester_bttnPress()
+		uHTR_outList = self.uHTR_config()
 		self.magicResetPress()
 		self.qie_resetPress()
 		for k in self.outSummaries:
@@ -735,12 +736,17 @@ class makeGui:
 		self.myTestStand.runAll()
 		print str(datetime.now())
 
-	def uHTR_tester_bttnPress(self):
+	def uHTR_config(self):
 		outSlotList = []
 		for i in range(len(self.uHTR_slotNumber)):
 			if (self.uHTR_slotNumber[i].get() == 1):
 				outSlotList.append(i)
 		return outSlotList
+
+	def uHTR_tester_bttnPress(self):
+		self.suiteChoiceVar.set("uHTR Test Suite")
+		self.runTestSuite()
+		
 
 	def magicResetPress(self):
 		b = webBus(self.piChoiceVar.get(),0)
