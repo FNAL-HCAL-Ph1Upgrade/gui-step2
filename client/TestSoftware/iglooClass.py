@@ -170,20 +170,18 @@ class statusReg(Test): #shows status register settings
 # ------------------------------------------------------------------------
 class Igloo2_FPGA_Control(Test):
 	def testBody(self):
-		print 'DEBUG... Card Slot: ' +str(self.address)
 		control_address = 0x22
 		message = self.readBridge(control_address,4)
 		print 'Igloo Control = '+str(message)
 
 		ones_address = 0x02
 		all_ones = '255 255 255 255'
-		i2c_error = '0 0 0 0'
 
                 retval = False
 
 		self.bus.write(0x00,[0x06])
 		self.bus.sendBatch()
-		
+
 		register = self.readIgloo(ones_address, 4)
 		if register != all_ones:
 			retval = False
@@ -211,7 +209,6 @@ class Igloo2_FPGA_Control(Test):
 		value = t.getValue(message)
 		value = value ^ 0x400 # toggle igloo power!
 		messageList = t.getMessageList(value,4)
-		print '\nDEBUG... Message sent to self.writeBridge: '+str(messageList)
 		self.writeBridge(iglooControl,messageList)
 #		self.bus.write(0x09, [iglooControl, value])
 		return self.readBridge(iglooControl,4)
@@ -248,7 +245,6 @@ class Igloo2_FPGA_Control(Test):
 		message = self.bus.sendBatch()[-1]
 		if message[0] != '0':
 			print 'Igloo i2c error detected in detectIglooError'
-		print 'Message[0] is: '+str(message[0])
 		return message[0]
 
 # ------------------------------------------------------------------------

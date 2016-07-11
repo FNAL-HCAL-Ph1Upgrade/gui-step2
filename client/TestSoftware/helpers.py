@@ -63,7 +63,7 @@ def getMessageList(value,num_bytes):
     length = len(hex_message)
     zeros = "".join(list('0' for i in xrange(8-length)))
     hex_message = zeros + hex_message
-    print 'hex message = '+str(hex_message)
+    # print 'hex message = '+str(hex_message)
     mList = list(int(hex_message[a:a+2],16) for a in xrange(0,2*num_bytes,2))
     mList.reverse()
     return mList
