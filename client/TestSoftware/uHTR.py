@@ -83,7 +83,6 @@ class uHTR():
 # Results of each test recorded in master_dict
 #############################################################
 
-
 	def ped_test(self):
 		ped_settings = list(i-31 for i in xrange(63))
 		ped_results={}
@@ -201,11 +200,6 @@ class uHTR():
 			os.makedirs("ci_plots")
 		os.chdir(cwd  + "/ci_plots")
 
-		#analyze results and make graphs
-		cwd=os.getcwd()
-		if not os.path.exists("ci_plots"):
-			os.makedirs("ci_plots")
-		os.chdir(cwd  + "/ci_plots")
 		for qslot in self.qcards:
 
 			cwd2=os.getcwd()
@@ -469,77 +463,7 @@ class uHTR():
 		os.chdir(self.cwd)
 	
 
-						peak_results[key].append(totalSignal)
-
-						if setting == 0:
-							default_peaks.append(totalSignal)
-					# else:
-						# print "Error: No signal seen!"
-
-
-			dataFile.write("\n\nPeak Results: \n")
-			dataFile.write(str(peak_results) + '\n\n')
-			dataFile.write("\n##########################################")
-			dataFile.write("\n##########################################\n")
-			if setting ==0:
-				dataFile.write("Default peaks: \n")
-				dataFile.write(str(default_peaks))
-
-		default_peaks_avg = sum(default_peaks)/len(default_peaks)
-
-		# for 15% error bound checking
-		dataFile.write("\n+++++++++++++++++++ 15 percent error ++++++++++++++++++++")
-		for qslot in self.qcards:
-			for chip in xrange(12):
-				dataFile.write('\n\n')
-				peak_key=str(self.get_QIE_map(qslot, chip))
-				chip_arr=peak_results[peak_key]
-				ratio_pf = [0, 0]
-				for setting in xrange(len(peak_results[peak_key])):
-					# print "##### Setting %d #####" %setting
-					pf = ''
-					ratio = float(peak_results[peak_key][setting]) / default_peaks_avg #ratio between shunt-adjusted peak & default peak
-					shuntRatio[setting].append(ratio)
-					if (ratio < nominalGainRatios[setting]*1.15 and ratio > nominalGainRatios[setting]*0.85): #within 10% of nominal
-						ratio_pf[0]+=1
-						grand_ratio_pf[0]+=1
-						pf = "PASS"
-					else:
-						ratio_pf[1]+=1
-						grand_ratio_pf[1]+=1
-						pf = "FAIL"
-
-					dataFile.write("\nqslot: {0}, chip: {1}, setting: {2}, ratio: {3}, p/f: {4}".format(qslot, chip, setting, ratio, pf))
-
-					self.get_QIE(qslot, chip)["shunt_scan"]=(ratio_pf[0], ratio_pf[1])
-
-
-		# Create histogram of all chips' ratios for each shunt setting
-		for count, sett in enumerate(settingList):
-			c = ROOT.TCanvas('c','c', 800,800)
-			c.cd()
-
-			hist = ROOT.TH1D('All Chips', 'Shunt Setting: {0} fC/LSB'.format(sett), 20, nominalGainRatios[count]*0.85, nominalGainRatios[count]*1.15)
-			hist.GetXaxis().SetTitle("Ratio (Shunted/Default)")
-			hist.GetYaxis().SetTitle("Number of Chips")
-			for rat in shuntRatio[count]:
-			    hist.Fill(rat)
-			hist.Draw()
-			c.Print('shunt%d.png'%count)
-
-		dataFile.write("\n\nTotal Pass/Fail for 15 percent error:  ("+str(grand_ratio_pf[0])+", "+str(grand_ratio_pf[1])+")")
-		print "Total Pass/Fail for 15 percent error:  (",grand_ratio_pf[0],", ",grand_ratio_pf[1],")"
-
-		dataFile.close()
-
-		# reset Gsel to close the function
-		for qslot in self.qcards:
-			dc=hw.getDChains(qslot, self.bus)
-			dc.read()
-			for chip in xrange(12):
-				dc[chip].Gsel(0) #set Gsel back to default
-			dc.write()
-			dc.read()
+#############################################################
 
 
 #############################################################
@@ -563,17 +487,6 @@ class uHTR():
 		### Returns the dictionary storing the test results of the specified QIE chip
 		key="({0}, {1})".format(qslot, chip)
 		return self.master_dict[key]
-
-	def get_QIE_results(self, qslot, chip, test_key=""):
-		### Returns the (pass, fail) tuple of specific test
-		qie_results=self.get_QIE(qslot, chip)[test_key]
-		return (qie_results[0], qie_results[1])
-
-	def update_QIE_test(self, qslot, chip, test_key, results):
-		#results so that True = pass and False = fail
-		qie_results=self.get_QIE(qslot, chip)[test_key]
-		if results: qie_results[0]+=1
-		else: qie_results[1]+=1
 
 	def get_QIE_map(self, qslot, chip):
 		key="({0}, {1})".format(qslot, chip)
@@ -687,6 +600,7 @@ class uHTR():
 		return histo_results
 
 #############################################################
+
 
 #############################################################
 # Generate and read TDC txt 
@@ -877,7 +791,6 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
 
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
-	ROOT.gROOT.SetBatch()
 	slot_result = {}
 	f = ROOT.TFile(file_in, "READ")
 	if sepCapID:
@@ -969,6 +882,8 @@ def getTDCInfo(rawOutput):
 			slotResult["%d"%(Link)]["%d"%(Channel)].append(int(TDCVal))
 	return slotResult
 
+
+def get_tdcs(crate, slots):
 
 	rawDictionary = {}
 	spyCMDS = [
@@ -1130,3 +1045,8 @@ def get_link_info(crate, slot):
 	linkInfo = {}
         statCMDs = ["0", "LINK", "STATUS", "QUIT", "EXIT"]
         statsPrintOut = send_commands(crate=crate, slot=slot, cmds=statCMDs)
+        linkInfo["BCN Status"] = get_BCN_status(statsPrintOut)
+        linkInfo["BPR Status"] = get_BPR_status(statsPrintOut)
+        linkInfo["AOD Status"] = get_AOD_status(statsPrintOut)
+        linkInfo["ON Status"] = get_ON_links(statsPrintOut)
+	return linkInfo

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 class ADCConverter:
     # Bitmasks for 8-bit ADC input
 
@@ -48,4 +46,3 @@ class ADCConverter:
 myadc = ADCConverter()
 for i in xrange(255):
     print '%d ADC: ' %i+str(myadc.linearize(i))
->>>>>>> 18be54736405b701a54c06e1462b41baf7577eac

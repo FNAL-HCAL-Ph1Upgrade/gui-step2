@@ -7,6 +7,7 @@
 #
 # This is a comment to see if I got git to work properly
 # round 2 electric boogaloo
+# 
 
 import qCard
 import loggerClass as logClass

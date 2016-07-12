@@ -70,6 +70,7 @@ class TestStand:
 		print 'Running uHTR tests!'
 		print '-------------------------'
 		print 'DEBUG... Active Slots: '+str(self.activeSlots)
+		print 'DEBUG... Overwrite: '+str(self.overwrite)
 		self.uHTR_instance = uHTR.uHTR(self.uHTR_slots, self.activeSlots, self.bus, self.user, self.overwrite)
 		mapReturn = sys.stdout.strReturn
 		mapReturn = mapReturn.replace("\\n","\n")
