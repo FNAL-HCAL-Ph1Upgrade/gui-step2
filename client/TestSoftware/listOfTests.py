@@ -26,7 +26,7 @@ def initializeBridgeList(b,a,i):
 def initializeIglooList(b,a,i):
 	iglooRegs = {"fpgaMajVer" : ic.fpgaMajVer(b,a,i), "fpgaMinVer" : ic.fpgaMinVer(b,a,i),
 	"iglooOnes" : ic.ones(b,a,i), "fpgaTopOrBot" : ic.fpgaTopOrBottom(b,a,i), "iglooZeros" : ic.zeroes(b,a,i),
-	"statusReg" : ic.statusReg(b,a,i), "cntrRegDisplay" : ic.cntrRegDisplay(b,a,i),
+	"statusReg" : ic.statusReg(b,a,i), "cntrRegDisplay" : ic.cntrRegDisplay(b,a,i), "iglooScratch" : ic.scratchReg(b,a,i)
 	"clk_count" : ic.clk_count(b,a,i), "rst_QIE_count" : ic.rst_QIE_count(b,a,i),
 	"igloo_wte_count" : ic.wte_count(b,a,i), "capIDErr_count" : ic.capIDErr_count(b,a,i),
 	"igloo_UID" : ic.uniqueID(b,a,i), "Igloo2_FPGA_Control" : ic.Igloo2_FPGA_Control(b,a,i),

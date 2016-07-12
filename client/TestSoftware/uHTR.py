@@ -596,7 +596,7 @@ class uHTR():
 			slot_num = str(file.split('_')[-1].split('.root')[0])
 
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
-#		shutil.rmtree(out_dir)
+		shutil.rmtree(out_dir)
 		return histo_results
 
 #############################################################
