@@ -487,7 +487,7 @@ class clk_count(Test): #clock count
         resultArr=[]
         diffGoodVal = True
         for n in xrange(2):
-            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            resultArr.append(t.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
             diff = 0
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
@@ -513,7 +513,7 @@ class rst_QIE_count(Test): #reset qie count
         resultArr=[]
         diffGoodVal = True
         for n in xrange(2):
-            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            resultArr.append(t.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
             diff = 0
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
@@ -539,7 +539,7 @@ class wte_count(Test): #warning-test-enable count
         resultArr=[]
         diffGoodVal = True
         for n in xrange(2):
-            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            resultArr.append(t.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
             diff = 0
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
