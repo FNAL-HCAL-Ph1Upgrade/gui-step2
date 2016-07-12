@@ -242,12 +242,13 @@ def printID(bus, slots):
     for slot in slots:
         uID = ID(bus, slot)
         print '\nSlot J' + str(slot)
-        print 'raw id = '+str(uID.raw)
+        print 'raw id = '+str(uID.raw+
         print 'serial id = '+str(uID.serial)
-        print 'full id = '+str(uID.full)
+        print 'full id = '+str(uID.full+
         print 'really full id = '+str(uID.reallyfull)
         print 'split id = '+str(uID.split)
-
+        print 'flip id = '+str(uID.flip)
+        print 'sort id = '+str(uID.sort)
 
 ##### Calling functions #####
 
@@ -267,5 +268,13 @@ def printID(bus, slots):
 
 # Print ID given bus and slots
 # printID(bus, slots)
-mySlots = [2,5,7,8,10]
+# mySlots = [2,5,7,8,10]
 printID(b,slots)
+
+# print 'open = ', h.openChannel(2,b)
+# print 'power = ', h.powerEnable(2,b)
+# print 'reset = ', h.magicReset(2,b)
+#
+# print 'open = ', h.openChannel(18,b)
+# print 'power = ', h.powerEnable(1,b)
+# print 'reset = ', h.magicReset(1,b)

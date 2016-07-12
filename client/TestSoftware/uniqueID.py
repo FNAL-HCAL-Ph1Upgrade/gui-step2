@@ -13,6 +13,8 @@ class ID:
         self.full = self.getFull()
         self.reallyfull = self.full + '00'
         self.split = self.getSplit()
+        self.flip = self.getFlip()
+        self.sort = self.getSort()
 
     def getID(self):
         Hardware.openChannel(self.slot, self.bus)
@@ -55,3 +57,14 @@ class ID:
         first = self.full[2:10]
         last = self.full[10:]
         return '0x' + first + ' 0x' + last
+
+    def getFlip(self):
+        first = self.full[2:10]
+        last = self.full[10:]
+        return '0x' + last + ' 0x' + first
+
+    def getSort(self):
+        crc = self.full[2:4]
+        mac = self.full[4:16]
+        fam = self.full[16:]
+        return '0x' + fam + mac + crc
