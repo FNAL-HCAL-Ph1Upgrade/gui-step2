@@ -62,6 +62,20 @@ def setTimingThresholdDAC(slots, threshold_val, bus):
         dcs.write() # write the changes for both daisy chains
 
 
+''' change tdc threshold '''
+def setTimingThresholdDAC(slots, threshold_val, bus):
+
+    for i_slot in slots: # all desired slots
+
+        dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
+        dcs.read()
+
+        for chip in xrange(12): # all 12 chips
+            dcs[chip].TimingThresholdDAC(threshold_val) # change threshold
+
+        dcs.write() # write the changes for both daisy chains
+
+
 
 ''' change pedestal values for all chips on all cards in 'slots' list '''
 def setPedestalDAC(slots, pedestal_val, bus):

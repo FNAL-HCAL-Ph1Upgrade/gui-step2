@@ -1,9 +1,13 @@
-import IglooLib
+import IglooLib_adry as i
 import Hardware as h
+from client import webBus
+import helpers
+import time
 
-i = IglooLib
+# i = IglooLib_adry
+bus = webBus('pi5',0)
 
-slot = 18 # the J_# slot
+slot = 2 # the J_# slot
 
 class Test:
     def __init__(self, bus, address, logfile, iterations = 1):
@@ -31,8 +35,13 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         print '----------%s----------' %name
         # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: RO not writable~~'
-            return True
+            maj = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
+            if maj == [0]:
+                print maj
+                print '~~PASS: Igloo Major Ver Firmware = 0 ~~'
+                return True
+            else:
+                return False
         else:
             return False
 # ------------------------------------------------------------------------
@@ -45,8 +54,13 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
         print '----------%s----------' %name
         # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: RO not writable~~'
-            return True
+            min = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
+            if min == [9]:
+                print min
+                print '~~PASS: Igloo Minor Ver Firmware = 9 ~~'
+                return True
+            else:
+                return False
         else:
             return False
 # ------------------------------------------------------------------------
@@ -271,7 +285,7 @@ class cntrRegChange(Test): # NOTE: this run() function is overloaded to require 
         if desiredReg == "all":
             write1 = i.writeToRegister(self.bus, i.iglooAdd, reg, toWrite)
             read2 = i.readFromRegister(self.bus, i.iglooAdd, reg, size) # gets new reg status
-            print 'cntrReg after 'all' WRITE: '+str(read2)
+            print 'cntrReg after all WRITE: '+str(read2)
 
             if not (write1 and read2): return False
             else:
@@ -408,11 +422,23 @@ class clk_count(Test): #clock count
         size = i.igloo[name]["size"] / 8
 
         print '----------%s----------' %name
-        # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: Read from RO~~'
+        resultArr=[]
+        diffGoodVal = True
+        for n in xrange(20):
+            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            diff = 0
+            if n != 0:
+                diff = resultArr[n] - resultArr[n-1]
+                if diff < 0: diff += 2**32
+                if diff > 41000000 and diff < 40000000: # approx 40MHz clock frequency
+                    diffGoodVal = False
+                print diff
+            time.sleep(1)
+        if (diffGoodVal):
+            print '~~ Pass: Clk Count 40MHz ~~'
             return True
         else:
+            print '~~ Fail: Clk Count NOT 40MHz ~~'
             return False
 # ------------------------------------------------------------------------
 class rst_QIE_count(Test): #reset qie count
@@ -422,11 +448,23 @@ class rst_QIE_count(Test): #reset qie count
         size = i.igloo[name]["size"] / 8
 
         print '----------%s----------' %name
-        # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: Read from RO~~'
+        resultArr=[]
+        diffGoodVal = True
+        for n in xrange(20):
+            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            diff = 0
+            if n != 0:
+                diff = resultArr[n] - resultArr[n-1]
+                if diff < 0: diff += 2**32
+                if diff > 12500 and diff < 10500: # approx 11kHz
+                    diffGoodVal = False
+                print diff
+            time.sleep(1)
+        if (diffGoodVal):
+            print '~~ Pass: RST Counter 11kHz ~~'
             return True
         else:
+            print '~~ Fail: Counter NOT 11kHz ~~'
             return False
 # ------------------------------------------------------------------------
 class wte_count(Test): #warning-test-enable count
@@ -436,14 +474,26 @@ class wte_count(Test): #warning-test-enable count
         size = i.igloo[name]["size"] / 8
 
         print '----------%s----------' %name
-        # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: Read from RO~~'
+        resultArr=[]
+        diffGoodVal = True
+        for n in xrange(20):
+            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            diff = 0
+            if n != 0:
+                diff = resultArr[n] - resultArr[n-1]
+                if diff < 0: diff += 2**32
+                if diff > 39000 and diff < 36000: # approx 37kHz
+                    diffGoodVal = False
+                print diff
+            time.sleep(1)
+        if (diffGoodVal):
+            print '~~ Pass: WTE Counter 37kHz ~~'
             return True
         else:
+            print '~~ Fail: Counter NOT 37kHz ~~'
             return False
 # ------------------------------------------------------------------------
-class capIDErr_count(Test): # changed: deleted obselete Link 3
+class capIDErr_count(Test):
     def testBody(self):
         name = "capIDErr_count"
         reg = [i.igloo[name]["register"]["link1"],\
@@ -453,11 +503,24 @@ class capIDErr_count(Test): # changed: deleted obselete Link 3
         print '----------%s----------' %name
         linkPass = [False, False]
 
-        # for RO count register, just test ability to read out
         link = 0
-        for n in reg:
+        for count,n in enumerate(reg):
             print '----Link'+str(link+1)+'----'
-            if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, n, size)):
+            # Approach that tests if there are zero capID errors... Can't use unless igloo firmware is fixed
+            # resultArrLink_1 = []
+            # resultArrLink_2 = []
+            # link_1_AllZero = True
+            # link_2_AllZero = True
+            # for m in xrange(100):
+            #     if link == 0:
+            #         resultArrLink_1.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, n, size))))
+            #         if (resultArrLink_1[m] != 0): link_1_AllZero = False
+            #     if link == 1:
+            #         resultArrLink_2.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, n, size))))
+            #         if (resultArrLink_2[m] != 0): link_2_AllZero = False
+            # if (link_1_AllZero and link_2_AllZero): print "~~ All PASS: Zero CapID Errors ~~"
+            read1 = i.readFromRegister_Quiet(self.bus, i.iglooAdd, n, size)
+            if (read1):
                 linkPass[link] = True
 
             link = link + 1
@@ -467,6 +530,7 @@ class capIDErr_count(Test): # changed: deleted obselete Link 3
             return True
         else:
             return False
+
 # ------------------------------------------------------------------------
 class fifo_data(Test): #NOTE: Unused register
     def testBody(self):
@@ -962,38 +1026,16 @@ def runSelect(bus):
     print m.run()
     m = fpgaMinVer(bus,i.igloo["fpgaMinVer"]["register"],'iglooClass.txt', 1)
     print m.run()
-    m = ones(bus,i.igloo["ones"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = zeroes(bus,i.igloo["zeroes"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = fpgaTopOrBottom(bus,i.igloo["fpgaTopOrBottom"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = uniqueID(bus,i.igloo["uniqueID"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = statusReg(bus,i.igloo["statusReg"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = cntrRegDisplay(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = clk_count(bus,i.igloo["clk_count"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = rst_QIE_count(bus,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = wte_count(bus,i.igloo["wte_count"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = capIDErr_count(bus,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    # m = inputSpy(bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
+    #
+    # m = clk_count(bus,i.igloo["clk_count"]["register"],'iglooClass.txt', 1)
     # print m.run()
-    # m = inputSpy_512Reads(bus,i.igloo["inputSpy"]["register"],'iglooClass.txt', 1)
-    # print m.run()
-    m = CI_Mode_On(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    m = CI_Mode_Off(bus,i.igloo["cntrReg"]["register"],'iglooClass.txt', 1)
-    print m.run()
-    # m = spy96Bits(bus,i.igloo["spy96Bits"]["register"],'iglooClass.txt', 1)
-    # print m.run()
-    # m = scratchReg(bus,i.igloo["scratchReg"]["register"],'iglooClass.txt', 1)
-    # print m.run()
+    # a = rst_QIE_count(bus,i.igloo["rst_QIE_count"]["register"],'iglooClass.txt', 1)
+    # print a.run()
+    # d = wte_count(bus,i.igloo["wte_count"]["register"],'iglooClass.txt', 1)
+    # print d.run()
+    # e = capIDErr_count(bus,i.igloo["capIDErr_count"]["register"],'iglooClass.txt', 1)
+    # print e.run()
+
 
 def readOutInputSpy(bus):
     h.openChannel(slot,bus)
@@ -1067,14 +1109,14 @@ def displayCI(bus,slot):
 # RUN FUNCTIONS
 ###########################################
 
-if __name__ == '__main__':
-    #runAll()
-    # runSelect()
-    #readOutInputSpy()
-    processInputSpy()
-    #setCI_MODE(1)
-    # readBridgeIglooReg()
-    # writeBridgeIglooReg()
-    # readBridgeIglooReg()
-    #turnOnCI()
-    #displayCI(slot)
+# if __name__ == '__main__':
+#runAll()
+runSelect(bus)
+#readOutInputSpy()
+# processInputSpy()
+#setCI_MODE(1)
+# readBridgeIglooReg()
+# writeBridgeIglooReg()
+# readBridgeIglooReg()
+#turnOnCI()
+#displayCI(slot)
