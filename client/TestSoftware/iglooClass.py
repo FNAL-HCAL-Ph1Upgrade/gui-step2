@@ -2,6 +2,7 @@ import IglooLib
 import Hardware as h
 import helpers as t
 from Test import Test
+import time
 
 i = IglooLib
 
@@ -17,8 +18,14 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
         print '----------%s----------' %name
         # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: RO not writable~~'
-            return True
+            maj = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
+            if maj == [0]:
+                print maj
+                print '~~PASS: Igloo Major Ver Firmware = 0 ~~'
+                return True
+            else:
+		print '~~FAIL: Igloo Minor Ver Mismatch ~~'
+                return False
         else:
             return False
 # ------------------------------------------------------------------------
@@ -31,8 +38,14 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
         print '----------%s----------' %name
         # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: RO not writable~~'
-            return True
+            min = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
+            if min == [9]:
+                print min
+                print '~~PASS: Igloo Minor Ver Firmware = 9 ~~'
+                return True
+            else:
+		print '~~FAIL: Igloo Minor Ver Mismatch ~~'
+                return False
         else:
             return False
 # ------------------------------------------------------------------------
@@ -471,11 +484,23 @@ class clk_count(Test): #clock count
         size = i.igloo[name]["size"] / 8
 
         print '----------%s----------' %name
-        # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: Read from RO~~'
+        resultArr=[]
+        diffGoodVal = True
+        for n in xrange(2):
+            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            diff = 0
+            if n != 0:
+                diff = resultArr[n] - resultArr[n-1]
+                if diff < 0: diff += 2**32
+                if diff > 41000000 and diff < 40000000: # approx 40MHz clock frequency
+                    diffGoodVal = False
+                print diff
+            time.sleep(1)
+        if (diffGoodVal):
+            print '~~ Pass: Clk Count 40MHz ~~'
             return True
         else:
+            print '~~ Fail: Clk Count NOT 40MHz ~~'
             return False
 # ------------------------------------------------------------------------
 class rst_QIE_count(Test): #reset qie count
@@ -485,11 +510,23 @@ class rst_QIE_count(Test): #reset qie count
         size = i.igloo[name]["size"] / 8
 
         print '----------%s----------' %name
-        # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: Read from RO~~'
+        resultArr=[]
+        diffGoodVal = True
+        for n in xrange(2):
+            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            diff = 0
+            if n != 0:
+                diff = resultArr[n] - resultArr[n-1]
+                if diff < 0: diff += 2**32
+                if diff > 12500 and diff < 10500: # approx 11kHz
+                    diffGoodVal = False
+                print diff
+            time.sleep(1)
+        if (diffGoodVal):
+            print '~~ Pass: RST Counter 11kHz ~~'
             return True
         else:
+            print '~~ Fail: Counter NOT 11kHz ~~'
             return False
 # ------------------------------------------------------------------------
 class wte_count(Test): #warning-test-enable count
@@ -499,11 +536,23 @@ class wte_count(Test): #warning-test-enable count
         size = i.igloo[name]["size"] / 8
 
         print '----------%s----------' %name
-        # for RO count register, just test ability to read out
-        if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)):
-            print '~~PASS: Read from RO~~'
+        resultArr=[]
+        diffGoodVal = True
+        for n in xrange(2):
+            resultArr.append(helpers.getValue(i.intListToString(i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size))))
+            diff = 0
+            if n != 0:
+                diff = resultArr[n] - resultArr[n-1]
+                if diff < 0: diff += 2**32
+                if diff > 39000 and diff < 36000: # approx 37kHz
+                    diffGoodVal = False
+                print diff
+            time.sleep(1)
+        if (diffGoodVal):
+            print '~~ Pass: WTE Counter 37kHz ~~'
             return True
         else:
+            print '~~ Fail: Counter NOT 37kHz ~~'
             return False
 # ------------------------------------------------------------------------
 class capIDErr_count(Test): # changed: deleted obselete Link 3
@@ -516,11 +565,11 @@ class capIDErr_count(Test): # changed: deleted obselete Link 3
         print '----------%s----------' %name
         linkPass = [False, False]
 
-        # for RO count register, just test ability to read out
         link = 0
-        for n in reg:
+        for count,n in enumerate(reg):
             print '----Link'+str(link+1)+'----'
-            if (i.readFromRegister_Quiet(self.bus, i.iglooAdd, n, size)):
+            read1 = i.readFromRegister_Quiet(self.bus, i.iglooAdd, n, size)
+            if (read1):
                 linkPass[link] = True
 
             link = link + 1

@@ -70,7 +70,11 @@ def strToHex(string):
                 j = j + 1
         return catHex
 
-
+def intListToString(intList):
+    string = ''
+    for n in intList:
+        string += str(n) + ' '
+    return string[:-1]
 
 ##############################
 # Read/write functions
