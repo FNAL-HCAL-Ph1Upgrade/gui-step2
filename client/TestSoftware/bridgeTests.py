@@ -4,19 +4,19 @@
 from Test import Test
 import calculateOrbits as co
 import helpers as h
-import temp 
+import temp
 
 # NOTE: some tests not included here are
 # -I2C_SELECT (Address 0x11)
 # -Igloo2_FPGA_Control (Address 0x22)
 # -ControlReg (Address 0x2A)
-# -The last two orbit histos are not included, as their 
-#  i2C addresses overlap with those of the 
+# -The last two orbit histos are not included, as their
+#  i2C addresses overlap with those of the
 
 class ID_string(Test):
 	def testBody(self):
 		self.criteria = "0 77 82 69 72"
-		self.bus.write(self.address, [0x00])	
+		self.bus.write(self.address, [0x00])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria):
@@ -87,7 +87,7 @@ class statusCheck(Test):
 		r=self.bus.sendBatch()[-1]
 		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
 			return True
-		else: 
+		else:
 			return False
 
 class Temperature(Test):
@@ -166,7 +166,7 @@ class ScratchCheck(Test):
 		r=self.bus.sendBatch()[-1]
 		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
 			return True
-		else: 
+		else:
 			return False
 
 class brdg_ClockCounter(Test):
@@ -177,7 +177,7 @@ class brdg_ClockCounter(Test):
 		r=self.bus.sendBatch()[-1]
 		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
 			return True
-		else: 
+		else:
 			return False
 
 class RES_QIE_Counter(Test):
@@ -188,7 +188,7 @@ class RES_QIE_Counter(Test):
 		r=self.bus.sendBatch()[-1]
 		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
 			return True
-		else: 
+		else:
 			return False
 
 class WTE_Counter(Test):
@@ -199,7 +199,7 @@ class WTE_Counter(Test):
 		r=self.bus.sendBatch()[-1]
 		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
 			return True
-		else: 
+		else:
 			return False
 
 class ControlReg(Test):
@@ -210,7 +210,7 @@ class ControlReg(Test):
 		r=self.bus.sendBatch()[-1]
 		if(r == self.criteria): # Note we want it to be equal to to the criteria string.
 			return True
-		else: 
+		else:
 			return False
 
 class OrbHist_5(Test):
@@ -232,4 +232,3 @@ class zeroOrbits(Test):
 				print 'Nonzero orbit error!'
 				return False
 		return True
-

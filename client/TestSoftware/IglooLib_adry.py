@@ -1,6 +1,6 @@
 from client import webBus
 
-b = webBus('pi6',0) #can add 'pi5,0' so won't print send/receive messages
+b = webBus('pi5',0) #can add 'pi5,0' so won't print send/receive messages
 
 ##############################
 # Helpful Tool Functions
@@ -65,14 +65,18 @@ def catBitsFromBytes(bitList, first = 0, length = 0):
 
 # helpful string to hex list
 def strToHex(string):
-        catHex = ""
-        j=0
-        for i in string.split():
-                catHex = catHex + " " + hex(int(string.split()[j]))[2:]
-                j = j + 1
-        return catHex
+    catHex = ""
+    j=0
+    for i in string.split():
+            catHex = catHex + " " + hex(int(string.split()[j]))[2:]
+            j = j + 1
+    return catHex
 
-
+def intListToString(intList):
+    string = ''
+    for n in intList:
+        string += str(n) + ' '
+    return string[:-1]
 
 ##############################
 # Read/write functions
@@ -100,6 +104,7 @@ def readFromRegister_Quiet(bus, address, register, numBytes):
     bus.write(address, [register])
     bus.read(address, numBytes)
     ret = []
+
     for i in bus.sendBatch()[-1].split():
         ret.append(int(i))
 
