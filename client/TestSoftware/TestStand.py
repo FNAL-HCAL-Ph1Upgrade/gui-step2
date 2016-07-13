@@ -60,8 +60,9 @@ class TestStand:
 	print '\n--- Slot determination finished. Beginning tests ---\n\n'
 
     def runAll(self):
-	    for r in self.RMs:
-		r.runAll(self.suiteSelection, self.iters)
+	    if (self.suiteSelection != "uhtr"):
+		    for r in self.RMs:
+			r.runAll(self.suiteSelection, self.iters)
 	    # uHTR tests need to be ran here, instead of being ran further down the line.
 	    if (self.suiteSelection in ["main","uhtr"]):
 

@@ -340,7 +340,8 @@ class uHTR():
 	def phase_test(self):
 		self.init_everything
 		#Valid (GOOD!!!) settings for phase
-		phase_settings = range(0,50) + range(64,115)
+#		phase_settings = range(0,50) + range(64,115)
+		phase_settings = range(0,10) + range(36,49) + range(64,75) + range(104,114)
 		phase_results={}
 		phase_results["settings"]=phase_settings
 		for setting in phase_settings:

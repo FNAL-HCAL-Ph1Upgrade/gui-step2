@@ -175,6 +175,7 @@ class brdg_ClockCounter(Test):
 		self.bus.write(self.address, [0x12])
 		self.bus.read(self.address, 4)
 		r=self.bus.sendBatch()[-1]
+		print "DEBUG... brdg_ClockCount: " + str(r)
 		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
 			return True
 		else:
