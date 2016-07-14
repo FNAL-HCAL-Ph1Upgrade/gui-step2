@@ -17,7 +17,7 @@ import loggerClass as logClass
 
 # Cutoff for card overheating. Hopefully they never get this hot...
 # Degrees Celsius
-tempThreshold = 55
+tempThreshold = 50
 
 # These dictionaries will be used to get information from
 # the card that pertains to UID, Temperature, and Humidity

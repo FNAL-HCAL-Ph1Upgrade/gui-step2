@@ -679,7 +679,7 @@ class uHTR():
 			fit=ROOT.TF1("fit", "[0] + [1]*x", 0, 0)			
 
 		if test == "shunt":
-			title="Shunt Scan Results"
+			title="Shunt Scan Results {0}".format(key)
 			ytitle="Measured ratio "
 			xtitle="ratio setting"
 			plot_base="shunt_{0}".format(key)
