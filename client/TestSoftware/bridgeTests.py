@@ -165,13 +165,26 @@ class Humidity(Test):
 
 class ScratchCheck(Test):
 	def testBody(self):
-		self.criteria = "0 0 0 0 0"
+		self.criteria = "0 100 111 111 100" # dood
+
 		self.bus.write(self.address, [0x0B])
 		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
+		r1 = self.bus.sendBatch()[-1]
+		print 'Initial Read = '+str(r1)
+
+		self.bus.write(self.address, [0x0B, 100, 111, 111, 100])
+		self.bus.sendBatch()
+
+		self.bus.write(self.address, [0x0B])
+		self.bus.read(self.address, 4)
+		r2 = self.bus.sendBatch()[-1]
+		print 'Final Read = '+str(r2)
+
+		if(r2 == self.criteria): # Note we want NOT EQUAL TO
+			print 'Scratch dood success!'
 			return True
 		else:
+			print 'Scratch dood fail.'
 			return False
 
 #######################################################################################################

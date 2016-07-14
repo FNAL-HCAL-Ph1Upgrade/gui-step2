@@ -52,7 +52,7 @@ def calcOrbs(bus,slot,seconds,verbose=0):
         print 'time delay (s)      = '+str(seconds)
         print 'orbits per second   = '+str(orbitsPerSec)
         print 'seconds per orbit   = '+str(secondsPerOribt)
-    
+
     print 'theoretical orbit time (microseconds) = '+str(orbitTime1)
     # print orbitTime2
     print 'measured orbit time (microseconds) = '+str(orbitTimeMeasured)

@@ -1,6 +1,7 @@
 #Hardware.py
 import sys
 from DChains import DChains
+import helpers as t
 #MUX dict
   #Given JX, set MUXes
 
@@ -136,5 +137,99 @@ class ADCConverter:
                 self.fc[exp * 64 + man] = self.inputCharge[exp * 5 + subrange] + ((man - self.adcBase[subrange]) + .5) * sensitivity
 
     def linearize(self, adc):
-	if adc > 255: adc = 255
+        if adc > 255: adc = 255
         return self.fc[int(adc)]
+
+# ------------------------------------------------------------------------
+class iglooPower:
+    def __init__(self, slot, bus):
+        self.address = getCardAddress(slot)
+        self.bus = bus
+        openChannel(slot, bus)
+        print self.testBody()
+
+    def testBody(self):
+        print '~~ Begin Toggle Igloo Power Slave'
+        control_address = 0x22
+        message = self.readBridge(control_address,4)
+        print 'Igloo Control = '+str(message)
+
+        ones_address = 0x02
+        all_ones = '255 255 255 255'
+
+        retval = False
+
+        self.bus.write(0x00,[0x06])
+        self.bus.sendBatch()
+
+        register = self.readIgloo(ones_address, 4)
+        if register != all_ones:
+        	retval = False
+        print 'Igloo Ones = '+str(register)
+
+        # Turn Igloo Off
+        print 'Igloo Control = '+str(self.toggleIgloo())
+        register = self.detectIglooError(ones_address, 4)
+        if register[0] != '0':
+        	retval = True
+        print 'Igloo Ones = '+str(register)
+
+        # Turn Igloo On
+        print 'Igloo Control = '+str(self.toggleIgloo())
+        register = self.readIgloo(ones_address, 4)
+        if register != all_ones:
+        	retval = False
+        print 'Igloo Ones = '+str(register)
+        if retval:
+            print '~~ Toggle Igloo Power PASS'
+        else:
+            print '~~ Toggle Igloo Power FAIL'
+        return retval
+
+    def toggleIgloo(self):
+        iglooControl = 0x22
+        message = self.readBridge(iglooControl,4)
+        value = t.getValue(message)
+        value = value ^ 0x400 # toggle igloo power!
+        messageList = t.getMessageList(value,4)
+        self.writeBridge(iglooControl,messageList)
+        return self.readBridge(iglooControl,4)
+
+    def writeBridge(self, regAddress, messageList):
+    	self.bus.write(0x19, [regAddress]+messageList)
+    	return self.bus.sendBatch()
+
+    def readBridge(self, regAddress, num_bytes):
+        self.bus.write(0x00,[0x06])
+        self.bus.sendBatch()
+        self.bus.write(0x19,[regAddress])
+        self.bus.read(0x19, num_bytes)
+        message = self.bus.sendBatch()[-1]
+        # if message[0] != '0':
+        #     print 'Bridge i2c error detected'
+        return t.reverseBytes(message[2:])
+
+    def readIgloo(self, regAddress, num_bytes):
+    	self.bus.write(0x00,[0x06])
+    	self.bus.write(self.address,[0x11,0x03,0,0,0])
+    	self.bus.write(0x09,[regAddress])
+    	self.bus.read(0x09, num_bytes)
+    	message = self.bus.sendBatch()[-1]
+    	# if message[0] != '0':
+    	# 	print 'Igloo i2c error detected in readIgloo'
+    	return t.reverseBytes(message[2:])
+
+    def detectIglooError(self, regAddress, num_bytes):
+    	self.bus.write(0x00,[0x06])
+    	self.bus.write(self.address,[0x11,0x03,0,0,0])
+    	self.bus.write(0x09,[regAddress])
+    	self.bus.read(0x09, num_bytes)
+    	message = self.bus.sendBatch()[-1]
+    	if message[0] != '0':
+    		print 'Igloo Power Off Confirmed.'
+    	return message
+
+def toggleIgloos(bus):
+    powerSlots = [2,7,18,23]
+    for ps in powerSlots:
+        ip = iglooPower(ps, bus)
