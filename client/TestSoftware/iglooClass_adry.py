@@ -1111,7 +1111,7 @@ def displayCI(bus,slot):
 
 # if __name__ == '__main__':
 #runAll()
-runSelect(bus)
+# runSelect(bus)
 #readOutInputSpy()
 # processInputSpy()
 #setCI_MODE(1)
