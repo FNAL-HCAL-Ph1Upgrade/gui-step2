@@ -26,7 +26,7 @@ class testSummary:
 	
 
 		self.iglooList = {"fpgaMajVer" : [0,0], "fpgaMinVer" : [0,0], "iglooOnes" : [0,0],
-			"iglooZeros" : [0,0],"fpgaTopOrBot" : [0,0], "iglooUID" : [0,0],
+			"iglooZeros" : [0,0],"fpgaTopOrBot" : [0,0],
 			"statusReg" : [0,0], "cntrRegDisplay" : [0,0], "rst_QIE_count" : [0,0], "clk_count" : [0,0],
 			"igloo_wte_count" : [0,0], "capIDErr_count" : [0,0],
 			"iglooScratch" : [0,0], "Igloo2_FPGA_Control" : [0,0],

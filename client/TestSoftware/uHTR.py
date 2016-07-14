@@ -340,7 +340,8 @@ class uHTR():
 	def phase_test(self):
 		self.init_everything
 		#Valid (GOOD!!!) settings for phase
-		phase_settings = range(0,50) + range(64,115)
+#		phase_settings = range(0,50) + range(64,115)
+		phase_settings = range(0,10) + range(36,49) + range(64,75) + range(104,114)
 		phase_results={}
 		phase_results["settings"]=phase_settings
 		for setting in phase_settings:
@@ -678,7 +679,7 @@ class uHTR():
 			fit=ROOT.TF1("fit", "[0] + [1]*x", 0, 0)			
 
 		if test == "shunt":
-			title="Shunt Scan Results"
+			title="Shunt Scan Results {0}".format(key)
 			ytitle="Measured ratio "
 			xtitle="ratio setting"
 			plot_base="shunt_{0}".format(key)

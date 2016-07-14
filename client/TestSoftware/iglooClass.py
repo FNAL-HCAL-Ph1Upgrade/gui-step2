@@ -482,6 +482,8 @@ class clk_count(Test): #clock count
         name = "clk_count"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
+	sleepFactor=0.25
+	
 
         print '----------%s----------' %name
         resultArr=[]
@@ -492,10 +494,11 @@ class clk_count(Test): #clock count
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
-                if diff > 41000000 and diff < 40000000: # approx 40MHz clock frequency
+		rate = (float(diff)/(sleepFactor))
+                if rate > 41000000 or rate < 40000000: # approx 40MHz clock frequency
                     diffGoodVal = False
-                print diff
-            time.sleep(1)
+                print rate
+            time.sleep(1*sleepFactor)
         if (diffGoodVal):
             print '~~ Pass: Clk Count 40MHz ~~'
             return True
@@ -508,6 +511,7 @@ class rst_QIE_count(Test): #reset qie count
         name = "rst_QIE_count"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
+	sleepFactor=0.25
 
         print '----------%s----------' %name
         resultArr=[]
@@ -518,10 +522,11 @@ class rst_QIE_count(Test): #reset qie count
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
-                if diff > 12500 and diff < 10500: # approx 11kHz
+		rate = (float(diff)/(sleepFactor))
+                if rate > 12500 or rate < 10500: # approx 11kHz
                     diffGoodVal = False
-                print diff
-            time.sleep(1)
+                print rate
+            time.sleep(1*sleepFactor)
         if (diffGoodVal):
             print '~~ Pass: RST Counter 11kHz ~~'
             return True
@@ -534,6 +539,7 @@ class wte_count(Test): #warning-test-enable count
         name = "wte_count"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
+	sleepFactor = 0.25
 
         print '----------%s----------' %name
         resultArr=[]
@@ -544,10 +550,11 @@ class wte_count(Test): #warning-test-enable count
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
-                if diff > 39000 and diff < 36000: # approx 37kHz
+		rate = (float(diff)/(sleepFactor))
+                if rate > 59000 or rate < 15000: # approx 37kHz
                     diffGoodVal = False
-                print diff
-            time.sleep(1)
+                print rate
+            time.sleep(1*sleepFactor)
         if (diffGoodVal):
             print '~~ Pass: WTE Counter 37kHz ~~'
             return True

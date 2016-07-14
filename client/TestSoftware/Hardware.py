@@ -137,4 +137,4 @@ class ADCConverter:
 
     def linearize(self, adc):
 	if adc > 255: adc = 255
-        return self.fc[adc]
+        return self.fc[int(adc)]

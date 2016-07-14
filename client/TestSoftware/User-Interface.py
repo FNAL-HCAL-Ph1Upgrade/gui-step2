@@ -723,6 +723,9 @@ class makeGui:
 		print '\n\nBackplane for '+self.piChoiceVar.get()+' reset!\n\n'
 
 	def runTestSuite(self):
+		subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
+		self.fanPowerFlag = True
+		print '\nFans enabled!\n'
 		print str(datetime.now())
 		uHTR_outList = self.uHTR_config()
 		self.magicResetPress()

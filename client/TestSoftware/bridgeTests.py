@@ -5,6 +5,7 @@ from Test import Test
 import calculateOrbits as co
 import helpers as h
 import temp
+import time
 
 # NOTE: some tests not included here are
 # -I2C_SELECT (Address 0x11)
@@ -136,6 +137,7 @@ class HumiPass(Test):
 			print 'Humidity: '+str(self.humiResult)+' in safe range!'
 			return True
 
+#######################################################################################################
 
 class Humidity(Test):
 	def testBody(self):
@@ -158,6 +160,9 @@ class Humidity(Test):
 		else:
 			return False
 
+
+#######################################################################################################
+
 class ScratchCheck(Test):
 	def testBody(self):
 		self.criteria = "0 0 0 0 0"
@@ -169,38 +174,150 @@ class ScratchCheck(Test):
 		else:
 			return False
 
+#######################################################################################################
+
 class brdg_ClockCounter(Test):
 	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x12])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
+		sleepFactor = 0.25
+		resultArr = []
+		numBytes = 4
+		isGoodVal = True
+		rate = 0
+
+		for n in xrange(2):
+			# Get data from chip, and then process it
+			self.bus.write(self.address, [0x12])
+			self.bus.read(self.address, numBytes)
+			ret = []
+			for i in self.bus.sendBatch()[-1].split():
+				ret.append(int(i))
+			ret.reverse()
+			if (ret[-1] != 0 ):
+				print "I2C Error in RES_QIE_Counter!"
+				return False
+			del ret[-1]
+			# End I2C and data processing part
+
+			resultArr.append(h.getValue(self.intListToString(ret)))
+
+			if (n != 0):
+				diff = resultArr[n] - resultArr[n-1]
+				if (abs(diff) > 3650):
+					isGoodVal = False
+			time.sleep(1*sleepFactor)
+
+		if(isGoodVal):
+			print "Clock_Counter rate in acceptable range!"
 			return True
 		else:
+			print "Clock_Counter FAILED!"
+			print "Failing Clock_Counter diff: " + str(diff)
 			return False
+
+	def intListToString(self, intList):
+		string = ''
+		for n in intList:
+			string += str(n) + ' '
+		return string[:-1]
+
+
+#######################################################################################################
 
 class RES_QIE_Counter(Test):
 	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x13])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
+		sleepFactor = 0.25
+		resultArr = []
+		numBytes = 4
+		isGoodVal = True
+		rate = 0
+
+		for n in xrange(2):
+			# Get data from chip, and then process it
+			self.bus.write(self.address, [0x13])
+			self.bus.read(self.address, numBytes)
+			ret = []
+			for i in self.bus.sendBatch()[-1].split():
+				ret.append(int(i))
+			ret.reverse()
+			if (ret[-1] != 0 ):
+				print "I2C Error in RES_QIE_Counter!"
+				return False
+			del ret[-1]
+			# End I2C and data processing part
+
+			resultArr.append(h.getValue(self.intListToString(ret)))
+
+			if (n != 0):
+				diff = resultArr[n] - resultArr[n-1]
+				if diff < 0: diff += 2**32
+				rate = (float(diff)/(sleepFactor))
+				if rate > 13000 or rate < 9000:
+					isGoodVal = False
+			time.sleep(1*sleepFactor)
+
+		if(isGoodVal):
+			print "RES_QIE_Counter rate in acceptable range!"
 			return True
 		else:
+			print "RES_QIE_Counter FAILED. Rate either above 13 kHz or below 9 kHz"
+			print "Failing rate is: " + str(rate) + " Hz"
 			return False
+
+	def intListToString(self, intList):
+		string = ''
+		for n in intList:
+			string += str(n) + ' '
+		return string[:-1]
+
+#######################################################################################################
 
 class WTE_Counter(Test):
 	def testBody(self):
-		self.criteria = "0 0 0 0 0"
-		self.bus.write(self.address, [0x14])
-		self.bus.read(self.address, 4)
-		r=self.bus.sendBatch()[-1]
-		if(r != self.criteria and r[0] != "1"): # Note we want NOT EQUAL TO
+		sleepFactor = 0.25
+		resultArr = []
+		numBytes = 4
+		isGoodVal = True
+		rate = 0
+
+		for n in xrange(2):
+			# Get data from chip, and then process it
+			self.bus.write(self.address, [0x14])
+			self.bus.read(self.address, numBytes)
+			ret = []
+			for i in self.bus.sendBatch()[-1].split():
+				ret.append(int(i))
+			ret.reverse()
+			if (ret[-1] != 0 ):
+				print "I2C Error in WTE_Counter!"
+				return False
+			del ret[-1]
+			# End I2C and data processing part
+
+			resultArr.append(h.getValue(self.intListToString(ret)))
+
+			if (n != 0):
+				diff = resultArr[n] - resultArr[n-1]
+				if diff < 0: diff += 2**32
+				rate = (float(diff)/(sleepFactor))
+				if rate > 23000 or rate < 8000:
+					isGoodVal = False
+			time.sleep(1*sleepFactor)
+
+		if(isGoodVal): # Note we want NOT EQUAL TO
+			print "WTE_Counter rate in acceptable range!"
 			return True
 		else:
+			print "WTE_Counter FAILED. Rate either above 27 kHz or below 8 kHz"
+			print "Failing rate is: " + str(rate) + " Hz"
 			return False
+
+	def intListToString(self, intList):
+		string = ''
+		for n in intList:
+			string += str(n) + ' '
+		return string[:-1]
+
+#######################################################################################################
 
 class ControlReg(Test):
 	def testBody(self):
@@ -213,9 +330,15 @@ class ControlReg(Test):
 		else:
 			return False
 
+
+#######################################################################################################
+
 class OrbHist_5(Test):
 	def testBody(self):
 		return co.calcOrbs(self.bus,self.address,0.5,0)
+
+
+#######################################################################################################
 
 class zeroOrbits(Test):
 	def testBody(self):
