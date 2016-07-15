@@ -58,7 +58,7 @@ def calcOrbs(bus,slot,seconds,verbose=0):
     print 'measured orbit time (microseconds) = '+str(orbitTimeMeasured)
     print 'percent error           =  '+str(percErr)+' % error'
 
-    if percErr < 0.5:
+    if percErr < 0.75:
 	print 'Passes!\n'
         return True
     else:
