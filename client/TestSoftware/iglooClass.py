@@ -554,7 +554,7 @@ class wte_count(Test): #warning-test-enable count
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
 		rate = (float(diff)/(sleepFactor))
-                if rate > 59000 or rate < 15000: # approx 37kHz
+                if rate > 1000000 or rate < 10000: # approx 37kHz
                     diffGoodVal = False
                 print rate
             time.sleep(1*sleepFactor)
