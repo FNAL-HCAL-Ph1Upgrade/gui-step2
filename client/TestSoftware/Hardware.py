@@ -146,13 +146,14 @@ class iglooPower:
         self.address = getCardAddress(slot)
         self.bus = bus
         openChannel(slot, bus)
-        print self.testBody()
+        # print self.testBody()
+        self.testBody()
 
     def testBody(self):
-        print '~~ Begin Toggle Igloo Power Slave'
+        # print '~~ Begin Toggle Igloo Power Slave'
         control_address = 0x22
         message = self.readBridge(control_address,4)
-        print 'Igloo Control = '+str(message)
+        # print 'Igloo Control = '+str(message)
 
         ones_address = 0x02
         all_ones = '255 255 255 255'
@@ -165,21 +166,23 @@ class iglooPower:
         register = self.readIgloo(ones_address, 4)
         if register != all_ones:
         	retval = False
-        print 'Igloo Ones = '+str(register)
+        # print 'Igloo Ones = '+str(register)
 
         # Turn Igloo Off
-        print 'Igloo Control = '+str(self.toggleIgloo())
+        # print 'Igloo Control = '+str(self.toggleIgloo())
+        self.toggleIgloo()
         register = self.detectIglooError(ones_address, 4)
         if register[0] != '0':
         	retval = True
-        print 'Igloo Ones = '+str(register)
+        # print 'Igloo Ones = '+str(register)
 
         # Turn Igloo On
-        print 'Igloo Control = '+str(self.toggleIgloo())
+        # print 'Igloo Control = '+str(self.toggleIgloo())
+        self.toggleIgloo()
         register = self.readIgloo(ones_address, 4)
         if register != all_ones:
         	retval = False
-        print 'Igloo Ones = '+str(register)
+        # print 'Igloo Ones = '+str(register)
         if retval:
             print '~~ Toggle Igloo Power PASS'
         else:
@@ -225,11 +228,12 @@ class iglooPower:
     	self.bus.write(0x09,[regAddress])
     	self.bus.read(0x09, num_bytes)
     	message = self.bus.sendBatch()[-1]
-    	if message[0] != '0':
-    		print 'Igloo Power Off Confirmed.'
+    	# if message[0] != '0':
+    	# 	print 'Igloo Power Off Confirmed.'
     	return message
 
 def toggleIgloos(bus):
     powerSlots = [2,7,18,23]
     for ps in powerSlots:
+        print 'Igloo Power Control Slot J'+str(ps)
         ip = iglooPower(ps, bus)

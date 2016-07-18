@@ -24,7 +24,7 @@ class fpgaMajVer(Test): #inherit from Test class, overload testBody() function
                 print '~~PASS: Igloo Major Ver Firmware = 0 ~~'
                 return True
             else:
-		print '~~FAIL: Igloo Minor Ver Mismatch ~~'
+                print '~~FAIL: Igloo Minor Ver Mismatch ~~'
                 return False
         else:
             return False
@@ -44,7 +44,7 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
                 print '~~PASS: Igloo Minor Ver Firmware = 9 ~~'
                 return True
             else:
-		print '~~FAIL: Igloo Minor Ver Mismatch ~~'
+                print '~~FAIL: Igloo Minor Ver Mismatch ~~'
                 return False
         else:
             return False
@@ -182,86 +182,86 @@ class statusReg(Test): #shows status register settings
 
 # ------------------------------------------------------------------------
 class Igloo2_FPGA_Control(Test):
-        def testBody(self):
-            print '~~ Begin Toggle Igloo Power Slave'
-            control_address = 0x22
-            message = self.readBridge(control_address,4)
-            print 'Igloo Control = '+str(message)
+    def testBody(self):
+        print '~~ Begin Toggle Igloo Power Slave'
+        control_address = 0x22
+        message = self.readBridge(control_address,4)
+        print 'Igloo Control = '+str(message)
 
-            ones_address = 0x02
-            all_ones = '255 255 255 255'
+        ones_address = 0x02
+        all_ones = '255 255 255 255'
 
+        	retval = False
+
+        self.bus.write(0x00,[0x06])
+        self.bus.sendBatch()
+
+        register = self.readIgloo(ones_address, 4)
+        if register != all_ones:
             retval = False
+        print 'Igloo Ones = '+str(register)
 
-            self.bus.write(0x00,[0x06])
-            self.bus.sendBatch()
+        # Turn Igloo Off
+        print 'Igloo Control = '+str(self.toggleIgloo())
+        register = self.detectIglooError(ones_address, 4)
+        if register[0] != '0':
+            retval = True
+        print 'Igloo Ones = '+str(register)
 
-            register = self.readIgloo(ones_address, 4)
-            if register != all_ones:
-            	retval = False
-            print 'Igloo Ones = '+str(register)
+        # Turn Igloo On
+        print 'Igloo Control = '+str(self.toggleIgloo())
+        register = self.readIgloo(ones_address, 4)
+        if register != all_ones:
+            retval = False
+        print 'Igloo Ones = '+str(register)
+        if retval:
+            print '~~ Toggle Igloo Power PASS'
+        else:
+            print '~~ Toggle Igloo Power FAIL'
+        return retval
 
-            # Turn Igloo Off
-            print 'Igloo Control = '+str(self.toggleIgloo())
-            register = self.detectIglooError(ones_address, 4)
-            if register[0] != '0':
-            	retval = True
-            print 'Igloo Ones = '+str(register)
+    def toggleIgloo(self):
+        iglooControl = 0x22
+        message = self.readBridge(iglooControl,4)
+        value = t.getValue(message)
+        value = value ^ 0x400 # toggle igloo power!
+        messageList = t.getMessageList(value,4)
+        self.writeBridge(iglooControl,messageList)
+        return self.readBridge(iglooControl,4)
 
-            # Turn Igloo On
-            print 'Igloo Control = '+str(self.toggleIgloo())
-            register = self.readIgloo(ones_address, 4)
-            if register != all_ones:
-            	retval = False
-            print 'Igloo Ones = '+str(register)
-            if retval:
-                print '~~ Toggle Igloo Power PASS'
-            else:
-                print '~~ Toggle Igloo Power FAIL'
-            return retval
+    def writeBridge(self, regAddress, messageList):
+        self.bus.write(0x19, [regAddress]+messageList)
+        return self.bus.sendBatch()
 
-        def toggleIgloo(self):
-            iglooControl = 0x22
-            message = self.readBridge(iglooControl,4)
-            value = t.getValue(message)
-            value = value ^ 0x400 # toggle igloo power!
-            messageList = t.getMessageList(value,4)
-            self.writeBridge(iglooControl,messageList)
-            return self.readBridge(iglooControl,4)
+    def readBridge(self, regAddress, num_bytes):
+        self.bus.write(0x00,[0x06])
+        self.bus.sendBatch()
+        self.bus.write(0x19,[regAddress])
+        self.bus.read(0x19, num_bytes)
+        message = self.bus.sendBatch()[-1]
+        if message[0] != '0':
+            print 'Bridge i2c error detected'
+        return t.reverseBytes(message[2:])
 
-    	def writeBridge(self, regAddress, messageList):
-    		self.bus.write(0x19, [regAddress]+messageList)
-    		return self.bus.sendBatch()
+	def readIgloo(self, regAddress, num_bytes):
+		self.bus.write(0x00,[0x06])
+		self.bus.write(self.address,[0x11,0x03,0,0,0])
+		self.bus.write(0x09,[regAddress])
+		self.bus.read(0x09, num_bytes)
+		message = self.bus.sendBatch()[-1]
+		if message[0] != '0':
+			print 'Igloo i2c error detected in readIgloo'
+		return t.reverseBytes(message[2:])
 
-        def readBridge(self, regAddress, num_bytes):
-            self.bus.write(0x00,[0x06])
-            self.bus.sendBatch()
-            self.bus.write(0x19,[regAddress])
-            self.bus.read(0x19, num_bytes)
-            message = self.bus.sendBatch()[-1]
-            # if message[0] != '0':
-            #     print 'Bridge i2c error detected'
-            return t.reverseBytes(message[2:])
-
-    	def readIgloo(self, regAddress, num_bytes):
-    		self.bus.write(0x00,[0x06])
-    		self.bus.write(self.address,[0x11,0x03,0,0,0])
-    		self.bus.write(0x09,[regAddress])
-    		self.bus.read(0x09, num_bytes)
-    		message = self.bus.sendBatch()[-1]
-    		# if message[0] != '0':
-    		# 	print 'Igloo i2c error detected in readIgloo'
-    		return t.reverseBytes(message[2:])
-
-    	def detectIglooError(self, regAddress, num_bytes):
-    		self.bus.write(0x00,[0x06])
-    		self.bus.write(self.address,[0x11,0x03,0,0,0])
-    		self.bus.write(0x09,[regAddress])
-    		self.bus.read(0x09, num_bytes)
-    		message = self.bus.sendBatch()[-1]
-    		if message[0] != '0':
-    			print 'Igloo Power Off Confirmed.'
-    		return message
+	def detectIglooError(self, regAddress, num_bytes):
+		self.bus.write(0x00,[0x06])
+		self.bus.write(self.address,[0x11,0x03,0,0,0])
+		self.bus.write(0x09,[regAddress])
+		self.bus.read(0x09, num_bytes)
+		message = self.bus.sendBatch()[-1]
+		if message[0] != '0':
+			print 'Igloo Power Off Confirmed.'
+		return message
 
 # ------------------------------------------------------------------------
 
@@ -485,8 +485,8 @@ class clk_count(Test): #clock count
         name = "clk_count"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
-	sleepFactor=0.25
-	
+        sleepFactor=0.25
+
 
         print '----------%s----------' %name
         resultArr=[]
@@ -497,7 +497,7 @@ class clk_count(Test): #clock count
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
-		rate = (float(diff)/(sleepFactor))
+                rate = (float(diff)/(sleepFactor))
                 if rate > 41000000 or rate < 40000000: # approx 40MHz clock frequency
                     diffGoodVal = False
                 print rate
@@ -514,7 +514,7 @@ class rst_QIE_count(Test): #reset qie count
         name = "rst_QIE_count"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
-	sleepFactor=0.25
+        sleepFactor=0.25
 
         print '----------%s----------' %name
         resultArr=[]
@@ -525,7 +525,7 @@ class rst_QIE_count(Test): #reset qie count
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
-		rate = (float(diff)/(sleepFactor))
+                rate = (float(diff)/(sleepFactor))
                 if rate > 12500 or rate < 10500: # approx 11kHz
                     diffGoodVal = False
                 print rate
@@ -542,7 +542,7 @@ class wte_count(Test): #warning-test-enable count
         name = "wte_count"
         reg = i.igloo[name]["register"]
         size = i.igloo[name]["size"] / 8
-	sleepFactor = 0.25
+        sleepFactor = 0.25
 
         print '----------%s----------' %name
         resultArr=[]
@@ -553,7 +553,7 @@ class wte_count(Test): #warning-test-enable count
             if n != 0:
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
-		rate = (float(diff)/(sleepFactor))
+                rate = (float(diff)/(sleepFactor))
                 if rate > 59000 or rate < 15000: # approx 37kHz
                     diffGoodVal = False
                 print rate
