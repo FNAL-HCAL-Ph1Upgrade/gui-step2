@@ -822,6 +822,7 @@ class makeGui:
 		print 'Files submitted to database!'
 
 
+subprocess.call("source /home/hep/shogan/uHTRtoolSetup.sh", shell=True)
 root = Tk()
 myapp = makeGui(root)
 sys.stdout = logClass.logger(myapp.humanLogName)

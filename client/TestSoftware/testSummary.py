@@ -115,3 +115,31 @@ class testSummary:
 				w.write("\n}")
 		else:
 			print 'Card has no attributes! Skipping log generation.'
+
+		self.cardGenInfo["Unique_ID"] = ""
+		self.cardGenInfo["DateRun"] = []
+		self.cardGenInfo["User"] = ""
+		self.cardGenInfo["HumanLogFile"] = ""
+		self.cardGenInfo["Overwrite"] = False
+
+		for i in self.resultList.keys():
+			self.resultList[i] = [0,0]
+		for i in self.iglooList.keys():
+			self.iglooList[i] = [0,0]
+		for i in self.vttxListOne.keys():
+			self.vttxListOne[i] = [0,0]
+		for i in self.vttxListTwo.keys():
+			self.vttxListTwo[i] = [0,0]
+		for i in self.longTestList.keys():
+			self.longTestList[i] = [0,0]	
+
+		for i in self.bridgeResults.keys():
+			self.bridgeResults[i] = '""'
+		for i in self.iglooResults.keys():
+			self.iglooResults[i] = '""'
+		for i in self.vttxOneResults.keys():
+			self.vttxOneResults[i] = '""'
+		for i in self.vttxTwoResults.keys():
+			self.vttxTwoResults[i] = '""'
+		for i in self.longTestResults.keys():
+			self.longTestResults[i] = '""'	

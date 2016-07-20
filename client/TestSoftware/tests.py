@@ -7,6 +7,7 @@ import vttxClass as vc
 import iglooClass as ic
 import client
 import helpers
+import Hardware as h
 import Test
 import listOfTests
 import uHTR
@@ -125,6 +126,22 @@ class testSuite:
 	self.b.write(0x00,[0x06])
 	self.b.write(slot,[0x11,0x03,0,0,0])
 	self.b.sendBatch()
+	self.setCkOutEn([self.outCard.cardGenInfo["JSlot"]], 1, self.b)
+	self.b.write(0x00,[0x06])
+	self.b.write(slot,[0x11,0x03,0,0,0])
+	self.b.sendBatch()
+
+    def setCkOutEn(self, slots, highOrLow, bus):
+	    # takes 1 or 0 to turn clock output enable on/off
+	    for i_slot in slots: # all desired slots
+
+		dcs = h.getDChains(i_slot,bus) # the 2 daisy chains from one QIE card
+		dcs.read()
+
+		for chip in xrange(12): # all 12 chips
+		    dcs[chip].CkOutEn(highOrLow) # change threshold
+
+		dcs.write() # write the changes for both daisy chains		
 
     def openVTTX(self, slot, vttxNum):
 	self.b.write(0x00,[0x06])

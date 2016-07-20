@@ -67,6 +67,8 @@ class uHTR():
 		self.canvas = ROOT.TCanvas("c1", "c1", 800, 800)
 		
 		self.master_dict={}
+		self.master_dict["shunt_flags"] = []
+		self.master_dict["ci_flags"] = []
 		### Each key of master_dict corresponds to a QIE chip
 		### The name of each QIE is "(qcard_slot, chip)"
 		### Each QIE chip returns a dictionary containing test results and its uHTR mapping
@@ -169,77 +171,82 @@ class uHTR():
 		ci_settings = [90, 180, 360, 720, 1440, 2880, 5760, 8640] #in fC
 
 		qslots = self.qcards
+
 		for attempt in attempts:
-			failures = []
-			ci_results={}
-			if self.V and  attempt > 0: print "\nRETEST attempt {1}, qcards: {0}\n".format(qslots, attempt)
-			for setting in ci_settings:
-				if self.V: print 'testing charge injection setting {0} fC'.format(setting)
+			if len(qslots) > 0:
+				failures = []
+				ci_results={}
+				if self.V and  attempt > 0: print "\nRETEST attempt {1}, qcards: {0}\n".format(qslots, attempt)
+				for setting in ci_settings:
+					if self.V: print 'testing charge injection setting {0} fC'.format(setting)
+					for qslot in qslots:
+						hw.SetQInjMode(1, qslot, self.bus)
+						dc=hw.getDChains(qslot, self.bus)
+						dc.read()
+						for chip in xrange(12):
+							dc[chip].PedestalDAC(6)
+							dc[chip].ChargeInjectDAC(setting)
+							dc[chip].Gsel(0)
+						dc.write()
+						dc.read()
+					histo_results=self.get_histo_results(self.crate, self.uhtr_slots, signalOn=True, out_dir="ci_histos_{0}".format(setting))
+
+					for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
+						for chip, chip_results in uhtr_slot_results.iteritems():
+							key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+							if key not in ci_results: ci_results[key]=[]
+							totalSignal = 0
+							if 'signalBinMax_1' in chip_results:
+								totalSignal = adc.linearize(chip_results['signalBinMax_1'])
+								if 'signalBinMax_2' in chip_results:	# get 2nd peak if needed
+									totalSignal += adc.linearize(chip_results['signalBinMax_2'])
+								ci_results[key].append(totalSignal)
+
+				#Turn off charge injection
 				for qslot in qslots:
-					hw.SetQInjMode(1, qslot, self.bus)
-					dc=hw.getDChains(qslot, self.bus)
-					dc.read()
+					hw.SetQInjMode(0, qslot, self.bus)
+
+				#analyze results and make graphs
+				cwd=os.getcwd()
+				if not os.path.exists("ci_plots"):
+					os.makedirs("ci_plots")
+				os.chdir(cwd  + "/ci_plots")
+
+				for qslot in qslots:
+
+					cwd2=os.getcwd()
+					if not os.path.exists(str(qslot)):
+						os.makedirs(str(qslot))
+					os.chdir(cwd2  + "/" + str(qslot))
+
 					for chip in xrange(12):
-						dc[chip].PedestalDAC(6)
-						dc[chip].ChargeInjectDAC(setting)
-						dc[chip].Gsel(0)
-					dc.write()
-					dc.read()
-				histo_results=self.get_histo_results(self.crate, self.uhtr_slots, signalOn=True, out_dir="ci_histos_{0}".format(setting))
 
-				for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
-					for chip, chip_results in uhtr_slot_results.iteritems():
-						key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-						if key not in ci_results: ci_results[key]=[]
-						totalSignal = 0
-						if 'signalBinMax_1' in chip_results:
-							totalSignal = adc.linearize(chip_results['signalBinMax_1'])
-							if 'signalBinMax_2' in chip_results:	# get 2nd peak if needed
-								totalSignal += adc.linearize(chip_results['signalBinMax_2'])
-							ci_results[key].append(totalSignal)
+						if attempt > 0: self.reset_QIE_results(qslot, chip, "ci")		
 
-			#Turn off charge injection
-			for qslot in qslots:
-				hw.SetQInjMode(0, qslot, self.bus)
+						chip_map=self.get_QIE_map(qslot, chip)
+						ci_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
+						chip_arr = ci_results[ci_key]
 
-			#analyze results and make graphs
-			cwd=os.getcwd()
-			if not os.path.exists("ci_plots"):
-				os.makedirs("ci_plots")
-			os.chdir(cwd  + "/ci_plots")
+						slope = self.graph_results("ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+						test_pass = False	
+						if slope <= 1.15 and slope >=0.95: test_pass = True
 
-			for qslot in qslots:
+						#update results
+						if test_pass or attempt == attempts[-1]: 
+							histo_slopes.append(slope)
 
-				cwd2=os.getcwd()
-				if not os.path.exists(str(qslot)):
-					os.makedirs(str(qslot))
-				os.chdir(cwd2  + "/" + str(qslot))
-
-				for chip in xrange(12):
-
-					chip_map=self.get_QIE_map(qslot, chip)
-					ci_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
-					chip_arr = ci_results[ci_key]
-
-					slope = self.graph_results("ci", ci_settings, chip_arr, "{0}_{1}".format(qslot, chip))
-					test_pass = False	
-					if slope <= 1.15 and slope >=0.95: test_pass = True
-
-					#update results
-					if test_pass or attempt == attempts[-1]: 
-						histo_slopes.append(slope)
 						self.update_QIE_results(qslot, chip, "ci", test_pass)
-					
-					if not test_pass and qslot not in failures: failures.append(qslot)
+						
+						if not test_pass and qslot not in failures: failures.append(qslot)
 
-					if attempt == 1: self.master_dict["ci_flags"] = failures					
+						if attempt == 0: self.master_dict["ci_flags"] = failures					
 
-					if self.V: print 'qslot: {0}, chip: {1}, slope: {2}, pass: {3}'.format(qslot, chip, slope, test_pass)
+						if self.V: print 'qslot: {0}, chip: {1}, slope: {2}, pass: {3}'.format(qslot, chip, slope, test_pass)
 
-				os.chdir(cwd2)
-			os.chdir(cwd)
-			
-			qslots = failures
+					os.chdir(cwd2)
+				os.chdir(cwd)
+				
+				qslots = failures
 
 		print "Failed cards: {0}".format(failures)		
 
@@ -269,85 +276,98 @@ class uHTR():
 	
 		qslots = self.qcards
 		for attempt in attempts:
-			failures = []
-			peak_results = {}
-			if self.V and attempt > 0: print "\nRETEST attempt {1}, qcards: {0}\n".format(qslots, attempt)
-			for i, setting in enumerate(bit_settings):
-				if self.V: print 'testing shunt setting ratio '+str(nominalGainRatios[i])
+			if len(qslots) > 0:
+				failures = []
+				peak_results = {}
+				if self.V and attempt > 0: print "\nRETEST attempt {1}, qcards: {0}\n".format(qslots, attempt)
+				for i, setting in enumerate(bit_settings):
+					if self.V: print 'testing shunt setting ratio '+str(nominalGainRatios[i])
+					for qslot in qslots:
+						dc=hw.getDChains(qslot, self.bus)
+						dc.read()
+						hw.SetQInjMode(1, qslot, self.bus)    #turn on CI mode (igloo function)
+						for chip in xrange(12):
+							dc[chip].PedestalDAC(6)
+							dc[chip].ChargeInjectDAC(8640)    #set max CI value
+							dc[chip].Gsel(setting)    #increase shunt/decrease gain
+						dc.write()
+						dc.read()
+
+					histo_results=self.get_histo_results(self.crate, self.uhtr_slots, signalOn=True, out_dir="shunt_histos_{0}".format(setting))
+
+					for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
+						for chip, chip_results in uhtr_slot_results.iteritems():
+							key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
+							if key not in peak_results: peak_results[key] = []
+							if 'signalBinMax_1' in chip_results:
+								totalSignal = adc.linearize(chip_results['signalBinMax_1'])
+								if 'signalBinMax_2' in chip_results:	# get 2nd peak if needed
+									totalSignal += adc.linearize(chip_results['signalBinMax_2'])
+								peak_results[key].append(totalSignal)
+
+				# reset Gsel to zero
 				for qslot in qslots:
 					dc=hw.getDChains(qslot, self.bus)
 					dc.read()
-					hw.SetQInjMode(1, qslot, self.bus)    #turn on CI mode (igloo function)
 					for chip in xrange(12):
-						dc[chip].PedestalDAC(6)
-						dc[chip].ChargeInjectDAC(8640)    #set max CI value
-						dc[chip].Gsel(setting)    #increase shunt/decrease gain
+						dc[chip].Gsel(0)
 					dc.write()
 					dc.read()
 
-				histo_results=self.get_histo_results(self.crate, self.uhtr_slots, signalOn=True, out_dir="shunt_histos_{0}".format(setting))
+				#Reset phases and internal charge injection to default
+				for qslot in self.qcards:
+					dc=hw.getDChains(qslot, self.bus)
+					hw.SetQInjMode(0, qslot, self.bus)
+					dc.read()
+					for chip in xrange(12):
+						dc[chip].PhaseDelay(0)
+					dc.write()
+					dc.read()
 
-				for uhtr_slot, uhtr_slot_results in histo_results.iteritems():
-					for chip, chip_results in uhtr_slot_results.iteritems():
-						key="{0}_{1}_{2}".format(uhtr_slot, chip_results["link"], chip_results["channel"])
-						if key not in peak_results: peak_results[key] = []
-						if 'signalBinMax_1' in chip_results:
-							totalSignal = adc.linearize(chip_results['signalBinMax_1'])
-							if 'signalBinMax_2' in chip_results:	# get 2nd peak if needed
-								totalSignal += adc.linearize(chip_results['signalBinMax_2'])
-							peak_results[key].append(totalSignal)
+				#analyze results and make graphs
+				cwd = os.getcwd()
+				if not os.path.exists("shunt_plots"):	
+					os.makedirs("shunt_plots")
+				os.chdir(cwd  + "/shunt_plots")
 
-			# reset Gsel to zero
-			for qslot in qslots:
-				dc=hw.getDChains(qslot, self.bus)
-				dc.read()
-				for chip in xrange(12):
-					dc[chip].Gsel(0)
-				dc.write()
-				dc.read()
+				for qslot in qslots:
+				
+					cwd2=os.getcwd()
+					if not os.path.exists(str(qslot)):
+						os.makedirs(str(qslot))
+					os.chdir(cwd2  + "/" + str(qslot))
+				
+					for chip in xrange(12):
 
-			#analyze results and make graphs
-			cwd = os.getcwd()
-			if not os.path.exists("shunt_plots"):	
-				os.makedirs("shunt_plots")
-			os.chdir(cwd  + "/shunt_plots")
+						if attempt > 0: self.reset_QIE_results(qslot, chip, "shunt")
 
-			for qslot in qslots:
-			
-				cwd2=os.getcwd()
-				if not os.path.exists(str(qslot)):
-					os.makedirs(str(qslot))
-				os.chdir(cwd2  + "/" + str(qslot))
-			
-				for chip in xrange(12):
-					chip_map=self.get_QIE_map(qslot, chip)
-					key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
-					chip_arr=peak_results[key]
-					ratio_arr = []    #used for making graphs
-					
-					for setting, peak in enumerate(chip_arr):
-						ratio = float(peak) / float(chip_arr[0])     #ratio between shunt-adjusted peak & default peak
-						ratio_arr.append(ratio)
-						histo_ratios[setting].append(ratio)
-	
-					slope = self.graph_results("shunt", nominalGainRatios, ratio_arr, "{0}_{1}".format(qslot, chip))
-					test_pass = False
-					if slope >= 0.95  and slope <= 1.15: test_pass = True
-					
-					if not test_pass and qslot not in failures: failures.append(qslot)
-					
-					if attempt == 1: self.master_dict["shunt_flags"] = failures
+						chip_map=self.get_QIE_map(qslot, chip)
+						key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
+						chip_arr=peak_results[key]
+						ratio_arr = []    #used for making graphs
+						
+						for setting, peak in enumerate(chip_arr):
+							ratio = float(peak) / float(chip_arr[0])     #ratio between shunt-adjusted peak & default peak
+							ratio_arr.append(ratio)
+							histo_ratios[setting].append(ratio)
+		
+						slope = self.graph_results("shunt", nominalGainRatios, ratio_arr, "{0}_{1}".format(qslot, chip))
+						test_pass = False
+						if slope >= 0.95  and slope <= 1.15: test_pass = True
+						
+						if not test_pass and qslot not in failures: failures.append(qslot)
+						
+						if attempt == 0: self.master_dict["shunt_flags"] = failures
 
-					if test_pass or attempt == attempts[-1]:
 						self.update_QIE_results(qslot, chip, "shunt", test_pass)
 
-					if self.V: print 'qslot: {0}, chip: {1}, slope: {2},  pass: {3}'.format(qslot, chip, slope, test_pass)
-			
-				os.chdir(cwd2)
-			os.chdir(cwd)
+						if self.V: print 'qslot: {0}, chip: {1}, slope: {2},  pass: {3}'.format(qslot, chip, slope, test_pass)
+				
+					os.chdir(cwd2)
+				os.chdir(cwd)
 
-			qslots = failures
-		
+				qslots = failures
+			
 		print "Failed cards: {0}".format(failures)
 
 		#make histogram of all results for each setting
@@ -362,7 +382,7 @@ class uHTR():
 	def phase_test(self):
 		self.init_everything
 		#Valid (GOOD!!!) settings for phase
-		phase_settings = range(0,50) + range(64,115)
+		phase_settings = range(0,50) + range(64,114)
 #		phase_settings = range(0,10) + range(36,49) + range(64,75) + range(104,114)
 		phase_results={}
 		phase_results["settings"]=phase_settings
@@ -417,14 +437,20 @@ class uHTR():
 			os.chdir(cwd2  + "/" + str(qslot))
 
 			for chip in xrange(12):
+				
+				make_graph = False  #DEBUG
 
 				chip_map=self.get_QIE_map(qslot, chip)
 				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
-				chip_arr = phase_results[phase_key]
-				
+
+				#DEBUG
+				if phase_key in phase_results: 
+					chip_arr = phase_results[phase_key]
+					make_graph = True   
+
 				#slopeTest = False
 				#results = False
-				slope = self.graph_results("phase", phase_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+				if make_graph: slope = self.graph_results("phase", phase_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 
 				#if slope <= 3 and slope >= 2: slopeTest=True
 				# Fill master_dict with phase test results
@@ -454,7 +480,7 @@ class uHTR():
 			jd["mapping"]["links"] = self.get_qcard_map(qslot)[1:]
 
 			jd["ci flag"] = self.get_flag(qslot, "ci_flags")
-			jd["shunt_flag"] = self.get_flag(qslot, "shunt_flags")
+			jd["shunt flag"] = self.get_flag(qslot, "shunt_flags")
 
 			jd["overall pedestal"] = self.get_qcard_results(qslot, "ped")
 			jd["overall charge injection"] = self.get_qcard_results(qslot, "ci")
@@ -534,6 +560,9 @@ class uHTR():
 		qie_results=self.get_QIE(qslot, chip)[test_key]
 		if results: qie_results[0]+=1
 		else: qie_results[1]+=1
+
+	def reset_QIE_results(self, qslot, chip, test_key):
+		self.get_QIE(qslot, chip)[test_key] = [0, 0]
 
 	def get_QIE_results(self, qslot, chip, test_key):
 		### Returns the (pass, fail) tuple of specific test
@@ -954,12 +983,15 @@ def get_tdcs(crate, slots):
 		   "0",
 	           "DAQ",
 		   "CTL",
+		   "21",
 		   "8", # Reset DAQ Path
 		   "5", # Set Pipeline length
 		   "15",
 		   "3", # Set nSamples
 		   "10",
 		   "-1",
+		   "SPY",
+		   "SPY",
 		   "SPY",
 		   "SPY",
                    "QUIT",
