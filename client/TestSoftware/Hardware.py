@@ -21,21 +21,26 @@ def ngccmGroup(rm):
     i2cGroups = [0x01, 0x10, 0x20, 0x02]
     return i2cGroups[rm-1]
 
-def openChannel(slot, bus):
+def openChannel(slot, bus, backplane = 0):
+    #backplane can be 0 or 1
     rmLoc = getReadoutSlot(slot)
-    if rmLoc in [3,4]:
-      # Open channel to ngCCM for RM 3,4: J1 - J10
-        bus.write(0x72,[0x02])
-    elif rmLoc in [1,2]:
+    rmnum = rmLoc + 4 * backplane
+    if rmLoc in [1,2]:
       # Open channel to ngCCM for RM 1,2: J17 - J26
         bus.write(0x72,[0x01])
+    elif rmLoc in [3,4]:
+      # Open channel to ngCCM for RM 3,4: J1 - J10
+        bus.write(0x72,[0x02])
+    elif rmLoc in [5,6]:
+      # Open channel to ngCCM for RM 3,4: J1 - J10
+        bus.write(0x72,[0x03])
+    elif rmLoc in [7,8]:
+      # Open channel to ngCCM for RM 3,4: J1 - J10
+        bus.write(0x72,[0x04])
     else:
-        print 'Invalid RM = '+str(rmLoc)
+        print 'Invalid RM = ', rmLoc
         print 'Please choose RM = {1,2,3,4}'
         return 'closed channel'
-  # Open channel to i2c group
-    bus.write(0x74, [ngccmGroup(rmLoc)])
-    bus.read(0x74, 1)
 
   # Reset the backplane
     bus.write(0x00,[0x06])
