@@ -39,7 +39,7 @@ def openChannel(slot, bus):
 
   # Reset the backplane
     bus.write(0x00,[0x06])
-    return bus.sendBatch()
+    return #bus.sendBatch()
 
 #Get DChains
 def getDChains(slot, bus):
@@ -53,7 +53,7 @@ def SetQInjMode(onOffBit, slot, bus):
     if onOffBit == 0 or onOffBit == 1:
         bus.write(getCardAddress(slot),[0x11,0x03,0,0,0])
         bus.write(0x09,[0x11,onOffBit,0,0,0])
-        bus.sendBatch()
+        #bus.sendBatch()
     else:
         print 'INVALID INPUT IN SetQInjMode... doing nothing'
 
@@ -90,7 +90,6 @@ def powerEnable(ngccm,bus):
 
     bus.write(0x70,[0x1,value2])
 
-    return b.sendBatch()
     return bus.sendBatch()
 
 
