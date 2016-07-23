@@ -487,7 +487,6 @@ class clk_count(Test): #clock count
         size = i.igloo[name]["size"] / 8
         sleepFactor=0.25
 
-
         print '----------%s----------' %name
         resultArr=[]
         diffGoodVal = True

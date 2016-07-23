@@ -128,7 +128,7 @@ class ADCConverter:
                         subrange = i
 
                 if subrange == -1:
-                    print 'Something has gone horribly wrong!'
+                    print 'Something has gone horribly wrong: subrange = -1 in ADCConverter from Hardware.py (line 131)!'
 
                 # Sensitivity = 3.1 * 8^exp * 2^subrange
                 sensitivity = self.baseSensitivity * 8.0**float(exp) * 2.0**subrange
@@ -184,9 +184,9 @@ class iglooPower:
         	retval = False
         # print 'Igloo Ones = '+str(register)
         if retval:
-            print '~~ Toggle Igloo Power PASS'
+            print '~~~ Toggle Igloo Power PASS'
         else:
-            print '~~ Toggle Igloo Power FAIL'
+            print '~~~ Toggle Igloo Power FAIL'
         return retval
 
     def toggleIgloo(self):
