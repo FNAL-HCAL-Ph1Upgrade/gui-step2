@@ -103,6 +103,7 @@ class TestStand:
 
 
 		self.uHTR_instance.make_jsons(mapReturn, pedReturn, citReturn, shtReturn, phsReturn)
+#		self.uHTR_instance.make_jsons(mapReturn, "be sure to", "drink your", "ovaltine", phsReturn)
 		timeStamp.timestamp_results(self.timeString)
 		
     def runSingle(self, key):

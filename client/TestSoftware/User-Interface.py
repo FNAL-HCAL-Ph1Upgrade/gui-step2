@@ -685,6 +685,10 @@ class makeGui:
 	###  BEGIN MEMBER FUNCTIONS   ###
 	###			      ###
 	#################################
+
+################################################################################################
+#### Functions for selecting various cards
+################################################################################################
 	
 	def allCheckBttnClick(self):
 		self.ngccmeVarList[0].set(self.allCardSelection.get())
@@ -706,15 +710,10 @@ class makeGui:
 		for i in range(9,13): self.cardVarList[i].set(self.readoutVarList[2].get())
 		for i in range(13,17): self.cardVarList[i].set(self.readoutVarList[3].get())
 
-	def qieClickRead(self):     # Where the magic(?) happens
-		# See what test the user has selected, and then run that test from the
-		# qieCommands.py file. Display the results in the text field within the
-		# QIE frame on the main GUI window.
-		self.prepareOutSlots()
-		self.myTestStand = TestStand(self.outSlotNumbers)
-		self.myTestStand.runSingle(self.qieReadVar.get())
-		self.outSlotNumbers = []
-	
+############################################################################################
+#### Do a simple backplane reset
+############################################################################################
+
 	def qie_resetPress(self):
 		# Instantiate a webBus member:
 		b = webBus(self.piChoiceVar.get(),0)
@@ -722,23 +721,47 @@ class makeGui:
 		b.sendBatch()
 		print '\n\nBackplane for '+self.piChoiceVar.get()+' reset!\n\n'
 
+############################################################################################
+#### The "main" member function. This calls the various scripts to run tests.
+############################################################################################
+
 	def runTestSuite(self):
-		subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
+		# Turn on the fans
+		#subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
 		self.fanPowerFlag = True
 		print '\nFans enabled!\n'
+
+		# Print out the current time, so that the user knows when things started
 		print str(datetime.now())
+
+		# Configure the uHTR slots to be used
 		uHTR_outList = self.uHTR_config()
+
+		# Call our two reset functions to make sure the backplane is good to go
 		self.magicResetPress()
 		self.qie_resetPress()
+
+		# For the instances of loggerClass, assign the user variable a value.
 		for k in self.outSummaries:
 			k.cardGenInfo["User"] = self.nameChoiceVar.get()
+
+		# Configure the JSlots to be used
 		self.prepareOutSlots()
 		suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
+
+		# Create a TestStand instance with all of our desired parameters
 		self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection,
 					     self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList,
 					     self.nameChoiceVar.get(), self.overwrite)
+
+		# Run the tests
 		self.myTestStand.runAll()
+		self.folderArgument = "/archivedResults/"+self.myTestStand.timeString
 		print str(datetime.now())
+
+############################################################################################
+#### Convert the checkboxes on the GUI to a list of uHTR slots to be used (outSlotList)
+############################################################################################
 
 	def uHTR_config(self):
 		outSlotList = []
@@ -747,10 +770,20 @@ class makeGui:
 				outSlotList.append(i)
 		return outSlotList
 
+
+############################################################################################
+#### When the "Run uHTR Tests" button is pressed, change the "selected" test suite, and then
+#### call the main runTestSuite function
+############################################################################################
+
 	def uHTR_tester_bttnPress(self):
 		self.suiteChoiceVar.set("uHTR Test Suite")
 		self.runTestSuite()
 		
+############################################################################################
+#### Magic reset. This essentially writes important values to I2C address 0x70, and is
+#### called every time the main test suite is ran
+############################################################################################
 
 	def magicResetPress(self):
 		b = webBus(self.piChoiceVar.get(),0)
@@ -771,6 +804,11 @@ class makeGui:
 		for j in range(2):
 			self.qie_magicButton.flash()
 
+
+############################################################################################
+#### Reset power options on I2C address 0x70
+############################################################################################
+
 	def powerResetPress(self):
 		b = webBus(self.piChoiceVar.get(),0)
 		for i in [1,2]:
@@ -780,15 +818,25 @@ class makeGui:
 			b.sendBatch()
 		print '\n\nPower Reset Completed!\n\n'
 
+############################################################################################
+#### Toggle the power of the fans on the backplane
+############################################################################################
+
 	def powerFanPress(self):
 		if (self.fanPowerFlag == False):
-			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
+#			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
 			self.fanPowerFlag = True
 			print '\nFans enabled!\n'
 		elif (self.fanPowerFlag == True):
-			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python stopfans.py", shell=True)
+#			subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python stopfans.py", shell=True)
 			self.fanPowerFlag = False
 			print '\nFans disabled!\n'
+
+############################################################################################
+#### Convert the checkboxes on the GUI to a list of QIE slots that will be useable
+#### in the steps down the line. Essentially, we're converting numbers 1 through 16,
+#### inclusive, into numbers in [2, 3, 4, 5, 7, 8, 9, 10, 18, 19, 20, 21, 23, 24, 25, 26]
+############################################################################################
 	
 	def prepareOutSlots(self):
 		self.outSlotNumbers = []
@@ -803,6 +851,11 @@ class makeGui:
 				elif k in [13,14,15,16]:
 					self.outSlotNumbers.append(k+10)
 
+############################################################################################
+#### For each selected QIE card, create an instance of the loggerClass so that results
+#### may be reported.
+############################################################################################
+
 	def prepareOutCards(self):
 		self.overwrite = False
 		if (self.overwriteVar.get() == 1): self.overwrite = True
@@ -816,11 +869,18 @@ class makeGui:
 			elif k in [13,14,15,16]:
 				self.outSummaries.append(testSummary.testSummary((k+10), self.humanLogName, self.overwrite))
 
+############################################################################################
+#### Self-explanatory. Calls Andrew's script to upload results to database.
+############################################################################################
+
 	def submitToDatabase(self):
-#		subprocess.call("ssh cmshcal11 /django/abaas/testing_database/uploader/upload.sh", shell=True)
-		subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/remote.sh", shell=True)
+		subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/remote.sh "+self.folderArguement, shell=True)
 		print 'Files submitted to database!'
 
+
+###############################################################################################################
+###############################################################################################################
+###############################################################################################################
 
 subprocess.call("source /home/hep/shogan/uHTRtoolSetup.sh", shell=True)
 root = Tk()

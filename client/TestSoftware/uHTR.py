@@ -57,8 +57,10 @@ class uHTR():
 
 		self.crate=41			#Always 41 for summer 2016 QIE testing
 
+
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
+		print self.uhtr_slots  #DEBUG
 
 		self.bus=bus
 
@@ -142,7 +144,7 @@ class uHTR():
 				for num in xrange(28):
 					if chip_arr[num] != 1: flat_test=False
 				slope = self.graph_results("ped", ped_settings, chip_arr, "{0}_{1}".format(qslot, chip))
-				if slope <= 2.4 and slope >=2.15: slope_test = True
+				if slope <= 2.5 and slope >=2.1: slope_test = True
 				if self.V: print 'qslot: {0}, chip: {1}, slope: {2}, pass flat test: {3}, pass slope test: {4}'.format(qslot, chip, slope, flat_test, slope_test)
 				
 				# update master_dict with test results
@@ -412,7 +414,6 @@ class uHTR():
 								break
 						if sigTDC == 0:
 							phase_results[key].append(63)
-
 		#Reset phases and internal charge injection to default
 		for qslot in self.qcards:
 			dc=hw.getDChains(qslot, self.bus)
@@ -436,21 +437,22 @@ class uHTR():
 				os.makedirs(str(qslot))
 			os.chdir(cwd2  + "/" + str(qslot))
 
+			print "phase_results: %s"%(str(phase_results))
 			for chip in xrange(12):
 				
-				make_graph = False  #DEBUG
 
 				chip_map=self.get_QIE_map(qslot, chip)
 				phase_key = "{0}_{1}_{2}".format(chip_map[0], chip_map[1], chip_map[2])
-
 				#DEBUG
-				if phase_key in phase_results: 
-					chip_arr = phase_results[phase_key]
-					make_graph = True   
+				if phase_key not in phase_results:
+					print "DEBUG: Phase_key: "+ str(phase_key) + " skipped."
+					continue
+
+				chip_arr = phase_results[phase_key]
 
 				#slopeTest = False
 				#results = False
-				if make_graph: slope = self.graph_results("phase", phase_settings, chip_arr, "{0}_{1}".format(qslot, chip))
+				slope = self.graph_results("phase", phase_settings, chip_arr, "{0}_{1}".format(qslot, chip))
 
 				#if slope <= 3 and slope >= 2: slopeTest=True
 				# Fill master_dict with phase test results
@@ -960,6 +962,8 @@ def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 def getTDCInfo(rawOutput):
 	
 	linesList = rawOutput.splitlines()
+	#for line in linesList: #DEBUG
+	#	print line
 	slotResult = defaultdict(dict)
 	foundLink = 0
 	for j in range(len(linesList)):
@@ -994,6 +998,12 @@ def get_tdcs(crate, slots):
 		   "SPY",
 		   "SPY",
 		   "SPY",
+		   "SPY",
+		   "SPY",
+		   "SPY",
+		   "SPY",
+		   "SPY",
+		   "SPY",
                    "QUIT",
 		   "EXIT",
 		   "-1"
@@ -1001,7 +1011,7 @@ def get_tdcs(crate, slots):
 
 	for slot in slots:
 		
-		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
+#		send_commands(crate=crate, slot=slot, cmds=spyCMDS) # Don't capture on first send cmds, flush "buffer"
 		rawOutput = send_commands(crate=crate, slot=slot, cmds=spyCMDS)
 		rawDictionary[slot] = rawOutput["192.168.%d.%d"%(crate,slot*4)]
 

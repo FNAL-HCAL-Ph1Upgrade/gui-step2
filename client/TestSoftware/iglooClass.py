@@ -39,9 +39,9 @@ class fpgaMinVer(Test): #inherit from Test class, overload testBody() function
         # for RO register, read1 == read2 constitutes a PASS
         if (i.RWR_forRO_Quiet(self.bus, i.iglooAdd, reg, size)):
             min = i.readFromRegister_Quiet(self.bus, i.iglooAdd, reg, size)
-            if min == [9]:
+            if min == [11]: #for Igloo firmware verison 0x0B = 11
                 print min
-                print '~~PASS: Igloo Minor Ver Firmware = 9 ~~'
+                print '~~PASS: Igloo Minor Ver Firmware = 11 ~~'
                 return True
             else:
 		print '~~FAIL: Igloo Minor Ver Mismatch ~~'
@@ -498,7 +498,7 @@ class clk_count(Test): #clock count
                 diff = resultArr[n] - resultArr[n-1]
                 if diff < 0: diff += 2**32
 		rate = (float(diff)/(sleepFactor))
-                if rate > 41000000 or rate < 40000000: # approx 40MHz clock frequency
+                if rate > 42000000 or rate < 40000000: # approx 40MHz clock frequency
                     diffGoodVal = False
                 print rate
             time.sleep(1*sleepFactor)
