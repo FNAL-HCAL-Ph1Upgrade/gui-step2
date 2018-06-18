@@ -9,10 +9,10 @@ def timestamp_results(timestamp):
     dst = home + "/archivedResults/" + tsdir
     srcs = []
     src1 = "/jsonResults/"
-    src2 = "/logResults/"
+#    src2 = "/logResults/"
     src3 = "/uhtrResults/"
     srcs.append(src1)
-    srcs.append(src2)
+#    srcs.append(src2)
     srcs.append(src3)
 
     os.chdir(home)
@@ -27,3 +27,14 @@ def timestamp_results(timestamp):
     
     for src in srcs:
         shutil.copytree(home+src, dst+src)
+
+    for myFile in os.listdir('/home/hep/jsonResults/'):
+		os.chdir('/home/hep/jsonResults/')
+		os.remove(myFile)
+
+    for myFile in os.listdir('/home/hep/uhtrResults/'):
+		os.chdir('/home/hep/uhtrResults/')
+		if os.path.isfile(myFile):
+			os.remove(myFile)
+		elif os.path.isdir(myFile):
+			shutil.rmtree(myFile)

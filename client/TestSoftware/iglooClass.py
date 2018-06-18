@@ -636,8 +636,9 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
         prevCapId = []
 
         for iter in range(0, fifoIterations):
-            print '___________'
-            print 'ITER: '+str(iter)
+            if iter % 100 == 0:
+                print '___________'
+                print 'ITER: '+str(iter)
             capIdPass          = False
             adcPass            = False
 
@@ -648,12 +649,14 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
                 buff.reverse() # InputSpy doesn't flip bytes like Bridge does
 
             # Get InputSpy data (qieList = [capIdConcise, adc, rangeQ, tdc])
-                qieList = self.printData(buff)
+                #JCH reduce verbosity
+                qieList = self.printData(buff, iter)
 
             # Check CapID
                 # print 'prevCapId: '+str(prevCapId)
                 if self.checkCapId(qieList[0], prevCapId, iter):
-                    print '~~CapIDs Rotate~~'
+                    if iter % 100 == 0:
+                        print '~~CapIDs Rotate~~'
                     capIdPass = True
                 else:
                     print 'CapId Rotation ERROR: '+str(prevCapId)+' -> '+str(qieList[0])
@@ -661,7 +664,8 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
 
             # Check ADC
                 if self.checkAdc(qieList[1]):
-                    print '~~ADC Good Zone~~'
+                    if iter % 100 == 0:
+                        print '~~ADC Good Zone~~'
                     adcPass = True
                 else:
                     print 'ADC Too High ERROR'
@@ -691,7 +695,7 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
 
         return retval
     # -------------------------------------------
-    def printData(self,buff): # returns: qieList = [capIdConcise, adc, rangeQ, tdc]
+    def printData(self,buff, iter): # returns: qieList = [capIdConcise, adc, rangeQ, tdc]
         # buff holds 25 bytes (first 24)
         pedArray = [] # dimensions: pedArray[12][4]
         for x in xrange(12):
@@ -735,19 +739,21 @@ class inputSpy(Test): #NOTE: run() takes parameter (default provided); processes
 
             pedArray[i][0x03 & int(capId[i])] += int(0x3f & adc[i])
 
-        print 'FIFO empty: %1d   FIFO full: %1d   clk counter: %6d' % (fifoEmpty,fifoFull,clkctr)
-        print '       '
+        if iter%100 == 0:
+            print 'FIFO empty: %1d   FIFO full: %1d   clk counter: %6d' % (fifoEmpty,fifoFull,clkctr)
+            print '       '
 
 
         capIdConcise = []
         for i in capId:
             capIdConcise.append(i & 0x03)
 
-        print 'CapID: '+str(capIdConcise)
-        print 'ADC:   '+str(adc)
-        print 'RANGE: '+str(rangeQ)
-        print 'TDC:   '+str(tdc)
-        # print '\n'
+        if iter%100 == 0:
+            print 'CapID: '+str(capIdConcise)
+            print 'ADC:   '+str(adc)
+            print 'RANGE: '+str(rangeQ)
+            print 'TDC:   '+str(tdc)
+            # print '\n'
 
         qieList = [capIdConcise, adc, rangeQ, tdc]
 

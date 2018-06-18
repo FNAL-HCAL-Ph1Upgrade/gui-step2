@@ -20,7 +20,9 @@ if __name__ == "__main__":
 
 	from client import webBus
 	from uHTR import uHTR
-	uhtr_slots=[1, 2]
+	#uhtr_slots=[1, 2]
+	#JCH DEBUG
+	uhtr_slots=[2]
 	all_slots = [2,3,4,5,7,8,9,10,18,19,20,21,23,24,25,26]
 	qcard_slots=[2,3,4,5,7,8,9,10,18,23,24,25,26]
 	b = webBus("pi5", 0)
@@ -60,6 +62,7 @@ class uHTR():
 
 		if isinstance(uhtr_slots, int): self.uhtr_slots=[uhtr_slots]
 		else: self.uhtr_slots=uhtr_slots
+		print "uhtr_slots is: "
 		print self.uhtr_slots  #DEBUG
 
 		self.bus=bus
@@ -163,7 +166,7 @@ class uHTR():
 		os.chdir(cwd)
 
 
-	def ci_test(self, num_attempts=2):
+	def ci_test(self, num_attempts=3):
 		self.init_everything()
 
 		attempts = range(num_attempts)
@@ -258,7 +261,7 @@ class uHTR():
 		os.chdir(cwd)
 
 
-	def shunt_test(self, num_attempts=2):
+	def shunt_test(self, num_attempts=3):
 		self.init_everything()
 
 		attempts = range(num_attempts)
@@ -437,7 +440,6 @@ class uHTR():
 				os.makedirs(str(qslot))
 			os.chdir(cwd2  + "/" + str(qslot))
 
-			print "phase_results: %s"%(str(phase_results))
 			for chip in xrange(12):
 				
 
@@ -610,6 +612,9 @@ class uHTR():
 					dc.write()
 					dc.read()
 					info=self.get_mapping_histo()
+					#DEBUG JCH
+					#print "self.get_mapping_histos() returned: "
+					#print info
 
 					if info is not None:
 						uhtr_slot=info[0]
@@ -650,6 +655,8 @@ class uHTR():
 	def get_mapping_histo(self):
 		# matches histo to QIE chip for mapping
 		map_results=self.get_histo_results(out_dir="map_histos")
+		#print "self.get_histo_results(out_dir='map_histos') returned: "
+		#print map_results
 		for uhtr_slot, uhtr_slot_results in map_results.iteritems():
 			for chip, chip_results in uhtr_slot_results.iteritems():
 				if chip_results["pedBinMax"] > 15 and chip_results["pedBinMax"] < 25:
@@ -675,8 +682,12 @@ class uHTR():
 			# Extract slot number from file name
 			slot_num = str(file.split('_')[-1].split('.root')[0])
 
+			#if slot_num in self.uhtr_slots:
 			histo_results[slot_num] = getHistoInfo(signal=signalOn, file_in=path_to_root+"/"+file)
+		histo_results.pop('1', None) 
 		if not self.save_histos: shutil.rmtree(out_dir)
+		#print "histo_results is "
+		#print histo_results
 		return histo_results
 
 #############################################################
@@ -887,6 +898,7 @@ def get_histo(crate, slot, n_orbits=5000, sepCapID=0, file_out=""):
 
 def getHistoInfo(file_in="", sepCapID=False, signal=False, qieRange = 0):
 	slot_result = {}
+	print "JCH DEBUG: file_in is %s" % file_in
 	f = ROOT.TFile(file_in, "READ")
 	if sepCapID:
 		rangeADCoffset = qieRange*64.
@@ -1051,23 +1063,30 @@ def clock_setup(crate, slots):
 
 def init_links(crate, slot, attempts=0):
 	attempts += 1
-	if attempts == 10:
+	if attempts == 25:
 		print 'Skipping initialization of links for crate {0}, slot {1} after 10 failed attempts!'.format(crate, slot)
 		return
 	linkInfo = get_link_info(crate, slot)
 	onLinks, goodLinks, badLinks = get_link_status(linkInfo)
 	medianOrbitDelay = int(median_orbit_delay(linkInfo))
 	if onLinks == 0:
-		print 'All crate {0}, slot {1} links are OFF! NOT initializing that slot!'.format(crate, slot)
-		return
+		if attempts == 25:
+			print 'All crate {0}, slot {1} links are OFF! NOT initializing that slot!'.format(crate, slot)
+			return
+		else:
+			time.sleep(1)
+			init_links(crate, slot, attempts)
 	elif attempts == 1:
 		initCMDS = ["0","LINK","INIT","1","22","0","1","1","QUIT","EXIT"]
 		send_commands(crate=crate, slot=slot, cmds=initCMDS)
+		#JCH debug... try sleeping before retrying
+		time.sleep(1)
 		init_links(crate, slot, attempts)
 	elif badLinks == 0:
 		time.sleep(2)
 		return
 	else:
+		time.sleep(1)
 		initCMDS = ["0","LINK","INIT","1","%d"%(medianOrbitDelay),"0","1","1","QUIT","EXIT"]
 		send_commands(crate=crate, slot=slot, cmds=initCMDS)
 		init_links(crate, slot, attempts)
@@ -1078,8 +1097,10 @@ def get_BCN_status(uHTRPrintOut):
 		linesList = value.split("\n")
 		BCNs = []
 		for j in range(len(linesList)):
-			if len(linesList[j].split("Align BCN")) == 2:
-				BCNLine = filter(None, linesList[j].split("Align BCN"))
+			#if len(linesList[j].split("Align BCN")) == 2:
+			#	BCNLine = filter(None, linesList[j].split("Align BCN"))
+			if len(linesList[j].split("Align delay")) == 2:
+				BCNLine = filter(None, linesList[j].split("Align delay"))
 				BCNList = filter(None, BCNLine[0].split(" "))
 				BCNs = map(int, BCNList)
 	return BCNs
@@ -1090,6 +1111,10 @@ def get_ON_links(uHTRPrintOut):
 		linesList = value.split("\n")
 		ONLinks = []
 		for j in range(len(linesList)):
+			#JCH DEBUG
+			#print "linesList[%i] is: %s" % (j, linesList[j])
+			#if len(linesList[j].split("Link status")) == 2:
+			#	ONLine = filter(None, linesList[j].split("Link status"))
 			if len(linesList[j].split("BadCounter")) == 2:
 				ONLine = filter(None, linesList[j].split("BadCounter"))
 				ONList = filter(None, ONLine[0].split(" "))
@@ -1114,6 +1139,8 @@ def get_AOD_status(uHTRPrintOut):
 		linesList = value.split("\n")
 		AODs = []
 		for j in range(len(linesList)):
+			#if len(linesList[j].split("V-- Status")) == 2:
+			#	AODLine = filter(None, linesList[j].split("V-- Status"))
 			if len(linesList[j].split("AOD Status")) == 2:
 				AODLine = filter(None, linesList[j].split("AOD Status"))
 				AODList = filter(None, AODLine[0].split(" "))
@@ -1134,6 +1161,9 @@ def median_orbit_delay(linkInfo):
 
 
 def get_link_status(linkInfo):
+	#DEBUG JCH
+	#print "linkInfo:",
+	#print linkInfo
 	goodLinks = 0
 	badLinks = 0
 	onLinks = 0
