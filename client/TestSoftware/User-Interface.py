@@ -1003,7 +1003,7 @@ class makeGui:
         def uploadFromStrBoxClick(self):
                 if self.uploadFromStrVar.get() == 1:
                         self.uploadFromStrField.configure(state=NORMAL)
-                        self.makeWarningBox("Please be sure that you enter the appropriate folder (e.g. /home/hep/archivedResults/Jul142016_019485_Results/)")
+                        self.makeWarningBox("Please be sure that you enter the appropriate folder (e.g. /home/hep/archivedResults/Jul142016_019485_Results/)") #5
                 else:
                         self.uploadFromStrField.configure(state=DISABLED) 
 
@@ -1041,7 +1041,7 @@ class makeGui:
                 self.msg.pack()
 
                 self.button = Button(self.top, text="Continue", command=self.top.destroy)
-                self.button.configure(bg="#ffbbbb")
+                self.button.configure(bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
                 self.button.pack()
                 
 ###############################################################################################################
