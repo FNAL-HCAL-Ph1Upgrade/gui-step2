@@ -341,6 +341,7 @@ class makeGui:
                         activebackground=dimbuttonsc[0],
                         fg=fontc,
                         activeforeground=fontc,
+                        selectcolor=checkc,
                         command = self.allCheckBttnClick
                         )
                 self.allRadio.configure(
@@ -365,6 +366,7 @@ class makeGui:
                                 fg=fontc,
                                 activebackground=dimbuttonsc[1],
                                 activeforeground=fontc,
+                                selectcolor=checkc,
                                 command = self.ngccmeCheckBttnClick
                                 )
                         self.ngccmeCheck.configure(
@@ -389,6 +391,7 @@ class makeGui:
                                 activebackground = dimbuttonsc[2],
                                 fg=fontc,
                                 activeforeground=fontc,
+                                selectcolor=checkc,
                                 command = self.rmCheckBttnClick
                                 )
                         self.readoutCheck.configure(
