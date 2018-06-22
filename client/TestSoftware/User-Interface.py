@@ -9,12 +9,12 @@
 # round 2 electric boogaloo
 # 
 
-import qCard
-import loggerClass as logClass
-import testSummary
+#import qCard
+#import loggerClass as logClass
+#import testSummary
 from Tkinter import *
-from client import webBus
-from TestStand import TestStand
+#from client import webBus
+#from TestStand import TestStand
 from datetime import datetime
 import subprocess
 import os, shutil
@@ -719,7 +719,7 @@ class makeGui:
                 self.separationLabel.pack()
 
                 # Make a checkbutton to manually type in desired upload folder
-                self.uploadFromStrBox = Checkbutton(self.qie_subBot_frame, text="Manually provide upload folder?", variable = self.uploadFromStrVar, command = self.uploadFromStrBoxClick)
+                self.uploadFromStrBox = Checkbutton(self.qie_subBot_frame, text="Manually provide upload folder?", variable = self.uploadFromStrVar, command = {})
                 self.uploadFromStrBox.configure(bg=buttonsc[10],fg=fontc, wraplength=300,activebackground=dimbuttonsc[10],activeforeground=fontc,selectcolor=checkc)
                 self.uploadFromStrBox.pack(side=TOP,
                                         padx = button_padx,
@@ -874,12 +874,19 @@ class makeGui:
 ############################################################################################
 
         def runTestSuite(self):
-                if (self.suiteChoiceVar.get() is "Main Suite : All Tests"):
-                    os.system("python RunRegisterTest.py %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
+                if (self.suiteChoiceVar.get() == "Main Suite : All Tests"):
+                    print("BWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH")
+                    #subprocess.Popen(['python RunRegisterTest.py',self.runNum.get(),
+                    #print("python /home/hcalpro/GITrepos/Common/RunRegisterTest.py %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
+                    #    self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
+                    #    self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
+                    #    self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
+                    #    self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
+                    os.system("./ohno.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
                         self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
                         self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
-                        self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
+                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))#])
 #                self.prepareOutCards()
 #                # Print out the current time, so that the user knows when things started
 #                print str(datetime.now())
@@ -887,7 +894,7 @@ class makeGui:
 #                # Configure the uHTR slots to be used
 #                uHTR_outList = self.uHTR_config()
 #
-#                # Call our two reset functions to make sure the backplane is good to go
+##                # Call our two reset functions to make sure the backplane is good to go
 #                self.magicResetPress()
 #                self.qie_resetPress()
 #
@@ -1015,25 +1022,25 @@ class makeGui:
 #### may be reported.
 ############################################################################################
 
-        def prepareOutCards(self):
-                self.overwrite = False
-                if (self.overwriteVar.get() == 1): self.overwrite = True
-                for k in range(len(self.cardVarList)):
-                        if k in [1,2,3,4]:
-                                self.outSummaries.append(testSummary.testSummary((k+1), self.humanLogName, self.overwrite))
-                        elif k in [5,6,7,8]:
-                                self.outSummaries.append(testSummary.testSummary((k+2), self.humanLogName, self.overwrite))
-                        elif k in [9,10,11,12]:
-                                self.outSummaries.append(testSummary.testSummary((k+9), self.humanLogName, self.overwrite))
-                        elif k in [13,14,15,16]:
-                                self.outSummaries.append(testSummary.testSummary((k+10), self.humanLogName, self.overwrite))
-
-        def uploadFromStrBoxClick(self):
-                if self.uploadFromStrVar.get() == 1:
-                        self.uploadFromStrField.configure(state=NORMAL)
-                        self.makeWarningBox("Please be sure that you enter the appropriate folder (e.g. /home/hep/archivedResults/Jul142016_019485_Results/)") #5
-                else:
-                        self.uploadFromStrField.configure(state=DISABLED) 
+#        def prepareOutCards(self):
+#                self.overwrite = False
+#                if (self.overwriteVar.get() == 1): self.overwrite = True
+#                for k in range(len(self.cardVarList)):
+#                        if k in [1,2,3,4]:
+#                                self.outSummaries.append(testSummary.testSummary((k+1), self.humanLogName, self.overwrite))
+#                        elif k in [5,6,7,8]:
+#                                self.outSummaries.append(testSummary.testSummary((k+2), self.humanLogName, self.overwrite))
+#                        elif k in [9,10,11,12]:
+#                                self.outSummaries.append(testSummary.testSummary((k+9), self.humanLogName, self.overwrite))
+#                        elif k in [13,14,15,16]:
+#                                self.outSummaries.append(testSummary.testSummary((k+10), self.humanLogName, self.overwrite))
+#
+#        def uploadFromStrBoxClick(self):
+#                if self.uploadFromStrVar.get() == 1:
+#                        self.uploadFromStrField.configure(state=NORMAL)
+#                        self.makeWarningBox("Please be sure that you enter the appropriate folder (e.g. /home/hep/archivedResults/Jul142016_019485_Results/)") #5
+#                else:
+#                        self.uploadFromStrField.configure(state=DISABLED) 
 
 ############################################################################################
 #### Self-explanatory. Calls Andrew's script to upload results to database.
@@ -1079,5 +1086,5 @@ class makeGui:
 subprocess.call("source /home/hep/shogan/uHTRtoolSetup.sh", shell=True)
 root = Tk()
 myapp = makeGui(root)
-sys.stdout = logClass.logger(myapp.humanLogName)
+#sys.stdout = logClass.logger(myapp.humanLogName)
 root.mainloop()
