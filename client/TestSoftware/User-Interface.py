@@ -657,8 +657,8 @@ class makeGui:
                 self.qie_resetButton.pack(side=TOP)
 
                 # Make a button to reset the backplane
-                self.qie_magicButton = Button(self.qie_subTopMid_frame, command=self.magicResetPress)
-                self.qie_magicButton.configure(text="    Magic Reset    ", bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
+                self.qie_magicButton = Button(self.qie_subTopMid_frame, command=self.processRunControlData)
+                self.qie_magicButton.configure(text="Process Run Control Data", bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
                 self.qie_magicButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -875,14 +875,13 @@ class makeGui:
 
         def runTestSuite(self):
                 if (self.suiteChoiceVar.get() == "Main Suite : All Tests"):
-                    print("BWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH")
                     #subprocess.Popen(['python RunRegisterTest.py',self.runNum.get(),
-                    #print("python /home/hcalpro/GITrepos/Common/RunRegisterTest.py %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
+                    #print("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
                     #    self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
                     #    self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                     #    self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
                     #    self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
-                    os.system("./ohno.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
+                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
                         self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
                         self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
@@ -929,12 +928,12 @@ class makeGui:
 #### Convert the checkboxes on the GUI to a list of uHTR slots to be used (outSlotList)
 ############################################################################################
 
-        def uHTR_config(self):
-                outSlotList = []
-                for i in range(len(self.uHTR_slotNumber)):
-                        if (self.uHTR_slotNumber[i].get() == 1):
-                                outSlotList.append(i)
-                return outSlotList
+#        def uHTR_config(self):
+#                outSlotList = []
+#                for i in range(len(self.uHTR_slotNumber)):
+#                        if (self.uHTR_slotNumber[i].get() == 1):
+#                                outSlotList.append(i)
+#                return outSlotList
 
 
 ############################################################################################
@@ -951,24 +950,26 @@ class makeGui:
 #### called every time the main test suite is ran
 ############################################################################################
 
-        def magicResetPress(self):
-                b = webBus(self.piChoiceVar.get(),0)
-                for ngccm in [1,2]: #both ngccm
-                        b.write(0x72,[ngccm])
-                        b.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
-                        #power on and reset
-                        #register 3 is control reg for i/o modes
-                        b.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
-                        b.write(0x70,[0x01,0x00])
-                        b.write(0x70,[0x01,0x08])
-                        b.write(0x70,[0x01,0x18]) # GPIO reset is 10
-                        b.write(0x70,[0x01,0x08])
-                        batch = b.sendBatch()
-                        print 'initial = '+str(batch)
-
-                print '\n\nMagic reset completed!\n\n'
-                for j in range(2):
-                        self.qie_magicButton.flash()
+        def processRunControlData(self):
+            os.system("./FixMe-RunControl.sh %s" % self.runNum.get())
+#        def magicResetPress(self):
+#                b = webBus(self.piChoiceVar.get(),0)
+#                for ngccm in [1,2]: #both ngccm
+#                        b.write(0x72,[ngccm])
+#                        b.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
+#                        #power on and reset
+#                        #register 3 is control reg for i/o modes
+#                        b.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
+#                        b.write(0x70,[0x01,0x00])
+#                        b.write(0x70,[0x01,0x08])
+#                        b.write(0x70,[0x01,0x18]) # GPIO reset is 10
+#                        b.write(0x70,[0x01,0x08])
+#                        batch = b.sendBatch()
+#                        print 'initial = '+str(batch)
+#
+#                print '\n\nMagic reset completed!\n\n'
+#                for j in range(2):
+#                        self.qie_magicButton.flash()
 
 
 ############################################################################################
