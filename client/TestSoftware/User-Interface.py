@@ -54,13 +54,7 @@ class makeGui:
                 # Create a dict for converting GUI list of suites to stuff for
                 # behind-the-scenes
                 self.suiteDict = {
-                                  "Main Suite : All Tests" : "main",
                                   "Bridge Register Suite"  : "bridge",
-                                  "Igloo Register Suite"   : "igloo",
-                                  "Vttx Register Suites"   : "vttx",
-                                  "uHTR Test Suite"        : "uhtr",
-                                  "Run Long Tests"         : "long",
-                                  "Run Short Tests"        : "short"
                                  }
 
                 # Create a list of nGCCme slots:
@@ -683,15 +677,13 @@ class makeGui:
 
                 # Make and pack a menu for the suite selection
                 self.qie_suiteMenu = OptionMenu(self.qie_subMid_frame, self.suiteChoiceVar,
-                                                "Main Suite : All Tests",
-                                                "Bridge Register Suite",
-                                                "Igloo Register Suite",
-                                                "Vttx Register Suites",
+                                                "Run Everything",
+                                                "Run Register Test",
                                                 )
                 self.qie_suiteMenu.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu.pack(side=LEFT)
-                self.suiteChoiceVar.set("Main Suite : All Tests")
+                self.suiteChoiceVar.set("Run Everything")
 
                 # Make a checkbox to overwrite/not overwrite pre-existing data
                 self.overwriteBox = Checkbutton(self.qie_subBot_frame, text="Overwrite existing QIE Card data (if applicable)?", variable=self.overwriteVar)
@@ -874,7 +866,9 @@ class makeGui:
 ############################################################################################
 
         def runTestSuite(self):
-                if (self.suiteChoiceVar.get() == "Main Suite : All Tests"):
+                if (self.suiteChoiceVar.get() == "Run Everything"):
+                    os.system("./FixMe-Everything.sh %s" % self.runNum.get())
+                elif (self.suiteChoiceVar.get() == "Run Register Test"):
                     #subprocess.Popen(['python RunRegisterTest.py',self.runNum.get(),
                     #print("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
                     #    self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
@@ -1084,7 +1078,6 @@ class makeGui:
 ###############################################################################################################
 ###############################################################################################################
 
-subprocess.call("source /home/hep/shogan/uHTRtoolSetup.sh", shell=True)
 root = Tk()
 myapp = makeGui(root)
 #sys.stdout = logClass.logger(myapp.humanLogName)
