@@ -19,6 +19,28 @@ from datetime import datetime
 import subprocess
 import os, shutil
 
+if (1):
+    fontc='#DDDDDD'
+    topc='#333333'
+    rightc='#333333'
+    leftc='#333333'
+    bottomc='#333333'
+    backc='#222222'
+    buttonsc=["#004D00","#664D00","#006080","#4d0066","#660000","#800000","#990000","#990099","#007A99","#008080","#00804D"]
+    dimbuttonsc=["#006600","#806000","#007399","#600080","#960000","#B00000","#C90000","#B300B3","#008FB3","#009999","#00995C"]
+    dimc="#555555"
+    checkc="#222222"
+else:
+    fontc="black"
+    topc="white"
+    rightc="white"
+    leftc="white"
+    bottomc="white"
+    backc="#DDDDDD"
+    buttonsc=["DarkSeaGreen1","lemon chiffon","light cyan","lavender","red","#F30033","#E60066","DarkOrchid1","turquoise","#33ffcc","pale green"]
+    dimbuttonsc=["#A1EFA1","#EFEAAD","#C0EFEF","#C6C6EA","#E50000","#DE0013","#D10046","#9F1EEF","#20D0B9","#13EFBC","#78EB78"]
+    dimc="#DDDDDD"
+    checkc="white"
 
 class makeGui:
         def __init__(self, parent):
@@ -85,7 +107,7 @@ class makeGui:
         
                 # Place an all-encompassing frame in the parent window. All of the following
                 # frames will be placed here (topMost_frame) and not in the parent window.
-                self.topMost_frame = Frame(parent)
+                self.topMost_frame = Frame(parent,bg=backc)
                 self.topMost_frame.pack()
 
                 # Add a flag to stop tests
@@ -117,7 +139,7 @@ class makeGui:
                         self.topMost_frame,
                         borderwidth=5, relief=RIDGE,
                         height=50,
-                        background="white",
+                        background=topc,
                         )
                 self.info_frame.pack(
                         side=TOP,
@@ -128,7 +150,7 @@ class makeGui:
                         )
 
                 # Make a top half-frame
-                self.topHalf_frame = Frame(self.topMost_frame)
+                self.topHalf_frame = Frame(self.topMost_frame,bg=backc)
                 self.topHalf_frame.pack(side=LEFT)
 
                 # Make a frame for containing an experiment diagram
@@ -136,7 +158,7 @@ class makeGui:
                         self.topHalf_frame,
                         borderwidth=5, relief=RIDGE,
                         height=580, width=300,
-                        background="white"
+                        background=leftc
                         )
                 self.experiment_frame.pack_propagate=(False)
                 self.experiment_frame.pack(
@@ -147,16 +169,16 @@ class makeGui:
                         )
 
                 # Make a bottom half-frame
-                self.botHalf_frame = Frame(self.topMost_frame)
+                self.botHalf_frame = Frame(self.topMost_frame,bg=backc)
                 self.botHalf_frame.pack(side=LEFT)
 
-                # Make and pack a sub-frame within topMost_frame that will contain
+                # Make and pack a sub-frame within the top right frame that will contain
                 # all of the controls for talking with the QIE cards
                 self.qie_frame = Frame(
                         self.botHalf_frame,
                         borderwidth=5, relief=RIDGE,
                         height=50,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_frame.pack(
                         side=TOP,
@@ -172,7 +194,7 @@ class makeGui:
                         self.botHalf_frame,
                         borderwidth=5, relief=RIDGE,
                         height=250, width=400,
-                        background="white"
+                        background=bottomc
                         )
                 # We don't want this frame to shrink when placing widgets:
 
@@ -203,12 +225,13 @@ class makeGui:
                 self.info_Label.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=topc,
+                        fg=fontc
                         )
                 self.info_Label.pack(side=TOP)
 
                 # Make a sub-sub-frame within the frame to hold another label and a dropdown box
-                self.info_subTop_frame = Frame(self.info_frame,background="white")
+                self.info_subTop_frame = Frame(self.info_frame,bg=topc)
                 self.info_subTop_frame.pack(
                         side=TOP,
                         ipadx=frame_ipadx,
@@ -218,7 +241,7 @@ class makeGui:
                         )
 
                 # Make a sub-sub-frame within the frame to hold comment box
-                self.info_subBot_frame = Frame(self.info_frame,background="white")
+                self.info_subBot_frame = Frame(self.info_frame,background=topc)
                 self.info_subBot_frame.pack(
                         side=TOP,
                         ipadx=frame_ipadx,
@@ -232,14 +255,15 @@ class makeGui:
                 self.info_nameLabel.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=topc,
+                        fg=fontc
                         )
                 self.info_nameLabel.pack(side=LEFT)
 
                 # Make and pack a listbox to pick which QIE card to talk to:
-                self.info_nameBox = OptionMenu(self.info_subTop_frame, self.nameChoiceVar,
-                                              "Shaun Hogan","Caleb Smith","Adryanna Smith","Jordan Potarf",
-                                              "John Lawrence","Andrew Baas","Mason Dorseth","Josh Hiltbrand", "Joe Pastika")
+                self.info_nameBox = OptionMenu(self.info_subTop_frame, self.nameChoiceVar,"Bryan Caraway", "Grace Cummings", "Zach Eckert", "Loriza Hasa", "Frank Jensen", "Kamal Lamichhane", "Nesta Lenhert", "Chris Madrid", "Brooks McMaster", "Danny \"HF\" Noonan", "Joe Pastika", "Mark Saunders", "Sezen Sekmen", "Zach Shelton", "Caleb Smith", "Nadja Strobbe")
+                self.info_nameBox.config(bg=topc,fg=fontc, activebackground=dimc,activeforeground=fontc)
+                self.info_nameBox["menu"].config(bg=topc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.info_nameBox.pack(side=LEFT)
                 self.nameChoiceVar.set("Shaun Hogan") # initializes the OptionMenu
 
@@ -248,7 +272,8 @@ class makeGui:
                 self.info_commentLabel.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=topc,
+                        fg=fontc
                         )
                 self.info_commentLabel.pack(side=LEFT)
 
@@ -257,6 +282,7 @@ class makeGui:
                         self.info_subBot_frame,
                         textvariable=self.infoCommentVar
                         )
+                self.info_commentBox.config(bg=topc,fg=fontc)
                 self.info_commentBox.pack(side=LEFT)
 
                 ######################################
@@ -270,12 +296,13 @@ class makeGui:
                 self.experi_subFrame_lbl.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=leftc,
+                        fg=fontc
                         )
                 self.experi_subFrame_lbl.pack(side=TOP)
 
                 # Make left subframe
-                self.experi_subLeft_frame = Frame(self.experiment_frame,background="white")
+                self.experi_subLeft_frame = Frame(self.experiment_frame,background=leftc)
                 self.experi_subLeft_frame.pack(
                         side=LEFT,
                         ipadx=frame_ipadx,
@@ -285,7 +312,7 @@ class makeGui:
                         )
 
                 # Make right subframe
-                self.experi_subRight_frame = Frame(self.experiment_frame,background="white")
+                self.experi_subRight_frame = Frame(self.experiment_frame,background=leftc)
                 self.experi_subRight_frame.pack(
                         side=RIGHT,
                         ipady=frame_ipady,
@@ -299,7 +326,8 @@ class makeGui:
                 self.experi_highlevel_lbl.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=leftc,
+                        foreground=fontc
                         )
                 self.experi_highlevel_lbl.pack(side=TOP)
 
@@ -309,7 +337,11 @@ class makeGui:
                         self.experi_subLeft_frame,
                         text="All slots",
                         variable=self.allCardSelection,
-                        background="DarkSeaGreen1",
+                        background=buttonsc[0],
+                        activebackground=dimbuttonsc[0],
+                        fg=fontc,
+                        activeforeground=fontc,
+                        selectcolor=checkc,
                         command = self.allCheckBttnClick
                         )
                 self.allRadio.configure(
@@ -318,7 +350,7 @@ class makeGui:
                         )
                 self.allRadio.pack(side=TOP)
 
-                self.blankLabel1 = Label(self.experi_subLeft_frame, text="", background="white")
+                self.blankLabel1 = Label(self.experi_subLeft_frame, text="", background=leftc)
                 self.blankLabel1.pack(side=TOP)
 
                 # Make and pack two checkbuttons that control each
@@ -330,7 +362,11 @@ class makeGui:
                                 self.experi_subLeft_frame,
                                 text = self.ngccmeSlots[i],
                                 variable = self.ngccmeVarList[i],
-                                background = "lemon chiffon",   # sounds delicious
+                                background = buttonsc[1],   # sounds delicious
+                                fg=fontc,
+                                activebackground=dimbuttonsc[1],
+                                activeforeground=fontc,
+                                selectcolor=checkc,
                                 command = self.ngccmeCheckBttnClick
                                 )
                         self.ngccmeCheck.configure(
@@ -339,7 +375,7 @@ class makeGui:
                                 )
                         self.ngccmeCheck.pack(side=TOP)
 
-                self.blankLabel2 = Label(self.experi_subLeft_frame, text="", background="white")
+                self.blankLabel2 = Label(self.experi_subLeft_frame, text="", background=leftc)
                 self.blankLabel2.pack(side=TOP)
 
                 # Make and pack four checkbuttons that control all
@@ -351,7 +387,11 @@ class makeGui:
                                 self.experi_subLeft_frame,
                                 text = self.readoutSlots[i],
                                 variable = self.readoutVarList[i],
-                                background = "light cyan",
+                                background = buttonsc[2],
+                                activebackground = dimbuttonsc[2],
+                                fg=fontc,
+                                activeforeground=fontc,
+                                selectcolor=checkc,
                                 command = self.rmCheckBttnClick
                                 )
                         self.readoutCheck.configure(
@@ -365,7 +405,8 @@ class makeGui:
                 self.experi_cards_lbl.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=leftc,
+                        fg=fontc
                         )
                 self.experi_cards_lbl.pack(side=TOP)
 
@@ -381,7 +422,11 @@ class makeGui:
                                 self.experi_subRight_frame,
                                 text = self.cardSlots[i],
                                 variable = self.cardVarList[i+1],
-                                background = "lavender"
+                                background = buttonsc[3],
+                                activebackground=dimbuttonsc[3],
+                                fg=fontc,
+                                activeforeground=fontc,
+                                selectcolor=checkc
                                 )
                         self.cardRadio.configure(
                                 padx=button_padx,
@@ -400,14 +445,15 @@ class makeGui:
                 self.qieFrameLabel.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=rightc,
+                        fg=fontc
                         )
                 self.qieFrameLabel.pack(side=TOP)
 
                 # Top sub-frame in QIE frame
                 self.qie_subTop_frame = Frame(
                         self.qie_frame,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_subTop_frame.pack(
                         side=TOP,
@@ -420,7 +466,7 @@ class makeGui:
                 # Top sub-frame 1 in QIE frame
                 self.qie_subTop_1_frame = Frame(
                         self.qie_frame,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_subTop_1_frame.pack(
                         side=TOP,
@@ -433,7 +479,7 @@ class makeGui:
                 # 2nd top sub-frame in QIE frame
                 self.qie_subTop2_frame = Frame(
                         self.qie_frame,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_subTop2_frame.pack(
                         side=TOP,
@@ -444,7 +490,7 @@ class makeGui:
                 # Make a sub-frame below the top sub-frame in QIE frame
                 self.qie_subTopMid_frame = Frame(
                         self.qie_frame,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_subTopMid_frame.pack(
                         side=TOP,
@@ -455,7 +501,7 @@ class makeGui:
                 # Make a 2nd sub-frame below the top sub-frame in QIE frame
                 self.qie_subTopMid2_frame = Frame(
                         self.qie_frame,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_subTopMid2_frame.pack(
                         side=TOP,
@@ -466,7 +512,7 @@ class makeGui:
                 # Mid sub-frame in QIE frame
                 self.qie_subMid_frame = Frame(
                         self.qie_frame,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_subMid_frame.pack(
                         side=TOP,
@@ -479,7 +525,7 @@ class makeGui:
                 # Bottom sub-frame in QIE frame
                 self.qie_subBot_frame = Frame(
                         self.qie_frame,
-                        background="white"
+                        background=rightc
                         )
                 self.qie_subBot_frame.pack(
                         side=TOP,
@@ -520,34 +566,37 @@ class makeGui:
                 self.piSelectionLbl.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=rightc,
+                        fg=fontc
                         )
                 self.piSelectionLbl.pack(side=LEFT)
 
                 # Make a menu for the raspberry pi options
                 self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
                                                 "pi5", "pi6")
+                self.pi_choiceBox.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
+                self.pi_choiceBox["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.pi_choiceBox.pack(side=LEFT)
                 self.piChoiceVar.set("pi5")
 
                 # Make a label for number of iterations
                 self.iter_label = Label(self.qie_subTop_1_frame, text="Number of iterations: ")
-                self.iter_label.configure(bg="white")
+                self.iter_label.configure(bg=rightc,fg=fontc)
                 self.iter_label.pack(side=LEFT)
 
                 # Make a field for number of iterations
-                self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar)
+                self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar,bg=rightc,fg=fontc)
                 self.iter_entry.pack(side=RIGHT)
                 self.iterationVar.set("20")
 
                 # Make a separation line
                 self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
-                self.separationLabelTop.configure(bg="white")
+                self.separationLabelTop.configure(bg=rightc,fg=fontc)
                 self.separationLabelTop.pack()
 
                 # Make a button to reset the backplane
                 self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.qie_resetPress)
-                self.qie_resetButton.configure(text="Reset Backplane", bg="red")
+                self.qie_resetButton.configure(text="Reset Backplane", bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -557,7 +606,7 @@ class makeGui:
 
                 # Make a button to cycle fan power
                 self.qie_fanButton = Button(self.qie_subTopMid_frame, command=self.powerFanPress)
-                self.qie_fanButton.configure(text="Toggle Fans On/Off", bg="#F30033")
+                self.qie_fanButton.configure(text="Toggle Fans On/Off", bg=buttonsc[5],fg=fontc,activebackground=dimbuttonsc[5],activeforeground=fontc)
                 self.qie_fanButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -568,7 +617,7 @@ class makeGui:
 
                 # Make a button to reset the backplane
                 self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.powerResetPress)
-                self.qie_resetButton.configure(text="Reset/Cycle Power", bg="#E60066")
+                self.qie_resetButton.configure(text="Reset/Cycle Power", bg=buttonsc[6],fg=fontc,activebackground=dimbuttonsc[6],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -578,7 +627,7 @@ class makeGui:
 
                 # Make a button to reset the backplane
                 self.qie_magicButton = Button(self.qie_subTopMid_frame, command=self.magicResetPress)
-                self.qie_magicButton.configure(text="    Magic Reset    ", bg="DarkOrchid1")
+                self.qie_magicButton.configure(text="    Magic Reset    ", bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
                 self.qie_magicButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -588,7 +637,7 @@ class makeGui:
 
                 # Make a separation line
                 self.separationLabel = Label(self.qie_subTopMid2_frame, text="------------------------------------------")
-                self.separationLabel.configure(bg="white")
+                self.separationLabel.configure(bg=rightc,fg=fontc)
                 self.separationLabel.pack()
 
                 # Make and pack a label for suite selection:
@@ -596,7 +645,8 @@ class makeGui:
                 self.qie_suiteLabel.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=rightc,
+                        fg=fontc
                         )
                 self.qie_suiteLabel.pack(side=LEFT)
 
@@ -610,12 +660,14 @@ class makeGui:
                                                 "Run Long Tests",
                                                 "Run Short Tests"
                                                 )
+                self.qie_suiteMenu.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
+                self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu.pack(side=LEFT)
                 self.suiteChoiceVar.set("Main Suite : All Tests")
 
                 # Make a checkbox to overwrite/not overwrite pre-existing data
                 self.overwriteBox = Checkbutton(self.qie_subBot_frame, text="Overwrite existing QIE Card data (if applicable)?", variable=self.overwriteVar)
-                self.overwriteBox.configure(bg="turquoise")
+                self.overwriteBox.configure(bg=buttonsc[8],fg=fontc,activebackground=dimbuttonsc[8],activeforeground=fontc,selectcolor=checkc)
                 self.overwriteBox.pack(side=TOP,
                                        padx = button_padx,
                                        pady = button_pady,
@@ -625,7 +677,7 @@ class makeGui:
 
                 #Make a button to run the main test suite
                 self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
-                self.qie_testSuite_button.configure(text="Run Selected Test Suite", background="#33ffcc")
+                self.qie_testSuite_button.configure(text="Run Selected Test Suite", background=buttonsc[9],fg=fontc,activebackground=dimbuttonsc[9],activeforeground=fontc)
                 self.qie_testSuite_button.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -635,12 +687,12 @@ class makeGui:
 
                 # Make a separation line
                 self.separationLabel = Label(self.qie_subBot_frame, text="------------------------------------------")
-                self.separationLabel.configure(bg="white")
+                self.separationLabel.configure(bg=rightc,fg=fontc)
                 self.separationLabel.pack()
 
                 # Make a checkbutton to manually type in desired upload folder
                 self.uploadFromStrBox = Checkbutton(self.qie_subBot_frame, text="Manually provide upload folder?", variable = self.uploadFromStrVar, command = self.uploadFromStrBoxClick)
-                self.uploadFromStrBox.configure(bg="pale green", wraplength=300)
+                self.uploadFromStrBox.configure(bg=buttonsc[10],fg=fontc, wraplength=300,activebackground=dimbuttonsc[10],activeforeground=fontc,selectcolor=checkc)
                 self.uploadFromStrBox.pack(side=TOP,
                                         padx = button_padx,
                                         pady = button_pady,
@@ -651,7 +703,11 @@ class makeGui:
                 # Make a field for the manual folder entry (if so desired)
                 self.uploadFromStrField = Entry(self.qie_subBot_frame,
                                                 textvariable = self.uploadFromStrEntry, 
-                                                state = "readonly"
+                                                state = "readonly",
+                                                bg=rightc,
+                                                fg=fontc,
+                                                disabledbackground=dimc,
+                                                readonlybackground=dimc
                                                 )
                 self.uploadFromStrField.configure(width=40)
                 self.uploadFromStrField.pack(side=TOP,
@@ -662,7 +718,7 @@ class makeGui:
 
                 # Make a button to submit the results from tests.
                 self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.submitToDatabase)
-                self.qie_testSuite_button.configure(text="Upload Results to Database", background="pale green")
+                self.qie_testSuite_button.configure(text="Upload Results to Database", bg=buttonsc[10],fg=fontc,activebackground=dimbuttonsc[10],activeforeground=fontc)
                 self.qie_testSuite_button.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -681,7 +737,8 @@ class makeGui:
                 self.uHTR_frame_Label.configure(
                         padx=button_padx,
                         pady=button_pady,
-                        background="white"
+                        background=bottomc,
+                        fg=fontc
                         )
                 self.uHTR_frame_Label.pack(side=TOP)
 
@@ -689,16 +746,16 @@ class makeGui:
                 self.uHTR_slotNumber = [IntVar() for i in range(0,7)]
 
                 # Make a subframe for the slot number label
-                self.uHTR_sub2 = Frame(self.uHTR_frame, bg="white")
+                self.uHTR_sub2 = Frame(self.uHTR_frame, bg=bottomc)
                 self.uHTR_sub2.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
                         padx=frame_padx, pady="1m")
 
                 # Slot number parameter label
-                self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg="white")
+                self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg=bottomc,fg=fontc)
                 self.uHTR_slotNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
 
                 # Make a subframe for the slot number vars
-                self.uHTR_sub3 = Frame(self.uHTR_frame, bg="white")
+                self.uHTR_sub3 = Frame(self.uHTR_frame, bg=bottomc)
                 self.uHTR_sub3.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
                         padx=frame_padx, pady="1m")
 
@@ -708,7 +765,11 @@ class makeGui:
                                         self.uHTR_sub3,
                                         text = str(i+1), anchor=S,
                                         variable = self.uHTR_slotNumber[i+1],
-                                        background = "lavender"
+                                        background = buttonsc[3],
+                                        fg=fontc,
+                                        activebackground=dimbuttonsc[3],
+                                        activeforeground=fontc,
+                                        selectcolor=checkc
                                         )
                                 self.uHTR_radio.configure(
                                         padx=button_padx,
@@ -719,12 +780,12 @@ class makeGui:
                 self.uHTR_slotNumber[2].set(1)
 
                 # Make top subframe 4
-                self.uHTR_sub4 = Frame(self.uHTR_frame, bg="white")
+                self.uHTR_sub4 = Frame(self.uHTR_frame, bg=bottomc)
                 self.uHTR_sub4.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
                         padx=frame_padx, pady="1m")
 
                 # Button for doing uHTR tests
-                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text="Run uHTR Tests", bg="turquoise",
+                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text="Run uHTR Tests", bg=buttonsc[8],fg=fontc,activebackground=dimbuttonsc[8],activeforeground=fontc,
                                                 command=self.uHTR_tester_bttnPress)
                 self.uHTR_tester_bttn.configure(
                         padx=button_padx*2,
@@ -942,7 +1003,7 @@ class makeGui:
         def uploadFromStrBoxClick(self):
                 if self.uploadFromStrVar.get() == 1:
                         self.uploadFromStrField.configure(state=NORMAL)
-                        self.makeWarningBox("Please be sure that you enter the appropriate folder (e.g. /home/hep/archivedResults/Jul142016_019485_Results/)")
+                        self.makeWarningBox("Please be sure that you enter the appropriate folder (e.g. /home/hep/archivedResults/Jul142016_019485_Results/)") #5
                 else:
                         self.uploadFromStrField.configure(state=DISABLED) 
 
@@ -980,7 +1041,7 @@ class makeGui:
                 self.msg.pack()
 
                 self.button = Button(self.top, text="Continue", command=self.top.destroy)
-                self.button.configure(bg="#ffbbbb")
+                self.button.configure(bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
                 self.button.pack()
                 
 ###############################################################################################################
