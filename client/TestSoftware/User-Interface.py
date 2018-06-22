@@ -101,6 +101,7 @@ class makeGui:
                 self.piChoiceVar    =  StringVar()
                 self.iterationVar   =  StringVar()
                 self.uploadFromStrEntry = StringVar()
+                self.runNum         =  StringVar()
                 self.allCardSelection = IntVar()
                 self.overwriteVar     = IntVar()
                 self.uploadFromStrVar = IntVar()
@@ -240,7 +241,17 @@ class makeGui:
                         pady=frame_pady
                         )
 
-                # Make a sub-sub-frame within the frame to hold comment box
+                # Make a sub-sub-frame within the frame to hold the comment box
+                self.info_subMid_frame = Frame(self.info_frame,bg=topc)
+                self.info_subMid_frame.pack(
+                        side=TOP,
+                        ipadx=frame_ipadx,
+                        ipady=frame_ipady,
+                        padx=frame_padx,
+                        pady=frame_pady
+                        )
+
+                # Make a sub-sub-frame within the frame to hold the run number
                 self.info_subBot_frame = Frame(self.info_frame,background=topc)
                 self.info_subBot_frame.pack(
                         side=TOP,
@@ -268,7 +279,7 @@ class makeGui:
                 self.nameChoiceVar.set("Shaun Hogan") # initializes the OptionMenu
 
                 # Make a label for the name drop-down:
-                self.info_commentLabel = Label(self.info_subBot_frame, text="User Testing Comments: ")
+                self.info_commentLabel = Label(self.info_subMid_frame, text="User Testing Comments: ")
                 self.info_commentLabel.configure(
                         padx=button_padx,
                         pady=button_pady,
@@ -279,11 +290,31 @@ class makeGui:
 
                 # Make a entrybox for testing comments
                 self.info_commentBox = Entry(
-                        self.info_subBot_frame,
+                        self.info_subMid_frame,
                         textvariable=self.infoCommentVar
                         )
                 self.info_commentBox.config(bg=topc,fg=fontc)
                 self.info_commentBox.pack(side=LEFT)
+
+                 # Make a label for the run number
+                self.info_commentLabel = Label(self.info_subBot_frame, text="Run Number: ")
+                self.info_commentLabel.configure(
+                        padx=button_padx,
+                        pady=button_pady,
+                        background=topc,
+                        fg=fontc
+                        )
+                self.info_commentLabel.pack(side=LEFT)
+
+                # Make an entrybox for the run number
+                self.info_commentBox = Entry(
+                        self.info_subBot_frame,
+                        textvariable=self.runNum
+                        )
+                self.info_commentBox.config(bg=topc,fg=fontc)
+                self.info_commentBox.pack(side=LEFT)
+
+
 
                 ######################################
                 #####                            #####
@@ -656,9 +687,6 @@ class makeGui:
                                                 "Bridge Register Suite",
                                                 "Igloo Register Suite",
                                                 "Vttx Register Suites",
-                                                "uHTR Test Suite",
-                                                "Run Long Tests",
-                                                "Run Short Tests"
                                                 )
                 self.qie_suiteMenu.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
@@ -846,49 +874,49 @@ class makeGui:
 ############################################################################################
 
         def runTestSuite(self):
-                self.prepareOutCards()
-
-                # Turn on the fans
-                #subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
-                self.fanPowerFlag = True
-                print '\nFans enabled!\n'
-
-                # Print out the current time, so that the user knows when things started
-                print str(datetime.now())
-
-                # Configure the uHTR slots to be used
-                uHTR_outList = self.uHTR_config()
-
-                # Call our two reset functions to make sure the backplane is good to go
-                self.magicResetPress()
-                self.qie_resetPress()
-
-                # For the instances of loggerClass, assign the user variable a value.
-                for k in self.outSummaries:
-                        k.cardGenInfo["User"] = self.nameChoiceVar.get()
-
-                # Configure the JSlots to be used
-                self.prepareOutSlots()
-                suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
-
-                # Create a TestStand instance with all of our desired parameters
-                self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection,
-                                             self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList,
-                                             self.nameChoiceVar.get(), self.overwrite)
-
-                # Run the tests
-                self.myTestStand.runAll()
-                self.folderArgument = "/archivedResults/"+self.myTestStand.timeString
-
-                self.tempLogName = self.humanLogName
-                self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
-                sys.stdout = logClass.logger(self.humanLogName)
-
-                print str(datetime.now())
-
-                os.chdir('/home/hep/logResults')
-                os.mkdir('/home/hep'+self.folderArgument+'_Results/logResults')
-                shutil.move(self.tempLogName+"_tests.log", '/home/hep'+self.folderArgument+'_Results/logResults/'+self.tempLogName+"_tests.log")
+                if (self.suiteChoiceVar.get() is "Main Suite : All Tests"):
+                    os.system("python RunRegisterTest.py %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
+                        self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
+                        self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
+                        self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
+                        self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
+#                self.prepareOutCards()
+#                # Print out the current time, so that the user knows when things started
+#                print str(datetime.now())
+#
+#                # Configure the uHTR slots to be used
+#                uHTR_outList = self.uHTR_config()
+#
+#                # Call our two reset functions to make sure the backplane is good to go
+#                self.magicResetPress()
+#                self.qie_resetPress()
+#
+#                # For the instances of loggerClass, assign the user variable a value.
+#                for k in self.outSummaries:
+#                        k.cardGenInfo["User"] = self.nameChoiceVar.get()
+#
+#                # Configure the JSlots to be used
+#                self.prepareOutSlots()
+#                suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
+#
+#                # Create a TestStand instance with all of our desired parameters
+#                self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection,
+#                                             self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList,
+#                                             self.nameChoiceVar.get(), self.overwrite)
+#
+#                # Run the tests
+#                self.myTestStand.runAll()
+#                self.folderArgument = "/archivedResults/"+self.myTestStand.timeString
+#
+#                self.tempLogName = self.humanLogName
+#                self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
+#                sys.stdout = logClass.logger(self.humanLogName)
+#
+#                print str(datetime.now())
+#
+#                os.chdir('/home/hep/logResults')
+#                os.mkdir('/home/hep'+self.folderArgument+'_Results/logResults')
+#                shutil.move(self.tempLogName+"_tests.log", '/home/hep'+self.folderArgument+'_Results/logResults/'+self.tempLogName+"_tests.log")
 
 ############################################################################################
 #### Convert the checkboxes on the GUI to a list of uHTR slots to be used (outSlotList)
