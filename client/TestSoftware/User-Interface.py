@@ -18,6 +18,7 @@ from Tkinter import *
 from datetime import datetime
 import subprocess
 import os, shutil
+import glob
 
 if (1):
     fontc='#DDDDDD'
@@ -290,7 +291,7 @@ class makeGui:
                 self.info_commentBox.config(bg=topc,fg=fontc)
                 self.info_commentBox.pack(side=LEFT)
 
-                 # Make a label for the run number
+                # Make a label for the run number
                 self.info_commentLabel = Label(self.info_subBot_frame, text="Run Number: ")
                 self.info_commentLabel.configure(
                         padx=button_padx,
@@ -308,6 +309,25 @@ class makeGui:
                 self.info_commentBox.config(bg=topc,fg=fontc)
                 self.info_commentBox.pack(side=LEFT)
 
+                # Make a spacer
+                self.info_commentLabel = Label(self.info_subBot_frame, text="   ")
+                self.info_commentLabel.configure(
+                        padx=button_padx,
+                        pady=button_pady,
+                        background=topc,
+                        fg=fontc
+                        )
+                self.info_commentLabel.pack(side=LEFT)
+
+                #Make a button to determine the run number
+                self.info_getRun_button = Button(self.info_subBot_frame, command = self.getRunNum)
+                self.info_getRun_button.configure(text="Latest Run", background=buttonsc[9],fg=fontc,activebackground=dimbuttonsc[9],activeforeground=fontc)
+                self.info_getRun_button.configure(
+                        width=button_width*2,
+                        padx=button_padx,
+                        pady=button_pady
+                        )
+                self.info_getRun_button.pack(side=LEFT)
 
 
                 ######################################
@@ -829,6 +849,13 @@ class makeGui:
 ################################################################################################
 #### Functions for selecting various cards
 ################################################################################################
+
+        def getRunNum(self):
+            files = glob.glob('/home/hcalpro/DATA/FNAL*.root')
+            numbers = []
+            for file in files:
+                 numbers.append(int(file[24:30]))
+            self.runNum.set(max(numbers))
         
         def allCheckBttnClick(self):
                 self.ngccmeVarList[0].set(self.allCardSelection.get())
@@ -1042,37 +1069,38 @@ class makeGui:
 ############################################################################################
 
         def submitToDatabase(self):
-                if self.uploadFromStrVar.get() == 1:
-                        self.folderArgument = self.uploadFromStrEntry.get()
-
-                else:
-                        self.folderArgument = '/home/hep'+self.folderArgument+'_Results'
-                        print "DEBUG:" + self.folderArgument
-
-                if (self.folderArgument == "/home/hep/999999999"):
-                        self.makeWarningBox("Please either run a test, or manually enter a folder.")
-                        return None
-        
-                subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/remote.sh "+self.folderArgument, shell=True)
-                print 'Files submitted to database!'
-
-                self.tempLogName =  self.humanLogName
-                self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
-                sys.stdout = logClass.logger(self.humanLogName)
-                os.remove('/home/hep/logResults/'+self.tempLogName+'_tests.log')
-
-        def makeWarningBox(self, warningMessage):
-                self.top = Toplevel()
-                self.top.title("Attention!")
-                self.top.config(height=50, width=800)
-                self.top.pack_propagate(False)
-
-                self.msg = Label(self.top, text=warningMessage)
-                self.msg.pack()
-
-                self.button = Button(self.top, text="Continue", command=self.top.destroy)
-                self.button.configure(bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
-                self.button.pack()
+            os.system("./FixMe-Upload.sh %s" % self.runNum.get())
+#                if self.uploadFromStrVar.get() == 1:
+#                        self.folderArgument = self.uploadFromStrEntry.get()
+#
+#                else:
+#                        self.folderArgument = '/home/hep'+self.folderArgument+'_Results'
+#                        print "DEBUG:" + self.folderArgument
+#
+#                if (self.folderArgument == "/home/hep/999999999"):
+#                        self.makeWarningBox("Please either run a test, or manually enter a folder.")
+#                        return None
+#        
+#                subprocess.call("ssh cmshcal11 /home/django/testing_database/uploader/remote.sh "+self.folderArgument, shell=True)
+#                print 'Files submitted to database!'
+#
+#                self.tempLogName =  self.humanLogName
+#                self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
+#                sys.stdout = logClass.logger(self.humanLogName)
+#                os.remove('/home/hep/logResults/'+self.tempLogName+'_tests.log')
+#
+#        def makeWarningBox(self, warningMessage):
+#                self.top = Toplevel()
+#                self.top.title("Attention!")
+#                self.top.config(height=50, width=800)
+#                self.top.pack_propagate(False)
+#
+#                self.msg = Label(self.top, text=warningMessage)
+#                self.msg.pack()
+#
+#                self.button = Button(self.top, text="Continue", command=self.top.destroy)
+#                self.button.configure(bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
+#                self.button.pack()
                 
 ###############################################################################################################
 ###############################################################################################################
