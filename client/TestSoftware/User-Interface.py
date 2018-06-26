@@ -641,7 +641,7 @@ class makeGui:
 
                 # Make a button to reset the backplane
                 self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.qie_resetPress)
-                self.qie_resetButton.configure(text="Reset Backplane", bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
+                self.qie_resetButton.configure(text=".1.", bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -651,7 +651,7 @@ class makeGui:
 
                 # Make a button to cycle fan power
                 self.qie_fanButton = Button(self.qie_subTopMid_frame, command=self.powerFanPress)
-                self.qie_fanButton.configure(text="Toggle Fans On/Off", bg=buttonsc[5],fg=fontc,activebackground=dimbuttonsc[5],activeforeground=fontc)
+                self.qie_fanButton.configure(text=".2.", bg=buttonsc[5],fg=fontc,activebackground=dimbuttonsc[5],activeforeground=fontc)
                 self.qie_fanButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -662,7 +662,7 @@ class makeGui:
 
                 # Make a button to reset the backplane
                 self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.powerResetPress)
-                self.qie_resetButton.configure(text="Reset/Cycle Power", bg=buttonsc[6],fg=fontc,activebackground=dimbuttonsc[6],activeforeground=fontc)
+                self.qie_resetButton.configure(text=".3.", bg=buttonsc[6],fg=fontc,activebackground=dimbuttonsc[6],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -671,8 +671,8 @@ class makeGui:
                 self.qie_resetButton.pack(side=TOP)
 
                 # Make a button to reset the backplane
-                self.qie_magicButton = Button(self.qie_subTopMid_frame, command=self.processRunControlData)
-                self.qie_magicButton.configure(text="Process Run Control Data", bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
+                self.qie_magicButton = Button(self.qie_subTopMid_frame, command={})
+                self.qie_magicButton.configure(text=".4.", bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
                 self.qie_magicButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -699,6 +699,7 @@ class makeGui:
                 self.qie_suiteMenu = OptionMenu(self.qie_subMid_frame, self.suiteChoiceVar,
                                                 "Run Everything",
                                                 "Run Register Test",
+                                                "Process Run Control",
                                                 )
                 self.qie_suiteMenu.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
@@ -706,7 +707,7 @@ class makeGui:
                 self.suiteChoiceVar.set("Run Everything")
 
                 # Make a checkbox to overwrite/not overwrite pre-existing data
-                self.overwriteBox = Checkbutton(self.qie_subBot_frame, text="Overwrite existing QIE Card data (if applicable)?", variable=self.overwriteVar)
+                self.overwriteBox = Checkbutton(self.qie_subBot_frame, text=".5.", variable=self.overwriteVar)
                 self.overwriteBox.configure(bg=buttonsc[8],fg=fontc,activebackground=dimbuttonsc[8],activeforeground=fontc,selectcolor=checkc)
                 self.overwriteBox.pack(side=TOP,
                                        padx = button_padx,
@@ -731,7 +732,7 @@ class makeGui:
                 self.separationLabel.pack()
 
                 # Make a checkbutton to manually type in desired upload folder
-                self.uploadFromStrBox = Checkbutton(self.qie_subBot_frame, text="Manually provide upload folder?", variable = self.uploadFromStrVar, command = {})
+                self.uploadFromStrBox = Checkbutton(self.qie_subBot_frame, text=".6.", variable = self.uploadFromStrVar, command = {})
                 self.uploadFromStrBox.configure(bg=buttonsc[10],fg=fontc, wraplength=300,activebackground=dimbuttonsc[10],activeforeground=fontc,selectcolor=checkc)
                 self.uploadFromStrBox.pack(side=TOP,
                                         padx = button_padx,
@@ -825,7 +826,7 @@ class makeGui:
                         padx=frame_padx, pady="1m")
 
                 # Button for doing uHTR tests
-                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text="Run uHTR Tests", bg=buttonsc[8],fg=fontc,activebackground=dimbuttonsc[8],activeforeground=fontc,
+                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text=".7.", bg=buttonsc[8],fg=fontc,activebackground=dimbuttonsc[8],activeforeground=fontc,
                                                 command=self.uHTR_tester_bttnPress)
                 self.uHTR_tester_bttn.configure(
                         padx=button_padx*2,
@@ -895,6 +896,8 @@ class makeGui:
         def runTestSuite(self):
                 if (self.suiteChoiceVar.get() == "Run Everything"):
                     os.system("./FixMe-Everything.sh %s" % self.runNum.get())
+                elif (self.suiteChoiceVar.get() == "Process Run Control"):
+                    os.system("./FixMe-RunControl.sh %s" % self.runNum.get())
                 elif (self.suiteChoiceVar.get() == "Run Register Test"):
                     #subprocess.Popen(['python RunRegisterTest.py',self.runNum.get(),
                     #print("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
