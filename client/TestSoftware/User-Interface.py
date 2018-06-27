@@ -271,7 +271,7 @@ class makeGui:
                 self.info_nameBox.config(bg=topc,fg=fontc, activebackground=dimc,activeforeground=fontc)
                 self.info_nameBox["menu"].config(bg=topc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.info_nameBox.pack(side=LEFT)
-                self.nameChoiceVar.set("Shaun Hogan") # initializes the OptionMenu
+                self.nameChoiceVar.set("Choose Name") # initializes the OptionMenu
 
                 # Make a label for the name drop-down:
                 self.info_commentLabel = Label(self.info_subMid_frame, text="User Testing Comments: ")
@@ -622,7 +622,7 @@ class makeGui:
                 self.pi_choiceBox.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.pi_choiceBox["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.pi_choiceBox.pack(side=LEFT)
-                self.piChoiceVar.set("pi5")
+                self.piChoiceVar.set("unused")
 
                 # Make a label for number of iterations
                 self.iter_label = Label(self.qie_subTop_1_frame, text="Number of iterations: ")
@@ -632,7 +632,7 @@ class makeGui:
                 # Make a field for number of iterations
                 self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar,bg=rightc,fg=fontc)
                 self.iter_entry.pack(side=RIGHT)
-                self.iterationVar.set("20")
+                self.iterationVar.set("5")
 
                 # Make a separation line
                 self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
@@ -700,6 +700,7 @@ class makeGui:
                                                 "Run Everything",
                                                 "Run Register Test",
                                                 "Process Run Control",
+                                                "Process Plugin Output",
                                                 )
                 self.qie_suiteMenu.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
@@ -774,7 +775,7 @@ class makeGui:
                 ###                           ###
                 #################################
                 # Make and pack a text label for the box label
-                self.uHTR_frame_Label = Label(self.uHTR_frame, text="uHTR Runtime Parameters")
+                self.uHTR_frame_Label = Label(self.uHTR_frame, text="Expert Panel")
                 self.uHTR_frame_Label.configure(
                         padx=button_padx,
                         pady=button_pady,
@@ -898,6 +899,8 @@ class makeGui:
                     os.system("./FixMe-Everything.sh %s" % self.runNum.get())
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
                     os.system("./FixMe-RunControl.sh %s" % self.runNum.get())
+                elif (self.suiteChoiceVar.get() == "Process Plugin Output"):
+                    os.system("./FixMe-PluginOut.sh %s" % self.runNum.get())
                 elif (self.suiteChoiceVar.get() == "Run Register Test"):
                     #subprocess.Popen(['python RunRegisterTest.py',self.runNum.get(),
                     #print("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
@@ -905,7 +908,7 @@ class makeGui:
                     #    self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                     #    self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
                     #    self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
-                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
+                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (int(self.iterationVar.get()),
                         self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
                         self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
