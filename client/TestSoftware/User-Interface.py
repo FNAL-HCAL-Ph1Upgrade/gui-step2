@@ -1082,9 +1082,9 @@ class makeGui:
             if ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
                 print ("Run Number Required")
             elif (self.suiteChoiceVar.get() == "Run Register Test"):
-                os.system("./FixMe-Upload.sh %s %s %s %s" % (0,1,0,"-r"))
+                os.system("./FixMe-Upload.sh %s %s %s %s" % (0,1,0,2))
             elif ((self.suiteChoiceVar.get() == "Process Run Control") or (self.suiteChoiceVar.get() == "Process Plugin Output")):
-                os.system("./FixMe-Upload.sh %s %s %s %s" % (self.runNum.get(),0,1,"-q"))
+                os.system("./FixMe-Upload.sh %s %s %s %s" % (self.runNum.get(),0,1,1))
 #                if self.uploadFromStrVar.get() == 1:
 #                        self.folderArgument = self.uploadFromStrEntry.get()
 #
