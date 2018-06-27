@@ -3,4 +3,4 @@ cd /home/hcalpro/hcalraw
 
 cd /home/hcalpro/hcalraw-scripts/processPluginsHBQIE
 ./processPlugins -f /home/hcalpro/hcalraw/output/run$1-master.root
-echo Finished with run control
+echo Finished processing run control output
