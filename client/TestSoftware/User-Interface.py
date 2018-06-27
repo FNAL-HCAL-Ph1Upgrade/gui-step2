@@ -895,8 +895,10 @@ class makeGui:
 ############################################################################################
 
         def runTestSuite(self):
-                if (self.suiteChoiceVar.get() == "Run Everything"):
-                    os.system("./FixMe-Everything.sh %s" % self.runNum.get())
+                if ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
+                    print ("Run Number Required")
+                elif (self.suiteChoiceVar.get() == "Run Everything"):
+                    os.system("./FixMe-Everything.sh %s %s" % (self.runNum.get(),self.iterationVar.get()))
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
                     os.system("./FixMe-RunControl.sh %s" % self.runNum.get())
                 elif (self.suiteChoiceVar.get() == "Process Plugin Output"):
@@ -908,7 +910,7 @@ class makeGui:
                     #    self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                     #    self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
                     #    self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
-                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (int(self.iterationVar.get()),
+                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
                         self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
                         self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
@@ -977,8 +979,10 @@ class makeGui:
 #### called every time the main test suite is ran
 ############################################################################################
 
-        def processRunControlData(self):
-            os.system("./FixMe-RunControl.sh %s" % self.runNum.get())
+
+
+
+
 #        def magicResetPress(self):
 #                b = webBus(self.piChoiceVar.get(),0)
 #                for ngccm in [1,2]: #both ngccm
@@ -1075,7 +1079,12 @@ class makeGui:
 ############################################################################################
 
         def submitToDatabase(self):
-            os.system("./FixMe-Upload.sh %s" % self.runNum.get())
+            if ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
+                print ("Run Number Required")
+            elif (self.suiteChoiceVar.get() == "Run Register Test"):
+                os.system("./FixMe-Upload.sh %s %s %s %s" % (0,1,0,"-r"))
+            elif ((self.suiteChoiceVar.get() == "Process Run Control") or (self.suiteChoiceVar.get() == "Process Plugin Output")):
+                os.system("./FixMe-Upload.sh %s %s %s %s" % (self.runNum.get(),0,1,"-q"))
 #                if self.uploadFromStrVar.get() == 1:
 #                        self.folderArgument = self.uploadFromStrEntry.get()
 #
