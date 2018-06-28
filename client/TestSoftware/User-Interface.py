@@ -640,7 +640,7 @@ class makeGui:
                 self.separationLabelTop.pack()
 
                 # Make a button to reset the backplane
-                self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.qie_resetPress)
+                self.qie_resetButton = Button(self.qie_subTopMid_frame, command={})
                 self.qie_resetButton.configure(text=".1.", bg=buttonsc[4],fg=fontc,font=(None,11),activebackground=dimbuttonsc[4],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
@@ -650,7 +650,7 @@ class makeGui:
                 self.qie_resetButton.pack(side=TOP)
 
                 # Make a button to cycle fan power
-                self.qie_fanButton = Button(self.qie_subTopMid_frame, command=self.powerFanPress)
+                self.qie_fanButton = Button(self.qie_subTopMid_frame, command={})
                 self.qie_fanButton.configure(text=".2.", bg=buttonsc[5],fg=fontc,font=(None,11),activebackground=dimbuttonsc[5],activeforeground=fontc)
                 self.qie_fanButton.configure(
                         width=button_width*4,
@@ -661,7 +661,7 @@ class makeGui:
 
 
                 # Make a button to reset the backplane
-                self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.powerResetPress)
+                self.qie_resetButton = Button(self.qie_subTopMid_frame, command={})
                 self.qie_resetButton.configure(text=".3.", bg=buttonsc[6],fg=fontc,font=(None,11),activebackground=dimbuttonsc[6],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
@@ -828,7 +828,7 @@ class makeGui:
 
                 # Button for doing uHTR tests
                 self.uHTR_tester_bttn = Button(self.uHTR_sub4, text=".7.", bg=buttonsc[8],fg=fontc,font=(None,11),activebackground=dimbuttonsc[8],activeforeground=fontc,
-                                                command=self.uHTR_tester_bttnPress)
+                                                command={})
                 self.uHTR_tester_bttn.configure(
                         padx=button_padx*2,
                         pady=button_pady*2,
@@ -848,6 +848,18 @@ class makeGui:
         ###                           ###
         #################################
 
+        def throwErrorBox(self,msg):
+            self.top = Toplevel()
+            self.top.title("Name Choice Error")
+            self.top.config(height=50, width=360)
+            self.top.pack_propagate(False)
+
+            self.msg = Label(self.top, text=msg,fg=fontc)
+            self.msg.pack()
+
+            self.button = Button(self.top, text="OK", command=self.top.destroy)
+            self.button.configure(bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
+            self.button.pack()
 
 ################################################################################################
 #### Functions for selecting various cards
@@ -896,143 +908,25 @@ class makeGui:
 ############################################################################################
 
         def runTestSuite(self):
-                if ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
-                    print ("Run Number Required")
+                if (self.nameChoiceVar.get() == "Choose Name"):
+                    self.throwErrorBox("Select a tester name")
+                elif ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
+                    self.throwErrorBox("Run Number Required")
                 elif (self.suiteChoiceVar.get() == "Run Everything"):
-                    os.system("./FixMe-Everything.sh %s %s" % (self.runNum.get(),self.iterationVar.get()))
+                    os.system("./FixMe-Everything.sh %s %s %s %s" % (self.runNum.get(),'\''+self.iterationVar.get()+'\'','\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
-                    os.system("./FixMe-RunControl.sh %s" % self.runNum.get())
+                    os.system("./FixMe-RunControl.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
                 elif (self.suiteChoiceVar.get() == "Process Plugin Output"):
-                    os.system("./FixMe-PluginOut.sh %s" % self.runNum.get())
+                    os.system("./FixMe-PluginOut.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
                 elif (self.suiteChoiceVar.get() == "Run Register Test"):
-                    #subprocess.Popen(['python RunRegisterTest.py',self.runNum.get(),
-                    #print("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
-                    #    self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
-                    #    self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
-                    #    self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
-                    #    self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
-                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
+                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
                         self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
                         self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
-                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))#])
-#                self.prepareOutCards()
-#                # Print out the current time, so that the user knows when things started
-#                print str(datetime.now())
-#
-#                # Configure the uHTR slots to be used
-#                uHTR_outList = self.uHTR_config()
-#
-##                # Call our two reset functions to make sure the backplane is good to go
-#                self.magicResetPress()
-#                self.qie_resetPress()
-#
-#                # For the instances of loggerClass, assign the user variable a value.
-#                for k in self.outSummaries:
-#                        k.cardGenInfo["User"] = self.nameChoiceVar.get()
-#
-#                # Configure the JSlots to be used
-#                self.prepareOutSlots()
-#                suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
-#
-#                # Create a TestStand instance with all of our desired parameters
-#                self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection,
-#                                             self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList,
-#                                             self.nameChoiceVar.get(), self.overwrite)
-#
-#                # Run the tests
-#                self.myTestStand.runAll()
-#                self.folderArgument = "/archivedResults/"+self.myTestStand.timeString
-#
-#                self.tempLogName = self.humanLogName
-#                self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
-#                sys.stdout = logClass.logger(self.humanLogName)
-#
-#                print str(datetime.now())
-#
-#                os.chdir('/home/hep/logResults')
-#                os.mkdir('/home/hep'+self.folderArgument+'_Results/logResults')
-#                shutil.move(self.tempLogName+"_tests.log", '/home/hep'+self.folderArgument+'_Results/logResults/'+self.tempLogName+"_tests.log")
+                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
 
 ############################################################################################
-#### Convert the checkboxes on the GUI to a list of uHTR slots to be used (outSlotList)
-############################################################################################
-
-#        def uHTR_config(self):
-#                outSlotList = []
-#                for i in range(len(self.uHTR_slotNumber)):
-#                        if (self.uHTR_slotNumber[i].get() == 1):
-#                                outSlotList.append(i)
-#                return outSlotList
-
-
-############################################################################################
-#### When the "Run uHTR Tests" button is pressed, change the "selected" test suite, and then
-#### call the main runTestSuite function
-############################################################################################
-
-        def uHTR_tester_bttnPress(self):
-                self.suiteChoiceVar.set("uHTR Test Suite")
-                self.runTestSuite()
-                
-############################################################################################
-#### Magic reset. This essentially writes important values to I2C address 0x70, and is
-#### called every time the main test suite is ran
-############################################################################################
-
-
-
-
-
-#        def magicResetPress(self):
-#                b = webBus(self.piChoiceVar.get(),0)
-#                for ngccm in [1,2]: #both ngccm
-#                        b.write(0x72,[ngccm])
-#                        b.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
-#                        #power on and reset
-#                        #register 3 is control reg for i/o modes
-#                        b.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
-#                        b.write(0x70,[0x01,0x00])
-#                        b.write(0x70,[0x01,0x08])
-#                        b.write(0x70,[0x01,0x18]) # GPIO reset is 10
-#                        b.write(0x70,[0x01,0x08])
-#                        batch = b.sendBatch()
-#                        print 'initial = '+str(batch)
-#
-#                print '\n\nMagic reset completed!\n\n'
-#                for j in range(2):
-#                        self.qie_magicButton.flash()
-
-
-############################################################################################
-#### Reset power options on I2C address 0x70
-############################################################################################
-
-        def powerResetPress(self):
-                b = webBus(self.piChoiceVar.get(),0)
-                for i in [1,2]:
-                        b.write(0x72,[i])
-                        b.write(0x74,[0x08])
-                        b.write(0x70,[0x08,0])
-                        b.sendBatch()
-                print '\n\nPower Reset Completed!\n\n'
-
-############################################################################################
-#### Toggle the power of the fans on the backplane
-############################################################################################
-
-        def powerFanPress(self):
-                if (self.fanPowerFlag == False):
-#                       subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
-                        self.fanPowerFlag = True
-                        print '\nFans enabled!\n'
-                elif (self.fanPowerFlag == True):
-#                       subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python stopfans.py", shell=True)
-                        self.fanPowerFlag = False
-                        print '\nFans disabled!\n'
-
-############################################################################################
-#### Convert the checkboxes on the GUI to a list of QIE slots that will be useable
+### Convert the checkboxes on the GUI to a list of QIE slots that will be useable
 #### in the steps down the line. Essentially, we're converting numbers 1 through 16,
 #### inclusive, into numbers in [2, 3, 4, 5, 7, 8, 9, 10, 18, 19, 20, 21, 23, 24, 25, 26]
 ############################################################################################
