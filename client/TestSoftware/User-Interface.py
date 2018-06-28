@@ -222,7 +222,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.info_Label.pack(side=TOP)
 
@@ -262,14 +262,14 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.info_nameLabel.pack(side=LEFT)
 
                 # Make and pack a listbox to pick which QIE card to talk to:
                 self.info_nameBox = OptionMenu(self.info_subTop_frame, self.nameChoiceVar,"Bryan Caraway", "Grace Cummings", "Zach Eckert", "Loriza Hasa", "Frank Jensen", "Kamal Lamichhane", "Nesta Lenhert", "Chris Madrid", "Brooks McMaster", "Danny \"HF\" Noonan", "Joe Pastika", "Mark Saunders", "Sezen Sekmen", "Zach Shelton", "Caleb Smith", "Nadja Strobbe")
-                self.info_nameBox.config(bg=topc,fg=fontc, activebackground=dimc,activeforeground=fontc)
-                self.info_nameBox["menu"].config(bg=topc,fg=fontc,activebackground=dimc,activeforeground=fontc)
+                self.info_nameBox.config(bg=topc,fg=fontc,font=(None,11), activebackground=dimc,activeforeground=fontc)
+                self.info_nameBox["menu"].config(bg=topc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
                 self.info_nameBox.pack(side=LEFT)
                 self.nameChoiceVar.set("Choose Name") # initializes the OptionMenu
 
@@ -279,7 +279,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.info_commentLabel.pack(side=LEFT)
 
@@ -288,7 +288,7 @@ class makeGui:
                         self.info_subMid_frame,
                         textvariable=self.infoCommentVar
                         )
-                self.info_commentBox.config(bg=topc,fg=fontc)
+                self.info_commentBox.config(bg=topc,fg=fontc,font=(None,11))
                 self.info_commentBox.pack(side=LEFT)
 
                 # Make a label for the run number
@@ -297,7 +297,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.info_commentLabel.pack(side=LEFT)
 
@@ -306,7 +306,7 @@ class makeGui:
                         self.info_subBot_frame,
                         textvariable=self.runNum
                         )
-                self.info_commentBox.config(bg=topc,fg=fontc)
+                self.info_commentBox.config(bg=topc,fg=fontc,font=(None,11))
                 self.info_commentBox.pack(side=LEFT)
 
                 # Make a spacer
@@ -315,13 +315,13 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.info_commentLabel.pack(side=LEFT)
 
                 #Make a button to determine the run number
                 self.info_getRun_button = Button(self.info_subBot_frame, command = self.getRunNum)
-                self.info_getRun_button.configure(text="Latest Run", background=buttonsc[9],fg=fontc,activebackground=dimbuttonsc[9],activeforeground=fontc)
+                self.info_getRun_button.configure(text="Latest Run", background=buttonsc[9],fg=fontc,font=(None,11),activebackground=dimbuttonsc[9],activeforeground=fontc)
                 self.info_getRun_button.configure(
                         width=button_width*2,
                         padx=button_padx,
@@ -342,7 +342,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=leftc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.experi_subFrame_lbl.pack(side=TOP)
 
@@ -384,7 +384,7 @@ class makeGui:
                         variable=self.allCardSelection,
                         background=buttonsc[0],
                         activebackground=dimbuttonsc[0],
-                        fg=fontc,
+                        fg=fontc,font=(None,11),
                         activeforeground=fontc,
                         selectcolor=checkc,
                         command = self.allCheckBttnClick
@@ -408,7 +408,7 @@ class makeGui:
                                 text = self.ngccmeSlots[i],
                                 variable = self.ngccmeVarList[i],
                                 background = buttonsc[1],   # sounds delicious
-                                fg=fontc,
+                                fg=fontc,font=(None,11),
                                 activebackground=dimbuttonsc[1],
                                 activeforeground=fontc,
                                 selectcolor=checkc,
@@ -434,7 +434,7 @@ class makeGui:
                                 variable = self.readoutVarList[i],
                                 background = buttonsc[2],
                                 activebackground = dimbuttonsc[2],
-                                fg=fontc,
+                                fg=fontc,font=(None,11),
                                 activeforeground=fontc,
                                 selectcolor=checkc,
                                 command = self.rmCheckBttnClick
@@ -451,7 +451,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=leftc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.experi_cards_lbl.pack(side=TOP)
 
@@ -469,7 +469,7 @@ class makeGui:
                                 variable = self.cardVarList[i+1],
                                 background = buttonsc[3],
                                 activebackground=dimbuttonsc[3],
-                                fg=fontc,
+                                fg=fontc,font=(None,11),
                                 activeforeground=fontc,
                                 selectcolor=checkc
                                 )
@@ -491,7 +491,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=rightc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.qieFrameLabel.pack(side=TOP)
 
@@ -612,36 +612,36 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=rightc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.piSelectionLbl.pack(side=LEFT)
 
                 # Make a menu for the raspberry pi options
                 self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
                                                 "pi5", "pi6")
-                self.pi_choiceBox.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
-                self.pi_choiceBox["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
+                self.pi_choiceBox.config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
+                self.pi_choiceBox["menu"].config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
                 self.pi_choiceBox.pack(side=LEFT)
                 self.piChoiceVar.set("unused")
 
                 # Make a label for number of iterations
                 self.iter_label = Label(self.qie_subTop_1_frame, text="Number of iterations: ")
-                self.iter_label.configure(bg=rightc,fg=fontc)
+                self.iter_label.configure(bg=rightc,fg=fontc,font=(None,11))
                 self.iter_label.pack(side=LEFT)
 
                 # Make a field for number of iterations
-                self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar,bg=rightc,fg=fontc)
+                self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar,bg=rightc,fg=fontc,font=(None,11))
                 self.iter_entry.pack(side=RIGHT)
                 self.iterationVar.set("5")
 
                 # Make a separation line
                 self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
-                self.separationLabelTop.configure(bg=rightc,fg=fontc)
+                self.separationLabelTop.configure(bg=rightc,fg=fontc,font=(None,11))
                 self.separationLabelTop.pack()
 
                 # Make a button to reset the backplane
-                self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.qie_resetPress)
-                self.qie_resetButton.configure(text=".1.", bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
+                self.qie_resetButton = Button(self.qie_subTopMid_frame, command={})
+                self.qie_resetButton.configure(text=".1.", bg=buttonsc[4],fg=fontc,font=(None,11),activebackground=dimbuttonsc[4],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -650,8 +650,8 @@ class makeGui:
                 self.qie_resetButton.pack(side=TOP)
 
                 # Make a button to cycle fan power
-                self.qie_fanButton = Button(self.qie_subTopMid_frame, command=self.powerFanPress)
-                self.qie_fanButton.configure(text=".2.", bg=buttonsc[5],fg=fontc,activebackground=dimbuttonsc[5],activeforeground=fontc)
+                self.qie_fanButton = Button(self.qie_subTopMid_frame, command={})
+                self.qie_fanButton.configure(text=".2.", bg=buttonsc[5],fg=fontc,font=(None,11),activebackground=dimbuttonsc[5],activeforeground=fontc)
                 self.qie_fanButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -661,8 +661,8 @@ class makeGui:
 
 
                 # Make a button to reset the backplane
-                self.qie_resetButton = Button(self.qie_subTopMid_frame, command=self.powerResetPress)
-                self.qie_resetButton.configure(text=".3.", bg=buttonsc[6],fg=fontc,activebackground=dimbuttonsc[6],activeforeground=fontc)
+                self.qie_resetButton = Button(self.qie_subTopMid_frame, command={})
+                self.qie_resetButton.configure(text=".3.", bg=buttonsc[6],fg=fontc,font=(None,11),activebackground=dimbuttonsc[6],activeforeground=fontc)
                 self.qie_resetButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -672,7 +672,7 @@ class makeGui:
 
                 # Make a button to reset the backplane
                 self.qie_magicButton = Button(self.qie_subTopMid_frame, command={})
-                self.qie_magicButton.configure(text=".4.", bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
+                self.qie_magicButton.configure(text=".4.", bg=buttonsc[7],fg=fontc,font=(None,11),activebackground=dimbuttonsc[7],activeforeground=fontc)
                 self.qie_magicButton.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -682,7 +682,7 @@ class makeGui:
 
                 # Make a separation line
                 self.separationLabel = Label(self.qie_subTopMid2_frame, text="------------------------------------------")
-                self.separationLabel.configure(bg=rightc,fg=fontc)
+                self.separationLabel.configure(bg=rightc,fg=fontc,font=(None,11))
                 self.separationLabel.pack()
 
                 # Make and pack a label for suite selection:
@@ -691,7 +691,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=rightc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.qie_suiteLabel.pack(side=LEFT)
 
@@ -702,14 +702,14 @@ class makeGui:
                                                 "Process Run Control",
                                                 "Process Plugin Output",
                                                 )
-                self.qie_suiteMenu.config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
-                self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,activebackground=dimc,activeforeground=fontc)
+                self.qie_suiteMenu.config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
+                self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu.pack(side=LEFT)
                 self.suiteChoiceVar.set("Run Everything")
 
                 # Make a checkbox to overwrite/not overwrite pre-existing data
                 self.overwriteBox = Checkbutton(self.qie_subBot_frame, text=".5.", variable=self.overwriteVar)
-                self.overwriteBox.configure(bg=buttonsc[8],fg=fontc,activebackground=dimbuttonsc[8],activeforeground=fontc,selectcolor=checkc)
+                self.overwriteBox.configure(bg=buttonsc[8],fg=fontc,font=(None,11),activebackground=dimbuttonsc[8],activeforeground=fontc,selectcolor=checkc)
                 self.overwriteBox.pack(side=TOP,
                                        padx = button_padx,
                                        pady = button_pady,
@@ -719,7 +719,7 @@ class makeGui:
 
                 #Make a button to run the main test suite
                 self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
-                self.qie_testSuite_button.configure(text="Run Selected Test Suite", background=buttonsc[9],fg=fontc,activebackground=dimbuttonsc[9],activeforeground=fontc)
+                self.qie_testSuite_button.configure(text="Run Selected Test Suite", background=buttonsc[9],fg=fontc,font=(None,11),activebackground=dimbuttonsc[9],activeforeground=fontc)
                 self.qie_testSuite_button.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -729,12 +729,12 @@ class makeGui:
 
                 # Make a separation line
                 self.separationLabel = Label(self.qie_subBot_frame, text="------------------------------------------")
-                self.separationLabel.configure(bg=rightc,fg=fontc)
+                self.separationLabel.configure(bg=rightc,fg=fontc,font=(None,11))
                 self.separationLabel.pack()
 
                 # Make a checkbutton to manually type in desired upload folder
                 self.uploadFromStrBox = Checkbutton(self.qie_subBot_frame, text=".6.", variable = self.uploadFromStrVar, command = {})
-                self.uploadFromStrBox.configure(bg=buttonsc[10],fg=fontc, wraplength=300,activebackground=dimbuttonsc[10],activeforeground=fontc,selectcolor=checkc)
+                self.uploadFromStrBox.configure(bg=buttonsc[10],fg=fontc,font=(None,11), wraplength=300,activebackground=dimbuttonsc[10],activeforeground=fontc,selectcolor=checkc)
                 self.uploadFromStrBox.pack(side=TOP,
                                         padx = button_padx,
                                         pady = button_pady,
@@ -747,7 +747,7 @@ class makeGui:
                                                 textvariable = self.uploadFromStrEntry, 
                                                 state = "readonly",
                                                 bg=rightc,
-                                                fg=fontc,
+                                                fg=fontc,font=(None,11),
                                                 disabledbackground=dimc,
                                                 readonlybackground=dimc
                                                 )
@@ -760,7 +760,7 @@ class makeGui:
 
                 # Make a button to submit the results from tests.
                 self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.submitToDatabase)
-                self.qie_testSuite_button.configure(text="Upload Results to Database", bg=buttonsc[10],fg=fontc,activebackground=dimbuttonsc[10],activeforeground=fontc)
+                self.qie_testSuite_button.configure(text="Upload Results to Database", bg=buttonsc[10],fg=fontc,font=(None,11),activebackground=dimbuttonsc[10],activeforeground=fontc)
                 self.qie_testSuite_button.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -780,7 +780,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=bottomc,
-                        fg=fontc
+                        fg=fontc,font=(None,11)
                         )
                 self.uHTR_frame_Label.pack(side=TOP)
 
@@ -793,7 +793,7 @@ class makeGui:
                         padx=frame_padx, pady="1m")
 
                 # Slot number parameter label
-                self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg=bottomc,fg=fontc)
+                self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg=bottomc,fg=fontc,font=(None,11))
                 self.uHTR_slotNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
 
                 # Make a subframe for the slot number vars
@@ -808,7 +808,7 @@ class makeGui:
                                         text = str(i+1), anchor=S,
                                         variable = self.uHTR_slotNumber[i+1],
                                         background = buttonsc[3],
-                                        fg=fontc,
+                                        fg=fontc,font=(None,11),
                                         activebackground=dimbuttonsc[3],
                                         activeforeground=fontc,
                                         selectcolor=checkc
@@ -827,8 +827,8 @@ class makeGui:
                         padx=frame_padx, pady="1m")
 
                 # Button for doing uHTR tests
-                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text=".7.", bg=buttonsc[8],fg=fontc,activebackground=dimbuttonsc[8],activeforeground=fontc,
-                                                command=self.uHTR_tester_bttnPress)
+                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text=".7.", bg=buttonsc[8],fg=fontc,font=(None,11),activebackground=dimbuttonsc[8],activeforeground=fontc,
+                                                command={})
                 self.uHTR_tester_bttn.configure(
                         padx=button_padx*2,
                         pady=button_pady*2,
@@ -847,6 +847,19 @@ class makeGui:
         ###  BEGIN MEMBER FUNCTIONS   ###
         ###                           ###
         #################################
+
+        def throwErrorBox(self,msg):
+            self.top = Toplevel()
+            self.top.title("Name Choice Error")
+            self.top.config(height=50, width=360)
+            self.top.pack_propagate(False)
+
+            self.msg = Label(self.top, text=msg,fg=fontc)
+            self.msg.pack()
+
+            self.button = Button(self.top, text="OK", command=self.top.destroy)
+            self.button.configure(bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
+            self.button.pack()
 
 ################################################################################################
 #### Functions for selecting various cards
@@ -895,143 +908,25 @@ class makeGui:
 ############################################################################################
 
         def runTestSuite(self):
-                if ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
-                    print ("Run Number Required")
+                if (self.nameChoiceVar.get() == "Choose Name"):
+                    self.throwErrorBox("Select a tester name")
+                elif ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
+                    self.throwErrorBox("Run Number Required")
                 elif (self.suiteChoiceVar.get() == "Run Everything"):
-                    os.system("./FixMe-Everything.sh %s %s" % (self.runNum.get(),self.iterationVar.get()))
+                    os.system("./FixMe-Everything.sh %s %s %s %s" % (self.runNum.get(),'\''+self.iterationVar.get()+'\'','\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
-                    os.system("./FixMe-RunControl.sh %s" % self.runNum.get())
+                    os.system("./FixMe-RunControl.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
                 elif (self.suiteChoiceVar.get() == "Process Plugin Output"):
-                    os.system("./FixMe-PluginOut.sh %s" % self.runNum.get())
+                    os.system("./FixMe-PluginOut.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
                 elif (self.suiteChoiceVar.get() == "Run Register Test"):
-                    #subprocess.Popen(['python RunRegisterTest.py',self.runNum.get(),
-                    #print("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.runNum.get(),
-                    #    self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
-                    #    self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
-                    #    self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
-                    #    self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))
-                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
+                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
                         self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
                         self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
-                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get()))#])
-#                self.prepareOutCards()
-#                # Print out the current time, so that the user knows when things started
-#                print str(datetime.now())
-#
-#                # Configure the uHTR slots to be used
-#                uHTR_outList = self.uHTR_config()
-#
-##                # Call our two reset functions to make sure the backplane is good to go
-#                self.magicResetPress()
-#                self.qie_resetPress()
-#
-#                # For the instances of loggerClass, assign the user variable a value.
-#                for k in self.outSummaries:
-#                        k.cardGenInfo["User"] = self.nameChoiceVar.get()
-#
-#                # Configure the JSlots to be used
-#                self.prepareOutSlots()
-#                suiteSelection = self.suiteDict[self.suiteChoiceVar.get()]
-#
-#                # Create a TestStand instance with all of our desired parameters
-#                self.myTestStand = TestStand(self.outSlotNumbers, self.outSummaries, suiteSelection,
-#                                             self.piChoiceVar.get(), int(self.iterationVar.get()), uHTR_outList,
-#                                             self.nameChoiceVar.get(), self.overwrite)
-#
-#                # Run the tests
-#                self.myTestStand.runAll()
-#                self.folderArgument = "/archivedResults/"+self.myTestStand.timeString
-#
-#                self.tempLogName = self.humanLogName
-#                self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
-#                sys.stdout = logClass.logger(self.humanLogName)
-#
-#                print str(datetime.now())
-#
-#                os.chdir('/home/hep/logResults')
-#                os.mkdir('/home/hep'+self.folderArgument+'_Results/logResults')
-#                shutil.move(self.tempLogName+"_tests.log", '/home/hep'+self.folderArgument+'_Results/logResults/'+self.tempLogName+"_tests.log")
+                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
 
 ############################################################################################
-#### Convert the checkboxes on the GUI to a list of uHTR slots to be used (outSlotList)
-############################################################################################
-
-#        def uHTR_config(self):
-#                outSlotList = []
-#                for i in range(len(self.uHTR_slotNumber)):
-#                        if (self.uHTR_slotNumber[i].get() == 1):
-#                                outSlotList.append(i)
-#                return outSlotList
-
-
-############################################################################################
-#### When the "Run uHTR Tests" button is pressed, change the "selected" test suite, and then
-#### call the main runTestSuite function
-############################################################################################
-
-        def uHTR_tester_bttnPress(self):
-                self.suiteChoiceVar.set("uHTR Test Suite")
-                self.runTestSuite()
-                
-############################################################################################
-#### Magic reset. This essentially writes important values to I2C address 0x70, and is
-#### called every time the main test suite is ran
-############################################################################################
-
-
-
-
-
-#        def magicResetPress(self):
-#                b = webBus(self.piChoiceVar.get(),0)
-#                for ngccm in [1,2]: #both ngccm
-#                        b.write(0x72,[ngccm])
-#                        b.write(0x74,[0x08]) # PCA9538 is bit 3 on ngccm mux
-#                        #power on and reset
-#                        #register 3 is control reg for i/o modes
-#                        b.write(0x70,[0x03,0x00]) # sets all GPIO pins to 'output' mode
-#                        b.write(0x70,[0x01,0x00])
-#                        b.write(0x70,[0x01,0x08])
-#                        b.write(0x70,[0x01,0x18]) # GPIO reset is 10
-#                        b.write(0x70,[0x01,0x08])
-#                        batch = b.sendBatch()
-#                        print 'initial = '+str(batch)
-#
-#                print '\n\nMagic reset completed!\n\n'
-#                for j in range(2):
-#                        self.qie_magicButton.flash()
-
-
-############################################################################################
-#### Reset power options on I2C address 0x70
-############################################################################################
-
-        def powerResetPress(self):
-                b = webBus(self.piChoiceVar.get(),0)
-                for i in [1,2]:
-                        b.write(0x72,[i])
-                        b.write(0x74,[0x08])
-                        b.write(0x70,[0x08,0])
-                        b.sendBatch()
-                print '\n\nPower Reset Completed!\n\n'
-
-############################################################################################
-#### Toggle the power of the fans on the backplane
-############################################################################################
-
-        def powerFanPress(self):
-                if (self.fanPowerFlag == False):
-#                       subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python startfans.py", shell=True)
-                        self.fanPowerFlag = True
-                        print '\nFans enabled!\n'
-                elif (self.fanPowerFlag == True):
-#                       subprocess.call("ssh -A cmshcal11 ssh -A pi@pi3 python stopfans.py", shell=True)
-                        self.fanPowerFlag = False
-                        print '\nFans disabled!\n'
-
-############################################################################################
-#### Convert the checkboxes on the GUI to a list of QIE slots that will be useable
+### Convert the checkboxes on the GUI to a list of QIE slots that will be useable
 #### in the steps down the line. Essentially, we're converting numbers 1 through 16,
 #### inclusive, into numbers in [2, 3, 4, 5, 7, 8, 9, 10, 18, 19, 20, 21, 23, 24, 25, 26]
 ############################################################################################
@@ -1114,7 +1009,7 @@ class makeGui:
 #                self.msg.pack()
 #
 #                self.button = Button(self.top, text="Continue", command=self.top.destroy)
-#                self.button.configure(bg=buttonsc[4],fg=fontc,activebackground=dimbuttonsc[4],activeforeground=fontc)
+#                self.button.configure(bg=buttonsc[4],fg=fontc,font=(None,11),activebackground=dimbuttonsc[4],activeforeground=fontc)
 #                self.button.pack()
                 
 ###############################################################################################################
