@@ -224,7 +224,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.info_Label.pack(side=TOP)
 
@@ -264,14 +264,14 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.info_nameLabel.pack(side=LEFT)
 
                 # Make and pack a listbox to pick which QIE card to talk to:
                 self.info_nameBox = OptionMenu(self.info_subTop_frame, self.nameChoiceVar,"Bryan Caraway", "Grace Cummings", "Zach Eckert", "Loriza Hasa", "Frank Jensen", "Kamal Lamichhane", "Nesta Lenhert", "Chris Madrid", "Brooks McMaster", "Danny \"HF\" Noonan", "Joe Pastika", "Mark Saunders", "Sezen Sekmen", "Zach Shelton", "Caleb Smith", "Nadja Strobbe")
-                self.info_nameBox.config(bg=topc,fg=fontc,font=(None,11), activebackground=dimc,activeforeground=fontc)
-                self.info_nameBox["menu"].config(bg=topc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
+                self.info_nameBox.config(bg=topc,fg=fontc,font=(None,14), activebackground=dimc,activeforeground=fontc)
+                self.info_nameBox["menu"].config(bg=topc,fg=fontc,font=(None,14),activebackground=dimc,activeforeground=fontc)
                 self.info_nameBox.pack(side=LEFT)
                 self.nameChoiceVar.set("Choose Name") # initializes the OptionMenu
 
@@ -281,7 +281,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.info_commentLabel.pack(side=LEFT)
 
@@ -290,7 +290,7 @@ class makeGui:
                         self.info_subMid_frame,
                         textvariable=self.infoCommentVar
                         )
-                self.info_commentBox.config(bg=topc,fg=fontc,font=(None,11))
+                self.info_commentBox.config(bg=topc,fg=fontc,font=(None,14))
                 self.info_commentBox.pack(side=LEFT)
 
                 # Make a label for the run number
@@ -299,7 +299,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.info_commentLabel.pack(side=LEFT)
 
@@ -308,7 +308,7 @@ class makeGui:
                         self.info_subBot_frame,
                         textvariable=self.runNum
                         )
-                self.info_commentBox.config(bg=topc,fg=fontc,font=(None,11))
+                self.info_commentBox.config(bg=topc,fg=fontc,font=(None,14))
                 self.info_commentBox.pack(side=LEFT)
 
                 # Make a spacer
@@ -317,13 +317,13 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=topc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.info_commentLabel.pack(side=LEFT)
 
                 #Make a button to determine the run number
                 self.info_getRun_button = Button(self.info_subBot_frame, command = self.getRunNum)
-                self.info_getRun_button.configure(text="Latest Run", background=buttonsc[9],fg=fontc,font=(None,11),activebackground=dimbuttonsc[9],activeforeground=fontc)
+                self.info_getRun_button.configure(text="Latest Run", background=buttonsc[9],fg=fontc,font=(None,14),activebackground=dimbuttonsc[9],activeforeground=fontc)
                 self.info_getRun_button.configure(
                         width=button_width*2,
                         padx=button_padx,
@@ -344,7 +344,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=leftc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.experi_subFrame_lbl.pack(side=TOP)
 
@@ -386,7 +386,7 @@ class makeGui:
                         variable=self.allCardSelection,
                         background=buttonsc[0],
                         activebackground=dimbuttonsc[0],
-                        fg=fontc,font=(None,11),
+                        fg=fontc,font=(None,14),
                         activeforeground=fontc,
                         selectcolor=checkc,
                         command = self.allCheckBttnClick
@@ -410,7 +410,7 @@ class makeGui:
                                 text = self.ngccmeSlots[i],
                                 variable = self.ngccmeVarList[i],
                                 background = buttonsc[1],   # sounds delicious
-                                fg=fontc,font=(None,11),
+                                fg=fontc,font=(None,14),
                                 activebackground=dimbuttonsc[1],
                                 activeforeground=fontc,
                                 selectcolor=checkc,
@@ -436,7 +436,7 @@ class makeGui:
                                 variable = self.readoutVarList[i],
                                 background = buttonsc[2],
                                 activebackground = dimbuttonsc[2],
-                                fg=fontc,font=(None,11),
+                                fg=fontc,font=(None,14),
                                 activeforeground=fontc,
                                 selectcolor=checkc,
                                 command = self.rmCheckBttnClick
@@ -453,7 +453,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=leftc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.experi_cards_lbl.pack(side=TOP)
 
@@ -471,7 +471,7 @@ class makeGui:
                                 variable = self.cardVarList[i+1],
                                 background = buttonsc[3],
                                 activebackground=dimbuttonsc[3],
-                                fg=fontc,font=(None,11),
+                                fg=fontc,font=(None,14),
                                 activeforeground=fontc,
                                 selectcolor=checkc
                                 )
@@ -493,7 +493,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=rightc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.qieFrameLabel.pack(side=TOP)
 
@@ -614,36 +614,36 @@ class makeGui:
 #                        padx=button_padx,
 #                        pady=button_pady,
 #                        background=rightc,
-#                        fg=fontc,font=(None,11)
+#                        fg=fontc,font=(None,14)
 #                        )
 #                self.piSelectionLbl.pack(side=LEFT)
 #
 #                # Make a menu for the raspberry pi options
 #                self.pi_choiceBox = OptionMenu(self.qie_subTop_frame, self.piChoiceVar,
 #                                                "pi5", "pi6")
-#                self.pi_choiceBox.config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
-#                self.pi_choiceBox["menu"].config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
+#                self.pi_choiceBox.config(bg=rightc,fg=fontc,font=(None,14),activebackground=dimc,activeforeground=fontc)
+#                self.pi_choiceBox["menu"].config(bg=rightc,fg=fontc,font=(None,14),activebackground=dimc,activeforeground=fontc)
 #                self.pi_choiceBox.pack(side=LEFT)
 #                self.piChoiceVar.set("unused")
 
                 # Make a label for number of iterations
                 self.iter_label = Label(self.qie_subTop_1_frame, text="Number of iterations: ")
-                self.iter_label.configure(bg=rightc,fg=fontc,font=(None,11))
+                self.iter_label.configure(bg=rightc,fg=fontc,font=(None,14))
                 self.iter_label.pack(side=LEFT)
 
                 # Make a field for number of iterations
-                self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar,bg=rightc,fg=fontc,font=(None,11))
+                self.iter_entry = Entry(self.qie_subTop_1_frame, textvariable=self.iterationVar,bg=rightc,fg=fontc,font=(None,14))
                 self.iter_entry.pack(side=RIGHT)
                 self.iterationVar.set("5")
 
 #                # Make a separation line
 #                self.separationLabelTop = Label(self.qie_subTop2_frame, text="------------------------------------------")
-#                self.separationLabelTop.configure(bg=rightc,fg=fontc,font=(None,11))
+#                self.separationLabelTop.configure(bg=rightc,fg=fontc,font=(None,14))
 #                self.separationLabelTop.pack()
 #
 #                # Make a button to reset the backplane
 #                self.qie_resetButton = Button(self.qie_subTopMid_frame, command={})
-#                self.qie_resetButton.configure(text=".1.", bg=buttonsc[4],fg=fontc,font=(None,11),activebackground=dimbuttonsc[4],activeforeground=fontc)
+#                self.qie_resetButton.configure(text=".1.", bg=buttonsc[4],fg=fontc,font=(None,14),activebackground=dimbuttonsc[4],activeforeground=fontc)
 #                self.qie_resetButton.configure(
 #                        width=button_width*4,
 #                        padx=button_padx,
@@ -653,7 +653,7 @@ class makeGui:
 #
 #                # Make a button to cycle fan power
 #                self.qie_fanButton = Button(self.qie_subTopMid_frame, command={})
-#                self.qie_fanButton.configure(text=".2.", bg=buttonsc[5],fg=fontc,font=(None,11),activebackground=dimbuttonsc[5],activeforeground=fontc)
+#                self.qie_fanButton.configure(text=".2.", bg=buttonsc[5],fg=fontc,font=(None,14),activebackground=dimbuttonsc[5],activeforeground=fontc)
 #                self.qie_fanButton.configure(
 #                        width=button_width*4,
 #                        padx=button_padx,
@@ -664,7 +664,7 @@ class makeGui:
 #
 #                # Make a button to reset the backplane
 #                self.qie_resetButton = Button(self.qie_subTopMid_frame, command={})
-#                self.qie_resetButton.configure(text=".3.", bg=buttonsc[6],fg=fontc,font=(None,11),activebackground=dimbuttonsc[6],activeforeground=fontc)
+#                self.qie_resetButton.configure(text=".3.", bg=buttonsc[6],fg=fontc,font=(None,14),activebackground=dimbuttonsc[6],activeforeground=fontc)
 #                self.qie_resetButton.configure(
 #                        width=button_width*4,
 #                        padx=button_padx,
@@ -674,7 +674,7 @@ class makeGui:
 #
 #                # Make a button to reset the backplane
 #                self.qie_magicButton = Button(self.qie_subTopMid_frame, command={})
-#                self.qie_magicButton.configure(text=".4.", bg=buttonsc[7],fg=fontc,font=(None,11),activebackground=dimbuttonsc[7],activeforeground=fontc)
+#                self.qie_magicButton.configure(text=".4.", bg=buttonsc[7],fg=fontc,font=(None,14),activebackground=dimbuttonsc[7],activeforeground=fontc)
 #                self.qie_magicButton.configure(
 #                        width=button_width*4,
 #                        padx=button_padx,
@@ -684,7 +684,7 @@ class makeGui:
 
                 # Make a separation line
                 self.separationLabel = Label(self.qie_subTopMid2_frame, text="------------------------------------------")
-                self.separationLabel.configure(bg=rightc,fg=fontc,font=(None,11))
+                self.separationLabel.configure(bg=rightc,fg=fontc,font=(None,14))
                 self.separationLabel.pack()
 
                 # Make and pack a label for suite selection:
@@ -693,7 +693,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=rightc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.qie_suiteLabel.pack(side=LEFT)
 
@@ -704,14 +704,14 @@ class makeGui:
                                                 "Process Run Control",
                                                 "Process Plugin Output",
                                                 )
-                self.qie_suiteMenu.config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
-                self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,font=(None,11),activebackground=dimc,activeforeground=fontc)
+                self.qie_suiteMenu.config(bg=rightc,fg=fontc,font=(None,14),activebackground=dimc,activeforeground=fontc)
+                self.qie_suiteMenu["menu"].config(bg=rightc,fg=fontc,font=(None,14),activebackground=dimc,activeforeground=fontc)
                 self.qie_suiteMenu.pack(side=LEFT)
                 self.suiteChoiceVar.set("Run Everything")
 
 #                # Make a checkbox to overwrite/not overwrite pre-existing data
 #                self.overwriteBox = Checkbutton(self.qie_subBot_frame, text=".5.", variable=self.overwriteVar)
-#                self.overwriteBox.configure(bg=buttonsc[8],fg=fontc,font=(None,11),activebackground=dimbuttonsc[8],activeforeground=fontc,selectcolor=checkc)
+#                self.overwriteBox.configure(bg=buttonsc[8],fg=fontc,font=(None,14),activebackground=dimbuttonsc[8],activeforeground=fontc,selectcolor=checkc)
 #                self.overwriteBox.pack(side=TOP,
 #                                       padx = button_padx,
 #                                       pady = button_pady,
@@ -721,7 +721,7 @@ class makeGui:
 
                 #Make a button to run the main test suite
                 self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.runTestSuite)
-                self.qie_testSuite_button.configure(text="Run Selected Test Suite", background=buttonsc[9],fg=fontc,font=(None,11),activebackground=dimbuttonsc[9],activeforeground=fontc)
+                self.qie_testSuite_button.configure(text="Run Selected Test Suite", background=buttonsc[9],fg=fontc,font=(None,14),activebackground=dimbuttonsc[9],activeforeground=fontc)
                 self.qie_testSuite_button.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -731,12 +731,12 @@ class makeGui:
 
                 # Make a separation line
                 self.separationLabel = Label(self.qie_subBot_frame, text="------------------------------------------")
-                self.separationLabel.configure(bg=rightc,fg=fontc,font=(None,11))
+                self.separationLabel.configure(bg=rightc,fg=fontc,font=(None,14))
                 self.separationLabel.pack()
 
 #                # Make a checkbutton to manually type in desired upload folder
 #                self.uploadFromStrBox = Checkbutton(self.qie_subBot_frame, text=".6.", variable = self.uploadFromStrVar, command = {})
-#                self.uploadFromStrBox.configure(bg=buttonsc[10],fg=fontc,font=(None,11), wraplength=300,activebackground=dimbuttonsc[10],activeforeground=fontc,selectcolor=checkc)
+#                self.uploadFromStrBox.configure(bg=buttonsc[10],fg=fontc,font=(None,14), wraplength=300,activebackground=dimbuttonsc[10],activeforeground=fontc,selectcolor=checkc)
 #                self.uploadFromStrBox.pack(side=TOP,
 #                                        padx = button_padx,
 #                                        pady = button_pady,
@@ -749,7 +749,7 @@ class makeGui:
 #                                                textvariable = self.uploadFromStrEntry, 
 #                                                state = "readonly",
 #                                                bg=rightc,
-#                                                fg=fontc,font=(None,11),
+#                                                fg=fontc,font=(None,14),
 #                                                disabledbackground=dimc,
 #                                                readonlybackground=dimc
 #                                                )
@@ -762,7 +762,7 @@ class makeGui:
 
                 # Make a button to submit the results from tests.
                 self.qie_testSuite_button = Button(self.qie_subBot_frame, command = self.submitToDatabase)
-                self.qie_testSuite_button.configure(text="Upload Results to Database", bg=buttonsc[10],fg=fontc,font=(None,11),activebackground=dimbuttonsc[10],activeforeground=fontc)
+                self.qie_testSuite_button.configure(text="Upload Results to Database", bg=buttonsc[10],fg=fontc,font=(None,14),activebackground=dimbuttonsc[10],activeforeground=fontc)
                 self.qie_testSuite_button.configure(
                         width=button_width*4,
                         padx=button_padx,
@@ -782,7 +782,7 @@ class makeGui:
                         padx=button_padx,
                         pady=button_pady,
                         background=bottomc,
-                        fg=fontc,font=(None,11)
+                        fg=fontc,font=(None,14)
                         )
                 self.uHTR_frame_Label.pack(side=TOP)
 
@@ -795,7 +795,7 @@ class makeGui:
                         padx=frame_padx, pady="1m")
 
 #                # Slot number parameter label
-#                self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg=bottomc,fg=fontc,font=(None,11))
+#                self.uHTR_slotNo_Lbl = Label(self.uHTR_sub2, text="Slot Number: ",bg=bottomc,fg=fontc,font=(None,14))
 #                self.uHTR_slotNo_Lbl.pack(side=LEFT,padx=button_padx,pady=button_pady)
 
                 self.expertC = Checkbutton(
@@ -805,7 +805,7 @@ class makeGui:
                         command = self.expertArm,
                         background = buttonsc[3],
                         activebackground=dimbuttonsc[3],
-                        fg=fontc,font=(None,11),
+                        fg=fontc,font=(None,14),
                         activeforeground=fontc,
                         selectcolor=checkc
                         )
@@ -827,7 +827,7 @@ class makeGui:
 #                                        text = str(i+1), anchor=S,
 #                                        variable = self.uHTR_slotNumber[i+1],
 #                                        background = buttonsc[3],
-#                                        fg=fontc,font=(None,11),
+#                                        fg=fontc,font=(None,14),
 #                                        activebackground=dimbuttonsc[3],
 #                                        activeforeground=fontc,
 #                                        selectcolor=checkc
@@ -846,7 +846,7 @@ class makeGui:
 #                        padx=frame_padx, pady="1m")
 #
 #                # Button for doing uHTR tests
-#                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text=".7.", bg=buttonsc[8],fg=fontc,font=(None,11),activebackground=dimbuttonsc[8],activeforeground=fontc,
+#                self.uHTR_tester_bttn = Button(self.uHTR_sub4, text=".7.", bg=buttonsc[8],fg=fontc,font=(None,14),activebackground=dimbuttonsc[8],activeforeground=fontc,
 #                                                command={})
 #                self.uHTR_tester_bttn.configure(
 #                        padx=button_padx*2,
@@ -949,6 +949,7 @@ class makeGui:
                         self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
                        self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+                    self.submitToDatabase()
 
 ############################################################################################
 ### Convert the checkboxes on the GUI to a list of QIE slots that will be useable
@@ -1034,7 +1035,7 @@ class makeGui:
 #                self.msg.pack()
 #
 #                self.button = Button(self.top, text="Continue", command=self.top.destroy)
-#                self.button.configure(bg=buttonsc[4],fg=fontc,font=(None,11),activebackground=dimbuttonsc[4],activeforeground=fontc)
+#                self.button.configure(bg=buttonsc[4],fg=fontc,font=(None,14),activebackground=dimbuttonsc[4],activeforeground=fontc)
 #                self.button.pack()
                 
 ###############################################################################################################
