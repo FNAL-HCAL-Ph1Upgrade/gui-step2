@@ -7,7 +7,7 @@
 
 V=true
 user=hcalpro
-startServer=/home/hcalpro/ngFEC/start_ngccm_hehbfermi_00.sh
+startServer=/home/hcalpro/ngFEC/start_ngccm_hbfermi_00.sh
 port=64000
 
 #check if ngccm server is running
