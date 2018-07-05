@@ -24,7 +24,7 @@ if pid=$(pgrep -f $tag) ; then
         echo "ngccm server with tag $tag is already running with pid $pid"
         echo "using kill to send ngccm server with tag $tag and pid $pid to the grave"
     fi
-    kill $pid
+    kill -11 $pid
 else
     echo "ngccm server with tag $tag is not running"
 fi
