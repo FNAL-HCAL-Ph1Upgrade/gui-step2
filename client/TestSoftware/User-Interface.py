@@ -820,6 +820,15 @@ class makeGui:
                 self.uHTR_sub3.pack(side=TOP, ipadx=frame_ipadx, ipady="1m",
                         padx=frame_padx, pady="1m")
 
+                self.exp_NGCCM_button = Button(self.uHTR_frame, command = self.expNGCCM)
+                self.exp_NGCCM_button.configure(text="Restart NGCCM Server", bg=buttonsc[4],fg=fontc,font=(None,14),activebackground=dimbuttonsc[5],activeforeground=fontc,state='disabled')
+                self.exp_NGCCM_button.configure(
+                        width=button_width*4,
+                        padx=button_padx,
+                        pady=button_pady
+                        )
+                self.exp_NGCCM_button.pack(side=TOP)
+
                 # Make checkboxes for each uHTR slot
 #                for i in range(0,6):
 #                                self.uHTR_radio = Checkbutton(
@@ -866,12 +875,17 @@ class makeGui:
         ###  BEGIN MEMBER FUNCTIONS   ###
         ###                           ###
         #################################
+
+        def expNGCCM(self):
+            os.system("/home/hcalpro/mcmaster/gui-step2/ngccmServer/restartNgccmServer.sh")
         
         def expertArm(self):
             if (self.armState.get() == 1):
-                print "On"
+                self.exp_NGCCM_button['state'] = 'normal'
+                self.exp_NGCCM_button.config(bg=buttonsc[5])
             else:
-                print "Off"
+                self.exp_NGCCM_button['state'] = 'disabled'
+                self.exp_NGCCM_button.config(bg=buttonsc[4])
 
         def throwErrorBox(self,msg):
             self.top = Toplevel()
