@@ -13,7 +13,6 @@ port=64000
 tag="hbfermi_00"
 
 echo "start server script: $startServer"
-ls -l $startServer
 
 #check if ngccm server is running
 #kill the server if it is running
