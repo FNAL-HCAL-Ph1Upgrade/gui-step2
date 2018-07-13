@@ -21,25 +21,30 @@ def ngccmGroup(rm):
     i2cGroups = [0x01, 0x10, 0x20, 0x02]
     return i2cGroups[rm-1]
 
-def openChannel(slot, bus):
+def openChannel(slot, bus, backplane = 0):
+    #backplane can be 0 or 1
     rmLoc = getReadoutSlot(slot)
-    if rmLoc in [3,4]:
-      # Open channel to ngCCM for RM 3,4: J1 - J10
-        bus.write(0x72,[0x02])
-    elif rmLoc in [1,2]:
+    rmnum = rmLoc + 4 * backplane
+    if rmLoc in [1,2]:
       # Open channel to ngCCM for RM 1,2: J17 - J26
         bus.write(0x72,[0x01])
+    elif rmLoc in [3,4]:
+      # Open channel to ngCCM for RM 3,4: J1 - J10
+        bus.write(0x72,[0x02])
+    elif rmLoc in [5,6]:
+      # Open channel to ngCCM for RM 3,4: J1 - J10
+        bus.write(0x72,[0x03])
+    elif rmLoc in [7,8]:
+      # Open channel to ngCCM for RM 3,4: J1 - J10
+        bus.write(0x72,[0x04])
     else:
-        print 'Invalid RM = '+str(rmLoc)
+        print 'Invalid RM = ', rmLoc
         print 'Please choose RM = {1,2,3,4}'
         return 'closed channel'
-  # Open channel to i2c group
-    bus.write(0x74, [ngccmGroup(rmLoc)])
-    bus.read(0x74, 1)
 
   # Reset the backplane
     bus.write(0x00,[0x06])
-    return bus.sendBatch()
+    return #bus.sendBatch()
 
 #Get DChains
 def getDChains(slot, bus):
@@ -53,7 +58,7 @@ def SetQInjMode(onOffBit, slot, bus):
     if onOffBit == 0 or onOffBit == 1:
         bus.write(getCardAddress(slot),[0x11,0x03,0,0,0])
         bus.write(0x09,[0x11,onOffBit,0,0,0])
-        bus.sendBatch()
+        #bus.sendBatch()
     else:
         print 'INVALID INPUT IN SetQInjMode... doing nothing'
 
@@ -90,7 +95,6 @@ def powerEnable(ngccm,bus):
 
     bus.write(0x70,[0x1,value2])
 
-    return b.sendBatch()
     return bus.sendBatch()
 
 
@@ -128,7 +132,7 @@ class ADCConverter:
                         subrange = i
 
                 if subrange == -1:
-                    print 'Something has gone horribly wrong!'
+                    print 'Something has gone horribly wrong: subrange = -1 in ADCConverter from Hardware.py (line 131)!'
 
                 # Sensitivity = 3.1 * 8^exp * 2^subrange
                 sensitivity = self.baseSensitivity * 8.0**float(exp) * 2.0**subrange
@@ -146,13 +150,14 @@ class iglooPower:
         self.address = getCardAddress(slot)
         self.bus = bus
         openChannel(slot, bus)
-        print self.testBody()
+        # print self.testBody()
+        self.testBody()
 
     def testBody(self):
-        print '~~ Begin Toggle Igloo Power Slave'
+        # print '~~ Begin Toggle Igloo Power Slave'
         control_address = 0x22
         message = self.readBridge(control_address,4)
-        print 'Igloo Control = '+str(message)
+        # print 'Igloo Control = '+str(message)
 
         ones_address = 0x02
         all_ones = '255 255 255 255'
@@ -165,25 +170,27 @@ class iglooPower:
         register = self.readIgloo(ones_address, 4)
         if register != all_ones:
         	retval = False
-        print 'Igloo Ones = '+str(register)
+        # print 'Igloo Ones = '+str(register)
 
         # Turn Igloo Off
-        print 'Igloo Control = '+str(self.toggleIgloo())
+        # print 'Igloo Control = '+str(self.toggleIgloo())
+        self.toggleIgloo()
         register = self.detectIglooError(ones_address, 4)
         if register[0] != '0':
         	retval = True
-        print 'Igloo Ones = '+str(register)
+        # print 'Igloo Ones = '+str(register)
 
         # Turn Igloo On
-        print 'Igloo Control = '+str(self.toggleIgloo())
+        # print 'Igloo Control = '+str(self.toggleIgloo())
+        self.toggleIgloo()
         register = self.readIgloo(ones_address, 4)
         if register != all_ones:
         	retval = False
-        print 'Igloo Ones = '+str(register)
+        # print 'Igloo Ones = '+str(register)
         if retval:
-            print '~~ Toggle Igloo Power PASS'
+            print '~~~ Toggle Igloo Power PASS'
         else:
-            print '~~ Toggle Igloo Power FAIL'
+            print '~~~ Toggle Igloo Power FAIL'
         return retval
 
     def toggleIgloo(self):
@@ -225,11 +232,12 @@ class iglooPower:
     	self.bus.write(0x09,[regAddress])
     	self.bus.read(0x09, num_bytes)
     	message = self.bus.sendBatch()[-1]
-    	if message[0] != '0':
-    		print 'Igloo Power Off Confirmed.'
+    	# if message[0] != '0':
+    	# 	print 'Igloo Power Off Confirmed.'
     	return message
 
 def toggleIgloos(bus):
     powerSlots = [2,7,18,23]
     for ps in powerSlots:
+        print 'Igloo Power Control Slot J'+str(ps)
         ip = iglooPower(ps, bus)
