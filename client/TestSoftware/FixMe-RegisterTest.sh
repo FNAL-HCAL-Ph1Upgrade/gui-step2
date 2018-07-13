@@ -1,6 +1,7 @@
 #!/bin/bash
-
 # Hack to run the register test from the gui
+# Setup python3
+source /opt/root6_py3/bin/thisroot.sh
 runNum=$1
 name=${18}
 comment=${19}
