@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# Setup python3
+source /opt/root6_py3/bin/thisroot.sh
 runNum=$1
 name=$2
 comments=$3
