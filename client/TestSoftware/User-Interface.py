@@ -48,10 +48,10 @@ class makeGui:
         def __init__(self, parent):
 
                 # Create a list of QIECard slots:
-                self.cardSlots = ["Card 2", "Card 3", "Card 4", "Card 5", "Card 7",
-                             "Card 8","Card 9", "Card 10", "Card 18", "Card 19",
-                             "Card 20", "Card 21", "Card 23", "Card 24",
-                             "Card 25", "Card 26"]
+                self.cardSlots = ["J2 RM 4-1", "J3 RM 4-2", "J4 RM 4-3", "J5 RM 4-4", "J7 RM 3-1",
+                             "J8 RM 3-2","J9 RM 3-3", "J10 RM 3-4", "J18 RM 2-1", "J19 RM 2-2",
+                             "J20 RM 2-3", "J21 RM 2-4", "J23 RM 1-1", "J24 RM 1-2",
+                             "J25 RM 1-3", "J26 RM 1-4"]
 
                 # Create a dict for converting GUI list of suites to stuff for
                 # behind-the-scenes
@@ -66,7 +66,7 @@ class makeGui:
                 self.folderArgument = "/home/hep/999999999"
 
                 # Create a list of Readout Modules:
-                self.readoutSlots = ["RM 1", "RM 2", "RM 3", "RM 4"]
+                self.readoutSlots = ["RM 4", "RM 3", "RM 2", "RM 1"]
 
                 # Create a string that uniquely defines a human log file
                 self.humanLogName = "{:%b%d%Y_%H%M%S}".format(datetime.now())
