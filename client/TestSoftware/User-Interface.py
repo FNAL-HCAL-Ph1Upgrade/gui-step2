@@ -989,8 +989,10 @@ class makeGui:
         def runTestSuite(self):
                 if (self.nameChoiceVar.get() == "Choose Name"):
                     self.throwErrorBox("Select a tester name")
+                    return
                 elif ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
                     self.throwErrorBox("Run Number Required")
+                    return
                 elif (self.suiteChoiceVar.get() == "Run Everything"):
                     p = Process(target=RunEverything,args=(self,))
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
