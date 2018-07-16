@@ -68,8 +68,17 @@ def RunRegister(self):
         self.submitToDatabase()
         self.lock.release()
 
-def RunUpload(n1,n2,n3,n4,self):
+def RunUpload(n1,n2,n3,n4):
     os.system("./FixMe-Upload.sh %s %s %s %s" % (n1,n2,n3,n4))
+
+def KillOrphans(target):
+    pidfind = re.compile(r"([0-9]+)")
+    try:
+        while True:
+            pid = int(pidfind.findall(subprocess.Popen("ps aux | grep '%s' | grep -v grep | grep -v vim" % target, shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
+            subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+    except IndexError:
+        pass
 
 class makeGui:
         def __init__(self, parent):
@@ -984,15 +993,13 @@ class makeGui:
                 elif (self.suiteChoiceVar.get() == "Run Everything"):
                     p = Process(target=RunEverything,args=(self,))
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
-                    pidfind = re.compile(r"([0-9]+)")
-                    try:
-                        pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'FixMe-RunControl.sh %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
-                        subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-                        pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'look.py %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
-                        subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-                        print("Run Control already running! The process was terminated and has begun again.")
-                    except IndexError:
-                        pass
+                    KillOrphans("FixMe-RunControl.sh %s" % self.runNum.get()) 
+                    KillOrphans("look.py %s" % self.runNum.get())
+                    #pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'FixMe-RunControl.sh %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
+                    #subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+                    #pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'look.py %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
+                    #subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+                    print("Run Control already running! The process was terminated and has begun again.")
                     p = Process(target=RunControl,args=(self,))
                 elif (self.suiteChoiceVar.get() == "Process Plugin Output"):
                     p = Process(target=RunPlugins,args=(self,))
@@ -1056,9 +1063,9 @@ class makeGui:
             if ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
                 print ("Run Number Required")
             elif (self.suiteChoiceVar.get() == "Run Register Test"):
-                p = Process(target=RunUpload,args=(0,1,0,2,self))
+                p = Process(target=RunUpload,args=(0,1,0,2))
             elif ((self.suiteChoiceVar.get() == "Process Run Control") or (self.suiteChoiceVar.get() == "Process Plugin Output")):
-                p = Process(target=RunUpload,args=(self.runNum.get(),0,1,1,self))
+                p = Process(target=RunUpload,args=(self.runNum.get(),0,1,1))
             else:
                 return
             p.start()
@@ -1098,11 +1105,26 @@ class makeGui:
 ###############################################################################################################
 ###############################################################################################################
 
+def Cleanup():
+    KillOrphans("FixMe-")
+    KillOrphans("RunEverything.sh")
+    KillOrphans("ProcessPlugins.sh")
+    KillOrphans("MoveFiles.sh")
+    KillOrphans("fnal_analyze.sh")
+    KillOrphans("look.py")
+    KillOrphans("RunRegisterTest.py")
+    KillOrphans("registerTest.py") 
+
 def main():
-    root = Tk()
-    myapp = makeGui(root)
-    #sys.stdout = logClass.logger(myapp.humanLogName)
-    root.mainloop()
+    try:
+        root = Tk()
+        myapp = makeGui(root)
+        #sys.stdout = logClass.logger(myapp.humanLogName)
+        root.mainloop()
+        Cleanup()
+    except KeyboardInterrupt:
+        print "Don't do that!"
+        Cleanup()
 
 if __name__ == '__main__':
     sys.exit(main())
