@@ -77,6 +77,7 @@ def KillOrphans(target):
         while True:
             pid = int(pidfind.findall(subprocess.Popen("ps aux | grep '%s' | grep -v grep | grep -v vim" % target, shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
             subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+            print "Process located and killed"
     except IndexError:
         pass
 
@@ -995,11 +996,6 @@ class makeGui:
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
                     KillOrphans("FixMe-RunControl.sh %s" % self.runNum.get()) 
                     KillOrphans("look.py %s" % self.runNum.get())
-                    #pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'FixMe-RunControl.sh %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
-                    #subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-                    #pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'look.py %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
-                    #subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-                    print("Run Control already running! The process was terminated and has begun again.")
                     p = Process(target=RunControl,args=(self,))
                 elif (self.suiteChoiceVar.get() == "Process Plugin Output"):
                     p = Process(target=RunPlugins,args=(self,))
