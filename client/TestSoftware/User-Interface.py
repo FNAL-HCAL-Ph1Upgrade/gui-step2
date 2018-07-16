@@ -16,10 +16,12 @@ from Tkinter import *
 #from client import webBus
 #from TestStand import TestStand
 from datetime import datetime
-import subprocess
+import  subprocess
 import os, shutil
 import glob
 import sys
+from multiprocessing import Process, Lock
+from time import sleep
 
 if (1):
     fontc='#DDDDDD'
@@ -43,6 +45,31 @@ else:
     dimbuttonsc=["#A1EFA1","#EFEAAD","#C0EFEF","#C6C6EA","#E50000","#DE0013","#D10046","#9F1EEF","#20D0B9","#13EFBC","#78EB78"]
     dimc="#DDDDDD"
     checkc="white"
+
+
+def RunEverything(self):
+    if (self.lock.acquire(False)):
+        os.system("./FixMe-Everything.sh %s %s %s %s" % (self.runNum.get(),'\''+self.iterationVar.get()+'\'','\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+        self.lock.release()
+
+def RunControl(self):
+    os.system("./FixMe-RunControl.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+
+def RunPlugins(self):
+    os.system("./FixMe-PluginOut.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+
+def RunRegister(self):
+    if (self.lock.acquire(False)):
+        os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
+                        self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
+                        self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
+                        self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
+                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+        self.submitToDatabase()
+        self.lock.release()
+
+def RunUpload(n1,n2,n3,n4,self):
+    os.system("./FixMe-Upload.sh %s %s %s %s" % (n1,n2,n3,n4))
 
 class makeGui:
         def __init__(self, parent):
@@ -102,7 +129,7 @@ class makeGui:
                 self.overwriteVar     = IntVar()
                 self.uploadFromStrVar = IntVar()
                 self.armState       =  IntVar()
- 
+                self.lock           = Lock() 
                 # Place an all-encompassing frame in the parent window. All of the following
                 # frames will be placed here (topMost_frame) and not in the parent window.
                 self.topMost_frame = Frame(parent,bg=backc)
@@ -880,12 +907,14 @@ class makeGui:
             os.system("/home/hcalpro/mcmaster/gui-step2/ngccmServer/restartNgccmServer.sh")
         
         def expertArm(self):
-            if (self.armState.get() == 1):
+            if ((self.armState.get() == 1) and (self.lock.acquire(False))):
                 self.exp_NGCCM_button['state'] = 'normal'
                 self.exp_NGCCM_button.config(bg=buttonsc[5])
+                self.lock.release()
             else:
                 self.exp_NGCCM_button['state'] = 'disabled'
                 self.exp_NGCCM_button.config(bg=buttonsc[4])
+                self.expertC.deselect()
 
         def throwErrorBox(self,msg):
             self.top = Toplevel()
@@ -946,24 +975,34 @@ class makeGui:
 #### The "main" member function. This calls the various scripts to run tests.
 ############################################################################################
 
+
         def runTestSuite(self):
                 if (self.nameChoiceVar.get() == "Choose Name"):
                     self.throwErrorBox("Select a tester name")
                 elif ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
                     self.throwErrorBox("Run Number Required")
                 elif (self.suiteChoiceVar.get() == "Run Everything"):
-                    os.system("./FixMe-Everything.sh %s %s %s %s" % (self.runNum.get(),'\''+self.iterationVar.get()+'\'','\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+                    p = Process(target=RunEverything,args=(self,))
                 elif (self.suiteChoiceVar.get() == "Process Run Control"):
-                    os.system("./FixMe-RunControl.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+                    pidfind = re.compile(r"([0-9]+)")
+                    try:
+                        pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'FixMe-RunControl.sh %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
+                        subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+                        pid = int(pidfind.findall(subprocess.Popen("ps aux | grep 'look.py %s' | grep -v grep" % self.runNum.get(), shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0])[0])
+                        subprocess.Popen("kill %d" % pid , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+                        print("Run Control already running! The process was terminated and has begun again.")
+                    except IndexError:
+                        pass
+                    p = Process(target=RunControl,args=(self,))
                 elif (self.suiteChoiceVar.get() == "Process Plugin Output"):
-                    os.system("./FixMe-PluginOut.sh %s %s %s" % (self.runNum.get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+                    p = Process(target=RunPlugins,args=(self,))
                 elif (self.suiteChoiceVar.get() == "Run Register Test"):
-                    os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
-                        self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
-                        self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
-                        self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
-                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
-                    self.submitToDatabase()
+                    p = Process(target=RunRegister,args=(self,))
+                else:
+                    return
+                p.start()
+                sleep(0.1)
+                self.expertArm()
 
 ############################################################################################
 ### Convert the checkboxes on the GUI to a list of QIE slots that will be useable
@@ -1017,9 +1056,12 @@ class makeGui:
             if ((self.runNum.get() == "") and (self.suiteChoiceVar.get() != "Run Register Test")):
                 print ("Run Number Required")
             elif (self.suiteChoiceVar.get() == "Run Register Test"):
-                os.system("./FixMe-Upload.sh %s %s %s %s" % (0,1,0,2))
+                p = Process(target=RunUpload,args=(0,1,0,2,self))
             elif ((self.suiteChoiceVar.get() == "Process Run Control") or (self.suiteChoiceVar.get() == "Process Plugin Output")):
-                os.system("./FixMe-Upload.sh %s %s %s %s" % (self.runNum.get(),0,1,1))
+                p = Process(target=RunUpload,args=(self.runNum.get(),0,1,1,self))
+            else:
+                return
+            p.start()
 #                if self.uploadFromStrVar.get() == 1:
 #                        self.folderArgument = self.uploadFromStrEntry.get()
 #
@@ -1064,3 +1106,9 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
+def RunEverything(self):
+    os.system("./FixMe-Everything.sh %s %s %s %s" % (self.runNum.get(),'\''+self.iterationVar.get()+'\'','\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+
+def f(name):
+    print 'hello', name
