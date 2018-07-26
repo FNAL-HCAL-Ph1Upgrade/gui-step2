@@ -61,10 +61,10 @@ def RunPlugins(self):
 def RunRegister(self):
     if (self.lock.acquire(False)):
         os.system("./FixMe-RegisterTest.sh %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (self.iterationVar.get(),
-                        self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),
-                        self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
+                        self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get(),
                         self.cardVarList[9].get(),self.cardVarList[10].get(),self.cardVarList[11].get(),self.cardVarList[12].get(),
-                       self.cardVarList[13].get(),self.cardVarList[14].get(),self.cardVarList[15].get(),self.cardVarList[16].get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
+                        self.cardVarList[5].get(),self.cardVarList[6].get(),self.cardVarList[7].get(),self.cardVarList[8].get(),
+                       self.cardVarList[1].get(),self.cardVarList[2].get(),self.cardVarList[3].get(),self.cardVarList[4].get(),'\''+self.nameChoiceVar.get()+'\'','\''+self.infoCommentVar.get()+'\''))
         self.submitToDatabase()
         self.lock.release()
 
