@@ -939,6 +939,21 @@ class makeGui:
             self.button.configure(bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
             self.button.pack()
 
+        def throwExitBox(self,msg):
+            self.top = Toplevel()
+            self.top.title("Confirm Exit")
+            self.top.config(height=50, width=360)
+            self.top.pack_propagate(False)
+
+            self.msg = Label(self.top, text=msg,fg=fontc)
+            self.msg.pack()
+
+            self.button = Button(self.top, text="Quiet Exit", command=self.top.destroy)
+            self.button = Button(self.top, text="End All Processes", command=lambda:[Cleanup(),self.top.destroy])
+            self.button.configure(bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
+            self.button.pack()
+
+
 ################################################################################################
 #### Functions for selecting various cards
 ################################################################################################
@@ -1119,10 +1134,29 @@ def main():
         myapp = makeGui(root)
         #sys.stdout = logClass.logger(myapp.humanLogName)
         root.mainloop()
-        Cleanup()
+        while(True):
+            c = raw_input("Close running processes? (y/n)\n")
+            if (c == 'y'):
+                Cleanup()
+                print("Orphans killed")
+                break;
+            elif (c == 'n'):
+                print("Watch for orphans")
+                break;
+            else:
+                print("invalid entry")
     except KeyboardInterrupt:
-        print "Don't do that!"
-        Cleanup()
+        while(True):
+            c = raw_input("Close running processes? (y/n)\n")
+            if (c == 'y'):
+                Cleanup()
+                print("Orphans killed")
+                break;
+            elif (c == 'n'):
+                print("Watch for orpans")
+                break;
+            else:
+                print("invalid entry")
 
 if __name__ == '__main__':
     sys.exit(main())
