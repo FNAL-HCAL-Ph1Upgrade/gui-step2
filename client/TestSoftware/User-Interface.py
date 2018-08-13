@@ -939,6 +939,7 @@ class makeGui:
             self.button.configure(bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
             self.button.pack()
 
+
 ################################################################################################
 #### Functions for selecting various cards
 ################################################################################################
@@ -1119,10 +1120,29 @@ def main():
         myapp = makeGui(root)
         #sys.stdout = logClass.logger(myapp.humanLogName)
         root.mainloop()
-        Cleanup()
+        while(True):
+            c = raw_input("Close running processes? (y/n)\n")
+            if (c == 'y'):
+                Cleanup()
+                print("Orphans killed")
+                break;
+            elif (c == 'n'):
+                print("Watch for orphans")
+                break;
+            else:
+                print("invalid entry")
     except KeyboardInterrupt:
-        print "Don't do that!"
-        Cleanup()
+        while(True):
+            c = raw_input("Close running processes? (y/n)\n")
+            if (c == 'y'):
+                Cleanup()
+                print("Orphans killed")
+                break;
+            elif (c == 'n'):
+                print("Watch for orpans")
+                break;
+            else:
+                print("invalid entry")
 
 if __name__ == '__main__':
     sys.exit(main())
