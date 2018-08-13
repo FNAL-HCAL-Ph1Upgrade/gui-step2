@@ -939,20 +939,6 @@ class makeGui:
             self.button.configure(bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
             self.button.pack()
 
-        def throwExitBox(self,msg):
-            self.top = Toplevel()
-            self.top.title("Confirm Exit")
-            self.top.config(height=50, width=360)
-            self.top.pack_propagate(False)
-
-            self.msg = Label(self.top, text=msg,fg=fontc)
-            self.msg.pack()
-
-            self.button = Button(self.top, text="Quiet Exit", command=self.top.destroy)
-            self.button = Button(self.top, text="End All Processes", command=lambda:[Cleanup(),self.top.destroy])
-            self.button.configure(bg=buttonsc[7],fg=fontc,activebackground=dimbuttonsc[7],activeforeground=fontc)
-            self.button.pack()
-
 
 ################################################################################################
 #### Functions for selecting various cards
