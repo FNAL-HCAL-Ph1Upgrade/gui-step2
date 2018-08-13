@@ -22,6 +22,7 @@ import glob
 import sys
 from multiprocessing import Process, Lock
 from time import sleep
+import tkMessageBox
 
 if (1):
     fontc='#DDDDDD'
@@ -160,7 +161,6 @@ class makeGui:
                 frame_ipady = "1m"
                 # End layout constants
 
-        
                 ##########################################
                 ###                                    ###
                 ###     BEGIN MAKING SUB-FRAMES        ### 
@@ -1114,23 +1114,20 @@ def Cleanup():
     KillOrphans("RunRegisterTest.py")
     KillOrphans("registerTest.py") 
 
+def checkExit(root):
+    if tkMessageBox.askquestion("Exit", "Really exit?") == "yes":
+        root.destroy()
+        Cleanup()
+
+
 def main():
     try:
         root = Tk()
+        root.checkExit = MethodType(checkExit, root, Tk)
+        root.wm_protocol("WM_DELETE_WINDOW", root.checkExit)
         myapp = makeGui(root)
         #sys.stdout = logClass.logger(myapp.humanLogName)
         root.mainloop()
-        while(True):
-            c = raw_input("Close running processes? (y/n)\n")
-            if (c == 'y'):
-                Cleanup()
-                print("Orphans killed")
-                break;
-            elif (c == 'n'):
-                print("Watch for orphans")
-                break;
-            else:
-                print("invalid entry")
     except KeyboardInterrupt:
         while(True):
             c = raw_input("Close running processes? (y/n)\n")
